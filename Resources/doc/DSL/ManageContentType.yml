@@ -1,0 +1,74 @@
+-
+    mode: create
+    type: content_type
+    content_type_group: x # Id of the group we want to put the new content class into
+    name: xyz # Name of new class
+    identifier: xyz # Class identifier
+    description: xyz # Optional
+    name_pattern: pattern # Optional, pattern to use for the name of the object (ex: <title>)
+    url_name_pattern: pattern # Optional
+    is_container: true|false # Optional, defaults to false
+    attributes:
+        -
+            type: xyz # Attribute type (See list https://confluence.ez.no/display/EZP/FieldTypes)
+            name: xyz
+            identifier: xyz
+            description: # Optional
+            required: true|false # Optional
+            searchable: true|false # Optional
+            info-collector: true|false # Optional
+            disable-translation: true|false # Optional
+            category: default|meta # Optional
+            default-value: # Optional
+            field-settings: array # Optional, can be used for various field type specific settings
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+        -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference (supports content type id and content type identifier)
+                                   # The shorthand 'id' can be used instead of 'content_type_id
+                                   # The shorthand 'identifier' can be used instead of 'content_type_identifier
+
+-
+    mode: update
+    type: content_type
+    identifier: xyz # The identifier of the content type
+    new_identifier: xyz # Optional, will update the identifier if set
+    name: xyz # Optional, will be updated if set
+    description: xyz # Optional, will be updated if set
+    name_pattern: xyz # Optional, will be updated if set
+    url_name_pattern: xyz # Optional, will be updated if set
+    is_container: true|false # Optional, will be updated if set
+    attributes: # Optional, if set will update existing ones or add new ones.
+        -
+            identifier: xyz # Identifier of the attribute to update or identifier of the new attribute to add
+            new_identifier: xyz # Optional, will update the identifier if set. Not used if adding a new attribute
+            type: xyz # Mandatory if adding a new attribute. Not used otherwise
+            name: # Optional, will be updated if set
+            description: # Optional, will be updated if set
+            required: true|false # Optional, will be updated if set
+            searchable: true|false # Optional, will be updated if set
+            info-collector: true|false # Optional, will be updated if set
+            disable-translation: true|false # Optional, will be updated if set
+            category: default|meta # Optional, will be updated if set
+            default-value: # Optional, will be updated if set
+            field-settings: array # Optional, can be used for various field type specific settings
+            position: # Optional, will move the attribute to this position
+    # Remove all attributes that have their identifiers listed here
+    # Can use both ways to define the list of identifiers.
+    remove_attributes: [identifier1, identifier2, identifier3]
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+            -
+                identifier: referenceID # A string used to identify the reference
+                attribute: attributeId # An attribute to get the value of for the reference (supports content type id and content type identifier)
+                                       # The shorthand 'id' can be used instead of 'content_type_id
+                                       # The shorthand 'identifier' can be used instead of 'content_type_identifier
+
+-
+    # Delete a content type
+    mode: delete
+    type: content_type
+    identifier: xyz # The identifier of the content type

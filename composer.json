@@ -1,0 +1,24 @@
+{
+    "name": "kaliop/migration",
+    "type": "library",
+    "description": "",
+    "keywords": ["migrations", "database", "ezpublish"],
+    "homepage": "",
+    "license": "",
+    "version": "1.0.3",    
+    "authors": [
+        {
+            "name": "Peter Halasz",
+            "email": "peter.halasz@kaliop.co.uk",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "ext-pdo": "*"
+    },
+    "autoload": {
+        "psr-0": { "Kaliop\\Migration\\BundleMigrationBundle": "" }
+    },
+    "target-dir": "Kaliop/Migration/BundleMigrationBundle"
+}

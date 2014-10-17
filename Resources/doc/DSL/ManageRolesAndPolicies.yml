@@ -1,0 +1,136 @@
+# Possible limitation types and values the types accept
+#
+# The types are defined by eZ Publish's Role service
+# All values must be arrays even if it is a single value
+#
+#  ContentType limitation example:
+#  type: Class
+#  value: [1, 2, 3] # List of content type ids
+#
+#  Language limitation example:
+#  type: Language
+#  value: [eng-GB, eng-US] # List of valid language codes
+#
+#  Location limitation example"
+#  type: Node
+#  value: [2, 345] # List of location ids
+#
+#  Owner limitation
+#  type: Owner
+#  value: [x] # must be either 1 (owner) or 2 (session)
+#
+#  ParentContentType limitation example:
+#  type: ParentClass
+#  value: [1, 2, 3] # List of content type ids.
+#
+#  ParentDepth limitation example:
+#  type: ParentDepth
+#  value: [x]
+#
+#  ParentOwner limitation example:
+#  type: ParentOwner
+#  value: [x] # either 1 (owner) or 2 (session)
+#
+#  ParentUserGroup limitation example:
+#  type: ParentGroup
+#  value: [1] # must be 1 (owner)
+#
+#  Section limitation example:
+#  type: Section
+#  value: [1, 2, 3] # List of section ids
+#
+#  Siteaccess limitation example: (Not implemented yet in eZ Publish 5 API
+#  type: SiteAccess
+#  value: [siteaccess, siteaccess] # List of siteaccess name strings
+#
+#  Subtree limitation example:
+#  type: Subtree
+#  value: [1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location id path
+#
+#  UserGroup limitation example:
+#  type: UserGroup
+#  value: [1] # must be 1 (owner)
+-
+    mode: create
+    type: role
+    name: xyz # Name of the role
+    policies: # Optional
+        -
+            module: xyz
+            function: xyz # to grant access to all function, use '*' (including simple quotes)
+            limitation: # Optional
+                -
+                    type: xyz
+                    value: [x, y]
+        -
+            module: xyz
+            function: xyz
+            limitation:
+                -
+                    type: xyz
+                    value: [x, y]
+    assign: # Optional
+        -
+            type: # Must be user or group
+            ids: [x, y, z] # List of user IDs to assign the new role to
+            limitation: # Optional role limitation on assignment
+                -
+                    type: xyz
+                    value: [x, y]
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+            -
+                identifier: referenceID # A string used to identify the reference
+                attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
+                                       # The shorthand 'id' can be used instead of 'role_id'
+                                       # The shorthand 'identifier' can be used instead of 'role_identifier'
+
+-
+    mode: update
+    type: role
+    name: xyz # Name of the role to be updated
+    assign: # Optional
+        -
+            type: # Must be user or group
+            ids: [x, y, z] # List of user IDs to assign the new role to
+            limitation: # Optional role limitation on assignment
+                -
+                    type: xyz
+                    value: [x, y]
+    unassign: # Optional
+        users: [x, z, y]
+        groups: [x, z, y]
+    policies: # Optional
+        add:
+            -
+                module: xyz
+                function: xyz
+                limitation:
+                    -
+                        type: xyz
+                        value: [x, z]
+        remove: [x, y, z] # Policy ids to remove from the role
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+                -
+                    identifier: referenceID # A string used to identify the reference
+                    attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
+                                           # The shorthand 'id' can be used instead of 'role_id'
+                                           # The shorthand 'identifier' can be used instead of 'role_identifier'
+
+# Not implemented
+#-
+#    mode: update
+#    type: policy
+#    id: x # The id of the policy to update
+#    limitation: # The new limitations for the policy
+#        -
+#            type: xyz
+#            value: [x, y]
+
+-
+    mode: delete
+    type: role
+    name: xyz # Name of the role to be removed

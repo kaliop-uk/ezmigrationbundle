@@ -1,0 +1,70 @@
+-
+    mode: create
+    type: content
+    content_type: [content type identifier]
+    main_location: x # The location (node) id of the parent node
+    other_locations: [x, y, z] # Optional, node ids of other parent location
+    attributes:
+        - attribute1: value1
+        - attribute2: value2
+        - attribute3: |
+                      value can be
+                      on multiple lines
+                      and new lines are preserved on parsing
+        - attribute4: >
+                      value on multiple
+                      lines, but new line is not preserved on parsing
+        # image/binary file attribute example
+        - attribute5:
+            type: ezimage/ezbinaryfile
+            path: '/path/to/image' # Relative path from MigrationVersions/images/
+            alt_text: xyz #optional, only used for images
+        # xml text using references
+        - attribute6:
+            type: ezxmltext
+            content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
+
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+        -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference (supports object_id and location_id)
+
+-
+    mode: update
+    type: content
+    object_id: x # Could use remote_id instead
+    attributes: # the list of attribute identifier value pairs
+        - attribute1: value1
+        - attribute2: value2
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+        -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference (supports object_id and location_id)
+
+-
+    mode: delete
+    type: content
+    object_id: x # the content/object id or a list of ids
+    remote_id: x # the content/object id or a list of ids
+
+-
+    mode: delete
+    type: content
+    remote_id: x # the remote id of the object
+
+-
+    mode: delete
+    type: content
+    object_id: [id1, id2, id3] # Defining a sequence with []
+
+-
+    mode: delete
+    type: content
+    # Sequences with the standard list syntax
+    object_id: - id1
+               - id2
+               - id3

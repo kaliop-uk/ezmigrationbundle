@@ -1,0 +1,79 @@
+-
+    mode: create
+    type: user_group
+    parent_group_id: x # The object ID of the user group to put the new group into, can be an array
+    name: xyz
+    description: xyz # Optional
+    roles: [x, y, z] # The role names or ids to assign to the group
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # The shorthand 'id' can be used instead of 'object_id'
+
+-
+    mode: create
+    type: user
+    first_name: xyz
+    last_name: xyz
+    username: xyz
+    email: xyz
+    password: xyz
+    main_language: xyz # Optional, default to eng-GB
+    groups: [x, y, z] # The user group IDs (Object IDs) to put the user into
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id)
+                                 # The shorthand 'id' can be used instead of 'user_id'
+
+-
+    mode: update
+    type: user
+    id: x # The ID of the user to update.
+    email: xyz # Optional
+    password: xyz # Optional
+    enabled: true|false # Optional
+    # Optional, list of group IDs the user is a member of.
+    # The user will be removed from all groups that are not in the list
+    groups: [x, y, z]
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id_
+                                 # The shorthand 'id' can be used instead of 'user_id'
+
+-
+    mode: update
+    type: user_group
+    id: x # The ID of the user group to update.
+    name: xyz # Optional
+    description: xyz # Optional
+    parent_group_id: x # Optional, the new parent user group ID
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # The shorthand 'id' can be used instead of 'object_id'
+
+-
+    mode: delete
+    type: user
+    user_id: x # Optional
+    email: xyz # Optional
+    username: xyz # Optional
+    # user_id, email, username could also be list of items as well
+
+-
+    # The users which are not assigned to other groups will be deleted.
+    mode: delete
+    type: user_group
+    group: x # Id of the group to be deleted. Can also be a list of ids.

@@ -1,0 +1,62 @@
+-
+    # Create new location
+    mode: create
+    type: location
+    object_id: x # The ID of the object we want to add a location to
+    parent_location_id: y # The Locations (Node) ID of the parent where the new location should be placed
+    priority: x # Optional
+    is_hidden: true|false # Optional
+    # Possible values for sort_field are:
+    # - published
+    # - priority
+    # - path
+    # - modified
+    # - section
+    # - depth
+    # - class_identifier
+    # - class_name
+    # - name
+    # - node_id
+    # - contentobject_id
+    # - modified_subnode
+    sort_field: x # Optional
+    sort_order: ASC|DESC # Optional
+-
+    mode: create
+    type: location
+    remote_id: x # The remote ID of the object we want to add a location to
+    parent_location_id: y
+    priority: x # Optional
+    is_hidden: true|false # Optional
+    sort_field: x # Optional
+    sort_order: ASC|DESC # Optional
+-
+    mode: create
+    type: location
+    object_id: x
+    # Can use both syntax for sequences to define the list
+    parent_location_id: [x, y, z]
+    priority: x # Optional
+    is_hidden: true|false # Optional
+    sort_field: x # Optional
+    sort_order: ASC|DESC # Optional
+
+-
+    mode: update
+    type: location
+    location_id: x # The ID of the location to update
+    swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set the same time parent_location_id is set.
+    priority: x # Optional, will be updated if set
+    parent_location_id: x # Optional The parent location to move the subtree to. Cannot be set the same time when swap_with_location is set.
+    is_hidden: true|false # Optional, Set the visibility of the location
+    sort_field: x # Optional
+    sort_order: ASC|DESC # Optional
+
+-
+    mode: delete
+    type: location
+    location_id: x
+-
+    mode: delete
+    type: location
+    location_id: [x, y, z] # Both syntax for defining sequences will work

@@ -1,0 +1,167 @@
+<?php
+namespace Kaliop\Migration\BundleMigrationBundle\Command;
+
+
+use Kaliop\Migration\BundleMigrationBundle\Core\Configuration;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class GenerateCommand extends AbstractCommand {
+
+    private $phpTemplate = '<?php
+
+namespace <namespace>;
+
+use Kaliop\Migration\BundleMigrationBundle\Interfaces\VersionInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+/**
+ * Auto-generated Migration definition: Please modify to your needs!
+ */
+class <version>_place_holder implements VersionInterface, ContainerAwareInterface
+{
+    /**
+     * The dependency injection container
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * @inheritdoc
+     */
+    public function execute() {
+        // @TODO This method is auto generated, please modify to your needs.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setContainer(ContainerInterface $container = null) {
+        $this->container = $container;
+    }
+}
+';
+
+    private $ymlTemplate = '
+# Auto-generated Migration definition: Please modify to your needs!
+-
+    mode: [create/update/delete]
+    type: [content/content_type/user/user_group/role]
+    ';
+
+    private $availableMigrationTypes = array( 'yml', 'php', 'sql' );
+
+    /**
+     * Configure the console command
+     */
+    protected function configure() {
+        $this->setName('kaliop:migration:generate')
+            ->setDescription('Generate a blank migration definition file.')
+            ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The type of migration file to generate. (yml, php, sql)', 'yml')
+            ->addOption('dbserver', null, InputOption::VALUE_OPTIONAL, 'The type of the database server the sql migration is for. (mysql, postgre)', 'mysql')
+            ->addArgument('bundle', InputOption::VALUE_REQUIRED, 'The bundle to generate the migration definition file in. eg.: KaliopBundleMigrationBundle' )
+            ->setHelp(<<<EOT
+The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
+
+<info>./ezpublish/console kaliop:migration:generate bundlename</info>
+
+You can optionally specify the file type to generate with <info>--type</info>:
+
+<info>./ezpublish/console kaliop:migration:generate --type=yml bundlename</info>
+
+For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
+
+<info>./ezpublish/console kaliop:migration:generate --type=sql --dbserver=mysql bundlename</info>
+EOT
+        );
+    }
+
+    /**
+     * Run the command and display the results.
+     *
+     * @throws \InvalidArgumentException When an unsupported file type is selected
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return void
+     */
+    public function execute( InputInterface $input, OutputInterface $output ) {
+        $fileType = $input->getOption('type');
+        $dbServer = $input->getOption('dbserver');
+
+        if (!in_array($fileType, $this->availableMigrationTypes))
+        {
+            throw new \InvalidArgumentException( 'Unsupported migration file type ' . $fileType );
+        }
+
+        $configuration = $this->getConfiguration( $input, $output );
+
+        $version = date('YmdHis');
+        $bundleName = $input->getArgument('bundle');
+
+        $path = $this->generateMigrationFile($configuration, $version, $bundleName, $fileType, $dbServer);
+
+        $output->writeln(sprintf("Generated new migration file to <info>%s</info>", $path));
+    }
+
+    /**
+     * Generates a migration definition file.
+     *
+     * @throws \InvalidArgumentException When the destination directory does not exists
+     * @param Configuration $configuration
+     * @param string $version The version string in YYYYMMDDHHMMSS format
+     * @param string $bundleName The name of the bundle to generate the migration file for
+     * @param string $fileType The type of migration file to generate
+     * @param string $dbServer The type of database server the SQL migration is for.
+     * @return string The path to the migration file
+     */
+    protected function generateMigrationFile(Configuration $configuration, $version, $bundleName, $fileType, $dbServer = 'mysql') {
+
+        /** @var $bundle \Symfony\Component\HttpKernel\Bundle\BundleInterface */
+        $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);
+
+        $container = $this->getApplication()->getKernel()->getContainer();
+
+        $versionDirectory = $container->getParameter( 'kaliop_bundle_migration.version_directory' );
+        $bundleVersionDirectory = $bundle->getPath() . '/' . $versionDirectory;
+
+        if($fileType == 'sql') {
+            $path = $bundleVersionDirectory . '/' . $version . '_' . $dbServer . '_place_holder.' . $fileType;
+        } else {
+            $path = $bundleVersionDirectory . '/' . $version .'_place_holder.' . $fileType;
+        }
+
+        switch($fileType) {
+            case 'php':
+                $template = $this->phpTemplate;
+                break;
+            case 'sql':
+                $template = "-- Autogenerated migration file. Please customise for your needs.";
+                break;
+            case 'yml':
+            default:
+                $template = $this->ymlTemplate;
+        }
+
+        $placeholders = array(
+            '<namespace>',
+            '<version>'
+        );
+
+        $replacements = array(
+            $configuration->versionDirectory . "\\" . $bundleName,
+            $version
+        );
+
+        $code = str_replace($placeholders, $replacements, $template);
+
+        if(!file_exists($bundleVersionDirectory)) {
+            throw new \InvalidArgumentException(sprintf('Migrations directory "%s" does not exist.', $bundleVersionDirectory));
+        }
+
+        file_put_contents($path, $code);
+
+        return $path;
+    }
+} 

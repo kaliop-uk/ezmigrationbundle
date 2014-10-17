@@ -1,0 +1,3 @@
+kaliop_bundle_migration_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: KaliopBundleMigrationBundle:Default:index }
