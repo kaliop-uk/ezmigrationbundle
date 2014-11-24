@@ -23,7 +23,7 @@ In the `repositories` section (if you do not have one then add it):
     "repositories": [
         {
                 "type": "vcs",
-                "url": "git@codebasehq.com:vision/kbase/bundle-migration.git"
+                "url": "ssh://git@stash.kaliop.net:7999/ku/kaliop-migration.git"
         }
     ]
 
@@ -73,7 +73,7 @@ The `registerBundles` method should look similar to:
             new EzPublishCoreBundle(),
             new EzPublishLegacyBundle(),
             new EzPublishRestBundle(),
-            new KaliopBundleMigrationBundle()
+            new Kaliop\Migration\BundleMigrationBundle\KaliopBundleMigrationBundle()
         );
     }
 
