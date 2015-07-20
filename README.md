@@ -4,18 +4,6 @@ This bundle aims to handle per bundle upgrades/migrations instead of a global mi
 
 ## Installation
 
-### KBase Demo
-
-If you have the KBase Demo environment installed then make sure you have the latest code checked out.
-
-The migration bundle is set to be a dev bundle for the moment. To install it and all it's dependencies run:
-
-    composer install --prefer-dist -vvv --dev
-
-This will install a bunch of dev bundles and activate them in the Kernel.
-
-### Other eZ Publish 5 environments
-
 Add the following to composer.json:
 
 In the `repositories` section (if you do not have one then add it):
@@ -29,9 +17,7 @@ In the `repositories` section (if you do not have one then add it):
 
 And in either `require` or `require-dev` at the end of the bundle list add:
 
-    "mikey179/vfsStream": "1.2.0",
-    "polishsymfonycommunity/symfony2-mocker-extension": "*",
-    "kaliop/migration": "@dev"
+    "kaliop/migration": "~1.0"
 
 For example `require-dev` should look similar to:
 
@@ -47,7 +33,7 @@ For example `require-dev` should look similar to:
         "phpunit/phpunit": "3.7.*",
         "mikey179/vfsStream": "1.2.0",
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
-        "kaliop/migration": "@dev"
+        "kaliop/migration": "~1.0"
     },
 
 Save composer.json and run
