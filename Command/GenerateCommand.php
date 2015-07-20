@@ -6,9 +6,11 @@ use Kaliop\Migration\BundleMigrationBundle\Core\Configuration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class GenerateCommand extends AbstractCommand {
 
+    const DIR_CREATE_PERMISSIONS = 0755;
     private $phpTemplate = '<?php
 
 namespace <namespace>;
@@ -54,6 +56,11 @@ class <version>_place_holder implements VersionInterface, ContainerAwareInterfac
     private $availableMigrationTypes = array( 'yml', 'php', 'sql' );
 
     /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
      * Configure the console command
      */
     protected function configure() {
@@ -89,6 +96,7 @@ EOT
     public function execute( InputInterface $input, OutputInterface $output ) {
         $fileType = $input->getOption('type');
         $dbServer = $input->getOption('dbserver');
+        $this->output = $output;
 
         if (!in_array($fileType, $this->availableMigrationTypes))
         {
@@ -157,7 +165,25 @@ EOT
         $code = str_replace($placeholders, $replacements, $template);
 
         if(!file_exists($bundleVersionDirectory)) {
-            throw new \InvalidArgumentException(sprintf('Migrations directory "%s" does not exist.', $bundleVersionDirectory));
+            $this->output->writeln( sprintf(
+                "Migrations directory <info>%s</info> does not exist. I will create one now....",
+                $bundleVersionDirectory
+            ) );
+
+            if (mkdir($bundleVersionDirectory, self::DIR_CREATE_PERMISSIONS, true))
+            {
+                $this->output->writeln( sprintf(
+                    "Migrations directory <info>%s</info> has been created",
+                    $bundleVersionDirectory
+                ) );
+            }
+            else
+            {
+                throw new FileException( sprintf(
+                    "Failed to create migrations directory %s.",
+                    $bundleVersionDirectory
+                ) );
+            }
         }
 
         file_put_contents($path, $code);
