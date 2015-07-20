@@ -5,11 +5,16 @@
     "keywords": ["migrations", "database", "ezpublish"],
     "homepage": "",
     "license": "",
-    "version": "1.0.3",    
+    "version": "1.0.5",
     "authors": [
         {
             "name": "Peter Halasz",
             "email": "peter.halasz@kaliop.co.uk",
+            "role": "Developer"
+        },
+        {
+            "name": "Daniel Clements",
+            "email": "dclements@kaliop.com",
             "role": "Developer"
         }
     ],
