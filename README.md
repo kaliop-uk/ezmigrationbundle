@@ -1,40 +1,12 @@
-# Per Bundle Migration
+# Kaliop Bundle-Migration Bundle
 
 This bundle aims to handle per bundle upgrades/migrations instead of a global migration.
 
 ## Installation
 
-Add the following to composer.json:
-
-In the `repositories` section (if you do not have one then add it):
-
-    "repositories": [
-        {
-                "type": "vcs",
-                "url": "ssh://git@stash.kaliop.net:7999/ku/kaliop-migration.git"
-        }
-    ]
-
-And in either `require` or `require-dev` at the end of the bundle list add:
+In either `require` or `require-dev` at the end of the bundle list add:
 
     "kaliop/migration": "~1.0"
-
-For example `require-dev` should look similar to:
-
-    "require-dev": {
-        "behat/behat": "2.4.*",
-        "behat/symfony2-extension": "*",
-        "behat/sahi-client": "dev-master as 1.1.1",
-        "behat/mink-extension": "*",
-        "behat/mink-goutte-driver": "*",
-        "behat/mink-selenium-driver": "*",
-        "behat/mink-sahi-driver": "*",
-        "symfony/icu": "~1.0",
-        "phpunit/phpunit": "3.7.*",
-        "mikey179/vfsStream": "1.2.0",
-        "polishsymfonycommunity/symfony2-mocker-extension": "*",
-        "kaliop/migration": "~1.0"
-    },
 
 Save composer.json and run
 
