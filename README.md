@@ -1,4 +1,4 @@
-# Kaliop Bundle-Migration Bundle
+# Kaliop eZ-Migration Bundle
 
 This bundle aims to handle per bundle upgrades/migrations instead of a global migration.
 
@@ -6,7 +6,7 @@ This bundle aims to handle per bundle upgrades/migrations instead of a global mi
 
 In either `require` or `require-dev` at the end of the bundle list add:
 
-    "kaliop/migration": "~1.0"
+    "kaliop/ezmigrationbundle": "~1.0"
 
 Save composer.json and run
 
@@ -31,7 +31,7 @@ The `registerBundles` method should look similar to:
             new EzPublishCoreBundle(),
             new EzPublishLegacyBundle(),
             new EzPublishRestBundle(),
-            new Kaliop\Migration\BundleMigrationBundle\KaliopBundleMigrationBundle()
+            new Kaliop\Migration\EzMigrationBundle()
         );
     }
 
@@ -50,7 +50,7 @@ This indicates that the bundle has been installed and registered correctly.
 
 To get the latest code you need to update the bundle with `composer`
 
-    composer update kaliop/migration
+    composer update kaliop/ezmigrationbundle
 
 ## Running tests
 
@@ -60,8 +60,8 @@ To run the unit tests just point PHPUnit to the bundle directory:
 
     bin/phpunit vendor/kaliop/migration/Kaliop/Migration/BundleMigrationBundle
 
-The behat instructions are left here for future reference when we get it working correctly with eZ Publish 5.
-To run the BDD test with behat:
+The Behat instructions are left here for future reference when we get it working correctly with eZ Publish 5.
+To run the BDD test with Behat:
 
     bin/behat @KaliopBundleMigrationBundle
 
