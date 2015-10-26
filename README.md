@@ -21,16 +21,7 @@ The `registerBundles` method should look similar to:
     public function registerBundles()
     {
         $bundles = array(
-            new FrameworkBundle(),
-            new SecurityBundle(),
-            new TwigBundle(),
-            new MonologBundle(),
-            new SwiftmailerBundle(),
-            new AsseticBundle(),
-            new TedivmStashBundle(),
-            new EzPublishCoreBundle(),
-            new EzPublishLegacyBundle(),
-            new EzPublishRestBundle(),
+            ...
             new Kaliop\eZMigrationBundle\EzMigrationBundle()
         );
     }
