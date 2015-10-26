@@ -2,7 +2,6 @@
 
 namespace Kaliop\Migration\Tests;
 
-
 use Doctrine\DBAL\DriverManager;
 
 class BundleMigrationDBTestCase extends BundleMigrationTestCase

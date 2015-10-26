@@ -1,6 +1,6 @@
 <?php
-namespace Kaliop\Migration\Core\DefinitionHandlers;
 
+namespace Kaliop\Migration\Core\DefinitionHandlers;
 
 use Kaliop\Migration\Interfaces\BundleAwareInterface;
 use Kaliop\Migration\Interfaces\VersionInterface;
@@ -25,7 +25,7 @@ class SQLDefinitionHandler implements VersionInterface, ContainerAwareInterface,
      * @FIXME: Do we want to move this to a config file?
      * @var array
      */
-    private $supportedDatabases = array( 'mysql', 'postgres' );
+    private $supportedDatabases = array('mysql', 'postgres');
 
     /**
      * The service container object.
@@ -70,7 +70,7 @@ class SQLDefinitionHandler implements VersionInterface, ContainerAwareInterface,
      */
     public function execute()
     {
-        $sqlCommands = file_get_contents( $this->sqlFile);
+        $sqlCommands = file_get_contents($this->sqlFile);
 
         /** @var $connection \ezcDbHandler */
         $connection = $this->container->get('ezpublish.connection');
@@ -112,7 +112,7 @@ class SQLDefinitionHandler implements VersionInterface, ContainerAwareInterface,
      * @throws \InvalidArgumentException
      * @return boolean
      */
-    public function isMigrationForDBServer( EzcDbHandler $connection)
+    public function isMigrationForDBServer(EzcDbHandler $connection)
     {
         if (empty($this->sqlFile)) {
             throw new \InvalidArgumentException('Missing sql file from migration.');

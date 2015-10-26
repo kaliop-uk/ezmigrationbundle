@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\Migration\Core\API\Managers;
 
 use eZ\Publish\API\Repository\ContentTypeService;

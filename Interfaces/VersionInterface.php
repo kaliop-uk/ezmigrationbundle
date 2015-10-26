@@ -19,5 +19,3 @@ interface VersionInterface
      */
     public function execute();
 }
-
-?>

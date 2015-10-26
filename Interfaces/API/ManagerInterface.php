@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\Migration\Interfaces\API;
 
 /**

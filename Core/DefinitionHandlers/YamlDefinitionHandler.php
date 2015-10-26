@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\Migration\Core\DefinitionHandlers;
 
 use Kaliop\Migration\Core\API\Managers\ContentManager;

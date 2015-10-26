@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\Migration\Core;
 
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
@@ -529,5 +530,3 @@ class Configuration
         return array_values($results);
     }
 }
-
-?>

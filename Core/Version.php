@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\Migration\Core;
 
 /**
@@ -86,5 +87,3 @@ class Version
         }
     }
 }
-
-?>

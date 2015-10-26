@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: peterh
- * Date: 12/11/2013
- * Time: 10:49
- */
 
 namespace Kaliop\Migration\Interfaces;
-
 
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
@@ -24,4 +17,4 @@ interface BundleAwareInterface
      * @api
      */
     public function setBundle(BundleInterface $bundle = null);
-} 
+}

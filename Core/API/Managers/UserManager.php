@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\Migration\Core\API\Managers;
 
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
@@ -157,7 +158,7 @@ class UserManager extends AbstractManager
                 array_push($usersToDelete,$userService->loadUserByLogin($username));
             }
         }
-        
+
         foreach($usersToDelete as $user){
             $userService->deleteUser($user);
         }

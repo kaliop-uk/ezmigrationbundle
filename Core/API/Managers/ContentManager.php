@@ -153,7 +153,7 @@ class ContentManager extends AbstractManager
             // each $field is one key value pair
             // eg.: $field = array( $fieldIdentifier => $fieldValue )
             $fieldIdentifier = key($field);
-            
+
             $fieldTypeIdentifier = $createStruct->contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
 
             if (is_array($field[$fieldIdentifier])) {
@@ -181,7 +181,7 @@ class ContentManager extends AbstractManager
             // each $field is one key value pair
             // eg.: $field = array( $fieldIdentifier => $fieldValue )
             $fieldIdentifier = key($field);
-            
+
             $fieldTypeIdentifier = $updateStruct->contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
 
             if (is_array($field[$fieldIdentifier])) {
@@ -356,5 +356,3 @@ class ContentManager extends AbstractManager
         return $xmlText;
     }
 }
-
-?>

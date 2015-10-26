@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\Migration\BundleMigrationBundle\Features\Context;
+namespace Kaliop\Migration\features\Context;
 
 use eZ\Publish\Core\Repository\Values\ContentType\ContentType;
 use eZ\Publish\Core\Repository\Values\ContentType\ContentTypeGroup;
@@ -16,8 +16,6 @@ use Behat\Behat\Exception\UndefinedException;
 
 use PHPUnit_Framework_Assert as Assertion;
 use DateTime;
-
-
 
 /**
  * Feature context.
