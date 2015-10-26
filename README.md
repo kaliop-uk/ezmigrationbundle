@@ -1,6 +1,9 @@
 # Kaliop eZ-Migration Bundle
 
-This bundle aims to handle per bundle upgrades/migrations instead of a global migration.
+This bundle makes it easy to handle eZPlatform / eZPublish 5 content upgrades/migrations.
+
+It is inspired by the DoctrineMigrationsBundle ( http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html )
+
 
 ## Installation
 
