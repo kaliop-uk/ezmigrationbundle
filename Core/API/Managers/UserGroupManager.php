@@ -1,7 +1,7 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Core\API\Managers;
+namespace Kaliop\Migration\Core\API\Managers;
 
-use Kaliop\Migration\BundleMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\Migration\Core\API\ReferenceHandler;
 use eZ\Publish\API\Repository\Values\User\UserGroup;
 
 /**
@@ -9,7 +9,7 @@ use eZ\Publish\API\Repository\Values\User\UserGroup;
  *
  * Handles user group migrations.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Core\API\Managers
+ * @package Kaliop\Migration\Core\API\Managers
  */
 class UserGroupManager extends AbstractManager
 {

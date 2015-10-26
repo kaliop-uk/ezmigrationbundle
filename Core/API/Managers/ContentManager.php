@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\Migration\BundleMigrationBundle\Core\API\Managers;
+namespace Kaliop\Migration\Core\API\Managers;
 
-use Kaliop\Migration\BundleMigrationBundle\Core\API\Managers\AbstractManager;
+use Kaliop\Migration\Core\API\Managers\AbstractManager;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
-use Kaliop\Migration\BundleMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\Migration\Core\API\ReferenceHandler;
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
@@ -16,7 +16,7 @@ use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
  * Class implementing the actions for managing (create/update/delete) Content in the system through
  * migrations and abstracts away the eZ Publish Public API.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Core\API\Managers
+ * @package Kaliop\Migration\Core\API\Managers
  */
 class ContentManager extends AbstractManager
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\Migration\BundleMigrationBundle\Interfaces;
+namespace Kaliop\Migration\Interfaces;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Connection;
@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection;
  *
  * All version definitions need to implement this interface
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Interfaces
+ * @package Kaliop\Migration\Interfaces
  */
 interface VersionInterface
 {

@@ -1,25 +1,25 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Command;
+namespace Kaliop\Migration\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\DBAL\DriverManager;
-use Kaliop\Migration\BundleMigrationBundle\Core\Configuration;
+use Kaliop\Migration\Core\Configuration;
 
 /**
  * Class AbstractCommand
  *
  * Base command class that all migration commands extend from.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Command
+ * @package Kaliop\Migration\Command
  */
 abstract class AbstractCommand extends Command
 {
     /**
      * The migration configuration object.
      *
-     * @var \Kaliop\Migration\BundleMigrationBundle\Core\Configuration
+     * @var \Kaliop\Migration\Core\Configuration
      */
     private $configuration;
 

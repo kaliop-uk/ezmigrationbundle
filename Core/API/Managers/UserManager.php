@@ -1,16 +1,16 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Core\API\Managers;
+namespace Kaliop\Migration\Core\API\Managers;
 
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 use eZ\Publish\API\Repository\Values\Content;
-use Kaliop\Migration\BundleMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\Migration\Core\API\ReferenceHandler;
 
 /**
  * Class UserManager
  *
  * Handle user migrations.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Core\API\Managers
+ * @package Kaliop\Migration\Core\API\Managers
  */
 class UserManager extends AbstractManager
 {

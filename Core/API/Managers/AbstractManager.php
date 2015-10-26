@@ -1,9 +1,9 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Core\API\Managers;
+namespace Kaliop\Migration\Core\API\Managers;
 
-use Kaliop\Migration\BundleMigrationBundle\Core\API\ReferenceHandler;
-use Kaliop\Migration\BundleMigrationBundle\Interfaces\API\ManagerInterface;
-use Kaliop\Migration\BundleMigrationBundle\Interfaces\BundleAwareInterface;
+use Kaliop\Migration\Core\API\ReferenceHandler;
+use Kaliop\Migration\Interfaces\API\ManagerInterface;
+use Kaliop\Migration\Interfaces\BundleAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
  *
  * The core manager class that all migration action managers inherit from.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Core\API\Managers
+ * @package Kaliop\Migration\Core\API\Managers
  */
 abstract class AbstractManager implements ManagerInterface, ContainerAwareInterface, BundleAwareInterface
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\Migration\BundleMigrationBundle\Tests\Core;
+namespace Kaliop\Migration\Tests\Core;
 
 
 use Doctrine\DBAL\Driver\Connection;
-use Kaliop\Migration\BundleMigrationBundle\Core\Configuration;
-use Kaliop\Migration\BundleMigrationBundle\Tests\BundleMigrationDBTestCase;
+use Kaliop\Migration\Core\Configuration;
+use Kaliop\Migration\Tests\BundleMigrationDBTestCase;
 use MyProject\Proxies\__CG__\OtherProject\Proxies\__CG__\stdClass;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -14,7 +14,7 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     /**
      * The BundleMigration Configuration instance.
      *
-     * @var \Kaliop\Migration\BundleMigrationBundle\Core\Configuration
+     * @var \Kaliop\Migration\Core\Configuration
      */
     protected $configuration;
 
@@ -52,8 +52,8 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getConnection()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::getConnection()
      */
     public function testGetMigratedVersionsByBundle() {
         $this->configuration->createVersionTable();
@@ -77,9 +77,9 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getConnection()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::setVersions()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::getConnection()
+     * @covers \Kaliop\Migration\Core\Configuration::setVersions()
      */
     public function testGetCurrentVersionByBundle() {
         $this->configuration->createVersionTable();
@@ -106,10 +106,10 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getConnection()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::setVersions()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getCurrentVersionByBundle()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::getConnection()
+     * @covers \Kaliop\Migration\Core\Configuration::setVersions()
+     * @covers \Kaliop\Migration\Core\Configuration::getCurrentVersionByBundle()
      */
     public function testGetCurrentBundleVersions() {
         $this->configuration->createVersionTable();
@@ -150,8 +150,8 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getConnection()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::getConnection()
      */
     public function testGetMigratedVersions() {
         $this->configuration->createVersionTable();
@@ -201,8 +201,8 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getConnection()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::getConnection()
      */
     public function testMigrationsToExecute() {
         $this->configuration->createVersionTable();
@@ -261,8 +261,8 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getMigratedVersionsByBundle()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::getMigratedVersionsByBundle()
      */
     public function testMarkVersionMigrated() {
         $this->configuration->createVersionTable();
@@ -283,9 +283,9 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::markVersionMigrated()
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::getMigratedVersionsByBundle()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::markVersionMigrated()
+     * @covers \Kaliop\Migration\Core\Configuration::getMigratedVersionsByBundle()
      */
     public function testMarkVersionNotMigrated() {
         $this->configuration->createVersionTable();
@@ -316,7 +316,7 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\Migration\BundleMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\Migration\Core\Configuration::createVersionTable()
      * @todo Work out how this could be tested.
      */
     public function testRegisterVersionFromDirectories() {
@@ -396,7 +396,7 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
      *
      * @var string
      */
-    private $dummyVersionContent = 'use Kaliop\Migration\BundleMigrationBundle\Interfaces\VersionInterface;
+    private $dummyVersionContent = 'use Kaliop\Migration\Interfaces\VersionInterface;
         use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
         class Version20131001144810 implements VersionInterface, ContainerAwareInterface

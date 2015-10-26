@@ -6,7 +6,7 @@
  * Time: 10:49
  */
 
-namespace Kaliop\Migration\BundleMigrationBundle\Interfaces;
+namespace Kaliop\Migration\Interfaces;
 
 
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 /**
  * The BundleAwareInterface should be implemented by classes that require access to a bundle object.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Interfaces
+ * @package Kaliop\Migration\Interfaces
  */
 interface BundleAwareInterface
 {

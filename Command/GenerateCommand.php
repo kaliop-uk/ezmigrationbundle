@@ -1,8 +1,8 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Command;
+namespace Kaliop\Migration\Command;
 
 
-use Kaliop\Migration\BundleMigrationBundle\Core\Configuration;
+use Kaliop\Migration\Core\Configuration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +15,7 @@ class GenerateCommand extends AbstractCommand {
 
 namespace <namespace>;
 
-use Kaliop\Migration\BundleMigrationBundle\Interfaces\VersionInterface;
+use Kaliop\Migration\Interfaces\VersionInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

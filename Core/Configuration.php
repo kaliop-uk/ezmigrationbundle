@@ -1,10 +1,10 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Core;
+namespace Kaliop\Migration\Core;
 
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
-use Kaliop\Migration\BundleMigrationBundle\Core\DefinitionHandlers\SQLDefinitionHandler;
-use Kaliop\Migration\BundleMigrationBundle\Core\DefinitionHandlers\YamlDefinitionHandler;
-use Kaliop\Migration\BundleMigrationBundle\Interfaces\BundleAwareInterface;
+use Kaliop\Migration\Core\DefinitionHandlers\SQLDefinitionHandler;
+use Kaliop\Migration\Core\DefinitionHandlers\YamlDefinitionHandler;
+use Kaliop\Migration\Interfaces\BundleAwareInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * Main configuration object holding settings for the migrations.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Core
+ * @package Kaliop\Migration\Core
  */
 class Configuration
 {
@@ -464,7 +464,7 @@ class Configuration
     {
         foreach ($this->versions as $bundle => $versions) {
             foreach ($versions as $version) {
-                /** @var $version \Kaliop\Migration\BundleMigrationBundle\Core\Version */
+                /** @var $version \Kaliop\Migration\Core\Version */
                 if ($version->migration instanceof ContainerAwareInterface) {
                     $version->migration->setContainer($container);
                 }
@@ -483,7 +483,7 @@ class Configuration
             $bundleObject = $kernel->getBundle($bundle);
 
             foreach ($versions as $version) {
-                /** @var $version \Kaliop\Migration\BundleMigrationBundle\Core\Version */
+                /** @var $version \Kaliop\Migration\Core\Version */
                 if ($version->migration instanceof BundleAwareInterface) {
                     $version->migration->setBundle($bundleObject);
                 }

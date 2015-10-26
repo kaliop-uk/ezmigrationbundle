@@ -1,7 +1,7 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Command;
+namespace Kaliop\Migration\Command;
 
-use Kaliop\Migration\BundleMigrationBundle\Command\AbstractCommand;
+use Kaliop\Migration\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
  *
  * Command to display the status of migrations.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Command
+ * @package Kaliop\Migration\Command
  */
 class StatusCommand extends AbstractCommand
 {
@@ -66,7 +66,7 @@ EOT
 
         //Check paths for version files
 
-        /* @var $configuration \Kaliop\Migration\BundleMigrationBundle\Core\Configuration */
+        /* @var $configuration \Kaliop\Migration\Core\Configuration */
         $configuration->registerVersionFromDirectories($paths);
 
         if ($bundleVersions = $configuration->getVersions()) {
@@ -78,7 +78,7 @@ EOT
                 $output->writeln("<info>{$bundle}</info>:");
 
                 foreach ($versions as $versionNumber => $versionClass) {
-                    /** @var $versionClass \Kaliop\Migration\BundleMigrationBundle\Core\Version */
+                    /** @var $versionClass \Kaliop\Migration\Core\Version */
                     $isMigrated = array_key_exists($bundle, $migratedVersions) && in_array(
                             $versionNumber,
                             $migratedVersions[$bundle]

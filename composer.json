@@ -1,5 +1,5 @@
 {
-    "name": "kaliop/bundlemigrationbundle",
+    "name": "kaliop/ezmigrationbundle",
     "type": "library",
     "description": "Kaliop Bundle-Migration Bundle",
     "keywords": ["migrations", "database", "ezpublish"],
@@ -23,7 +23,6 @@
         "polishsymfonycommunity/symfony2-mocker-extension": "*"
     },
     "autoload": {
-        "psr-0": { "Kaliop\\Migration\\BundleMigrationBundle": "" }
+        "psr-4": { "Kaliop\\Migration": "" }
     },
-    "target-dir": "Kaliop/Migration/BundleMigrationBundle"
 }

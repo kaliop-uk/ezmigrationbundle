@@ -1,8 +1,8 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Command;
+namespace Kaliop\Migration\Command;
 
-use Kaliop\Migration\BundleMigrationBundle\Command\AbstractCommand;
-use Kaliop\Migration\BundleMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\Migration\Command\AbstractCommand;
+use Kaliop\Migration\Core\API\ReferenceHandler;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
  *
  * Command to execute the available migration definitions.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Command
+ * @package Kaliop\Migration\Command
  */
 class UpdateCommand extends AbstractCommand
 {
@@ -65,7 +65,7 @@ EOT
         // Get paths to look for version files in
         $versions = $input->getOption('versions');
 
-        /** @var $configuration \Kaliop\Migration\BundleMigrationBundle\Core\Configuration */
+        /** @var $configuration \Kaliop\Migration\Core\Configuration */
         $configuration = $this->getConfiguration($input, $output);
 
         if ($versions) {
@@ -94,7 +94,7 @@ EOT
 
                 if ($versions) {
                     foreach ($versions as $versionNumber => $versionClass) {
-                        /** @var $versionClass \Kaliop\Migration\BundleMigrationBundle\Core\Version */
+                        /** @var $versionClass \Kaliop\Migration\Core\Version */
                         $output->writeln(
                             "<comment>></comment> " . date(
                                 "Y-m-d H:i:s",

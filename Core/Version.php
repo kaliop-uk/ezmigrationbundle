@@ -1,12 +1,12 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Core;
+namespace Kaliop\Migration\Core;
 
 /**
  * Class Version
  *
  * Class to encapsulate a migration definition. This allows for different migration definitions eg.: PHP or Yaml.
  *
- * @package Kaliop\Migration\BundleMigrationBundle\Core
+ * @package Kaliop\Migration\Core
  */
 class Version
 {

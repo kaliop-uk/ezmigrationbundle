@@ -1,9 +1,9 @@
 <?php
-namespace Kaliop\Migration\BundleMigrationBundle\Core\DefinitionHandlers;
+namespace Kaliop\Migration\Core\DefinitionHandlers;
 
 
-use Kaliop\Migration\BundleMigrationBundle\Interfaces\BundleAwareInterface;
-use Kaliop\Migration\BundleMigrationBundle\Interfaces\VersionInterface;
+use Kaliop\Migration\Interfaces\BundleAwareInterface;
+use Kaliop\Migration\Interfaces\VersionInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
