@@ -1,13 +1,13 @@
 <?php
 
-namespace Kaliop\Migration\Interfaces\API;
+namespace Kaliop\eZMigrationBundle\Interfaces\API;
 
 /**
  * Class ManagerInterface
  *
  * Interface that all migration definition handlers need to implement.
  *
- * @package Kaliop\Migration\Interfaces\API
+ * @package Kaliop\eZMigrationBundle\Interfaces\API
  */
 interface ManagerInterface {
 

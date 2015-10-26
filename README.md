@@ -31,7 +31,7 @@ The `registerBundles` method should look similar to:
             new EzPublishCoreBundle(),
             new EzPublishLegacyBundle(),
             new EzPublishRestBundle(),
-            new Kaliop\Migration\EzMigrationBundle()
+            new Kaliop\eZMigrationBundle\EzMigrationBundle()
         );
     }
 
@@ -93,7 +93,7 @@ Generate command's help output:
      kaliop:migration:generate [--type[="..."]] [--dbserver[="..."]] [bundle]
 
     Arguments:
-     bundle                The bundle to generate the migration definition file in. eg.: KaliopBundleMigrationBundle
+     bundle                The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle
 
     Options:
      --type                The type of migration file to generate. (yml, php, sql) (default: "yml")

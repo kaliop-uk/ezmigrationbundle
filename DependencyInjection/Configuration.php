@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\Migration\DependencyInjection;
+namespace Kaliop\eZMigrationBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

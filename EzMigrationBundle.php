@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\Migration;
+namespace Kaliop\eZMigrationBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

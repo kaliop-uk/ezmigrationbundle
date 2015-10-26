@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\Migration\Tests;
+namespace Kaliop\eZMigrationBundle\Tests;
 
 use Doctrine\DBAL\DriverManager;
 

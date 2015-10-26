@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\Migration\Tests;
+namespace Kaliop\eZMigrationBundle\Tests;
 
 abstract class BundleMigrationTestCase extends \PHPUnit_Framework_TestCase
 {

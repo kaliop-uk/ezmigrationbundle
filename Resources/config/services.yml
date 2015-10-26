@@ -1,9 +1,9 @@
 parameters:
-#    kaliop_bundle_migration.example.class: Kaliop\Migration\BundleMigrationBundle\Example
+#    acme_bundle_migration.example.class: Acme\Migration\AcmeMigrationBundle\Example
     kaliop_bundle_migration.version_directory: 'MigrationVersions'
     kaliop_bundle_migration.table_name: 'kaliop_versions'
 
 services:
-#    kaliop_bundle_migration.example:
-#        class: %kaliop_bundle_migration.example.class%
+#    acme_bundle_migration.example:
+#        class: %acme_bundle_migration.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]

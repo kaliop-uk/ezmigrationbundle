@@ -1,8 +1,8 @@
 <?php
-namespace Kaliop\Migration\Command;
+namespace Kaliop\eZMigrationBundle\Command;
 
-use Kaliop\Migration\Command\AbstractCommand;
-use Kaliop\Migration\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Command\AbstractCommand;
+use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
  *
  * Command to execute the available migration definitions.
  *
- * @package Kaliop\Migration\Command
+ * @package Kaliop\eZMigrationBundle\Command
  */
 class UpdateCommand extends AbstractCommand
 {
@@ -65,7 +65,7 @@ EOT
         // Get paths to look for version files in
         $versions = $input->getOption('versions');
 
-        /** @var $configuration \Kaliop\Migration\Core\Configuration */
+        /** @var $configuration \Kaliop\eZMigrationBundle\Core\Configuration */
         $configuration = $this->getConfiguration($input, $output);
 
         if ($versions) {
@@ -94,7 +94,7 @@ EOT
 
                 if ($versions) {
                     foreach ($versions as $versionNumber => $versionClass) {
-                        /** @var $versionClass \Kaliop\Migration\Core\Version */
+                        /** @var $versionClass \Kaliop\eZMigrationBundle\Core\Version */
                         $output->writeln(
                             "<comment>></comment> " . date(
                                 "Y-m-d H:i:s",

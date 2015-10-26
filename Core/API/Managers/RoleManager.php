@@ -1,19 +1,19 @@
 <?php
 
-namespace Kaliop\Migration\Core\API\Managers;
+namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
 
 use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
-use Kaliop\Migration\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 
 /**
  * Class RoleManager
  *
  * Handles the role migration definitions.
  *
- * @package Kaliop\Migration\Core\API\Managers
+ * @package Kaliop\eZMigrationBundle\Core\API\Managers
  */
 class RoleManager extends AbstractManager
 {

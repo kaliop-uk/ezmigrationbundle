@@ -1,25 +1,25 @@
 <?php
-namespace Kaliop\Migration\Command;
+namespace Kaliop\eZMigrationBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\DBAL\DriverManager;
-use Kaliop\Migration\Core\Configuration;
+use Kaliop\eZMigrationBundle\Core\Configuration;
 
 /**
  * Class AbstractCommand
  *
  * Base command class that all migration commands extend from.
  *
- * @package Kaliop\Migration\Command
+ * @package Kaliop\eZMigrationBundle\Command
  */
 abstract class AbstractCommand extends Command
 {
     /**
      * The migration configuration object.
      *
-     * @var \Kaliop\Migration\Core\Configuration
+     * @var \Kaliop\eZMigrationBundle\Core\Configuration
      */
     private $configuration;
 
@@ -58,7 +58,7 @@ abstract class AbstractCommand extends Command
             $configuration->versionDirectory = $container->getParameter( 'kaliop_bundle_migration.version_directory' );
             $configuration->versionTableName = $container->getParameter( 'kaliop_bundle_migration.table_name' );
             $this->configuration = $configuration;
-            
+
         }
 
         return $this->configuration;

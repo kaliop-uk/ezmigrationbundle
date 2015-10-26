@@ -1,16 +1,16 @@
 <?php
 
-namespace Kaliop\Migration\Core\API\Managers;
+namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
 use eZ\Publish\API\Repository\ContentTypeService;
-use Kaliop\Migration\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 
 /**
  * Class ContentTypeManager
  *
  * Methods to handle content type migrations
  *
- * @package Kaliop\Migration\Core\API\Managers
+ * @package Kaliop\eZMigrationBundle\Core\API\Managers
  */
 class ContentTypeManager extends AbstractManager
 {

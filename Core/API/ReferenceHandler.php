@@ -1,13 +1,13 @@
 <?php
 
-namespace Kaliop\Migration\Core\API;
+namespace Kaliop\eZMigrationBundle\Core\API;
 
 /**
  * Class ReferenceHandler
  *
  * Handle references.
  *
- * @package Kaliop\Migration\Core\API
+ * @package Kaliop\eZMigrationBundle\Core\API
  */
 class ReferenceHandler
 {

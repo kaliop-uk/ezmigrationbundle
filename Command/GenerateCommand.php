@@ -1,8 +1,8 @@
 <?php
-namespace Kaliop\Migration\Command;
 
+namespace Kaliop\eZMigrationBundle\Command;
 
-use Kaliop\Migration\Core\Configuration;
+use Kaliop\eZMigrationBundle\Core\Configuration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +15,7 @@ class GenerateCommand extends AbstractCommand {
 
 namespace <namespace>;
 
-use Kaliop\Migration\Interfaces\VersionInterface;
+use Kaliop\eZMigrationBundle\Interfaces\VersionInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -68,7 +68,7 @@ class <version>_place_holder implements VersionInterface, ContainerAwareInterfac
             ->setDescription('Generate a blank migration definition file.')
             ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The type of migration file to generate. (yml, php, sql)', 'yml')
             ->addOption('dbserver', null, InputOption::VALUE_OPTIONAL, 'The type of the database server the sql migration is for. (mysql, postgre)', 'mysql')
-            ->addArgument('bundle', InputOption::VALUE_REQUIRED, 'The bundle to generate the migration definition file in. eg.: KaliopBundleMigrationBundle' )
+            ->addArgument('bundle', InputOption::VALUE_REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle' )
             ->setHelp(<<<EOT
 The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
 
@@ -190,4 +190,4 @@ EOT
 
         return $path;
     }
-} 
+}

@@ -1,15 +1,15 @@
 <?php
 
-namespace Kaliop\Migration\Core\DefinitionHandlers;
+namespace Kaliop\eZMigrationBundle\Core\DefinitionHandlers;
 
-use Kaliop\Migration\Core\API\Managers\ContentManager;
-use Kaliop\Migration\Core\API\Managers\ContentTypeManager;
-use Kaliop\Migration\Core\API\Managers\LocationManager;
-use Kaliop\Migration\Core\API\Managers\RoleManager;
-use Kaliop\Migration\Core\API\Managers\UserGroupManager;
-use Kaliop\Migration\Core\API\Managers\UserManager;
-use Kaliop\Migration\Interfaces\BundleAwareInterface;
-use Kaliop\Migration\Interfaces\VersionInterface;
+use Kaliop\eZMigrationBundle\Core\API\Managers\ContentManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\ContentTypeManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\LocationManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\RoleManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\UserGroupManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\UserManager;
+use Kaliop\eZMigrationBundle\Interfaces\BundleAwareInterface;
+use Kaliop\eZMigrationBundle\Interfaces\VersionInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -20,7 +20,7 @@ use Symfony\Component\Yaml\Yaml;
  *
  * This class handles Yaml migration definitions.
  *
- * @package Kaliop\Migration\Core\DefinitionHandlers
+ * @package Kaliop\eZMigrationBundle\Core\DefinitionHandlers
  */
 class YamlDefinitionHandler implements VersionInterface, ContainerAwareInterface, BundleAwareInterface
 {
