@@ -23,6 +23,6 @@
         "polishsymfonycommunity/symfony2-mocker-extension": "*"
     },
     "autoload": {
-        "psr-4": { "Kaliop\\Migration": "" }
+        "psr-4": { "Kaliop\\Migration\\": "" }
     }
 }
