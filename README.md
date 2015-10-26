@@ -15,16 +15,16 @@ Save composer.json and run
 
     composer update --dev kaliop/migration
 
-This will then install the bundle and all it's dependencies.
+This will install the bundle and all its dependencies.
 
-Please make sure that you have the bundle registered in the kernel as well. Check `ezpublish/EzPublishKernerl.php`
+Please make sure that you have the bundle registered in the kernel as well. Check `ezpublish/EzPublishKernel.php`
 
 The `registerBundles` method should look similar to:
 
     public function registerBundles()
     {
         $bundles = array(
-            ...
+            ... more stuff here ...
             new Kaliop\eZMigrationBundle\EzMigrationBundle()
         );
     }
@@ -42,7 +42,7 @@ This indicates that the bundle has been installed and registered correctly.
 
 ## Updating
 
-To get the latest code you need to update the bundle with `composer`
+To get the latest version, you can update the bundle using `composer`
 
     composer update kaliop/ezmigrationbundle
 
