@@ -18,9 +18,12 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "ext-pdo": "*",
+        "ext-pdo": "*"
+    },
+    "require-dev": {
         "mikey179/vfsStream": "~1.2.0",
-        "polishsymfonycommunity/symfony2-mocker-extension": "*"
+        "polishsymfonycommunity/symfony2-mocker-extension": "*",
+        "phpunit/phpunit": "~4.0"
     },
     "autoload": {
         "psr-4": { "Kaliop\\Migration\\": "" }
