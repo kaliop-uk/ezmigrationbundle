@@ -49,6 +49,11 @@ class ContentManager extends AbstractManager
             $locationId = $this->getReference($locationId);
         }
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
+
+        if (array_key_exists('priority', $this->dsl)) {
+            $locationCreateStruct->priority = $this->dsl['priority'];
+        }
+
         $locations = array($locationCreateStruct);
 
         if (array_key_exists('other_locations', $this->dsl)) {

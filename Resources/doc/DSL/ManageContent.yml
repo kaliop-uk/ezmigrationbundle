@@ -3,6 +3,7 @@
     type: content
     content_type: [content type identifier]
     main_location: x # The location (node) id of the parent node
+    priority: 0 # Set the priority of the main location
     other_locations: [x, y, z] # Optional, node ids of other parent location
     attributes:
         - attribute1: value1
