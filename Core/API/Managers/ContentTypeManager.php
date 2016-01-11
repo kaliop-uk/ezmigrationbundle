@@ -20,7 +20,6 @@ class ContentTypeManager extends AbstractManager
      */
     public function create()
     {
-
         // Authenticate the user
         $this->loginUser();
 
@@ -245,7 +244,7 @@ class ContentTypeManager extends AbstractManager
                         $fieldDefinition->defaultValue = $value;
                         break;
                     case 'field-settings':
-                        $fieldDefinition->fieldSettings = $value;
+                        $fieldDefinition->fieldSettings = $this->setFieldSettings($value);
                         break;
                 }
             }
@@ -297,7 +296,7 @@ class ContentTypeManager extends AbstractManager
                         $fieldDefinitionUpdateStruct->defaultValue = $value;
                         break;
                     case 'field-settings':
-                        $fieldDefinitionUpdateStruct->fieldSettings = $value;
+                        $fieldDefinitionUpdateStruct->fieldSettings = $this->setFieldSettings($value);
                         break;
                     case 'position':
                         $fieldDefinitionUpdateStruct->position = $value;
@@ -307,6 +306,30 @@ class ContentTypeManager extends AbstractManager
         }
 
         return $fieldDefinitionUpdateStruct;
+    }
+
+    private function setFieldSettings( $value )
+    {
+        // Updating any references in the value array
+        $ret = $value;
+        if (is_array($value))
+        {
+            $ret = array();
+            foreach ($value as $key => $val)
+            {
+                $ret[$key] = $val;
+                if ( $this->isReference($val) )
+                {
+                    $ret[$key] = $this->getReference($val);
+                }
+            }
+        }
+        else if ( $this->isReference($value) )
+        {
+            $ret = $this->getReference($value);
+        }
+
+        return $ret;
     }
 
     /**

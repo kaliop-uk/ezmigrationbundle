@@ -92,6 +92,17 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
      */
     public function handle()
     {
+        $method = $this->dsl['mode'];
+
+        if ( method_exists( $this, $method ) ) {
+            $this->$method();
+        } else {
+            throw new \Exception('Unknown migration mode');
+        }
+
+
+
+/*
         switch ($this->dsl['mode']) {
             case 'create':
                 $this->create();
@@ -105,6 +116,7 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
             default:
                 throw new \Exception('Unknown migration mode');
         }
+*/
     }
 
     /**

@@ -6,6 +6,7 @@ use Kaliop\eZMigrationBundle\Core\API\Managers\ContentManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\ContentTypeManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\LocationManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\RoleManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\TagManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\UserGroupManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\UserManager;
 use Kaliop\eZMigrationBundle\Interfaces\BundleAwareInterface;
@@ -107,6 +108,12 @@ class YamlDefinitionHandler implements VersionInterface, ContainerAwareInterface
                     break;
                 case 'location':
                     $manager = new LocationManager();
+                    $manager->setContainer($this->container);
+                    $manager->setDSL($instructions);
+                    $manager->handle();
+                    break;
+                case 'tag':
+                    $manager = new TagManager();
                     $manager->setContainer($this->container);
                     $manager->setDSL($instructions);
                     $manager->handle();

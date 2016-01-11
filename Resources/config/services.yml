@@ -1,9 +1,21 @@
 parameters:
-#    acme_bundle_migration.example.class: Acme\Migration\AcmeMigrationBundle\Example
-    kaliop_bundle_migration.version_directory: 'MigrationVersions'
-    kaliop_bundle_migration.table_name: 'kaliop_versions'
+  ez_migration_bundle.complex.field.manager.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\ComplexFieldManager
+  kaliop_bundle_migration.version_directory: 'MigrationVersions'
+  kaliop_bundle_migration.table_name: 'kaliop_versions'
+  ez_migration_bundle.complex.field.ezimage.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzImage
+  ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzBinaryFile
+  ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzXmlText
+  ez_migration_bundle.complex.field.ezpage.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzPage
 
 services:
-#    acme_bundle_migration.example:
-#        class: %acme_bundle_migration.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+  ez_migration_bundle.complex.field.manager:
+    class: %ez_migration_bundle.complex.field.manager.class%
+    arguments:
+      - @ezpublish.api.repository
+      - @service_container
+      - # map of fieldtypes => classes implementing ComplexFieldInterface.
+        ezimage: %ez_migration_bundle.complex.field.ezimage.class%
+        ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
+        ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
+        ezpage: %ez_migration_bundle.complex.field.ezpage.class%
+

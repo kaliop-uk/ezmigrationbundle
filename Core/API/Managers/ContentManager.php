@@ -39,9 +39,13 @@ class ContentManager extends AbstractManager
         }
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
+
+
         // FIXME: Defaulting in language code for now
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, self::DEFAULT_LANGUAGE_CODE);
         $this->setFields($contentCreateStruct, $this->dsl['attributes']);
+
+
 
         // instantiate a location create struct from the parent location
         $locationId = $this->dsl['main_location'];
@@ -66,6 +70,7 @@ class ContentManager extends AbstractManager
                 array_push($locations, $secondaryLocationCreateStruct);
             }
         }
+
 
         // create a draft using the content and location create struct and publish it
         $draft = $contentService->createContent($contentCreateStruct, $locations);
@@ -163,13 +168,14 @@ class ContentManager extends AbstractManager
 
             if (is_array($field[$fieldIdentifier])) {
                 // Complex field needs special handling eg.: ezimage, ezbinaryfile
-                $fieldValue = $this->handleComplexField($field[$fieldIdentifier]);
+                $fieldValue = $this->handleComplexField($fieldTypeIdentifier, $field[$fieldIdentifier]);
             } else {
                 // Primitive field eg.: ezstring, ezxml etc.
                 $fieldValue = $this->handleSingleField($fieldTypeIdentifier, $fieldIdentifier, $field[$fieldIdentifier]);
             }
 
-            $createStruct->setField($fieldIdentifier, $fieldValue);
+            $createStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
+
         }
     }
 
@@ -191,13 +197,13 @@ class ContentManager extends AbstractManager
 
             if (is_array($field[$fieldIdentifier])) {
                 // Complex field needs special handling eg.: ezimage, ezbinaryfile
-                $fieldValue = $this->handleComplexField($field[$fieldIdentifier]);
+                $fieldValue = $this->handleComplexField($fieldTypeIdentifier, $field[$fieldIdentifier]);
             } else {
                 // Primitive field eg.: ezstring, ezxml etc.
                 $fieldValue = $this->handleSingleField($fieldTypeIdentifier, $fieldIdentifier, $field[$fieldIdentifier]);
             }
 
-            $updateStruct->setField($fieldIdentifier, $fieldValue);
+            $updateStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
         }
     }
 
@@ -231,23 +237,30 @@ class ContentManager extends AbstractManager
      * @throws \InvalidArgumentException
      * @return object
      */
-    protected function handleComplexField(array $fieldValueArray)
+    protected function handleComplexField($fieldTypeIdentifier, array $fieldValueArray)
     {
-        switch ($fieldValueArray['type']) {
-            case 'ezimage':
-                $fieldValue = $this->createImageValue($fieldValueArray);
-                break;
-            case 'ezbinaryfile':
-                $fieldValue = $this->createBinaryFileValue($fieldValueArray);
-                break;
-            case 'ezxmltext':
-                $fieldValue = $this->parseXMLTextForReferences($fieldValueArray);
-                break;
-            default:
-                throw new \InvalidArgumentException('Content manager does not support complex field type: ' . $fieldValueArray['type']);
-        }
+        $fieldManager = $this->container->get('ez_migration_bundle.complex.field.manager');
+        $fieldManager->setBundle($this->bundle);
 
-        return $fieldValue;
+        $complexField = $fieldManager->getComplexField($fieldTypeIdentifier, $fieldValueArray, $this);
+
+        return $complexField->createValue();
+
+//        switch ($fieldValueArray['type']) {
+//            case 'ezimage':
+//                $fieldValue = $this->createImageValue($fieldValueArray);
+//                break;
+//            case 'ezbinaryfile':
+//                $fieldValue = $this->createBinaryFileValue($fieldValueArray);
+//                break;
+//            case 'ezxmltext':
+//                $fieldValue = $this->parseXMLTextForReferences($fieldValueArray);
+//                break;
+//            default:
+//                throw new \InvalidArgumentException('Content manager does not support complex field type: ' . $fieldValueArray['type']);
+//        }
+//
+//        return $fieldValue;
     }
 
     /**
@@ -285,79 +298,5 @@ class ContentManager extends AbstractManager
         }
 
         return true;
-    }
-
-    /**
-     * Creates a value object to use as the field value when setting an image field type.
-     *
-     * @param array $imageData
-     * @return ImageValue
-     */
-    protected function createImageValue(array $imageData)
-    {
-        $migrationDir = $this->container->getParameter('kaliop_bundle_migration.version_directory');
-        $bundlePath = $this->bundle->getPath();
-        $filePath = $bundlePath . '/' . $migrationDir . '/images/' . $imageData['path'];
-
-        $value = new ImageValue(
-            array(
-                'path' => $filePath,
-                'fileSize' => filesize($filePath),
-                'fileName' => basename($filePath),
-                'alternativeText' => $imageData['alt_text']
-            )
-        );
-
-        return $value;
-    }
-
-    /**
-     * Creates a value object to use as the field value when setting a binary file field type
-     *
-     * @param array $fileData
-     * @return BinaryFileValue
-     */
-    protected function createBinaryFileValue(array $fileData)
-    {
-        $migrationDir = $this->container->getParameter('kaliop_bundle_migration.version_directory');
-        $bundlePath = $this->bundle->getPath();
-        $filePath = $bundlePath . '/' . $migrationDir .  '/files/' . $fileData['path'];
-
-        $value = new BinaryFileValue(
-            array(
-                'path' => $filePath,
-                'fileSize' => filesize($filePath),
-                'fileName' => basename($filePath),
-                'mimeType' => mime_content_type($filePath)
-            )
-        );
-
-        return $value;
-    }
-
-    /**
-     * Replace any references in an xml string to be used as the input data for an ezxmltext field.
-     *
-     * @param array $fieldData
-     * @return string
-     */
-    protected function parseXMLTextForReferences(array $fieldData)
-    {
-        $xmlText = $fieldData['content'];
-
-        //Check if there are any references in the xml text and replace them.
-        // $result[0][] will have the matched full string eg.: [reference:example_reference]
-        // $result[1][] will have the reference id eg.: example_reference
-        $count = preg_match_all('|\[reference:([^\]\[]*)\]|', $xmlText, $result);
-
-        if ($count !== false and count($result) > 1) {
-            foreach ($result[1] as $index => $referenceIdentifier) {
-                $reference = $this->getReference($referenceIdentifier);
-
-                $xmlText = str_replace($result[0][$index], $reference, $xmlText);
-            }
-        }
-
-        return $xmlText;
     }
 }
