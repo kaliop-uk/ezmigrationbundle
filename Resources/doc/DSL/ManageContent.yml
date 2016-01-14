@@ -5,6 +5,7 @@
     main_location: x # The location (node) id of the parent node
     priority: 0 # Set the priority of the main location
     other_locations: [x, y, z] # Optional, node ids of other parent location
+    remote_id: custom_remote_id # Optional, will set an object remote id as the remote ID and a location remote ID with a _location suffix
     attributes:
         - attribute1: value1
         - attribute2: value2

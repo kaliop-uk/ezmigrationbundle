@@ -45,7 +45,9 @@ class ContentManager extends AbstractManager
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, self::DEFAULT_LANGUAGE_CODE);
         $this->setFields($contentCreateStruct, $this->dsl['attributes']);
 
-
+        if (array_key_exists('remote_id', $this->dsl)) {
+            $contentCreateStruct->remoteId = $this->dsl['remote_id'];
+        }
 
         // instantiate a location create struct from the parent location
         $locationId = $this->dsl['main_location'];
@@ -53,6 +55,9 @@ class ContentManager extends AbstractManager
             $locationId = $this->getReference($locationId);
         }
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
+        if (array_key_exists('remote_id', $this->dsl)) {
+            $locationCreateStruct->remoteId = $this->dsl['remote_id'] . '_location';
+        }
 
         if (array_key_exists('priority', $this->dsl)) {
             $locationCreateStruct->priority = $this->dsl['priority'];
