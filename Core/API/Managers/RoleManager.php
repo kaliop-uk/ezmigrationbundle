@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\API\Handler\RoleTranslationHandler;
 
 /**
  * Class RoleManager
@@ -28,7 +29,7 @@ class RoleManager extends AbstractManager
         $this->loginUser();
 
         $roleService = $this->repository->getRoleService();
-        $userService = $this->repository->getUserService();
+        //$userService = $this->repository->getUserService();
 
         $roleCreateStruct = $roleService->newRoleCreateStruct($this->dsl['name']);
 
@@ -55,35 +56,29 @@ class RoleManager extends AbstractManager
         $this->loginUser();
 
         $roleService = $this->repository->getRoleService();
-        $userService = $this->repository->getUserService();
+        //$userService = $this->repository->getUserService();
 
         if (array_key_exists('name', $this->dsl)) {
             $role = $roleService->loadRoleByIdentifier($this->dsl['name']);
 
-            if (array_key_exists('assign', $this->dsl)) {
-                $this->assignRole($role, $roleService, $userService, $this->dsl['assign']);
-            }
-
-            if (array_key_exists('unassign', $this->dsl)) {
-                if (array_key_exists('users', $this->dsl['unassign'])) {
-                    $this->unassignRoleFromUsers($role, $roleService, $userService, $this->dsl['unassign']['users']);
-                }
-                if (array_key_exists('groups', $this->dsl['unassign'])) {
-                    $this->unassignRoleFromGroups($role, $roleService, $userService, $this->dsl['unassign']['groups']);
-                }
-            }
-
             if (array_key_exists('policies', $this->dsl)) {
-                if (array_key_exists('add', $this->dsl['policies'])) {
-                    $this->addPolicies($role, $roleService, $this->dsl['policies']['add']);
+                $ymlPolicies = $this->dsl['policies'];
+
+                // Removing all policies so we can add them back.
+                // TODO: Check and update policies instead of remove and add.
+                $policies = $role->getPolicies();
+                foreach($policies as $policy) {
+                    $roleService->deletePolicy($policy);
                 }
-                if (array_key_exists('remove', $this->dsl['policies'])) {
-                    $this->removePolicies($role, $roleService, $this->dsl['policies']['remove']);
+
+                foreach($ymlPolicies as $key => $ymlPolicy) {
+                    $this->addPolicy($role, $roleService, $ymlPolicy);
                 }
             }
+
+            $this->setReferences($role);
         }
 
-        $this->setReferences($role);
     }
 
     /**
@@ -157,12 +152,12 @@ class RoleManager extends AbstractManager
      */
     private function createLimitation(RoleService $roleService, array $limitation)
     {
-        $limitationType = $roleService->getLimitationType($limitation['type']);
+        /** @var RoleTranslationHandler $roleTranslationHandler */
+        $roleTranslationHandler = $this->container->get('ez_migration_bundle.handler.role');
 
-        $limitationValue = $limitation['value'];
-        if(!is_array($limitationValue)) {
-            $limitationValue = array($limitationValue);
-        }
+        $limitationType = $roleService->getLimitationType($limitation['identifier']);
+
+        $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
 
         foreach( $limitationValue as $id => $value) {
             if ($this->isReference($value)) {
@@ -170,6 +165,8 @@ class RoleManager extends AbstractManager
                 $limitationValue[$id] = $value;
             }
         }
+
+        $limitationValue = $roleTranslationHandler->convertLimitationToValue($limitation['identifier'], $limitationValue);
 
         return $limitationType->buildValue($limitationValue);
     }
@@ -275,36 +272,17 @@ class RoleManager extends AbstractManager
      * @param \eZ\Publish\API\Repository\RoleService $roleService
      * @param array $policies
      */
-    private function addPolicies(Role $role, RoleService $roleService, array $policies)
+    private function addPolicy(Role $role, RoleService $roleService, array $policy)
     {
-        foreach ($policies as $policy) {
-            $policyCreateStruct = $roleService->newPolicyCreateStruct($policy['module'], $policy['function']);
+        $policyCreateStruct = $roleService->newPolicyCreateStruct($policy['module'], $policy['function']);
 
-            if (array_key_exists('limitation', $policy)) {
-                foreach ($policy['limitation'] as $limitation) {
-                    $limitationObject = $this->createLimitation($roleService, $limitation);
-                    $policyCreateStruct->addLimitation($limitationObject);
-                }
-            }
-
-            $roleService->addPolicy($role, $policyCreateStruct);
-        }
-    }
-
-    /**
-     * Remove a list of policies from a Role.
-     *
-     * @param \eZ\Publish\API\Repository\Values\User\Role $role
-     * @param \eZ\Publish\API\Repository\RoleService $roleService
-     * @param array $policies An array of policy ids to remove.
-     */
-    private function removePolicies(Role $role, RoleService $roleService, array $policies)
-    {
-        $rolePolicies = $role->getPolicies();
-        foreach ($rolePolicies as $rolePolicy) {
-            if (in_array($rolePolicy->id, $policies)) {
-                $roleService->removePolicy($role, $rolePolicy);
+        if (array_key_exists('limitations', $policy)) {
+            foreach ($policy['limitations'] as $limitation) {
+                $limitationObject = $this->createLimitation($roleService, $limitation);
+                $policyCreateStruct->addLimitation($limitationObject);
             }
         }
+
+        $roleService->addPolicy($role, $policyCreateStruct);
     }
 }

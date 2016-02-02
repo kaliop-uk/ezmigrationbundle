@@ -151,6 +151,11 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
         return $referenceHandler->getReference($identifier);
     }
 
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
     /**
      * Helper method to log in a user that can make changes to the system.
      */
