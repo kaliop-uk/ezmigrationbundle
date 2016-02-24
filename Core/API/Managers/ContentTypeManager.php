@@ -246,6 +246,9 @@ class ContentTypeManager extends AbstractManager
                     case 'field-settings':
                         $fieldDefinition->fieldSettings = $this->setFieldSettings($value);
                         break;
+                    case 'validator-configuration':
+                        $fieldDefinition->validatorConfiguration = $value;
+                        break;
                 }
             }
         }
@@ -300,6 +303,9 @@ class ContentTypeManager extends AbstractManager
                         break;
                     case 'position':
                         $fieldDefinitionUpdateStruct->position = $value;
+                        break;
+                    case 'validator-configuration':
+                        $fieldDefinitionUpdateStruct->validatorConfiguration = $value;
                         break;
                 }
             }
