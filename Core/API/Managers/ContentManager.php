@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
+use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\Core\API\Managers\AbstractManager;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
@@ -90,6 +91,7 @@ class ContentManager extends AbstractManager
     public function update()
     {
         $contentService = $this->repository->getContentService();
+        $contentTypeService = $this->repository->getContentTypeService();
 
         $this->loginUser();
 
@@ -99,19 +101,21 @@ class ContentManager extends AbstractManager
                 $objectId = $this->getReference($objectId);
             }
             $contentToUpdate = $contentService->loadContent($objectId);
+            $contentInfo = $contentToUpdate->contentInfo;
         } else {
             $remoteId = $this->dsl['remote_id'];
             if ($this->isReference($remoteId)) {
                 $remoteId = $this->getReference($remoteId);
             }
-            $contentToUpdate = $contentService->loadContentInfoByRemoteId($remoteId);
+            $contentInfo = $contentService->loadContentInfoByRemoteId($remoteId);
         }
 
+        $contentType = $contentTypeService->loadContentType($contentInfo->contentTypeId);
         $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
-        $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes']);
+        $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes'], $contentType);
 
-        $draft = $contentService->createContentDraft($contentToUpdate->contentInfo);
+        $draft = $contentService->createContentDraft($contentInfo);
         $contentService->updateContent($draft->versionInfo,$contentUpdateStruct);
 
         $content = $contentService->publishVersion($draft->versionInfo);
@@ -191,14 +195,14 @@ class ContentManager extends AbstractManager
      * @param ContentUpdateStruct $updateStruct
      * @param array $fields
      */
-    protected function setFieldsToUpdate(ContentUpdateStruct &$updateStruct, array $fields)
+    protected function setFieldsToUpdate(ContentUpdateStruct &$updateStruct, array $fields, ContentType $contentType)
     {
         foreach ($fields as $field) {
             // each $field is one key value pair
             // eg.: $field = array( $fieldIdentifier => $fieldValue )
             $fieldIdentifier = key($field);
 
-            $fieldTypeIdentifier = $updateStruct->contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
+            $fieldTypeIdentifier = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
 
             if (is_array($field[$fieldIdentifier])) {
                 // Complex field needs special handling eg.: ezimage, ezbinaryfile
