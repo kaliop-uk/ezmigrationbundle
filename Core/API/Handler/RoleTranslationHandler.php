@@ -50,7 +50,6 @@ class RoleTranslationHandler
         $values = $limitation->limitationValues;
 
         switch ($limitation->getIdentifier()) {
-            // Making section data human readable
             case 'Section':
                 /** @var \eZ\Publish\API\Repository\SectionService $sectionService */
                 $sectionService = $this->repository->getSectionService();
@@ -59,7 +58,6 @@ class RoleTranslationHandler
                     $retValues[] = $section->identifier;
                 }
                 break;
-            // Making site access data human readable
             case 'SiteAccess':
                 foreach($values as $value) {
                     $name = "No Site Access Found";
@@ -69,7 +67,7 @@ class RoleTranslationHandler
                     $retValues[] = $name;
                 }
                 break;
-            // Making site access data human readable
+            case 'ParentClass':
             case 'Class':
                 /** @var \eZ\Publish\API\Repository\ContentTypeService $contentTypeService */
                 $contentTypeService = $this->repository->getContentTypeService();
@@ -100,6 +98,17 @@ class RoleTranslationHandler
     {
         $retValues = array();
         switch ($limitationIdentifier) {
+            case 'Node':
+                $locationService = $this->repository->getLocationService();
+                foreach ($values as $value) {
+                    if (!is_int($value)) {
+                        $location = $locationService->loadLocationByRemoteId($value);
+                        $retValues[] = $location->id;
+                    } else {
+                        $retValues[] = $value;
+                    }
+                }
+                break;
             case 'Section':
                 /** @var \eZ\Publish\API\Repository\SectionService $sectionService */
                 $sectionService = $this->repository->getSectionService();
@@ -117,13 +126,18 @@ class RoleTranslationHandler
                     }
                 }
                 break;
+            case 'ParentClass':
             case 'Class':
                 /** @var \eZ\Publish\API\Repository\ContentTypeService $contentTypeService */
                 $contentTypeService = $this->repository->getContentTypeService();
 
                 foreach($values as $value) {
-                    $contentType = $contentTypeService->loadContentTypeByIdentifier($value);
-                    $retValues[] = $contentType->id;
+                    $contentTypeId = $value;
+                    if (!is_int($value)) {
+                        $contentType = $contentTypeService->loadContentTypeByIdentifier($value);
+                        $contentTypeId = $contentType->id;
+                    }
+                    $retValues[] = $contentTypeId;
                 }
                 break;
             default:

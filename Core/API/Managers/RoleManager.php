@@ -59,7 +59,15 @@ class RoleManager extends AbstractManager
         //$userService = $this->repository->getUserService();
 
         if (array_key_exists('name', $this->dsl)) {
+            /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
             $role = $roleService->loadRoleByIdentifier($this->dsl['name']);
+
+            // Updating role name
+            if (array_key_exists('new_name', $this->dsl)) {
+                $update = $roleService->newRoleUpdateStruct();
+                $update->identifier = $this->dsl['new_name'];
+                $roleService->updateRole($role, $update);
+            }
 
             if (array_key_exists('policies', $this->dsl)) {
                 $ymlPolicies = $this->dsl['policies'];
