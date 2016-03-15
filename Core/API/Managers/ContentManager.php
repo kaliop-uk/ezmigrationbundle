@@ -18,6 +18,8 @@ use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
  * migrations and abstracts away the eZ Publish Public API.
  *
  * @package Kaliop\eZMigrationBundle\Core\API\Managers
+ *
+ * @todo add support for updating of content metadata
  */
 class ContentManager extends AbstractManager
 {
@@ -129,7 +131,7 @@ class ContentManager extends AbstractManager
     public function delete()
     {
         if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id'])) {
-            throw new \Exception('No object provided for deletion');
+            throw new \Exception('No object identifier provided for deletion');
         }
 
         $this->loginUser();
@@ -146,9 +148,7 @@ class ContentManager extends AbstractManager
                 $content = $contentService->loadContent($objectId);
                 $contentService->deleteContent($content->contentInfo);
             }
-        }
-
-        if(isset($this->dsl['remote_id'])){
+        } else if(isset($this->dsl['remote_id'])) {
             if (!is_array($this->dsl['remote_id'])) {
                 $this->dsl['remote_id'] = array($this->dsl['remote_id']);
             }

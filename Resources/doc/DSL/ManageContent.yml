@@ -36,7 +36,8 @@
 -
     mode: update
     type: content
-    object_id: x # Could use remote_id instead
+    object_id: x # The id of the object to update.
+    remote_id: xxx # The 'remote_id' of the object to update. Can be used as alternative to the object_id. NB: this does *not* mean 'set the remote-id to what I want'
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1
         - attribute2: value2
@@ -51,7 +52,7 @@
     mode: delete
     type: content
     object_id: x # the content/object id or a list of ids
-    remote_id: x # the content/object id or a list of ids
+    remote_id: x # the content/object id or a list of ids. Used when object_id is not set
 
 -
     mode: delete
