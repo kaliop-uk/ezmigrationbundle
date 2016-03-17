@@ -101,7 +101,7 @@ class RoleTranslationHandler
             case 'Node':
                 $locationService = $this->repository->getLocationService();
                 foreach ($values as $value) {
-                    if (!is_int($value)) {
+                    if (!ctype_digit($value)) {
                         $location = $locationService->loadLocationByRemoteId($value);
                         $retValues[] = $location->id;
                     } else {
@@ -133,7 +133,7 @@ class RoleTranslationHandler
 
                 foreach($values as $value) {
                     $contentTypeId = $value;
-                    if (!is_int($value)) {
+                    if (!ctype_digit($value)) {
                         $contentType = $contentTypeService->loadContentTypeByIdentifier($value);
                         $contentTypeId = $contentType->id;
                     }
