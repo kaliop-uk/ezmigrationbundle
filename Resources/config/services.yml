@@ -7,6 +7,7 @@ parameters:
   ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzBinaryFile
   ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzXmlText
   ez_migration_bundle.complex.field.ezpage.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzPage
+  ez_migration_bundle.complex.field.ezauthor.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzAuthor
 
 services:
   ez_migration_bundle.complex.field.manager:
@@ -19,6 +20,7 @@ services:
         ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
         ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
         ezpage: %ez_migration_bundle.complex.field.ezpage.class%
+        ezauthor: %ez_migration_bundle.complex.field.ezauthor.class%
   ez_migration_bundle.handler.role:
     class: %ez_migration_bundle.handler.role.class%
     arguments:
