@@ -80,6 +80,14 @@ class RoleTranslationHandler
                     $retValues[] = $contentType->identifier;
                 }
                 break;
+            case 'NewSection':
+                $sectionService = $this->repository->getSectionService();
+
+                foreach ($values as $value) {
+                    $section = $sectionService->loadSection($value);
+                    $retValues[] = $section->name;
+                }
+                break;
             default:
                 $retValues = $values;
         }
@@ -101,7 +109,7 @@ class RoleTranslationHandler
             case 'Node':
                 $locationService = $this->repository->getLocationService();
                 foreach ($values as $value) {
-                    if (!ctype_digit($value)) {
+                    if (!is_int($value)) {
                         $location = $locationService->loadLocationByRemoteId($value);
                         $retValues[] = $location->id;
                     } else {
@@ -133,11 +141,25 @@ class RoleTranslationHandler
 
                 foreach($values as $value) {
                     $contentTypeId = $value;
-                    if (!ctype_digit($value)) {
+                    if (!is_int($value)) {
                         $contentType = $contentTypeService->loadContentTypeByIdentifier($value);
                         $contentTypeId = $contentType->id;
                     }
                     $retValues[] = $contentTypeId;
+                }
+                break;
+            case 'NewSection':
+                $sectionService = $this->repository->getSectionService();
+
+                foreach ($values as $value) {
+                    $sections = $sectionService->loadSections();
+
+                    /** @var \eZ\Publish\API\Repository\Values\Content\Section $section */
+                    foreach ($sections as $section) {
+                        if ($value == $section->name or $value == $section->identifier or $value == $section->id) {
+                            $retValues[] = $section->id;
+                        }
+                    }
                 }
                 break;
             default:
