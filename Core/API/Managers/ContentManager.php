@@ -109,7 +109,13 @@ class ContentManager extends AbstractManager
             if ($this->isReference($remoteId)) {
                 $remoteId = $this->getReference($remoteId);
             }
-            $contentInfo = $contentService->loadContentInfoByRemoteId($remoteId);
+
+            try {
+                $contentInfo = $contentService->loadContentInfoByRemoteId($remoteId);
+            } catch (\eZ\Publish\API\Repository\Exceptions\NotFoundException $e) {
+                $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteId);
+                $contentInfo = $location->contentInfo;
+            }
         }
 
         $contentType = $contentTypeService->loadContentType($contentInfo->contentTypeId);

@@ -23,13 +23,14 @@ class EzImage extends AbstractComplexField
         $migrationDir = $this->container->getParameter('kaliop_bundle_migration.version_directory');
         $bundlePath = $this->bundle->getPath();
         $filePath = $bundlePath . '/' . $migrationDir . '/images/' . $imageData['path'];
+        $altText = array_key_exists('alt_text', $imageData) ? $imageData['alt_text'] : '';
 
         $value = new ImageValue(
             array(
                 'path' => $filePath,
                 'fileSize' => filesize($filePath),
                 'fileName' => basename($filePath),
-                'alternativeText' => $imageData['alt_text']
+                'alternativeText' => $altText
             )
         );
 
