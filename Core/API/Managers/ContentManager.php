@@ -121,12 +121,27 @@ class ContentManager extends AbstractManager
         $contentType = $contentTypeService->loadContentType($contentInfo->contentTypeId);
         $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
-        $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes'], $contentType);
+        if (array_key_exists('attributes', $this)) {
+            $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes'], $contentType);
+        }
 
         $draft = $contentService->createContentDraft($contentInfo);
         $contentService->updateContent($draft->versionInfo,$contentUpdateStruct);
-
         $content = $contentService->publishVersion($draft->versionInfo);
+
+        if (array_key_exists('new_remote_id', $this->dsl)) {
+            // Update object remote ID
+            $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
+            $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
+            $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
+
+            // Update main location remote ID
+            $locationService = $this->repository->getLocationService();
+            $locationUpdateStruct = $locationService->newLocationUpdateStruct();
+            $locationUpdateStruct->remoteId = $this->dsl['new_remote_id'] . '_location';
+            $location = $locationService->loadLocation($content->contentInfo->mainLocationId);
+            $locationService->updateLocation($location, $locationUpdateStruct);
+        }
 
         $this->setReferences($content);
     }
