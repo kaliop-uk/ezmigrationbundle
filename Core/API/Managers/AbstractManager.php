@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
+use Kaliop\eZMigrationBundle\Core\API\Handler\LocationResolverHandler;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Interfaces\API\ManagerInterface;
 use Kaliop\eZMigrationBundle\Interfaces\BundleAwareInterface;
@@ -151,9 +152,20 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
         return $referenceHandler->getReference($identifier);
     }
 
+    /**
+     * @return ContainerInterface
+     */
     public function getContainer()
     {
         return $this->container;
+    }
+
+    /**
+     * @return LocationResolverHandler
+     */
+    public function getLocationResolverHandler()
+    {
+        return $this->container->get('ez_migration_bundle.handler.location_resolver');
     }
 
     /**

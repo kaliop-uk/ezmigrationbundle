@@ -7,6 +7,9 @@ parameters:
   ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzBinaryFile
   ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzXmlText
   ez_migration_bundle.complex.field.ezpage.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzPage
+  ez_migration_bundle.handler.location_resolver.class: Kaliop\eZMigrationBundle\Core\API\Handler\LocationResolverHandler
+  ez_migration_bundle.location_resolver.repository_aware.class: Kaliop\eZMigrationBundle\Core\API\LocationResolver\AbstractRepositoryAwareLocationResolver
+  ez_migration_bundle.location_resolver.location_remote_id.class: Kaliop\eZMigrationBundle\Core\API\LocationResolver\LocationRemoteIdLocationResolver
 
 services:
   ez_migration_bundle.complex.field.manager:
@@ -25,3 +28,15 @@ services:
       - @ezpublish.api.repository
       - @service_container
       - %ezpublish.siteaccess.list%
+  ez_migration_bundle.handler.location_resolver:
+    class: %ez_migration_bundle.handler.location_resolver.class%
+  ez_migration_bundle.location_resolver.repository_aware:
+    class: %ez_migration_bundle.location_resolver.repository_aware.class%
+    abstract: true
+    arguments:
+      - @ezpublish.api.repository
+  ez_migration_bundle.location_resolver.location_remote_id:
+    class: %ez_migration_bundle.location_resolver.location_remote_id.class%
+    parent: ez_migration_bundle.location_resolver.repository_aware
+    tags:
+      - { name: ez_migration_bundle.location_resolver }
