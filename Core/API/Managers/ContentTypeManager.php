@@ -323,7 +323,7 @@ class ContentTypeManager extends AbstractManager
             $ret = array();
             foreach ($value as $key => $val)
             {
-                $ret[$key] = $val;
+                $ret[$key] = $this->parseFieldSettingValue($val);
                 if ( $this->isReference($val) )
                 {
                     $ret[$key] = $this->getReference($val);
@@ -336,6 +336,17 @@ class ContentTypeManager extends AbstractManager
         }
 
         return $ret;
+    }
+
+    /**
+     * Returns transformed value if needed
+     *
+     * @param $value
+     * @return mixed
+     */
+    private function parseFieldSettingValue($value)
+    {
+        return $this->getLocationResolverHandler()->resolve($value);
     }
 
     /**
