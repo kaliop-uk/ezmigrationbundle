@@ -5,6 +5,8 @@ namespace Kaliop\eZMigrationBundle\Core\DefinitionHandlers;
 use Kaliop\eZMigrationBundle\Core\API\Managers\ContentManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\ContentTypeManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\LocationManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\ObjectStateGroupManager;
+use Kaliop\eZMigrationBundle\Core\API\Managers\ObjectStateManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\RoleManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\TagManager;
 use Kaliop\eZMigrationBundle\Core\API\Managers\UserGroupManager;
@@ -114,6 +116,18 @@ class YamlDefinitionHandler implements VersionInterface, ContainerAwareInterface
                     break;
                 case 'tag':
                     $manager = new TagManager();
+                    $manager->setContainer($this->container);
+                    $manager->setDSL($instructions);
+                    $manager->handle();
+                    break;
+                case 'object_state':
+                    $manager = new ObjectStateManager();
+                    $manager->setContainer($this->container);
+                    $manager->setDSL($instructions);
+                    $manager->handle();
+                    break;
+                case 'object_state_group':
+                    $manager = new ObjectStateGroupManager();
                     $manager->setContainer($this->container);
                     $manager->setDSL($instructions);
                     $manager->handle();
