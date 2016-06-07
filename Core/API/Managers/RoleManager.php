@@ -29,7 +29,7 @@ class RoleManager extends AbstractManager
         $this->loginUser();
 
         $roleService = $this->repository->getRoleService();
-        //$userService = $this->repository->getUserService();
+        $userService = $this->repository->getUserService();
 
         $roleCreateStruct = $roleService->newRoleCreateStruct($this->dsl['name']);
 
