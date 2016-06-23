@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
 use Kaliop\eZMigrationBundle\Core\API\Handler\LocationResolverHandler;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\API\LocationRemoteIdHandler;
 use Kaliop\eZMigrationBundle\Interfaces\API\ManagerInterface;
 use Kaliop\eZMigrationBundle\Interfaces\BundleAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -136,6 +137,21 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
     }
 
     /**
+     * Checks if a string is a location remote id or not.
+     *
+     * @param string $string
+     * @return boolean
+     */
+    public function isLocationRemoteId($string)
+    {
+        if (!is_string($string)) {
+            return false;
+        }
+
+        return (strpos($string, LocationRemoteIdHandler::REFERENCE_PREFIX) !== false);
+    }
+
+    /**
      * Get a referenced value from the handler
      *
      * @param string $identifier
@@ -151,6 +167,18 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
 
         return $referenceHandler->getReference($identifier);
     }
+
+    public function getLocationByRemoteId($identifier)
+    {
+        if (strpos($identifier, LocationRemoteIdHandler::REFERENCE_PREFIX) === 0) {
+            $identifier = substr($identifier, strlen(LocationRemoteIdHandler::REFERENCE_PREFIX));
+        }
+        
+        $locationHandler = LocationRemoteIdHandler::instance();
+        
+        return $locationHandler->getLocationId($identifier, $this->container);
+    }
+
 
     /**
      * @return ContainerInterface

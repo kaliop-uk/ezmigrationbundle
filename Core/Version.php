@@ -77,9 +77,11 @@ class Version
 
             $this->configuration->output->writeln(
                 sprintf(
-                    '<error>Migration %s failed. Error "%s"</error>',
+                    '<error>Migration %s failed. Error "%s" File: "%s" Line: "%s"</error>',
                     $this->version,
-                    $e->getMessage()
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine()
                 )
             );
 

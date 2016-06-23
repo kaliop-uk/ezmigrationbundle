@@ -4,7 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
 use eZ\Publish\API\Repository\ContentTypeService;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
-
+use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 /**
  * Class ContentTypeManager
  *
@@ -112,11 +112,12 @@ class ContentTypeManager extends AbstractManager
 
         // Add/edit attributes
         if (array_key_exists('attributes', $this->dsl)) {
-            foreach ($this->dsl['attributes'] as $attribute) {
+            foreach ($this->dsl['attributes'] as $key => $attribute) {
                 $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
                 if ($existingFieldDefinition) {
                     // Edit exisiting attribute
                     $fieldDefinitionUpdateStruct = $this->updateFieldDefinition($contentTypeService, $attribute);
+//                    $fieldDefinitionUpdateStruct = $this->updateFieldSettingsFromExisting($fieldDefinitionUpdateStruct, $existingFieldDefinition);
                     $contentTypeService->updateFieldDefinition(
                         $contentTypeDraft,
                         $existingFieldDefinition,
@@ -314,6 +315,62 @@ class ContentTypeManager extends AbstractManager
         return $fieldDefinitionUpdateStruct;
     }
 
+    private function updateFieldSettingsFromExisting($fieldDefinitionUpdateStruct, FieldDefinition $existingFieldDefinition) {
+        if (is_null($fieldDefinitionUpdateStruct->fieldSettings)) {
+            $fieldDefinitionUpdateStruct->fieldSettings = $existingFieldDefinition->getFieldSettings();
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->identifier)) {
+            $fieldDefinitionUpdateStruct->identifier = $existingFieldDefinition->identifier;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->names)) {
+            $fieldDefinitionUpdateStruct->names = $existingFieldDefinition->names;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->descriptions)) {
+            $fieldDefinitionUpdateStruct->descriptions = $existingFieldDefinition->descriptions;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->fieldGroup)) {
+            $fieldDefinitionUpdateStruct->fieldGroup = $existingFieldDefinition->fieldGroup;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->position)) {
+            $fieldDefinitionUpdateStruct->position = $existingFieldDefinition->position;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->isTranslatable)) {
+            $fieldDefinitionUpdateStruct->isTranslatable = $existingFieldDefinition->isTranslatable;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->isRequired)) {
+            $fieldDefinitionUpdateStruct->isRequired = $existingFieldDefinition->isRequired;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->isInfoCollector)) {
+            $fieldDefinitionUpdateStruct->isInfoCollector = $existingFieldDefinition->isInfoCollector;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->validatorConfiguration)) {
+            $fieldDefinitionUpdateStruct->validatorConfiguration = $existingFieldDefinition->validatorConfiguration;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->fieldSettings)) {
+            $fieldDefinitionUpdateStruct->fieldSettings = $existingFieldDefinition->getFieldSettings();
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->defaultValue)) {
+            $fieldDefinitionUpdateStruct->defaultValue = $existingFieldDefinition->defaultValue;
+        }
+
+        if (is_null($fieldDefinitionUpdateStruct->isSearchable)) {
+            $fieldDefinitionUpdateStruct->isSearchable = $existingFieldDefinition->isSearchable;
+        }
+
+        return $fieldDefinitionUpdateStruct;
+    }
+
     private function setFieldSettings( $value )
     {
         // Updating any references in the value array
@@ -328,11 +385,19 @@ class ContentTypeManager extends AbstractManager
                 {
                     $ret[$key] = $this->getReference($val);
                 }
+                if ( $this->isLocationRemoteId($val) )
+                {
+                    $ret[$key] = $this->getLocationByRemoteId($val);
+                }
             }
         }
         else if ( $this->isReference($value) )
         {
             $ret = $this->getReference($value);
+        }
+        else if ( $this->isLocationRemoteId($value) )
+        {
+            $ret = $this->getLocationByRemoteId($value);
         }
 
         return $ret;
