@@ -25,6 +25,17 @@
         - attribute6:
             type: ezxmltext
             content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
+        # Adding values to an ezauthor field
+        - attribute7:
+            type: ezauthor 
+            authors: 
+              - 
+                name: Test Author 
+                email: test@example.com 
+              -
+                name: Another Author 
+                email: another@example.com
+
 
     # The list in references tells the manager to store specific attribute values for later use
     # by other migration definitions in the current set.
