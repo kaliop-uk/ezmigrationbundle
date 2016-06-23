@@ -10,6 +10,7 @@ parameters:
   ez_migration_bundle.handler.location_resolver.class: Kaliop\eZMigrationBundle\Core\API\Handler\LocationResolverHandler
   ez_migration_bundle.location_resolver.repository_aware.class: Kaliop\eZMigrationBundle\Core\API\LocationResolver\AbstractRepositoryAwareLocationResolver
   ez_migration_bundle.location_resolver.location_remote_id.class: Kaliop\eZMigrationBundle\Core\API\LocationResolver\LocationRemoteIdLocationResolver
+  ez_migration_bundle.complex.field.ezauthor.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzAuthor
 
 services:
   ez_migration_bundle.complex.field.manager:
@@ -22,6 +23,7 @@ services:
         ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
         ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
         ezpage: %ez_migration_bundle.complex.field.ezpage.class%
+        ezauthor: %ez_migration_bundle.complex.field.ezauthor.class%
   ez_migration_bundle.handler.role:
     class: %ez_migration_bundle.handler.role.class%
     arguments:
