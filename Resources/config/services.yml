@@ -6,6 +6,7 @@ parameters:
   ez_migration_bundle.complex.field.ezimage.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzImage
   ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzBinaryFile
   ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzXmlText
+  ez_migration_bundle.complex.field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzRichText
   ez_migration_bundle.complex.field.ezpage.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzPage
   ez_migration_bundle.handler.location_resolver.class: Kaliop\eZMigrationBundle\Core\API\Handler\LocationResolverHandler
   ez_migration_bundle.location_resolver.repository_aware.class: Kaliop\eZMigrationBundle\Core\API\LocationResolver\AbstractRepositoryAwareLocationResolver
@@ -22,6 +23,7 @@ services:
         ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
         ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
         ezpage: %ez_migration_bundle.complex.field.ezpage.class%
+        ezrichtext: %ez_migration_bundle.complex.field.ezrichtext.class%
   ez_migration_bundle.handler.role:
     class: %ez_migration_bundle.handler.role.class%
     arguments:
