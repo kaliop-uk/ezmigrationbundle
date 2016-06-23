@@ -24,11 +24,9 @@ services:
         ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
         ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
         ezpage: %ez_migration_bundle.complex.field.ezpage.class%
-<<<<<<< HEAD
         ezauthor: %ez_migration_bundle.complex.field.ezauthor.class%
-=======
         ezrichtext: %ez_migration_bundle.complex.field.ezrichtext.class%
->>>>>>> 8e3f79808a8b437383348f5efcbcd62b7d198207
+
   ez_migration_bundle.handler.role:
     class: %ez_migration_bundle.handler.role.class%
     arguments:
