@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
 use eZ\Publish\API\Repository\ContentTypeService;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\API\TagHandler;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 /**
  * Class ContentTypeManager
@@ -389,6 +390,10 @@ class ContentTypeManager extends AbstractManager
                 {
                     $ret[$key] = $this->getLocationByRemoteId($val);
                 }
+                if ( $this->isTag($val) )
+                {
+                    $ret[$key] = $this->getTagIdFromKeyword($val);
+                }
             }
         }
         else if ( $this->isReference($value) )
@@ -398,6 +403,10 @@ class ContentTypeManager extends AbstractManager
         else if ( $this->isLocationRemoteId($value) )
         {
             $ret = $this->getLocationByRemoteId($value);
+        }
+        else if ( $this->isTag($value) )
+        {
+            $ret = $this->getTagIdFromKeyword($value);
         }
 
         return $ret;

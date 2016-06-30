@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
 use Kaliop\eZMigrationBundle\Core\API\Handler\LocationResolverHandler;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\API\TagHandler;
 use Kaliop\eZMigrationBundle\Core\API\LocationRemoteIdHandler;
 use Kaliop\eZMigrationBundle\Interfaces\API\ManagerInterface;
 use Kaliop\eZMigrationBundle\Interfaces\BundleAwareInterface;
@@ -129,11 +130,7 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
      */
     public function isReference($string)
     {
-        if (!is_string($string)) {
-            return false;
-        }
-
-        return (strpos($string, ReferenceHandler::REFERENCE_PREFIX) !== false);
+        return $this->checkStringForReference($string, ReferenceHandler::REFERENCE_PREFIX);
     }
 
     /**
@@ -144,11 +141,27 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
      */
     public function isLocationRemoteId($string)
     {
+        return $this->checkStringForReference($string, LocationRemoteIdHandler::REFERENCE_PREFIX);
+    }
+
+    /**
+     * Checks if a string is a tag remote id or not.
+     *
+     * @param string $string
+     * @return boolean
+     */
+    public function isTag($string)
+    {
+        return $this->checkStringForReference($string, TagHandler::REFERENCE_PREFIX);
+    }
+
+    protected function checkStringForReference($string, $reference)
+    {
         if (!is_string($string)) {
             return false;
         }
 
-        return (strpos($string, LocationRemoteIdHandler::REFERENCE_PREFIX) !== false);
+        return (strpos($string, $reference) !== false);
     }
 
     /**
@@ -159,26 +172,39 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
      */
     public function getReference($identifier)
     {
-        if (strpos($identifier, 'reference:') === 0) {
-            $identifier = substr($identifier, 10); // Remove reference: from the beginning.
-        }
+        $identifier = $this->stripHandlerReference($identifier, ReferenceHandler::REFERENCE_PREFIX);
 
         $referenceHandler = ReferenceHandler::instance();
 
         return $referenceHandler->getReference($identifier);
     }
+    
+    public function getTagIdFromKeyword($identifier) 
+    {
+        $identifier = $this->stripHandlerReference($identifier, TagHandler::REFERENCE_PREFIX);
+
+        $tagHandler = TagHandler::instance();
+
+        return $tagHandler->getTagId($identifier, $this->container);
+    }
 
     public function getLocationByRemoteId($identifier)
     {
-        if (strpos($identifier, LocationRemoteIdHandler::REFERENCE_PREFIX) === 0) {
-            $identifier = substr($identifier, strlen(LocationRemoteIdHandler::REFERENCE_PREFIX));
-        }
-        
+        $identifier = $this->stripHandlerReference($identifier, LocationRemoteIdHandler::REFERENCE_PREFIX);
+
         $locationHandler = LocationRemoteIdHandler::instance();
         
         return $locationHandler->getLocationId($identifier, $this->container);
     }
 
+    protected function stripHandlerReference($string, $reference)
+    {
+        if (strpos($string, $reference) === 0) {
+            $string = substr($string, strlen($reference));
+        }
+
+        return $string;
+    }
 
     /**
      * @return ContainerInterface
