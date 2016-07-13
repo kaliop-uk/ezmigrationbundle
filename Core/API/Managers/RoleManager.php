@@ -8,7 +8,7 @@ use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Core\API\Handler\RoleTranslationHandler;
-
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 /**
  * Class RoleManager
  *
@@ -29,7 +29,7 @@ class RoleManager extends AbstractManager
         $this->loginUser();
 
         $roleService = $this->repository->getRoleService();
-        //$userService = $this->repository->getUserService();
+        $userService = $this->repository->getUserService();
 
         $roleCreateStruct = $roleService->newRoleCreateStruct($this->dsl['name']);
 
@@ -56,7 +56,7 @@ class RoleManager extends AbstractManager
         $this->loginUser();
 
         $roleService = $this->repository->getRoleService();
-        //$userService = $this->repository->getUserService();
+        $userService = $this->repository->getUserService();
 
         if (array_key_exists('name', $this->dsl)) {
             /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
@@ -82,6 +82,10 @@ class RoleManager extends AbstractManager
                 foreach($ymlPolicies as $key => $ymlPolicy) {
                     $this->addPolicy($role, $roleService, $ymlPolicy);
                 }
+            }
+
+            if (array_key_exists('assign', $this->dsl)) {
+                $this->assignRole($role, $roleService, $userService, $this->dsl['assign']);
             }
 
             $this->setReferences($role);
@@ -220,11 +224,15 @@ class RoleManager extends AbstractManager
                         $group = $userService->loadUserGroup($groupId);
 
                         if (!array_key_exists('limitation', $assign)) {
-                            $roleService->assignRoleToUserGroup($role, $group);
+                            try {
+                                $roleService->assignRoleToUserGroup($role, $group);
+                            } catch (InvalidArgumentException $e) {}
                         } else {
                             foreach ($assign['limitation'] as $limitation) {
                                 $limitationObject = $this->createLimitation($roleService, $limitation);
-                                $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
+                                try {
+                                    $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
+                                } catch (InvalidArgumentException $e) {}
                             }
                         }
                     }
