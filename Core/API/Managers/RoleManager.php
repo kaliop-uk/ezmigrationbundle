@@ -29,15 +29,18 @@ class RoleManager extends AbstractManager
         $this->loginUser();
 
         $roleService = $this->repository->getRoleService();
-        //$userService = $this->repository->getUserService();
+        $userService = $this->repository->getUserService();
 
         $roleCreateStruct = $roleService->newRoleCreateStruct($this->dsl['name']);
 
         // Publish new role
         $role = $roleService->createRole($roleCreateStruct);
+        $roleService->publishRoleDraft($role);
 
         if (array_key_exists('policies', $this->dsl)) {
-            $this->addPolicies($role, $roleService, $this->dsl['policies']);
+            foreach($this->dsl['policies'] as $key => $ymlPolicy) {
+                $this->addPolicy($role, $roleService, $ymlPolicy);
+            }
         }
 
         if (array_key_exists('assign', $this->dsl)) {
