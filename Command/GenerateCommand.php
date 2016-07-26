@@ -71,9 +71,9 @@ class <version>_place_holder implements VersionInterface, ContainerAwareInterfac
     {
         $this->setName('kaliop:migration:generate')
             ->setDescription('Generate a blank migration definition file.')
-            ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The type of migration file to generate. (yml, php, sql)', 'yml')
-            ->addOption('dbserver', null, InputOption::VALUE_OPTIONAL, 'The type of the database server the sql migration is for. (mysql, postgre)', 'mysql')
-            ->addOption('role', null, InputOption::VALUE_OPTIONAL, 'The role identifier you would like to update.', null)
+            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration file to generate. (yml, php, sql)', 'yml')
+            ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for. (mysql, postgres)', 'mysql')
+            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'The role identifier you would like to update.', null)
             ->addArgument('bundle', InputOption::VALUE_REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->setHelp(<<<EOT
 The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
