@@ -72,6 +72,7 @@ class <version>_place_holder implements VersionInterface, ContainerAwareInterfac
         $this->setName('kaliop:migration:generate')
             ->setDescription('Generate a blank migration definition file.')
             ->addOption('type', null, InputOption::VALUE_OPTIONAL, 'The type of migration file to generate. (yml, php, sql)', 'yml')
+            ->addOption('name', null, InputOption::VALUE_OPTIONAL, 'The name you would like for the migration file', null)
             ->addOption('dbserver', null, InputOption::VALUE_OPTIONAL, 'The type of the database server the sql migration is for. (mysql, postgre)', 'mysql')
             ->addOption('role', null, InputOption::VALUE_OPTIONAL, 'The role identifier you would like to update.', null)
             ->addArgument('bundle', InputOption::VALUE_REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
@@ -80,9 +81,9 @@ The <info>kaliop:migration:generate</info> command generates a skeleton migratio
 
 <info>./ezpublish/console kaliop:migration:generate bundlename</info>
 
-You can optionally specify the file type to generate with <info>--type</info>:
+You can optionally specify the file type and file name to generate with <info>--type</info> or <info>--name</info>:
 
-<info>./ezpublish/console kaliop:migration:generate --type=yml bundlename</info>
+<info>./ezpublish/console kaliop:migration:generate --type=yml --name=logical_file_name bundlename</info>
 
 For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
 
@@ -106,6 +107,7 @@ EOT
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $fileType = $input->getOption('type');
+        $fileName = $input->getOption('name');
         $dbServer = $input->getOption('dbserver');
         $this->output = $output;
 
@@ -120,7 +122,7 @@ EOT
 
         $role = $input->getOption('role');
 
-        $path = $this->generateMigrationFile($configuration, $version, $bundleName, $fileType, $dbServer, $role);
+        $path = $this->generateMigrationFile($configuration, $version, $bundleName, $fileType, $fileName, $dbServer, $role);
 
         $output->writeln(sprintf("Generated new migration file to <info>%s</info>", $path));
     }
@@ -133,11 +135,12 @@ EOT
      * @param string $version The version string in YYYYMMDDHHMMSS format
      * @param string $bundleName The name of the bundle to generate the migration file for
      * @param string $fileType The type of migration file to generate
+     * @param string $fileName The name of migration file to generate
      * @param string $dbServer The type of database server the SQL migration is for.
      * @return string The path to the migration file
      */
     protected function generateMigrationFile(
-        Configuration $configuration, $version, $bundleName, $fileType, $dbServer = 'mysql', $role = null
+        Configuration $configuration, $version, $bundleName, $fileType, $fileName = null, $dbServer = 'mysql', $role = null
     )
     {
 
@@ -149,7 +152,9 @@ EOT
         $versionDirectory = $container->getParameter('kaliop_bundle_migration.version_directory');
         $bundleVersionDirectory = $bundle->getPath() . '/' . $versionDirectory;
 
-        if (!is_null($role)) {
+        if (!is_null($fileName)) {
+            $path = $bundleVersionDirectory . '/' . $version . '_' . $fileName . '.' . $fileType;
+        } elseif (!is_null($role)) {
             $path = $bundleVersionDirectory . '/' . $version . '_' . $role . '_role_sync' . '.yml';
             $fileType = 'yml';
         } elseif ($fileType == 'sql') {
