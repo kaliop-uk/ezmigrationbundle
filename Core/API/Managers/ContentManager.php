@@ -121,7 +121,7 @@ class ContentManager extends AbstractManager
         $contentType = $contentTypeService->loadContentType($contentInfo->contentTypeId);
         $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
-        if (array_key_exists('attributes', $this)) {
+        if (array_key_exists('attributes', $this->dsl)) {
             $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes'], $contentType);
         }
 
