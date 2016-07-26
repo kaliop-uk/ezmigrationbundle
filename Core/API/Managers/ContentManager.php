@@ -257,6 +257,10 @@ class ContentManager extends AbstractManager
                 $fieldValue = $value;
         }
 
+        if ($this->isReference($value)) {
+            $fieldValue = $this->getReference($value);
+        }
+
         return $fieldValue;
     }
 
