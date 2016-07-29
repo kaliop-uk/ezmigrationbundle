@@ -14,6 +14,7 @@ parameters:
   ez_migration_bundle.location_resolver.location_remote_id.class: Kaliop\eZMigrationBundle\Core\LocationResolver\LocationRemoteIdLocationResolver
   ez_migration_bundle.complex.field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
   ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
+  ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
 
 services:
   ez_migration_bundle.complex.field.manager:
@@ -54,4 +55,9 @@ services:
   ez_migration_bundle.content_matcher:
     class: %ez_migration_bundle.content_matcher.class%
     arguments:
-      - @ezpublish.api.inner_repository
+      - @ezpublish.api.repository
+
+  ez_migration_bundle.location_matcher:
+    class: %ez_migration_bundle.location_matcher.class%
+    arguments:
+      - @ezpublish.api.repository
