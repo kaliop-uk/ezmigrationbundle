@@ -34,10 +34,6 @@ class ContentMatcher
     {
         foreach ($conditions as $key => $values) {
 
-            if (!is_int($values) && !is_array($values)) {
-                throw new \Exception('Value must be an integer or an array');
-            }
-
             if (!is_array($values)) {
                 $values = array($values);
             }
@@ -58,7 +54,7 @@ class ContentMatcher
                 case 'parent_location_id':
                     return $this->findContentsByParentLocationIds($values);
 
-                case 'parent_remote_location_id':
+                case 'parent_location_remote_id':
                     return $this->findContentsByParentRemoteLocationIds($values);
             }
         }
@@ -161,7 +157,7 @@ class ContentMatcher
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
 
-        $results = $this->repository->getSearchService()->findContentInfo($query);
+        $results = $this->repository->getSearchService()->findContent($query);
 
         $contents = [];
 

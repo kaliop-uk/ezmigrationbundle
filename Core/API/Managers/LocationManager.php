@@ -42,6 +42,20 @@ class LocationManager extends AbstractManager
             throw new \Exception('Missing parent location id. This is required to create the new location.');
         }
 
+        // convert the references passed in the match
+        // @todo probably can be moved to a separate method.
+        foreach ($match as $condition => $values) {
+            if (is_integer($values) && $this->isReference($values)) {
+                $match[$condition] = $this->getReference($values);
+            } elseif (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->isReference($value)) {
+                        $match[$condition][$position] = $this->getReference($value);
+                    }
+                }
+            }
+        }
+
         $this->loginUser();
 
         // @TODO: see if this can be simplified somehow
