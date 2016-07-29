@@ -14,6 +14,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Main configuration object holding settings for the migrations.
+ *
+ *
  */
 class Configuration
 {
@@ -31,11 +33,13 @@ class Configuration
      *
      * @var boolean
      */
-    private $versionTableCreated = false;
+    private $versionTableExists = false;
 
     /**
      * Name of the database table where installed migration versions are tracked.
      * @var string
+     *
+     * @todo add setter/getter, as we need to clear versionTableExists when switching this
      */
     public $versionTableName = 'kaliop_versions';
 
@@ -212,7 +216,7 @@ class Configuration
     }
 
     /**
-     * Checks if a version with the same $version and $bundle have already been registered.
+     * Checks if a version with the same $version and $bundle has already been registered.
      *
      * @TODO: Add new exception type
      *
@@ -231,27 +235,32 @@ class Configuration
     /**
      * Check if the version db table exists and create it if not.
      *
-     * @return bool
+     * @return bool true if table has been created, false if it was already there
+     *
+     * @todo add a 'force' flag to force table re-creation
      */
-    public function createVersionTable()
+    public function createVersionTableIfNeeded()
     {
-        if ($this->versionTableCreated) {
+        if ($this->versionTableExists) {
+            return false;
+        }
+
+        if ($this->tablesExist($this->versionTableName)) {
+            $this->versionTableExists = true;
             return false;
         }
 
         // TODO: Make this table creation not MySQL dependant
-        if (!$this->tablesExist($this->versionTableName)) {
-            $sql = "CREATE TABLE `kaliop_versions` (
-  `version` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `bundle` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`version`,`bundle`)
+        $sql = "CREATE TABLE " .  $this->versionTableName . " (
+version varchar(255) NOT NULL,
+bundle varchar(255) NOT NULL,
+PRIMARY KEY (version, bundle)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
-            $this->connection->exec($sql);
-        }
+        $this->connection->exec($sql);
 
-
-        return false;
+        $this->versionTableExists = true;
+        return true;
     }
 
     /**
@@ -263,7 +272,7 @@ class Configuration
      */
     public function getMigratedVersions()
     {
-        $this->createVersionTable();
+        $this->createVersionTableIfNeeded();
 
         /** @var $q \ezcQuerySelect */
         $q = $this->connection->createSelectQuery();
@@ -290,7 +299,7 @@ class Configuration
      */
     public function getCurrentVersionByBundle($bundle)
     {
-        $this->createVersionTable();
+        $this->createVersionTableIfNeeded();
 
         /** @var $q \ezcQuerySelect */
         $q = $this->connection->createSelectQuery();
@@ -352,7 +361,7 @@ class Configuration
      */
     public function getMigratedVersionsByBundle($bundle)
     {
-        $this->createVersionTable();
+        $this->createVersionTableIfNeeded();
 
         /** @var $q \ezcQuerySelect */
         $q = $this->connection->createSelectQuery();
@@ -416,7 +425,7 @@ class Configuration
      */
     public function markVersionMigrated($bundle, $version)
     {
-        $this->createVersionTable();
+        $this->createVersionTableIfNeeded();
 
         /** @var $q \ezcQueryInsert */
         $q = $this->connection->createInsertQuery();
@@ -436,7 +445,7 @@ class Configuration
      */
     public function markVersionNotMigrated($bundle, $version)
     {
-        $this->createVersionTable();
+        $this->createVersionTableIfNeeded();
 
         /** @var $q \ezcQueryDelete */
         $q = $this->connection->createDeleteQuery();

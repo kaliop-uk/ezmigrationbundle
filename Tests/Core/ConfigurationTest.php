@@ -44,19 +44,19 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
         $this->assertTrue( is_array($version ) );
     }
 
-    public function testCreateVersionTable()
+    public function testcreateVersionTableIfNeeded()
     {
-        $result = $this->configuration->createVersionTable();
+        $result = $this->configuration->createVersionTableIfNeeded();
 
         $this->assertTrue( $result );
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getConnection()
      */
     public function testGetMigratedVersionsByBundle() {
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $conn = $this->configuration->getConnection();
 
@@ -77,12 +77,12 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getConnection()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::setVersions()
      */
     public function testGetCurrentVersionByBundle() {
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $conn = $this->configuration->getConnection();
 
@@ -106,13 +106,13 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getConnection()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::setVersions()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getCurrentVersionByBundle()
      */
     public function testGetCurrentBundleVersions() {
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $conn = $this->configuration->getConnection();
 
@@ -150,11 +150,11 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getConnection()
      */
     public function testGetMigratedVersions() {
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $conn = $this->configuration->getConnection();
 
@@ -201,11 +201,11 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getConnection()
      */
     public function testMigrationsToExecute() {
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $conn = $this->configuration->getConnection();
 
@@ -261,11 +261,11 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getMigratedVersionsByBundle()
      */
     public function testMarkVersionMigrated() {
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $bundle = 'testBundle';
         $version = '1';
@@ -283,12 +283,12 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::markVersionMigrated()
      * @covers \Kaliop\eZMigrationBundle\Core\Configuration::getMigratedVersionsByBundle()
      */
     public function testMarkVersionNotMigrated() {
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $bundle = 'testBundle';
         $version1 = '1';
@@ -316,7 +316,7 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
     }
 
     /**
-     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTable()
+     * @covers \Kaliop\eZMigrationBundle\Core\Configuration::createVersionTableIfNeeded()
      * @todo Work out how this could be tested.
      */
     public function testRegisterVersionFromDirectories() {
@@ -332,7 +332,7 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
             'bundle2' => array( vfsStream::url( 'bundles/bundle2/MigrationVersions' ) )
         );
 
-        $this->configuration->createVersionTable();
+        $this->configuration->createVersionTableIfNeeded();
 
         $versions = $this->configuration->registerVersionFromDirectories( $paths );
 

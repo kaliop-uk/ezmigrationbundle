@@ -9,7 +9,7 @@ class EzBinaryFile extends AbstractComplexField
     public function createValue()
     {
         $fileData = $this->fieldValueArray;
-        $migrationDir = $this->container->getParameter('kaliop_bundle_migration.version_directory');
+        $migrationDir = $this->container->getParameter('ez_migration_bundle.version_directory');
         $bundlePath = $this->bundle->getPath();
         $filePath = $bundlePath . '/' . $migrationDir .  '/files/' . $fileData['path'];
 

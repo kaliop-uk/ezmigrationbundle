@@ -146,7 +146,7 @@ EOT
 
         $container = $this->getApplication()->getKernel()->getContainer();
 
-        $versionDirectory = $container->getParameter('kaliop_bundle_migration.version_directory');
+        $versionDirectory = $container->getParameter('ez_migration_bundle.version_directory');
         $bundleVersionDirectory = $bundle->getPath() . '/' . $versionDirectory;
 
         if (!is_null($role)) {

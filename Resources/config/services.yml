@@ -1,8 +1,9 @@
 parameters:
+  ez_migration_bundle.version_directory: 'MigrationVersions'
+  ez_migration_bundle.table_name: 'kaliop_versions'
+
   ez_migration_bundle.complex.field.manager.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\ComplexFieldManager
   ez_migration_bundle.handler.role.class: Kaliop\eZMigrationBundle\Core\API\Handler\RoleTranslationHandler
-  kaliop_bundle_migration.version_directory: 'MigrationVersions'
-  kaliop_bundle_migration.table_name: 'kaliop_versions'
   ez_migration_bundle.complex.field.ezimage.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzImage
   ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzBinaryFile
   ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzXmlText
@@ -34,13 +35,16 @@ services:
       - @ezpublish.api.repository
       - @service_container
       - %ezpublish.siteaccess.list%
+
   ez_migration_bundle.handler.location_resolver:
     class: %ez_migration_bundle.handler.location_resolver.class%
+
   ez_migration_bundle.location_resolver.repository_aware:
     class: %ez_migration_bundle.location_resolver.repository_aware.class%
     abstract: true
     arguments:
       - @ezpublish.api.repository
+
   ez_migration_bundle.location_resolver.location_remote_id:
     class: %ez_migration_bundle.location_resolver.location_remote_id.class%
     parent: ez_migration_bundle.location_resolver.repository_aware

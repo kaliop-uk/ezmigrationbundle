@@ -52,8 +52,8 @@ abstract class AbstractCommand extends Command
             $conn = $container->get( 'ezpublish.connection' );
 
             $configuration = new Configuration( $conn, $output );
-            $configuration->versionDirectory = $container->getParameter( 'kaliop_bundle_migration.version_directory' );
-            $configuration->versionTableName = $container->getParameter( 'kaliop_bundle_migration.table_name' );
+            $configuration->versionDirectory = $container->getParameter( 'ez_migration_bundle.version_directory' );
+            $configuration->versionTableName = $container->getParameter( 'ez_migration_bundle.table_name' );
             $this->configuration = $configuration;
 
         }
@@ -74,7 +74,7 @@ abstract class AbstractCommand extends Command
 
         $container = $this->getApplication()->getKernel()->getContainer();
 
-        $versionDirectory = $container->getParameter( 'kaliop_bundle_migration.version_directory' );
+        $versionDirectory = $container->getParameter( 'ez_migration_bundle.version_directory' );
 
         /** @var $bundle \Symfony\Component\HttpKernel\Bundle\BundleInterface */
         foreach( $this->getApplication()->getKernel()->getBundles() as $bundle )
