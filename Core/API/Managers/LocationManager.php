@@ -17,8 +17,20 @@ class LocationManager extends AbstractManager
      */
     public function create()
     {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id'])) {
-            throw new \Exception('The ID or remote ID of an object is required to create a new location.');
+        if (!isset($this->dsl['match'])) {
+            throw new \Exception('Match condition is required to perform location create operations.');
+        }
+
+        $match = $this->dsl['match'];
+
+        if (!isset($match['content_id']) &&
+            !isset($match['location_id']) &&
+            !isset($match['content_remote_id']) &&
+            !isset($match['location_remote_id']) &&
+            !isset($match['parent_location_id'])
+        ) {
+          throw new \Exception('Either the ID or remote ID of a content, the ID or remote ID of a location or the parent
+           location id of the contents you want to create a new location are required to create a new location.');
         }
 
         if (!isset($this->dsl['parent_location_id'])) {
