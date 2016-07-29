@@ -16,87 +16,96 @@ class ContentMatcher
 
     /**
      * @param array $conditions
+     * @return ContentCollection
      */
-    public function matchContentByConditions($conditions = array())
+    public function getCollection(array $conditions)
     {
-        $contents = [];
-
-        foreach ($conditions as $key => $values) {
-            switch ($key) {
-                case 'content_id':
-                    $contents = array_merge($contents, $this->findContentsByContentId($values));
-                    break;
-
-                case 'location_id':
-                    $contents = array_merge($contents, $this->findContentsByLocationId($values));
-                    break;
-
-                case 'content_remote_id':
-                    $contents = array_merge($contents, $this->findContentsByRemoteContentId($values));
-                    break;
-
-                case 'location_remote_id':
-                    $contents = array_merge($contents, $this->findContentsByRemoteLocationId($values));
-                    break;
-
-                case 'parent_location_id':
-                    $contents = array_merge($contents, $this->findContentsByParentLocationId($values));
-                    break;
-
-                case 'parent_remote_location_id':
-                    $contents = array_merge($contents, $this->findContentsByParentLocationId($values));
-                    break;
-
-            }
-        }
+        $contents = $this->matchContentByConditions($conditions);
 
         return new ContentCollection($contents);
     }
 
     /**
-     * @param int|int[] $contentIds
+     * @param array $conditions
      */
-    public function findContentsByContentId($contentIds)
+    public function matchContentByConditions(array $conditions)
+    {
+        foreach ($conditions as $key => $values) {
+
+            if (!is_int($values) && !is_array($values)) {
+                throw new \Exception('Value must be an integer or an array')
+            }
+
+            if (!is_array($values)) {
+                $values = array($values);
+            }
+
+            switch ($key) {
+                case 'content_id':
+                    $contents = $this->findContentsByContentIds($values);
+
+                case 'location_id':
+                    return $this->findContentsByLocationIds($values);
+
+                case 'content_remote_id':
+                    return $this->findContentsByRemoteContentIds($values);
+
+                case 'location_remote_id':
+                    return $this->findContentsByRemoteLocationIds($values);
+
+                case 'parent_location_id':
+                    return $this->findContentsByParentLocationIds($values);
+
+                case 'parent_remote_location_id':
+                    return $this->findContentsByParentLocationIds($values);
+            }
+        }
+    }
+
+    /**
+     * @param int[] $contentIds
+     */
+    private function findContentsByContentIds(array $contentIds)
     {
 
     }
 
     /**
-     * @param int|int[] $remoteContentIds
+     * @param int[] $remoteContentIds
      */
-    public function findContentsByRemoteContentId($remoteContentIds)
+    private function findContentsByRemoteContentIds(array $remoteContentIds)
     {
 
     }
 
     /**
-     * @param int|int[] $locationIds
+     * @param int[] $locationIds
      */
-    public function findContentsByLocationId($locationIds)
+    private function findContentsByLocationIds(array $locationIds)
     {
 
     }
 
     /**
-     * @param int|int[] $remoteLocationIds
+     * @param int[] $remoteLocationIds
      */
-    public function findContentsByRemoteLocationId($remoteLocationIds)
+    private function findContentsByRemoteLocationIds($remoteLocationIds)
     {
 
     }
 
     /**
-     * @param int $parentLocationId
+     * @param int[] $parentLocationIds
      */
-    public function findContentsByParentLocationId($parentLocationId)
+    private function findContentsByParentLocationIds($parentLocationIds)
     {
 
     }
 
     /**
-     * @param int $remoteParentLocationId
+     * @param int[] $remoteParentLocationIds
      */
-    public function findContentsByRemoteParentLocationId($remoteParentLocationId)
+    private function findContentsByRemoteParentLocationIds($remoteParentLocationIds)
     {
 
     }
