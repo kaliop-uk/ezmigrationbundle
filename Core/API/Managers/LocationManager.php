@@ -17,32 +17,49 @@ class LocationManager extends AbstractManager
      */
     public function create()
     {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id'])) {
-            throw new \Exception('The ID or remote ID of an object is required to create a new location.');
+        if (!isset($this->dsl['match'])) {
+            throw new \Exception('Match condition is required to perform location create operations.');
+        }
+
+        $match = $this->dsl['match'];
+
+        if (!isset($match['content_id']) &&
+            !isset($match['location_id']) &&
+            !isset($match['content_remote_id']) &&
+            !isset($match['location_remote_id']) &&
+            !isset($match['parent_location_id']) &&
+            !isset($match['parent_location_remote_id'])
+        ) {
+          throw new \Exception('Either the ID or remote ID of a content, the ID or remote ID of a location or the id or remote ID
+          of the parent location of the contents you want to create a new location are required to create a new location.');
+        }
+
+        if (count($match) > 1) {
+            throw new \Exception('Only one condition is allowed by now');
         }
 
         if (!isset($this->dsl['parent_location_id'])) {
             throw new \Exception('Missing parent location id. This is required to create the new location.');
         }
 
+        // convert the references passed in the match
+        // @todo probably can be moved to a separate method.
+        foreach ($match as $condition => $values) {
+            if (is_integer($values) && $this->isReference($values)) {
+                $match[$condition] = $this->getReference($values);
+            } elseif (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->isReference($value)) {
+                        $match[$condition][$position] = $this->getReference($value);
+                    }
+                }
+            }
+        }
+
         $this->loginUser();
 
-        $contentService = $this->repository->getContentService();
-
         // @TODO: see if this can be simplified somehow
-        if (isset($this->dsl['object_id'])) {
-            $objectId = $this->dsl['object_id'];
-            if ($this->isReference($objectId)) {
-                $objectId = $this->getReference($objectId);
-            }
-            $contentInfo = $contentService->loadContentInfo($objectId);
-        } else {
-            $remoteId = $this->dsl['remote_id'];
-            if ($this->isReference($remoteId)) {
-                $remoteId = $this->getReference($remoteId);
-            }
-            $contentInfo = $contentService->loadContentInfoByRemoteId($remoteId);
-        }
+        $contentCollection = $this->container->get('ez_migration_bundle.content_matcher')->getCollection($match);
 
         $locationService = $this->repository->getLocationService();
 
@@ -50,22 +67,29 @@ class LocationManager extends AbstractManager
             $this->dsl['parent_location_id'] = array($this->dsl['parent_location_id']);
         }
 
-        foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
-            if ($this->isReference($parentLocationId)) {
-                $parentLocationId = $this->getReference($parentLocationId);
+        while ($contentCollection->valid()) {
+            $content = $contentCollection->current();
+            $contentInfo = $content->contentInfo;
+
+            foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
+                if ($this->isReference($parentLocationId)) {
+                    $parentLocationId = $this->getReference($parentLocationId);
+                }
+                $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
+
+                $locationCreateStruct->hidden = isset($this->dsl['is_hidden']) ?: false;
+
+                if (isset($this->dsl['priority'])) {
+                    $locationCreateStruct->priority = $this->dsl['priority'];
+                }
+
+                $locationCreateStruct->sortOrder = $this->getSortOrder();
+                $locationCreateStruct->sortField = $this->getSortField();
+
+                $locationService->createLocation($contentInfo, $locationCreateStruct);
             }
-            $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
 
-            $locationCreateStruct->hidden = isset($this->dsl['is_hidden']) ? : false;
-
-            if (isset($this->dsl['priority'])) {
-                $locationCreateStruct->priority = $this->dsl['priority'];
-            }
-
-            $locationCreateStruct->sortOrder = $this->getSortOrder();
-            $locationCreateStruct->sortField = $this->getSortField();
-
-            $locationService->createLocation($contentInfo, $locationCreateStruct);
+            $contentCollection->next();
         }
     }
 

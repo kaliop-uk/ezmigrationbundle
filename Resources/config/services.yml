@@ -12,6 +12,7 @@ parameters:
   ez_migration_bundle.location_resolver.repository_aware.class: Kaliop\eZMigrationBundle\Core\API\LocationResolver\AbstractRepositoryAwareLocationResolver
   ez_migration_bundle.location_resolver.location_remote_id.class: Kaliop\eZMigrationBundle\Core\API\LocationResolver\LocationRemoteIdLocationResolver
   ez_migration_bundle.complex.field.ezauthor.class: Kaliop\eZMigrationBundle\Core\API\ComplexFields\EzAuthor
+  ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\API\ContentMatcher
 
 services:
   ez_migration_bundle.complex.field.manager:
@@ -45,3 +46,8 @@ services:
     parent: ez_migration_bundle.location_resolver.repository_aware
     tags:
       - { name: ez_migration_bundle.location_resolver }
+
+  ez_migration_bundle.content_matcher:
+    class: %ez_migration_bundle.content_matcher.class%
+    arguments:
+      - @ezpublish.api.inner_repository
