@@ -3,7 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\Command\AbstractCommand;
-use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

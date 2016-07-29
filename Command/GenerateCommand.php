@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use eZ\Publish\API\Repository\Values\User\Limitation;
-use Kaliop\eZMigrationBundle\Core\API\Handler\RoleTranslationHandler;
+use Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -19,7 +19,7 @@ class GenerateCommand extends AbstractCommand
 
 namespace <namespace>;
 
-use Kaliop\eZMigrationBundle\Interfaces\VersionInterface;
+use Kaliop\eZMigrationBundle\API\VersionInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

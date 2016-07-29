@@ -396,7 +396,7 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
      *
      * @var string
      */
-    private $dummyVersionContent = 'use Kaliop\eZMigrationBundle\Interfaces\VersionInterface;
+    private $dummyVersionContent = 'use Kaliop\eZMigrationBundle\API\VersionInterface;
         use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
         class Version20131001144810 implements VersionInterface, ContainerAwareInterface

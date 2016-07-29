@@ -3,9 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core;
 
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
-use Kaliop\eZMigrationBundle\Core\DefinitionHandlers\SQLDefinitionHandler;
-use Kaliop\eZMigrationBundle\Core\DefinitionHandlers\YamlDefinitionHandler;
-use Kaliop\eZMigrationBundle\Interfaces\BundleAwareInterface;
+use Kaliop\eZMigrationBundle\Core\DefinitionHandler\SQLDefinitionHandler;
+use Kaliop\eZMigrationBundle\Core\DefinitionHandler\YamlDefinitionHandler;
+use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -14,8 +14,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Main configuration object holding settings for the migrations.
- *
- *
  */
 class Configuration
 {
@@ -206,6 +204,9 @@ class Configuration
 
                 $this->versions[$bundle][$version] = $versionObject;
                 break;
+
+            default:
+                /// @todo throw an 'unsupported migration' error
         }
 
         if (array_key_exists($bundle, $this->versions) && is_array($this->versions[$bundle])) {
