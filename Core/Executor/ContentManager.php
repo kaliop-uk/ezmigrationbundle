@@ -1,15 +1,15 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Manager;
+namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
-use Kaliop\eZMigrationBundle\Core\Manager\AbstractManager;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Implements the actions for managing (create/update/delete) Content in the system through
@@ -17,8 +17,17 @@ use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
  *
  * @todo add support for updating of content metadata
  */
-class ContentManager extends AbstractManager
+class ContentManager extends AbstractExecutor implements ExecutorInterface
 {
+    public function supportedTypes()
+    {
+        return array('content');
+    }
+
+    public function execute($type, array $dsl = array())
+    {
+    }
+
     /**
      * Handle the content create migration action type
      */

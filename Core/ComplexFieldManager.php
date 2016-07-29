@@ -6,7 +6,7 @@ use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
 use eZ\Publish\API\Repository\Repository as eZRepository;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Kaliop\eZMigrationBundle\Core\Manager\ContentManager;
+use Kaliop\eZMigrationBundle\Core\Executor\ContentManager;
 
 class ComplexFieldManager
 {

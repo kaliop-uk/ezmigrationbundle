@@ -1,14 +1,24 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Manager;
+namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use Netgen\TagsBundle\Core\SignalSlot\TagsService;
 use Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct;
 use Symfony\Component\Debug\Exception\ClassNotFoundException;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
-class TagManager extends AbstractManager
+class TagManager extends AbstractExecutor implements ExecutorInterface
 {
+    public function supportedTypes()
+    {
+        return array('tag');
+    }
+
+    public function execute($type, array $dsl = array())
+    {
+    }
+
     /**
      * @return mixed
      */

@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core;
+namespace Kaliop\eZMigrationBundle\Core\ReferenceHandler;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

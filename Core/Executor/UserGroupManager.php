@@ -1,15 +1,25 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Manager;
+namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\API\Repository\Values\User\UserGroup;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Handles user-group migrations.
  */
-class UserGroupManager extends AbstractManager
+class UserGroupManager extends AbstractExecutor implements ExecutorInterface
 {
+    public function supportedTypes()
+    {
+        return array('user_group');
+    }
+
+    public function execute($type, array $dsl = array())
+    {
+    }
+
     /**
      * Method to handle the create operation of the migration instructions
      */

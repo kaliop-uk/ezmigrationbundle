@@ -1,16 +1,26 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Manager;
+namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 use eZ\Publish\API\Repository\Values\Content;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Handles user migrations.
  */
-class UserManager extends AbstractManager
+class UserManager extends AbstractExecutor implements ExecutorInterface
 {
+    public function execute($type, array $dsl = array())
+    {
+    }
+
+    public function supportedTypes()
+    {
+        return array('user');
+    }
+
     /**
      * Method to handle the create operation of the migration instructions
      *

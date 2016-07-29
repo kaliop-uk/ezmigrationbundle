@@ -51,8 +51,8 @@
 #  type: UserGroup
 #  value: [1] # must be 1 (owner)
 -
-    mode: create
     type: role
+    mode: create
     name: xyz # Name of the role
     policies: # Optional
         -
@@ -87,8 +87,8 @@
                                        # The shorthand 'identifier' can be used instead of 'role_identifier'
 
 -
-    mode: update
     type: role
+    mode: update
     name: xyz # Name of the role to be updated
     assign: # Optional
         -
@@ -131,6 +131,6 @@
 #            value: [x, y]
 
 -
-    mode: delete
     type: role
+    mode: delete
     name: xyz # Name of the role to be removed

@@ -1,17 +1,25 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Manager;
+namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\ContentTypeService;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
-use Kaliop\eZMigrationBundle\Core\TagHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Methods to handle content type migrations
  */
-class ContentTypeManager extends AbstractManager
+class ContentTypeManager extends AbstractExecutor implements ExecutorInterface
 {
+    public function supportedTypes()
+    {
+        return array('content_type');
+    }
+
+    public function execute($type, array $dsl = array())
+    {
+    }
 
     /**
      * Method to handle the create operation of the migration instructions

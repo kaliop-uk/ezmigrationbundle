@@ -1,21 +1,6 @@
 -
-    mode: create
-    type: user_group
-    parent_group_id: x # The object ID of the user group to put the new group into, can be an array
-    name: xyz
-    description: xyz # Optional
-    roles: [x, y, z] # The role names or ids to assign to the group
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
-    references: #Optional
-         -
-            identifier: referenceID # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference
-                                 # The shorthand 'id' can be used instead of 'object_id'
-
--
-    mode: create
     type: user
+    mode: create
     first_name: xyz
     last_name: xyz
     username: xyz
@@ -32,8 +17,8 @@
                                  # The shorthand 'id' can be used instead of 'user_id'
 
 -
-    mode: update
     type: user
+    mode: update
     id: x # The ID of the user to update.
     email: xyz # Optional
     password: xyz # Optional
@@ -50,8 +35,31 @@
                                  # The shorthand 'id' can be used instead of 'user_id'
 
 -
-    mode: update
+    type: user
+    mode: delete
+    user_id: x # Optional
+    email: xyz # Optional
+    username: xyz # Optional
+    # user_id, email, username could also be list of items as well
+
+-
     type: user_group
+    mode: create
+    parent_group_id: x # The object ID of the user group to put the new group into, can be an array
+    name: xyz
+    description: xyz # Optional
+    roles: [x, y, z] # The role names or ids to assign to the group
+    # The list in references tells the manager to store specific attribute values for later use
+    # by other migration definitions in the current set.
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # The shorthand 'id' can be used instead of 'object_id'
+
+-
+    type: user_group
+    mode: update
     id: x # The ID of the user group to update.
     name: xyz # Optional
     description: xyz # Optional
@@ -65,15 +73,7 @@
                                  # The shorthand 'id' can be used instead of 'object_id'
 
 -
-    mode: delete
-    type: user
-    user_id: x # Optional
-    email: xyz # Optional
-    username: xyz # Optional
-    # user_id, email, username could also be list of items as well
-
--
     # The users which are not assigned to other groups will be deleted.
-    mode: delete
     type: user_group
+    mode: delete
     group: x # Id of the group to be deleted. Can also be a list of ids.

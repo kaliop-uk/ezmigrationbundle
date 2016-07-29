@@ -1,19 +1,29 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Manager;
+namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Handles the role migration definitions.
  */
-class RoleManager extends AbstractManager
+class RoleManager extends AbstractExecutor implements ExecutorInterface
 {
+    public function supportedTypes()
+    {
+        return array('role');
+    }
+
+    public function execute($type, array $dsl = array())
+    {
+    }
+
     /**
      * Method to handle the create operation of the migration instructions
      */

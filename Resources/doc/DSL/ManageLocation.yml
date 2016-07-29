@@ -1,7 +1,7 @@
 -
     # Create new location
-    mode: create
     type: location
+    mode: create
     match:
     # Possible values for matching. only one of them will allowed by now. All of them can be single or array
         - content_id: # the content id(s) of the content we want to add a location to
@@ -29,8 +29,8 @@
     sort_field: x # Optional
     sort_order: ASC|DESC # Optional
 -
-    mode: create
     type: location
+    mode: create
     remote_id: x # The remote ID of the object we want to add a location to
     parent_location_id: y
     priority: x # Optional
@@ -38,8 +38,8 @@
     sort_field: x # Optional
     sort_order: ASC|DESC # Optional
 -
-    mode: create
     type: location
+    mode: create
     object_id: x
     # Can use both syntax for sequences to define the list
     parent_location_id: [x, y, z]
@@ -49,8 +49,8 @@
     sort_order: ASC|DESC # Optional
 
 -
-    mode: update
     type: location
+    mode: update
     location_id: x # The ID of the location to update
     swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set the same time parent_location_id is set.
     priority: x # Optional, will be updated if set
@@ -60,10 +60,10 @@
     sort_order: ASC|DESC # Optional
 
 -
-    mode: delete
     type: location
+    mode: delete
     location_id: x
 -
-    mode: delete
     type: location
+    mode: delete
     location_id: [x, y, z] # Both syntax for defining sequences will work

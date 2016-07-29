@@ -1,12 +1,21 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Manager;
+namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
-class LocationManager extends AbstractManager
+class LocationManager extends AbstractExecutor implements ExecutorInterface
 {
+    public function supportedTypes()
+    {
+        return array('location');
+    }
+
+    public function execute($type, array $dsl = array())
+    {
+    }
 
     /**
      * Method to handle the create operation of the migration instructions

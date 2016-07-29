@@ -2,15 +2,15 @@
 
 namespace Kaliop\eZMigrationBundle\Core\DefinitionHandler;
 
-use Kaliop\eZMigrationBundle\Core\Manager\ContentManager;
-use Kaliop\eZMigrationBundle\Core\Manager\ContentTypeManager;
-use Kaliop\eZMigrationBundle\Core\Manager\LocationManager;
-use Kaliop\eZMigrationBundle\Core\Manager\RoleManager;
-use Kaliop\eZMigrationBundle\Core\Manager\TagManager;
-use Kaliop\eZMigrationBundle\Core\Manager\UserGroupManager;
-use Kaliop\eZMigrationBundle\Core\Manager\UserManager;
+use Kaliop\eZMigrationBundle\Core\Executor\ContentManager;
+use Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager;
+use Kaliop\eZMigrationBundle\Core\Executor\LocationManager;
+use Kaliop\eZMigrationBundle\Core\Executor\RoleManager;
+use Kaliop\eZMigrationBundle\Core\Executor\TagManager;
+use Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager;
+use Kaliop\eZMigrationBundle\Core\Executor\UserManager;
 use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
-use Kaliop\eZMigrationBundle\API\VersionInterface;
+use Kaliop\eZMigrationBundle\API\DefinitionHandlerInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -19,7 +19,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Handles Yaml migration definitions.
  */
-class YamlDefinitionHandler implements VersionInterface, ContainerAwareInterface, BundleAwareInterface
+class YamlDefinitionHandler implements DefinitionHandlerInterface, ContainerAwareInterface, BundleAwareInterface
 {
 
     /**
@@ -40,6 +40,40 @@ class YamlDefinitionHandler implements VersionInterface, ContainerAwareInterface
      * @var \Symfony\Component\HttpKernel\Bundle\BundleInterface
      */
     private $bundle;
+
+    /**
+     * Tells whether the given file can be handled by this handler, by checking e.g. the suffix
+     *
+     * @param string $fileName full path to filename
+     * @return bool
+     */
+    public function supports($fileName)
+    {
+        /// @todo
+    }
+
+    /**
+     * Analyze a migration file to determine whether it is valid or not.
+     * This will be only called on files that pass the supports() call
+     *
+     * @param string $fileName full path to filename
+     * @throws \Exception if the file is not valid for any reason
+     */
+    public function isValidMigration($fileName)
+    {
+        Yaml::parse($fileName);
+    }
+
+    /**
+     * Parses a migration definition file, and returns the list of actions to take
+     *
+     * @param string $fileName full path to filename
+     * @return array key: the action to take, value: the action-specific definition (an array)
+     */
+    public function parseMigration($fileName)
+    {
+        return Yaml::parse($fileName);
+    }
 
     /**
      * Execute the migration based on the instructions in the Yaml definition file

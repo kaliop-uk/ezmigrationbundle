@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core;
+namespace Kaliop\eZMigrationBundle\Core\ReferenceHandler;
 
 /**
  * Handle references.
@@ -30,7 +30,6 @@ class ReferenceHandler
      */
     private function __construct()
     {
-
     }
 
     /**

@@ -3,15 +3,15 @@
 namespace Kaliop\eZMigrationBundle\Core\DefinitionHandler;
 
 use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
-use Kaliop\eZMigrationBundle\API\VersionInterface;
+use Kaliop\eZMigrationBundle\API\DefinitionHandlerInterface;
+
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use eZ\Publish\Core\Persistence\Legacy\EzcDbHandler;
 
-class SQLDefinitionHandler implements VersionInterface, ContainerAwareInterface, BundleAwareInterface
+class SQLDefinitionHandler implements DefinitionHandlerInterface, ContainerAwareInterface, BundleAwareInterface
 {
-
     /**
      * Path to the sql migration file
      *
@@ -64,6 +64,42 @@ class SQLDefinitionHandler implements VersionInterface, ContainerAwareInterface,
     }
 
     /**
+     * Tells whether the given file can be handled by this handler, by checking e.g. the suffix
+     *
+     * @param string $fileName full path to filename
+     * @return bool
+     */
+    public function supports($fileName)
+    {
+        /// @todo
+    }
+
+    /**
+     * Analyze a migration file to determine whether it is valid or not.
+     * This will be only called on files that pass the supports() call
+     *
+     * @param string $fileName full path to filename
+     * @throws \Exception if the file is not valid for any reason
+     */
+    public function isValidMigration($fileName)
+    {
+        /// @todo
+    }
+
+    /**
+     * Parses a migration definition file, and returns the list of actions to take
+     *
+     * @param string $fileName full path to filename
+     * @return array key: the action to take, value: the action-specific definition (an array)
+     */
+    public function parseMigration($fileName)
+    {
+        /// @todo
+    }
+
+
+
+    /**
      * Execute a version definition.
      *
      * For now simply prepare a PDO Statement from the contents of the sql file and execute it.
@@ -90,7 +126,7 @@ class SQLDefinitionHandler implements VersionInterface, ContainerAwareInterface,
      * @throws \InvalidArgumentException
      * @return boolean
      */
-    public function isValidMigration()
+    public function isValidMigration_()
     {
         if (empty($this->sqlFile)) {
             throw new \InvalidArgumentException('Missing sql file from migration.');
