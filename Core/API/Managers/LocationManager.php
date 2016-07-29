@@ -44,22 +44,8 @@ class LocationManager extends AbstractManager
 
         $this->loginUser();
 
-        $contentService = $this->repository->getContentService();
-
         // @TODO: see if this can be simplified somehow
-        if (isset($this->dsl['object_id'])) {
-            $objectId = $this->dsl['object_id'];
-            if ($this->isReference($objectId)) {
-                $objectId = $this->getReference($objectId);
-            }
-            $contentInfo = $contentService->loadContentInfo($objectId);
-        } else {
-            $remoteId = $this->dsl['remote_id'];
-            if ($this->isReference($remoteId)) {
-                $remoteId = $this->getReference($remoteId);
-            }
-            $contentInfo = $contentService->loadContentInfoByRemoteId($remoteId);
-        }
+        $contentCollection = $this->container->get('ez_migration_bundle.content_matcher')->getCollection($match);
 
         $locationService = $this->repository->getLocationService();
 
@@ -67,22 +53,29 @@ class LocationManager extends AbstractManager
             $this->dsl['parent_location_id'] = array($this->dsl['parent_location_id']);
         }
 
-        foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
-            if ($this->isReference($parentLocationId)) {
-                $parentLocationId = $this->getReference($parentLocationId);
+        while ($contentCollection->valid()) {
+            $content = $contentCollection->current();
+            $contentInfo = $content->contentInfo;
+
+            foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
+                if ($this->isReference($parentLocationId)) {
+                    $parentLocationId = $this->getReference($parentLocationId);
+                }
+                $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
+
+                $locationCreateStruct->hidden = isset($this->dsl['is_hidden']) ?: false;
+
+                if (isset($this->dsl['priority'])) {
+                    $locationCreateStruct->priority = $this->dsl['priority'];
+                }
+
+                $locationCreateStruct->sortOrder = $this->getSortOrder();
+                $locationCreateStruct->sortField = $this->getSortField();
+
+                $locationService->createLocation($contentInfo, $locationCreateStruct);
             }
-            $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
 
-            $locationCreateStruct->hidden = isset($this->dsl['is_hidden']) ? : false;
-
-            if (isset($this->dsl['priority'])) {
-                $locationCreateStruct->priority = $this->dsl['priority'];
-            }
-
-            $locationCreateStruct->sortOrder = $this->getSortOrder();
-            $locationCreateStruct->sortField = $this->getSortField();
-
-            $locationService->createLocation($contentInfo, $locationCreateStruct);
+            $contentCollection->next();
         }
     }
 
