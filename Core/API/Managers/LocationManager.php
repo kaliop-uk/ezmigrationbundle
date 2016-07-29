@@ -27,10 +27,15 @@ class LocationManager extends AbstractManager
             !isset($match['location_id']) &&
             !isset($match['content_remote_id']) &&
             !isset($match['location_remote_id']) &&
-            !isset($match['parent_location_id'])
+            !isset($match['parent_location_id']) &&
+            !isset($match['parent_location_remote_id'])
         ) {
-          throw new \Exception('Either the ID or remote ID of a content, the ID or remote ID of a location or the parent
-           location id of the contents you want to create a new location are required to create a new location.');
+          throw new \Exception('Either the ID or remote ID of a content, the ID or remote ID of a location or the id or remote ID
+          of the parent location of the contents you want to create a new location are required to create a new location.');
+        }
+
+        if (count($match) > 1) {
+            throw new \Exception('Only one condition is allowed by now');
         }
 
         if (!isset($this->dsl['parent_location_id'])) {
