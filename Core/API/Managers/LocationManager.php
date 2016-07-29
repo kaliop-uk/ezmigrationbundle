@@ -5,10 +5,6 @@ namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 
-/**
- * Class LocationManager
- * @package Kaliop\eZMigrationBundle\Core\API\Managers
- */
 class LocationManager extends AbstractManager
 {
 

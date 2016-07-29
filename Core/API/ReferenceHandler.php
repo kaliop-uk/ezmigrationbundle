@@ -3,11 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\API;
 
 /**
- * Class ReferenceHandler
- *
  * Handle references.
- *
- * @package Kaliop\eZMigrationBundle\Core\API
  */
 class ReferenceHandler
 {
@@ -83,6 +79,5 @@ class ReferenceHandler
             }
 
             $this->references[$identifier] = $value;
-
     }
 }

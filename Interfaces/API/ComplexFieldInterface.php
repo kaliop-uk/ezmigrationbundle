@@ -1,11 +1,10 @@
 <?php
-/**
- * Interface for all complex field creation classes.
- */
 
 namespace Kaliop\eZMigrationBundle\Interfaces\API;
 
-
+/**
+ * Interface for all complex field creation classes.
+ */
 interface ComplexFieldInterface
 {
     /**

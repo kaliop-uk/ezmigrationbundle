@@ -13,11 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 /**
- * Class AbstractManager
- *
  * The core manager class that all migration action managers inherit from.
- *
- * @package Kaliop\eZMigrationBundle\Core\API\Managers
  */
 abstract class AbstractManager implements ManagerInterface, ContainerAwareInterface, BundleAwareInterface
 {
@@ -178,8 +174,8 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
 
         return $referenceHandler->getReference($identifier);
     }
-    
-    public function getTagIdFromKeyword($identifier) 
+
+    public function getTagIdFromKeyword($identifier)
     {
         $identifier = $this->stripHandlerReference($identifier, TagHandler::REFERENCE_PREFIX);
 
@@ -193,7 +189,7 @@ abstract class AbstractManager implements ManagerInterface, ContainerAwareInterf
         $identifier = $this->stripHandlerReference($identifier, LocationRemoteIdHandler::REFERENCE_PREFIX);
 
         $locationHandler = LocationRemoteIdHandler::instance();
-        
+
         return $locationHandler->getLocationId($identifier, $this->container);
     }
 

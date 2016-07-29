@@ -6,12 +6,9 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Core\API\TagHandler;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
+
 /**
- * Class ContentTypeManager
- *
  * Methods to handle content type migrations
- *
- * @package Kaliop\eZMigrationBundle\Core\API\Managers
  */
 class ContentTypeManager extends AbstractManager
 {

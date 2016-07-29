@@ -6,11 +6,7 @@ use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 use eZ\Publish\API\Repository\Values\User\UserGroup;
 
 /**
- * Class UserGroupManager
- *
- * Handles user group migrations.
- *
- * @package Kaliop\eZMigrationBundle\Core\API\Managers
+ * Handles user-group migrations.
  */
 class UserGroupManager extends AbstractManager
 {

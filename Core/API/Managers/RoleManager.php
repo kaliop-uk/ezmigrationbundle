@@ -2,19 +2,15 @@
 
 namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 
-
 use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Core\API\Handler\RoleTranslationHandler;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+
 /**
- * Class RoleManager
- *
  * Handles the role migration definitions.
- *
- * @package Kaliop\eZMigrationBundle\Core\API\Managers
  */
 class RoleManager extends AbstractManager
 {

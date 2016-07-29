@@ -63,5 +63,4 @@ class Collection implements \ArrayAccess, \Iterator
         return isset($this->elements[$this->position]);
     }
 
-
 }

@@ -13,11 +13,7 @@ use eZ\Publish\Core\Persistence\Legacy\EzcDbHandler;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * Class Configuration
- *
  * Main configuration object holding settings for the migrations.
- *
- * @package Kaliop\eZMigrationBundle\Core
  */
 class Configuration
 {

@@ -7,11 +7,7 @@ use eZ\Publish\API\Repository\Values\Content;
 use Kaliop\eZMigrationBundle\Core\API\ReferenceHandler;
 
 /**
- * Class UserManager
- *
- * Handle user migrations.
- *
- * @package Kaliop\eZMigrationBundle\Core\API\Managers
+ * Handles user migrations.
  */
 class UserManager extends AbstractManager
 {

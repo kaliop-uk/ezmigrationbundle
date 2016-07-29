@@ -9,8 +9,6 @@ use Doctrine\DBAL\Connection;
  * Interface VersionInterface
  *
  * All version definitions need to implement this interface
- *
- * @package Kaliop\eZMigrationBundle\Interfaces
  */
 interface VersionInterface
 {

@@ -3,11 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Interfaces\API;
 
 /**
- * Class ManagerInterface
- *
  * Interface that all migration definition handlers need to implement.
- *
- * @package Kaliop\eZMigrationBundle\Interfaces\API
  */
 interface ManagerInterface {
 

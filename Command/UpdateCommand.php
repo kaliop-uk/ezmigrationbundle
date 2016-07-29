@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\Command\AbstractCommand;
@@ -10,11 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class UpdateCommand
- *
  * Command to execute the available migration definitions.
- *
- * @package Kaliop\eZMigrationBundle\Command
  */
 class UpdateCommand extends AbstractCommand
 {
@@ -168,5 +165,3 @@ EOT
 
     }
 }
-
-?>

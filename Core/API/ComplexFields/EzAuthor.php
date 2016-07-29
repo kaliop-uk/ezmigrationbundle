@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: phalasz
- * Date: 31/03/16
- * Time: 12:00
- */
 
 namespace Kaliop\eZMigrationBundle\Core\API\ComplexFields;
 

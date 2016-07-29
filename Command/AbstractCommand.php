@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -8,11 +9,7 @@ use Doctrine\DBAL\DriverManager;
 use Kaliop\eZMigrationBundle\Core\Configuration;
 
 /**
- * Class AbstractCommand
- *
  * Base command class that all migration commands extend from.
- *
- * @package Kaliop\eZMigrationBundle\Command
  */
 abstract class AbstractCommand extends Command
 {
@@ -119,5 +116,3 @@ abstract class AbstractCommand extends Command
         return $groupedPaths;
     }
 }
-
-?>

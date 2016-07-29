@@ -1,4 +1,5 @@
 <?php
+
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\Command\AbstractCommand;
@@ -7,11 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class StatusCommand
- *
  * Command to display the status of migrations.
- *
- * @package Kaliop\eZMigrationBundle\Command
  */
 class StatusCommand extends AbstractCommand
 {
@@ -98,5 +95,3 @@ EOT
         }
     }
 }
-
-?>

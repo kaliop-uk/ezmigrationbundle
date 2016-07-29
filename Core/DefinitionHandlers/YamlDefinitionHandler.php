@@ -17,11 +17,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Class YamlDefinitionHandler
- *
- * This class handles Yaml migration definitions.
- *
- * @package Kaliop\eZMigrationBundle\Core\DefinitionHandlers
+ * Handles Yaml migration definitions.
  */
 class YamlDefinitionHandler implements VersionInterface, ContainerAwareInterface, BundleAwareInterface
 {

@@ -2,7 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\Core\API\ComplexFields;
 
-
 class EzRichText extends AbstractComplexField
 {
     /**

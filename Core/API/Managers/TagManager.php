@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08/01/16
- * Time: 09:15
- */
 
 namespace Kaliop\eZMigrationBundle\Core\API\Managers;
 

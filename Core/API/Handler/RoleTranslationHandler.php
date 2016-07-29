@@ -1,7 +1,4 @@
 <?php
-/**
- *
- */
 
 namespace Kaliop\eZMigrationBundle\Core\API\Handler;
 

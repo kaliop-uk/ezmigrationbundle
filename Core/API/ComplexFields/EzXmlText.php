@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11/12/15
- * Time: 15:04
- */
 
 namespace Kaliop\eZMigrationBundle\Core\API\ComplexFields;
-
 
 class EzXmlText extends AbstractComplexField
 {

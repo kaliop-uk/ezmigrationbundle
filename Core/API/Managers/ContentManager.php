@@ -12,12 +12,8 @@ use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 
 /**
- * Class ContentManager
- *
- * Class implementing the actions for managing (create/update/delete) Content in the system through
+ * Implements the actions for managing (create/update/delete) Content in the system through
  * migrations and abstracts away the eZ Publish Public API.
- *
- * @package Kaliop\eZMigrationBundle\Core\API\Managers
  *
  * @todo add support for updating of content metadata
  */
