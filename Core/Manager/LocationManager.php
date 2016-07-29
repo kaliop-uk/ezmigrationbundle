@@ -55,7 +55,7 @@ class LocationManager extends AbstractManager
         $this->loginUser();
 
         // @TODO: see if this can be simplified somehow
-        $contentCollection = $this->container->get('ez_migration_bundle.content_matcher')->getCollection($match);
+        $contentCollection = $this->container->get('ez_migration_bundle.content_matcher')->matchContent($match);
 
         $locationService = $this->repository->getLocationService();
 

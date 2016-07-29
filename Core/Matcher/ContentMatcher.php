@@ -10,28 +10,28 @@ use Kaliop\eZMigrationBundle\Core\Collection\ContentCollection;
 
 class ContentMatcher
 {
+    const MATCH_CONTENT_ID = 'content_id';
+    const MATCH_LOCATION_ID = 'location_id';
+    const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
+    const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
+    const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
+    const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
+
     protected $repository;
 
+    /**
+     * @todo inject the services needed, not thw whole repository
+     */
     public function __construct(Repository $repository)
     {
         $this->repository = $repository;
     }
 
     /**
-     * @param array $conditions
+     * @param array $conditions key: condition, value: int / array of ints
      * @return ContentCollection
      */
-    public function getCollection(array $conditions)
-    {
-        $contents = $this->matchContentByConditions($conditions);
-
-        return new ContentCollection($contents);
-    }
-
-    /**
-     * @param array $conditions
-     */
-    public function matchContentByConditions(array $conditions)
+    public function matchContent(array $conditions)
     {
         foreach ($conditions as $key => $values) {
 
@@ -40,23 +40,23 @@ class ContentMatcher
             }
 
             switch ($key) {
-                case 'content_id':
-                   return $this->findContentsByContentIds($values);
+                case self::MATCH_CONTENT_ID:
+                   return new ContentCollection($this->findContentsByContentIds($values));
 
-                case 'location_id':
-                    return $this->findContentsByLocationIds($values);
+                case self::MATCH_LOCATION_ID:
+                    return new ContentCollection($this->findContentsByLocationIds($values));
 
-                case 'content_remote_id':
-                    return $this->findContentsByRemoteContentIds($values);
+                case self::MATCH_CONTENT_REMOTE_ID:
+                    return new ContentCollection($this->findContentsByContentRemoteIds($values));
 
-                case 'location_remote_id':
-                    return $this->findContentsByRemoteLocationIds($values);
+                case self::MATCH_LOCATION_REMOTE_ID:
+                    return new ContentCollection($this->findContentsByLocationRemoteIds($values));
 
-                case 'parent_location_id':
-                    return $this->findContentsByParentLocationIds($values);
+                case self::MATCH_PARENT_LOCATION_ID:
+                    return new ContentCollection($this->findContentsByParentLocationIds($values));
 
-                case 'parent_location_remote_id':
-                    return $this->findContentsByParentRemoteLocationIds($values);
+                case self::MATCH_PARENT_LOCATION_REMOTE_ID:
+                    return new ContentCollection($this->findContentsByParentLocationRemoteIds($values));
             }
         }
     }
@@ -66,17 +66,12 @@ class ContentMatcher
      *
      * @return Content[]
      */
-    private function findContentsByContentIds(array $contentIds)
+    protected function findContentsByContentIds(array $contentIds)
     {
         $contents = [];
 
         foreach ($contentIds as $contentId) {
-            try {
-                $contents[] = $this->repository->getContentService()->loadContent($contentId);
-            }
-            catch (\Exception $e) {
-                // @todo log from here?
-            }
+            $contents[] = $this->repository->getContentService()->loadContent($contentId);
         }
 
         return $contents;
@@ -87,17 +82,12 @@ class ContentMatcher
      *
      * @return Content[]
      */
-    private function findContentsByRemoteContentIds(array $remoteContentIds)
+    protected function findContentsByContentRemoteIds(array $remoteContentIds)
     {
         $contents = [];
 
         foreach ($remoteContentIds as $remoteContentId) {
-            try {
-                $contents[] = $this->repository->getContentService()->loadContentByRemoteId($remoteContentId);
-            }
-            catch (\Exception $e) {
-                // @todo log from here?
-            }
+            $contents[] = $this->repository->getContentService()->loadContentByRemoteId($remoteContentId);
         }
 
         return $contents;
@@ -108,18 +98,13 @@ class ContentMatcher
      *
      * @return Content[]
      */
-    private function findContentsByLocationIds(array $locationIds)
+    protected function findContentsByLocationIds(array $locationIds)
     {
         $contentIds = [];
 
         foreach ($locationIds as $locationId) {
-            try {
-                $location = $this->repository->getLocationService()->loadLocation($locationId);
-                $contentIds[] = $location->contentId;
-            }
-            catch (\Exception $e) {
-                // @todo log from here
-            }
+            $location = $this->repository->getLocationService()->loadLocation($locationId);
+            $contentIds[] = $location->contentId;
         }
 
         return $this->findContentsByContentIds($contentIds);
@@ -130,18 +115,13 @@ class ContentMatcher
      *
      * @return Content[]
      */
-    private function findContentsByRemoteLocationIds($remoteLocationIds)
+    protected function findContentsByLocationRemoteIds($remoteLocationIds)
     {
         $contentIds = [];
 
         foreach ($remoteLocationIds as $remoteLocationId) {
-            try {
-                $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteLocationId);
-                $contentIds[] = $location->contentId;
-            }
-            catch (\Exception $e) {
-                // @todo log from here
-            }
+            $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteLocationId);
+            $contentIds[] = $location->contentId;
         }
 
         return $this->findContentsByContentIds($contentIds);
@@ -152,7 +132,7 @@ class ContentMatcher
      *
      * @return Content[]
      */
-    private function findContentsByParentLocationIds($parentLocationIds)
+    protected function findContentsByParentLocationIds($parentLocationIds)
     {
         $query = new Query();
         $query->limit = PHP_INT_MAX;
@@ -174,7 +154,7 @@ class ContentMatcher
      *
      * @return Content[]
      */
-    private function findContentsByParentRemoteLocationIds($remoteParentLocationIds)
+    protected function findContentsByParentLocationRemoteIds($remoteParentLocationIds)
     {
         $locationIds = [];
 
