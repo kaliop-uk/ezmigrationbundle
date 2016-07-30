@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\DefinitionHandler;
+namespace Kaliop\eZMigrationBundle\Core\DefinitionParser;
 
 use Kaliop\eZMigrationBundle\Core\Executor\ContentManager;
 use Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager;
@@ -10,7 +10,9 @@ use Kaliop\eZMigrationBundle\Core\Executor\TagManager;
 use Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager;
 use Kaliop\eZMigrationBundle\Core\Executor\UserManager;
 use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
-use Kaliop\eZMigrationBundle\API\DefinitionHandlerInterface;
+use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
@@ -19,7 +21,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Handles Yaml migration definitions.
  */
-class YamlDefinitionHandler implements DefinitionHandlerInterface, ContainerAwareInterface, BundleAwareInterface
+class YamlDefinitionParser implements DefinitionParserInterface, ContainerAwareInterface, BundleAwareInterface
 {
 
     /**
@@ -54,33 +56,25 @@ class YamlDefinitionHandler implements DefinitionHandlerInterface, ContainerAwar
     }
 
     /**
-     * Analyze a migration file to determine whether it is valid or not.
-     * This will be only called on files that pass the supports() call
-     *
-     * @param string $migrationName typically a filename
-     * @param string $contents
-     * @throws \Exception if the file is not valid for any reason
-     */
-    public function isValidMigrationDefinition($migrationName, $contents)
-    {
-        $data = Yaml::parse($fileName);
-        foreach($data as $stepDef) {
-            if (!isset($stepDef['type'])) {
-                throw new \Exception("Missing 'type' for migration definition step in file '$migrationName'");
-            }
-        }
-    }
-
-    /**
      * Parses a migration definition file, and returns the list of actions to take
      *
-     * @param string $migrationName typically a filename
-     * @param string $contents
-     * @return \Kaliop\eZMigrationBundle\API\Value\MigrationDefinition
+     * @param MigrationDefinition $definition
+     * @return MigrationDefinition
      */
-    public function parseMigrationDefinition($migrationName, $contents)
+    public function parseMigrationDefinition(MigrationDefinition $definition)
     {
-        $data = Yaml::parse($contents);
+        try {
+            $data = Yaml::parse($definition->rawDefinition);
+        } catch(\Exception $e) {
+            return new MigrationDefinition(
+                $definition->name,
+                $definition->path,
+                $definition->rawDefinition,
+                MigrationDefinition::STATUS_INVALID,
+                array(),
+                $e->getMessage()
+            );
+        }
 
         $stepDefs = array();
         foreach($data as $stepDef) {
@@ -89,10 +83,16 @@ class YamlDefinitionHandler implements DefinitionHandlerInterface, ContainerAwar
             $stepDefs[] = new MigrationStep($type, $stepDef);
         }
 
-        return new MigrationDefinition($migrationName, $stepDefs);
+        return new MigrationDefinition(
+            $definition->name,
+            $definition->path,
+            $definition->rawDefinition,
+            MigrationDefinition::STATUS_PARSED,
+            $stepDefs
+        );
     }
 
-
+/// *** BELOW THE FOLD: TO BE REFACTORED ***
 
     /**
      * Execute the migration based on the instructions in the Yaml definition file

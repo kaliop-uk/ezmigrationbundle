@@ -6,6 +6,8 @@ use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationCollection;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use Doctrine\DBAL\Schema\Schema;
+use eZ\Publish\Core\Persistence\Database\SelectQuery;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
 
 /**
  * Database-backed storage for info on executed migrations
@@ -42,22 +44,30 @@ class Database implements StorageHandlerInterface
         $this->migrationsTableName = $migrationsTableName;
     }
 
+    /**
+     * @return MigrationCollection
+     * @todo add support offset, limit
+     */
     public function loadMigrations()
     {
         $this->createMigrationsTableIfNeeded();
 
         /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
         $q = $this->connection->createSelectQuery();
-        $q->select('migration, path, execution_date, status')->from($this->migrationsTableName);
-
+        $q->select('migration, md5, path, execution_date, status')->from($this->migrationsTableName)->orderBy('migration', SelectQuery::DESC);
         $stmt = $q->prepare();
         $stmt->execute();
-
         $results = $stmt->fetchAll();
 
         $migrations = array();
         foreach ($results as $result) {
-            $migrations[$result['migration']] = $result;
+            $migrations[$result['migration']] = new Migration(
+                $result['migration'],
+                $result['md5'],
+                $result['path'],
+                $result['execution_date'],
+                $result['status']
+            );
         }
 
         return new MigrationCollection($migrations);
@@ -69,7 +79,7 @@ class Database implements StorageHandlerInterface
      * @return bool true if table has been created, false if it was already there
      *
      * @todo add a 'force' flag to force table re-creation
-     * @todo manage changes to table definition!
+     * @todo manage changes to table definition
      */
     public function createMigrationsTableIfNeeded()
     {
@@ -99,18 +109,18 @@ class Database implements StorageHandlerInterface
         $t = $schema->createTable($this->migrationsTableName);
         $t->addColumn('migration', 'string', array('length' => 255));
         $t->addColumn('path', 'string', array('length' => 4000));
+        $t->addColumn('md5', 'string', array('length' => 32));
         $t->addColumn('execution_date', 'integer', array('notnull' => false));
-        $t->addColumn('status', 'integer', array('default ' => 0));
+        $t->addColumn('status', 'integer', array('default ' => Migration::STATUS_TODO));
         $t->setPrimaryKey(array('migration'));
 
         foreach($schema->toSql($dbPlatform) as $sql) {
-            //$dbconn->query($sql);
             $this->connection->exec($sql);
         }
     }
 
     /**
-     * Helper function to check if a table exists in the database
+     * Check if a table exists in the database
      *
      * @param string $tableName
      * @return bool

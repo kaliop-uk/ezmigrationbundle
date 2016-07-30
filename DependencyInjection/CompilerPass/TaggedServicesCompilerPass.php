@@ -16,9 +16,9 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
         if ($container->has('ez_migration_bundle.migration_service')) {
             $migrationService = $container->findDefinition('ez_migration_bundle.migration_service');
 
-            $definitionHandlers = $container->findTaggedServiceIds('ez_migration_bundle.definition_handler');
-            foreach ($definitionHandlers as $id => $tags) {
-                $migrationService->addMethodCall('addDefinitionHandler', array(
+            $DefinitionParsers = $container->findTaggedServiceIds('ez_migration_bundle.definition_parser');
+            foreach ($DefinitionParsers as $id => $tags) {
+                $migrationService->addMethodCall('addDefinitionParser', array(
                     new Reference($id)
                 ));
             }

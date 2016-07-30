@@ -2,18 +2,41 @@
 
 namespace Kaliop\eZMigrationBundle\API\Value;
 
-class Migration
+/**
+ * @property-read string $name
+ * @property-read string $md5 of the original definition file
+ * @property-read string $path
+ * @property-read int $executionDate timestamp
+ * @property-read integer $status
+ */
+class Migration extends AbstractValue
 {
+    const STATUS_TODO = 0;
+    const STATUS_STARTED = 1;
+    const STATUS_DONE = 2;
+    const STATUS_FAILED = 3;
+    const STATUS_SKIPPED = 4;
+    const STATUS_PARTIALLY_DONE = 5;
+
     protected $name;
-    protected $bundle;
-    protected $execution_date;
+    protected $md5;
+    protected $path;
+    protected $executionDate;
     protected $status;
 
-    function __construct($name, $bundle, $execution_date, $status)
+    /**
+     * @param string $name
+     * @param string md5 checksum of the migration definition file
+     * @param string $path
+     * @param int $executionDate timestamp
+     * @param int $status
+     */
+    function __construct($name, $md5, $path, $executionDate = null, $status = 0)
     {
         $this->name = $name;
-        $this->bundle = $bundle;
-        $this->execution_date = $execution_date;
+        $this->md5 = $md5;
+        $this->path = $path;
+        $this->executionDate = $executionDate;
         $this->status = $status;
     }
 }

@@ -3,8 +3,8 @@
 namespace Kaliop\eZMigrationBundle\Core;
 
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
-use Kaliop\eZMigrationBundle\Core\DefinitionHandler\SQLDefinitionHandler;
-use Kaliop\eZMigrationBundle\Core\DefinitionHandler\YamlDefinitionHandler;
+use Kaliop\eZMigrationBundle\Core\DefinitionParser\SQLDefinitionParser;
+use Kaliop\eZMigrationBundle\Core\DefinitionParser\YamlDefinitionParser;
 use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -139,7 +139,7 @@ class Configuration
                 $this->versions[$bundle][$version] = $versionObject;
                 break;
             case "yml":
-                $migrationObject = new YamlDefinitionHandler();
+                $migrationObject = new YamlDefinitionParser();
                 $migrationObject->yamlFile = $filePath;
 
                 $versionObject->migration = $migrationObject;
@@ -151,7 +151,7 @@ class Configuration
                 $this->versions[$bundle][$version] = $versionObject;
                 break;
             case "sql":
-                $migrationObject = new SQLDefinitionHandler();
+                $migrationObject = new SQLDefinitionParser();
                 $migrationObject->sqlFile = $filePath;
 
                 // Check if db type can be determined, skip if not

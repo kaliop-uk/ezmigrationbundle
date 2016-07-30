@@ -1,15 +1,22 @@
 parameters:
+    # The directory (inside each bundle) where to look for migrations definitions
     ez_migration_bundle.version_directory: 'MigrationVersions'
+    # The dtabase table used to store migration information. Will be created automatically
     ez_migration_bundle.table_name: 'kaliop_migrations'
+    # Used to discriminate valid migration definitions
+    ez_migration_bundle.valid_databases:
+        - 'mysql'
+        - 'postgres'
+        - 'oracle'
 
     ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
 
     ez_migration_bundle.loader.filesystem.class: Kaliop\eZMigrationBundle\Core\Loader\Filesystem
     ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
 
-    ez_migration_bundle.definition_handler.yaml.class: Kaliop\eZMigrationBundle\Core\DefinitionHandler\PHPDefinitionHandler
-    ez_migration_bundle.definition_handler.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionHandler\SQLDefinitionHandler
-    ez_migration_bundle.definition_handler.php.class: Kaliop\eZMigrationBundle\Core\DefinitionHandler\YamlDefinitionHandler
+    ez_migration_bundle.definition_parser.yaml.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\PHPDefinitionParser
+    ez_migration_bundle.definition_parser.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\SQLDefinitionParser
+    ez_migration_bundle.definition_parser.php.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\YamlDefinitionParser
 
     ez_migration_bundle.executor.content_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentManager
     ez_migration_bundle.executor.content_type_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager
@@ -64,23 +71,24 @@ services:
             - '@ezpublish.connection'
             - '%ez_migration_bundle.table_name%'
 
-    ez_migration_bundle.definition_handler.yaml:
-        class: '%ez_migration_bundle.definition_handler.yaml.class%'
+    ez_migration_bundle.definition_parser.yaml:
+        class: '%ez_migration_bundle.definition_parser.yaml.class%'
         arguments: []
         tags:
-            - { name: ez_migration_bundle.definition_handler }
+            - { name: ez_migration_bundle.definition_parser }
 
-    ez_migration_bundle.definition_handler.sql:
-        class: '%ez_migration_bundle.definition_handler.sql.class%'
-        #arguments:
+    ez_migration_bundle.definition_parser.sql:
+        class: '%ez_migration_bundle.definition_parser.sql.class%'
+        arguments:
+            - '%ez_migration_bundle.valid_databases%'
         tags:
-            - { name: ez_migration_bundle.definition_handler }
+            - { name: ez_migration_bundle.definition_parser }
 
-    ez_migration_bundle.definition_handler.php:
-        class: '%ez_migration_bundle.definition_handler.php.class%'
+    ez_migration_bundle.definition_parser.php:
+        class: '%ez_migration_bundle.definition_parser.php.class%'
         arguments: []
         tags:
-            - { name: ez_migration_bundle.definition_handler }
+            - { name: ez_migration_bundle.definition_parser }
 
     ez_migration_bundle.executor.content_manager:
         class: '%ez_migration_bundle.executor.content_manager.class%'

@@ -16,7 +16,7 @@ interface LoaderInterface
 
     /**
      * @param array $paths
-     * @return string[] migrations definitions. key: name, value: contents of the definition, as string
+     * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection unparsed definitions. key has to be the migration name
      * @throws \Exception
      */
     public function loadDefinitions($paths = array());

@@ -2,21 +2,19 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
+use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Helper\Table;
 
 /**
  * Command to display the status of migrations.
  */
 class StatusCommand extends AbstractCommand
 {
-    /**
-     * Setup the commands.
-     *
-     * Define the name, options and help text.
-     */
     protected function configure()
     {
         $this->setName('kaliop:migration:status')
@@ -29,7 +27,7 @@ class StatusCommand extends AbstractCommand
             )
             ->setHelp(
                 <<<EOT
-The <info>kaliop:migration:status</info> command displays the status of all available migrations in your bundles:
+The <info>kaliop:migration:status</info> command displays the status of all available migrations:
 
 <info>./ezpublish/console kaliop:migration:status</info>
 
@@ -40,68 +38,93 @@ EOT
             );
     }
 
-    /**
-     * Run the command and display the results.
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null|void
-     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $migrationsService = $this->getMigrationService();
 
-        $migrationDefinitions = $migrationsService->getDefinitions($input->getOption('path')) ;
-
+        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path')) ;
         $migrations = $migrationsService->getMigrations();
 
-return;
-
-/// *** BELOW THE FOLD: TO BE REFACTORED ***
-
-        // Get paths to look for version files in
-        $paths = $input->getOption('paths');
-
-        $configuration = $this->getConfiguration($input, $output);
-
-        if ($paths) {
-            $paths = is_array($versions) ? $versions : array($versions);
-            $paths = $this->groupPathsByBundle($paths);
-        } else {
-            $paths = $this->groupPathsByBundle($this->getBundlePaths());
+        if (!count($migrationDefinitions) && !count($migrations)) {
+            $output->writeln('<info>No migrations found</info>');
+            return;
         }
 
-        // Check paths for version files
-
-        /* @var $configuration \Kaliop\eZMigrationBundle\Core\Configuration */
-        $configuration->registerVersionFromDirectories($paths);
-
-        if ($bundleVersions = $configuration->getVersions()) {
-            $migratedVersions = $configuration->getMigratedVersions();
-
-            $output->writeln("\n <info>==</info> Available Migrations\n");
-
-            foreach ($bundleVersions as $bundle => $versions) {
-                $output->writeln("<info>{$bundle}</info>:");
-
-                foreach ($versions as $versionNumber => $versionClass) {
-                    /** @var $versionClass \Kaliop\eZMigrationBundle\Core\Version */
-                    $isMigrated = array_key_exists($bundle, $migratedVersions) && in_array(
-                            $versionNumber,
-                            $migratedVersions[$bundle]
-                        );
-                    $status = $isMigrated ? "  <info>< migrated ></info>  " : "<error>< not migrated ></error>";
-                    $output->writeln(
-                        $status . " " . date(
-                            "Y-m-d H:i:s",
-                            strtotime($versionNumber)
-                        ) . " (<comment>{$versionNumber}</comment>) (<info>$versionClass->type</info>) : " . $versionClass->description
-                    );
-                }
-                $output->writeln('');
+        // create a unique ist of all migrations and definitions
+        $index = array();
+        foreach($migrationDefinitions as $migrationDefinition) {
+            $index[$migrationDefinition->name] = array('definition' => $migrationDefinition);
+        }
+        foreach($migrations as $migration) {
+            if (isset($index[$migration->name])) {
+                $index[$migration->name]['migration'] = $migration;
+            } else {
+                $index[$migration->name] = array('migration' => $migration);
             }
-        } else {
-            $output->writeln('<info>No versions found. Exiting...</info>');
         }
+        krsort($index);
+
+        $output->writeln("\n <info>==</info> Available Migrations\n");
+
+        $data = array();
+        foreach($index as $name => $value) {
+            if (!isset($value['migration'])) {
+                $migrationDefinition = $migrationsService->parseMigrationDefinition($value['definition']);
+                $notes = '';
+                if ($migrationDefinition->status != MigrationDefinition::STATUS_PARSED) {
+                    $notes = '<error>' . $migrationDefinition->parsingError . '</error>';
+                }
+                $data[] = array(
+                    $name,
+                    '<error>not executed</error>',
+                    '',
+                    $notes
+                );
+            } else {
+                $migration = $value['migration'];
+                switch ($migration->status) {
+                    case Migration::STATUS_DONE:
+                        $status = '<info>executed</info>';
+                        break;
+                    case Migration::STATUS_STARTED:
+                        $status = '<warning>execution started</warning>';
+                        break;
+                    case Migration::STATUS_TODO:
+                        $status = '<error>not executed</error>';
+                        break;
+                    case Migration::STATUS_SKIPPED:
+                        $status = '<warning>skipped</warning>';
+                        break;
+                    case Migration::STATUS_PARTIALLY_DONE:
+                        $status = '<warning>partially executed</warning>';
+                        break;
+                }
+                $notes = array();
+                if (!isset($value['definition'])) {
+                    $notes[] = '<warning>The migration definition file can not be found any more</warning>';
+                } else {
+                    $migrationDefinition = $value['definition'];
+                    if (md5($migrationDefinition->rawDefinition) != $migration->md5) {
+                        $notes[] = '<warning>The migration definition file has now a different checksum</warning>';
+                    }
+                    if ($migrationDefinition->path != $migrationDefinition->path) {
+                        $notes[] = '<warning>The migration definition file has now moved</warning>';
+                    }
+                }
+                $notes = implode(' ', $notes);
+                $data[] = array(
+                    $migration->name,
+                    $status,
+                    ($migration->executionDate != null ? date("Y-m-d H:i:s", $migration->executionDate) : ''),
+                    $notes
+                );
+            }
+        }
+
+        $table = new Table($output);
+        $table
+            ->setHeaders(array('Migration', 'Status', 'Executed on', 'Notes'))
+            ->setRows($data);
+        $table->render();
     }
 }

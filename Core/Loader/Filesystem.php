@@ -3,6 +3,8 @@
 namespace Kaliop\eZMigrationBundle\Core\Loader;
 
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -35,18 +37,18 @@ class Filesystem implements LoaderInterface
 
     /**
      * @param array $paths either dir names or file names
-     * @return string[] migrations definitions. key: name, value: contents of the definition, as string
+     * @return MigrationDefinitionCollection migrations definitions. key: name, value: contents of the definition, as string
      * @throws \Exception
      */
     public function loadDefinitions($paths = array())
     {
-        return $this->getDefinitions($paths, false);
+        return new MigrationDefinitionCollection($this->getDefinitions($paths, false));
     }
 
     /**
      * @param array $paths either dir names or file names
      * @param bool $returnFilename return either the
-     * @return string[] migrations definitions. key: name, value: contents of the definition, as string or file path
+     * @return MigrationDefinition[]|string[] migrations definitions. key: name, value: contents of the definition, as string or file path
      * @throws \Exception
      */
     protected function getDefinitions($paths = array(), $returnFilename = false)
@@ -67,11 +69,20 @@ class Filesystem implements LoaderInterface
         $definitions = array();
         foreach($paths as $path) {
             if (is_file($path)) {
-                $definitions[basename($path)] = $returnFilename ? $path : file_get_contents($path);
+                $definitions[basename($path)] = $returnFilename ? $path : new MigrationDefinition(
+                    basename($path),
+                    $path,
+                    file_get_contents($path)
+                );
             } elseif (is_dir($path)) {
                 foreach (new \DirectoryIterator($path) as $file) {
                     if ($file->isFile()) {
-                        $definitions[$file->getFilename()] = $returnFilename ? $file->getRealPath() : file_get_contents($file->getRealPath());
+                        $definitions[$file->getFilename()] =
+                            $returnFilename ? $file->getRealPath() : new MigrationDefinition(
+                                $file->getFilename(),
+                                $file->getRealPath(),
+                                file_get_contents($file->getRealPath())
+                            );
                     }
                 }
             }
@@ -79,6 +90,7 @@ class Filesystem implements LoaderInterface
                 throw new \Exception("Path '$path' is neither a file nor directory");
             }
         }
+        krsort($definitions);
         return $definitions;
     }
 }
