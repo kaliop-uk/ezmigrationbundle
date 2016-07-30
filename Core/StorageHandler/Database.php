@@ -3,7 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler;
 
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
+use Kaliop\eZMigrationBundle\API\Collection\MigrationCollection;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
+use Doctrine\DBAL\Schema\Schema;
 
 /**
  * Database-backed storage for info on executed migrations
@@ -15,7 +17,7 @@ class Database implements StorageHandlerInterface
      *
      * @var boolean
      */
-    private $versionTableExists = false;
+    private $migrationsTableExists = false;
 
     /**
      * Name of the database table where installed migration versions are tracked.
@@ -23,7 +25,7 @@ class Database implements StorageHandlerInterface
      *
      * @todo add setter/getter, as we need to clear versionTableExists when switching this
      */
-    private $versionTableName;
+    private $migrationsTableName;
 
     /**
      * @var DatabaseHandler $connection
@@ -32,15 +34,102 @@ class Database implements StorageHandlerInterface
 
     /**
      * @param DatabaseHandler $connection
-     * @param string $versionTableName
+     * @param string $migrationsTableName
      */
-    public function __construct(DatabaseHandler $connection, $versionTableName = 'kaliop_versions')
+    public function __construct(DatabaseHandler $connection, $migrationsTableName = 'kaliop_migrations')
     {
         $this->connection = $connection;
-        $this->versionTableName = $versionTableName;
+        $this->migrationsTableName = $migrationsTableName;
+    }
+
+    public function loadMigrations()
+    {
+        $this->createMigrationsTableIfNeeded();
+
+        /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
+        $q = $this->connection->createSelectQuery();
+        $q->select('migration, path, execution_date, status')->from($this->migrationsTableName);
+
+        $stmt = $q->prepare();
+        $stmt->execute();
+
+        $results = $stmt->fetchAll();
+
+        $migrations = array();
+        foreach ($results as $result) {
+            $migrations[$result['migration']] = $result;
+        }
+
+        return new MigrationCollection($migrations);
+    }
+
+    /**
+     * Check if the version db table exists and create it if not.
+     *
+     * @return bool true if table has been created, false if it was already there
+     *
+     * @todo add a 'force' flag to force table re-creation
+     * @todo manage changes to table definition!
+     */
+    public function createMigrationsTableIfNeeded()
+    {
+        if ($this->migrationsTableExists) {
+            return false;
+        }
+
+        if ($this->tableExist($this->migrationsTableName)) {
+            $this->migrationsTableExists = true;
+            return false;
+        }
+
+        $this->createMigrationsTable();
+
+        $this->migrationsTableExists = true;
+        return true;
+    }
+
+    public function createMigrationsTable()
+    {
+        /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
+        $sm = $this->connection->getConnection()->getSchemaManager();
+        $dbPlatform = $sm->getDatabasePlatform();
+
+        $schema = new Schema();
+
+        $t = $schema->createTable($this->migrationsTableName);
+        $t->addColumn('migration', 'string', array('length' => 255));
+        $t->addColumn('path', 'string', array('length' => 4000));
+        $t->addColumn('execution_date', 'integer', array('notnull' => false));
+        $t->addColumn('status', 'integer', array('default ' => 0));
+        $t->setPrimaryKey(array('migration'));
+
+        foreach($schema->toSql($dbPlatform) as $sql) {
+            //$dbconn->query($sql);
+            $this->connection->exec($sql);
+        }
+    }
+
+    /**
+     * Helper function to check if a table exists in the database
+     *
+     * @param string $tableName
+     * @return bool
+     */
+    protected function tableExist($tableName)
+    {
+        /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
+        $sm = $this->connection->getConnection()->getSchemaManager();
+        foreach($sm->listTables() as $table) {
+            if($table->getName() == $tableName) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
+/// *** BELOW THE FOLD: TO BE REFACTORED ***
 
 
     /**
@@ -164,53 +253,7 @@ class Database implements StorageHandlerInterface
         return $result !== false ? (int)$result : '0';
     }
 
-    /**
-     * Check if the version db table exists and create it if not.
-     *
-     * @return bool true if table has been created, false if it was already there
-     *
-     * @todo add a 'force' flag to force table re-creation
-     */
-    public function createVersionTableIfNeeded()
-    {
-        if ($this->versionTableExists) {
-            return false;
-        }
 
-        if ($this->tablesExist($this->versionTableName)) {
-            $this->versionTableExists = true;
-            return false;
-        }
-
-        // TODO: Make this table creation not MySQL dependant
-        $sql = "CREATE TABLE " .  $this->versionTableName . " (
-version varchar(255) NOT NULL,
-bundle varchar(255) NOT NULL,
-execution_date integer NOT_NULL,
-status integer NOT_NULL
-PRIMARY KEY (version, bundle)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-
-        $this->connection->exec($sql);
-
-        $this->versionTableExists = true;
-        return true;
-    }
-
-    /**
-     * Helper function to check if tables with $tableNames exist in the database
-     *
-     * @param array|string $tableNames
-     * @return bool
-     */
-    protected function tablesExist($tableNames)
-    {
-        $tableNames = array_map('strtolower', (array)$tableNames);
-
-        return count($tableNames) == count(
-            \array_intersect($tableNames, array_map('strtolower', $this->listTableNames()))
-        );
-    }
 
     /**
      * Helper function to get all the table names from the database

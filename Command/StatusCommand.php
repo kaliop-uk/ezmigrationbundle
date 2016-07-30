@@ -51,9 +51,13 @@ EOT
     {
         $migrationsService = $this->getMigrationService();
 
+        $migrationDefinitions = $migrationsService->getDefinitions($input->getOption('path')) ;
+
+        $migrations = $migrationsService->getMigrations();
+
 return;
 
-
+/// *** BELOW THE FOLD: TO BE REFACTORED ***
 
         // Get paths to look for version files in
         $paths = $input->getOption('paths');

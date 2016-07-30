@@ -110,7 +110,7 @@ EOT
 
 return;
 
-
+/// *** BELOW THE FOLD: TO BE REFACTORED ***
 
         $fileType = $input->getOption('format');
         $migrationType = $input->getOption('type');

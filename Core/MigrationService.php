@@ -18,8 +18,10 @@ class MigrationService
      */
     protected $storageHandler;
 
+    /** @var DefinitionHandlerInterface[] $definitionHandlers */
     protected $definitionHandlers = array();
 
+    /** @var ExecutorInterface[] $executors */
     protected $executors = array();
 
     public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler)
@@ -38,5 +40,29 @@ class MigrationService
         foreach($executor->supportedTypes() as $type) {
             $this->executors[$type] = $executor;
         }
+    }
+
+    /**
+     * @param string[] $paths
+     * @return string[] key: migration name, value: migration definition as binary string
+     */
+    public function getDefinitions($paths = array())
+    {
+        // we try to be flexible in file types we support, and the same time avoid loading all files in a directory
+        $handledDefinitions = array();
+        foreach($this->loader->listAvailableDefinitions($paths) as $migration => $definitionPath) {
+            foreach($this->definitionHandlers as $definitionHandler) {
+                if ($definitionHandler->supports($migration)) {
+                    $handledDefinitions[] = $definitionPath;
+                }
+            }
+        }
+
+        return $this->loader->loadDefinitions($handledDefinitions);
+    }
+
+    public function getMigrations()
+    {
+        return $this->storageHandler->loadMigrations();
     }
 }

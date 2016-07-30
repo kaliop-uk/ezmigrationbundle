@@ -62,6 +62,7 @@ EOT
 
 return;
 
+/// *** BELOW THE FOLD: TO BE REFACTORED ***
 
         // Get paths to look for version files in
         $versions = $input->getOption('versions');

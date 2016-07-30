@@ -1,6 +1,6 @@
 parameters:
     ez_migration_bundle.version_directory: 'MigrationVersions'
-    ez_migration_bundle.table_name: 'kaliop_versions'
+    ez_migration_bundle.table_name: 'kaliop_migrations'
 
     ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
 
@@ -52,6 +52,7 @@ services:
     ez_migration_bundle.loader.filesystem:
         class: '%ez_migration_bundle.loader.filesystem.class%'
         arguments:
+            - '@kernel'
             - '%ez_migration_bundle.version_directory%'
 
     ez_migration_bundle.storage_handler:
