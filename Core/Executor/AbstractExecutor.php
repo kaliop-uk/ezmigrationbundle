@@ -6,7 +6,6 @@ use Kaliop\eZMigrationBundle\Core\Handler\LocationResolverHandler;
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\TagHandler;
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\LocationRemoteIdHandler;
-use Kaliop\eZMigrationBundle\API\ManagerInterface;
 use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 /**
  * The core manager class that all migration action managers inherit from.
  */
-abstract class AbstractExecutor implements ManagerInterface, ContainerAwareInterface, BundleAwareInterface
+abstract class AbstractExecutor implements ContainerAwareInterface, BundleAwareInterface
 {
 
     /**

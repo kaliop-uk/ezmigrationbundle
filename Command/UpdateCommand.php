@@ -28,10 +28,10 @@ class UpdateCommand extends AbstractCommand
             ->setName('kaliop:migration:update')
             ->setDescription('Apply available migration definitions.')
             ->addOption(
-                'versions',
+                'path',
                 null,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                "The directory or file to load the migration instructions from"
+                "The directory or file to load the migration definitions from"
             )
             ->addOption('clear-cache', null, InputOption::VALUE_NONE, "Clear the cache after the command finishes")
             ->setHelp(
@@ -40,9 +40,9 @@ class UpdateCommand extends AbstractCommand
 
 <info>./ezpublish/console kaliop:migration:update</info>
 
-You can optionally specify the path to migration versions with the <info>--versions</info>:
+You can optionally specify the path to migration definitions with <info>--path</info>:
 
-<info>./ezpublish/console kaliop:migrations:update --versions=/path/to/bundle/version directory name/version1 --versions=/path/to/bundle/version directory name/version2</info>
+<info>./ezpublish/console kaliop:migrations:update --path=/path/to/bundle/version_directory_name/version1 --path=/path/to/bundle/version_directory_name/version2</info>
 EOT
             );
     }
@@ -58,6 +58,10 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $migrationsService = $this->getMigrationService();
+
+return;
+
 
         // Get paths to look for version files in
         $versions = $input->getOption('versions');

@@ -20,22 +20,22 @@ class StatusCommand extends AbstractCommand
     protected function configure()
     {
         $this->setName('kaliop:migration:status')
-            ->setDescription('List available migration definitions and their statuses.')
+            ->setDescription('List available migrations and their status.')
             ->addOption(
-                'versions',
+                'path',
                 null,
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                "The directory or file to load the migration instructions from"
+                "The directory or file to load the migration definitions from"
             )
             ->setHelp(
                 <<<EOT
-                The <info>kaliop:migration:status</info> command displays the status of all available migrations in your bundles:
+The <info>kaliop:migration:status</info> command displays the status of all available migrations in your bundles:
 
 <info>./ezpublish/console kaliop:migration:status</info>
 
-You can optionally specify the path to migration versions with the <info>--versions</info>:
+You can optionally specify the path to migration versions with <info>--path</info>:
 
-<info>./ezpublish/console kaliop:migrations:status --versions=/path/to/bundle/version directory name/version1 --versions=/path/to/bundle/version directory name/version2</info>
+<info>./ezpublish/console kaliop:migrations:status --path=/path/to/bundle/version directory_name/version1 --path=/path/to/bundle/version_directory_name/version2</info>
 EOT
             );
     }
@@ -49,19 +49,25 @@ EOT
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $migrationsService = $this->getMigrationService();
+
+return;
+
+
+
         // Get paths to look for version files in
-        $versions = $input->getOption('versions');
+        $paths = $input->getOption('paths');
 
         $configuration = $this->getConfiguration($input, $output);
 
-        if ($versions) {
+        if ($paths) {
             $paths = is_array($versions) ? $versions : array($versions);
             $paths = $this->groupPathsByBundle($paths);
         } else {
             $paths = $this->groupPathsByBundle($this->getBundlePaths());
         }
 
-        //Check paths for version files
+        // Check paths for version files
 
         /* @var $configuration \Kaliop\eZMigrationBundle\Core\Configuration */
         $configuration->registerVersionFromDirectories($paths);
@@ -69,7 +75,7 @@ EOT
         if ($bundleVersions = $configuration->getVersions()) {
             $migratedVersions = $configuration->getMigratedVersions();
 
-            $output->writeln("\n <info>==</info> Available Migration Versions\n");
+            $output->writeln("\n <info>==</info> Available Migrations\n");
 
             foreach ($bundleVersions as $bundle => $versions) {
                 $output->writeln("<info>{$bundle}</info>:");

@@ -17,35 +17,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
  */
 class Configuration
 {
-    /**
-     * EzcDbHandler
-     *
-     * The database connection.
-     *
-     * @var \ezcDbHandler
-     */
-    protected $connection;
-
-    /**
-     * Flag to indicate that the migration version table has been created
-     *
-     * @var boolean
-     */
-    private $versionTableExists = false;
-
-    /**
-     * Name of the database table where installed migration versions are tracked.
-     * @var string
-     *
-     * @todo add setter/getter, as we need to clear versionTableExists when switching this
-     */
-    public $versionTableName = 'kaliop_versions';
-
-    /**
-     * Name of the directory where migration versions are located
-     * @var string
-     */
-    public $versionDirectory = 'MigrationVersions';
 
     /**
      * Object used to output text to the console.
@@ -233,36 +204,6 @@ class Configuration
         }
     }
 
-    /**
-     * Check if the version db table exists and create it if not.
-     *
-     * @return bool true if table has been created, false if it was already there
-     *
-     * @todo add a 'force' flag to force table re-creation
-     */
-    public function createVersionTableIfNeeded()
-    {
-        if ($this->versionTableExists) {
-            return false;
-        }
-
-        if ($this->tablesExist($this->versionTableName)) {
-            $this->versionTableExists = true;
-            return false;
-        }
-
-        // TODO: Make this table creation not MySQL dependant
-        $sql = "CREATE TABLE " .  $this->versionTableName . " (
-version varchar(255) NOT NULL,
-bundle varchar(255) NOT NULL,
-PRIMARY KEY (version, bundle)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
-
-        $this->connection->exec($sql);
-
-        $this->versionTableExists = true;
-        return true;
-    }
 
     /**
      * Return the migrated versions grouped by bundle.
@@ -419,50 +360,6 @@ PRIMARY KEY (version, bundle)
     }
 
     /**
-     * Mark a version as migrated in the database
-     *
-     * @param string $bundle
-     * @param int $version
-     */
-    public function markVersionMigrated($bundle, $version)
-    {
-        $this->createVersionTableIfNeeded();
-
-        /** @var $q \ezcQueryInsert */
-        $q = $this->connection->createInsertQuery();
-        $q->insertInto($this->versionTableName)
-            ->set('bundle', $q->bindValue($bundle))
-            ->set('version', $q->bindValue($version));
-
-        $stmt = $q->prepare();
-        $stmt->execute();
-    }
-
-    /**
-     * Mark a version as NOT migrated in the database
-     *
-     * @param string $bundle
-     * @param int $version
-     */
-    public function markVersionNotMigrated($bundle, $version)
-    {
-        $this->createVersionTableIfNeeded();
-
-        /** @var $q \ezcQueryDelete */
-        $q = $this->connection->createDeleteQuery();
-        $q->deleteFrom($this->versionTableName)
-            ->where(
-                $q->expr->lAnd(
-                    $q->expr->eq('bundle', $q->bindValue($bundle)),
-                    $q->expr->eq('version', $q->bindValue($version))
-                )
-            );
-
-        $stmt = $q->prepare();
-        $stmt->execute();
-    }
-
-    /**
      * Inject in the service container into all of the available ContainerAware Versions
      *
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
@@ -498,41 +395,4 @@ PRIMARY KEY (version, bundle)
         }
     }
 
-    /**
-     * Helper function to check if tables with $tableNames exist in the database
-     *
-     * @param array|string $tableNames
-     * @return bool
-     */
-    private function tablesExist($tableNames)
-    {
-        $tableNames = array_map('strtolower', (array)$tableNames);
-
-        return count($tableNames) == count(
-            \array_intersect($tableNames, array_map('strtolower', $this->listTableNames()))
-        );
-    }
-
-    /**
-     * Helper function to get all the table names from the database
-     *
-     * @todo Make this DB independent
-     * @return array
-     */
-    private function listTableNames()
-    {
-
-        $results = array();
-
-        $stmt = $this->connection->prepare("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'");
-        $stmt->execute();
-
-        $tables = $stmt->fetchAll();
-
-        foreach ($tables as $table) {
-            $results[] = array_shift($table);
-        }
-
-        return array_values($results);
-    }
 }

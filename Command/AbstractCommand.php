@@ -2,64 +2,29 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\DBAL\DriverManager;
 use Kaliop\eZMigrationBundle\Core\Configuration;
 
 /**
  * Base command class that all migration commands extend from.
  */
-abstract class AbstractCommand extends Command
+abstract class AbstractCommand extends ContainerAwareCommand
 {
-    /**
-     * The migration configuration object.
-     *
-     * @var \Kaliop\eZMigrationBundle\Core\Configuration
-     */
-    private $configuration;
+    private $migrationService;
 
-    protected function configure()
+    public function getMigrationService()
     {
-
-    }
-
-    /**
-     * Set the migration configuration
-     *
-     * @param Configuration $configuration
-     * @return Configuration
-     */
-    public function setConfiguration( Configuration $configuration )
-    {
-        return ( $this->configuration = $configuration );
-    }
-
-    /**
-     * Return the migration configuration
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return Configuration
-     */
-    public function getConfiguration( InputInterface $input, OutputInterface $output )
-    {
-        if( !$this->configuration )
+        if (!$this->migrationService)
         {
-            $container = $this->getApplication()->getKernel()->getContainer();
-
-            $conn = $container->get( 'ezpublish.connection' );
-
-            $configuration = new Configuration( $conn, $output );
-            $configuration->versionDirectory = $container->getParameter( 'ez_migration_bundle.version_directory' );
-            $configuration->versionTableName = $container->getParameter( 'ez_migration_bundle.table_name' );
-            $this->configuration = $configuration;
-
+            $this->migrationService = $this->getContainer()->get('ez_migration_bundle.migration_service');
         }
 
-        return $this->configuration;
+        return $this->migrationService;
     }
+
+
 
     /**
      * Get the paths to all registered bundles.

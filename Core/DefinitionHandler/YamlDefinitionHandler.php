@@ -44,36 +44,55 @@ class YamlDefinitionHandler implements DefinitionHandlerInterface, ContainerAwar
     /**
      * Tells whether the given file can be handled by this handler, by checking e.g. the suffix
      *
-     * @param string $fileName full path to filename
+     * @param string $migrationName typically a filename
      * @return bool
      */
-    public function supports($fileName)
+    public function supports($migrationName)
     {
-        /// @todo
+        $ext = pathinfo($migrationName, PATHINFO_EXTENSION);
+        return  $ext == 'yml' || $ext == 'yaml';
     }
 
     /**
      * Analyze a migration file to determine whether it is valid or not.
      * This will be only called on files that pass the supports() call
      *
-     * @param string $fileName full path to filename
+     * @param string $migrationName typically a filename
+     * @param string $contents
      * @throws \Exception if the file is not valid for any reason
      */
-    public function isValidMigration($fileName)
+    public function isValidMigrationDefinition($migrationName, $contents)
     {
-        Yaml::parse($fileName);
+        $data = Yaml::parse($fileName);
+        foreach($data as $stepDef) {
+            if (!isset($stepDef['type'])) {
+                throw new \Exception("Missing 'type' for migration definition step in file '$migrationName'");
+            }
+        }
     }
 
     /**
      * Parses a migration definition file, and returns the list of actions to take
      *
-     * @param string $fileName full path to filename
-     * @return array key: the action to take, value: the action-specific definition (an array)
+     * @param string $migrationName typically a filename
+     * @param string $contents
+     * @return \Kaliop\eZMigrationBundle\API\Value\MigrationDefinition
      */
-    public function parseMigration($fileName)
+    public function parseMigrationDefinition($migrationName, $contents)
     {
-        return Yaml::parse($fileName);
+        $data = Yaml::parse($contents);
+
+        $stepDefs = array();
+        foreach($data as $stepDef) {
+            $type = $stepDef['type'];
+            unset($stepDef['type']);
+            $stepDefs[] = new MigrationStep($type, $stepDef);
+        }
+
+        return new MigrationDefinition($migrationName, $stepDefs);
     }
+
+
 
     /**
      * Execute the migration based on the instructions in the Yaml definition file

@@ -71,7 +71,8 @@ class <version>_place_holder implements VersionInterface, ContainerAwareInterfac
     {
         $this->setName('kaliop:migration:generate')
             ->setDescription('Generate a blank migration definition file.')
-            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration file to generate. (yml, php, sql)', 'yml')
+            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate. (yml, php, sql)', 'yml')
+            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, generic, db)', '')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for. (mysql, postgres)', 'mysql')
             ->addOption('role', null, InputOption::VALUE_REQUIRED, 'The role identifier you would like to update.', null)
             ->addArgument('bundle', InputOption::VALUE_REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
@@ -80,13 +81,13 @@ The <info>kaliop:migration:generate</info> command generates a skeleton migratio
 
 <info>./ezpublish/console kaliop:migration:generate bundlename</info>
 
-You can optionally specify the file type to generate with <info>--type</info>:
+You can optionally specify the file type to generate with <info>--format</info>:
 
-<info>./ezpublish/console kaliop:migration:generate --type=yml bundlename</info>
+<info>./ezpublish/console kaliop:migration:generate --format=yml bundlename</info>
 
 For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
 
-<info>./ezpublish/console kaliop:migration:generate --type=sql --dbserver=mysql bundlename</info>
+<info>./ezpublish/console kaliop:migration:generate --format=sql --dbserver=mysql bundlename</info>
 
 For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies you wish for the role. Any not defined will be removed.
 
@@ -105,8 +106,30 @@ EOT
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $fileType = $input->getOption('type');
+        $migrationsService = $this->getMigrationService();
+
+return;
+
+
+
+        $fileType = $input->getOption('format');
+        $migrationType = $input->getOption('type');
+        $role = $input->getOption('role');
         $dbServer = $input->getOption('dbserver');
+
+        // be kind to lazy users
+        if ($migrationType == '') {
+            if ($dbServer != '') {
+                $migrationType = 'db';
+            } elseif ($role != '') {
+                $migrationType = 'role';
+            } else {
+                $migrationType = 'generic';
+            }
+        }
+
+
+
         $this->output = $output;
 
         if (!in_array($fileType, $this->availableMigrationTypes)) {

@@ -12,27 +12,29 @@ interface DefinitionHandlerInterface
     /**
      * Tells whether the given file can be handled by this handler, by checking e.g. the suffix
      *
-     * @param string $fileName full path to filename
+     * @param string $migrationName typically a filename
      * @return bool
      */
-    public function supports($fileName);
+    public function supports($migrationName);
 
     /**
      * Analyze a migration file to determine whether it is valid or not.
      * This will be only called on files that pass the supports() call
      *
-     * @param string $fileName full path to filename
+     * @param string $migrationName typically a filename
+     * @param string $contents
      * @throws \Exception if the file is not valid for any reason
      *
      * @todo shall we prescribe a specific exception to be thrown ?
      */
-    public function isValidMigration($fileName);
+    public function isValidMigrationDefinition($migrationName, $contents);
 
     /**
      * Parses a migration definition file, and returns the list of actions to take
      *
-     * @param string $fileName full path to filename
-     * @return array key: the action to take, value: the action-specific definition (an array)
+     * @param string $migrationName typically a filename
+     * @param string $contents
+     * @return \Kaliop\eZMigrationBundle\API\Value\MigrationDefinition
      */
-    public function parseMigration($fileName);
+    public function parseMigrationDefinition($migrationName, $contents);
 }

@@ -1,63 +1,184 @@
 parameters:
-  ez_migration_bundle.version_directory: 'MigrationVersions'
-  ez_migration_bundle.table_name: 'kaliop_versions'
+    ez_migration_bundle.version_directory: 'MigrationVersions'
+    ez_migration_bundle.table_name: 'kaliop_versions'
 
-  ez_migration_bundle.complex.field.manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
-  ez_migration_bundle.handler.role.class: Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler
-  ez_migration_bundle.complex.field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
-  ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
-  ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
-  ez_migration_bundle.complex.field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
-  ez_migration_bundle.complex.field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
-  ez_migration_bundle.handler.location_resolver.class: Kaliop\eZMigrationBundle\Core\Handler\LocationResolverHandler
-  ez_migration_bundle.location_resolver.repository_aware.class: Kaliop\eZMigrationBundle\Core\LocationResolver\AbstractRepositoryAwareLocationResolver
-  ez_migration_bundle.location_resolver.location_remote_id.class: Kaliop\eZMigrationBundle\Core\LocationResolver\LocationRemoteIdLocationResolver
-  ez_migration_bundle.complex.field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
-  ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
-  ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
+    ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
+
+    ez_migration_bundle.loader.filesystem.class: Kaliop\eZMigrationBundle\Core\Loader\Filesystem
+    ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
+
+    ez_migration_bundle.definition_handler.yaml.class: Kaliop\eZMigrationBundle\Core\DefinitionHandler\PHPDefinitionHandler
+    ez_migration_bundle.definition_handler.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionHandler\SQLDefinitionHandler
+    ez_migration_bundle.definition_handler.php.class: Kaliop\eZMigrationBundle\Core\DefinitionHandler\YamlDefinitionHandler
+
+    ez_migration_bundle.executor.content_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentManager
+    ez_migration_bundle.executor.content_type_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager
+    ez_migration_bundle.executor.location_manager.class: Kaliop\eZMigrationBundle\Core\Executor\LocationManager
+    ez_migration_bundle.executor.role_manager.class: Kaliop\eZMigrationBundle\Core\Executor\RoleManager
+    ez_migration_bundle.executor.tag_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TagManager
+    ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
+    ez_migration_bundle.executor.user_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserManager
+    ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
+    ez_migration_bundle.executor.sql.class: Kaliop\eZMigrationBundle\Core\Executor\SQLExecutor
+
+    ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
+    ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
+
+
+    ez_migration_bundle.complex.field.manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
+    ez_migration_bundle.handler.role.class: Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler
+    ez_migration_bundle.complex.field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
+    ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
+    ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
+    ez_migration_bundle.complex.field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
+    ez_migration_bundle.complex.field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
+    ez_migration_bundle.handler.location_resolver.class: Kaliop\eZMigrationBundle\Core\Handler\LocationResolverHandler
+    ez_migration_bundle.location_resolver.repository_aware.class: Kaliop\eZMigrationBundle\Core\LocationResolver\AbstractRepositoryAwareLocationResolver
+    ez_migration_bundle.location_resolver.location_remote_id.class: Kaliop\eZMigrationBundle\Core\LocationResolver\LocationRemoteIdLocationResolver
+    ez_migration_bundle.complex.field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
+
 
 services:
-  ez_migration_bundle.complex.field.manager:
-    class: %ez_migration_bundle.complex.field.manager.class%
-    arguments:
-      - @ezpublish.api.repository
-      - @service_container
-      - # map of fieldtypes => classes implementing ComplexFieldInterface.
-        ezimage: %ez_migration_bundle.complex.field.ezimage.class%
-        ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
-        ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
-        ezpage: %ez_migration_bundle.complex.field.ezpage.class%
-        ezauthor: %ez_migration_bundle.complex.field.ezauthor.class%
-        ezrichtext: %ez_migration_bundle.complex.field.ezrichtext.class%
 
-  ez_migration_bundle.handler.role:
-    class: %ez_migration_bundle.handler.role.class%
-    arguments:
-      - @ezpublish.api.repository
-      - @service_container
-      - %ezpublish.siteaccess.list%
+    ez_migration_bundle.migration_service:
+        class: '%ez_migration_bundle.migration_service.class%'
+        arguments:
+            - '@ez_migration_bundle.loader'
+            - '@ez_migration_bundle.storage_handler'
 
-  ez_migration_bundle.handler.location_resolver:
-    class: %ez_migration_bundle.handler.location_resolver.class%
+    ez_migration_bundle.loader:
+        alias: ez_migration_bundle.loader.filesystem
 
-  ez_migration_bundle.location_resolver.repository_aware:
-    class: %ez_migration_bundle.location_resolver.repository_aware.class%
-    abstract: true
-    arguments:
-      - @ezpublish.api.repository
+    ez_migration_bundle.loader.filesystem:
+        class: '%ez_migration_bundle.loader.filesystem.class%'
+        arguments:
+            - '%ez_migration_bundle.version_directory%'
 
-  ez_migration_bundle.location_resolver.location_remote_id:
-    class: %ez_migration_bundle.location_resolver.location_remote_id.class%
-    parent: ez_migration_bundle.location_resolver.repository_aware
-    tags:
-      - { name: ez_migration_bundle.location_resolver }
+    ez_migration_bundle.storage_handler:
+        alias: ez_migration_bundle.storage_handler.database
 
-  ez_migration_bundle.content_matcher:
-    class: %ez_migration_bundle.content_matcher.class%
-    arguments:
-      - @ezpublish.api.repository
+    ez_migration_bundle.storage_handler.database:
+        class: '%ez_migration_bundle.storage_handler.database.class%'
+        arguments:
+            - '@ezpublish.connection'
+            - '%ez_migration_bundle.table_name%'
 
-  ez_migration_bundle.location_matcher:
-    class: %ez_migration_bundle.location_matcher.class%
-    arguments:
-      - @ezpublish.api.repository
+    ez_migration_bundle.definition_handler.yaml:
+        class: '%ez_migration_bundle.definition_handler.yaml.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.definition_handler }
+
+    ez_migration_bundle.definition_handler.sql:
+        class: '%ez_migration_bundle.definition_handler.sql.class%'
+        #arguments:
+        tags:
+            - { name: ez_migration_bundle.definition_handler }
+
+    ez_migration_bundle.definition_handler.php:
+        class: '%ez_migration_bundle.definition_handler.php.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.definition_handler }
+
+    ez_migration_bundle.executor.content_manager:
+        class: '%ez_migration_bundle.executor.content_manager.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.content_type_manager:
+        class: '%ez_migration_bundle.executor.content_type_manager.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.location_manager:
+        class: '%ez_migration_bundle.executor.location_manager.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.role_manager:
+        class: '%ez_migration_bundle.executor.role_manager.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.tag_manager:
+        class: '%ez_migration_bundle.executor.tag_manager.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.user_group_manager:
+        class: '%ez_migration_bundle.executor.user_group_manager.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.user_manager:
+        class: '%ez_migration_bundle.executor.user_manager.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.php:
+        class: '%ez_migration_bundle.executor.php.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.sql:
+        class: '%ez_migration_bundle.executor.sql.class%'
+        arguments:
+            - '@ezpublish.connection'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.content_matcher:
+        class: '%ez_migration_bundle.content_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.location_matcher:
+        class: '%ez_migration_bundle.location_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+
+
+    ez_migration_bundle.complex.field.manager:
+        class: '%ez_migration_bundle.complex.field.manager.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+            - '@service_container'
+            - # map of fieldtypes => classes implementing ComplexFieldInterface.
+                ezimage: %ez_migration_bundle.complex.field.ezimage.class%
+                ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
+                ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
+                ezpage: %ez_migration_bundle.complex.field.ezpage.class%
+                ezauthor: %ez_migration_bundle.complex.field.ezauthor.class%
+                ezrichtext: %ez_migration_bundle.complex.field.ezrichtext.class%
+
+    ez_migration_bundle.handler.role:
+        class: '%ez_migration_bundle.handler.role.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+            - '@service_container'
+            - '%ezpublish.siteaccess.list%'
+
+    ez_migration_bundle.handler.location_resolver:
+        class: '%ez_migration_bundle.handler.location_resolver.class%'
+
+    ez_migration_bundle.location_resolver.repository_aware:
+        class: '%ez_migration_bundle.location_resolver.repository_aware.class%'
+        abstract: true
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.location_resolver.location_remote_id:
+        class: '%ez_migration_bundle.location_resolver.location_remote_id.class%'
+        parent: ez_migration_bundle.location_resolver.repository_aware
+        tags:
+            - { name: ez_migration_bundle.location_resolver }
