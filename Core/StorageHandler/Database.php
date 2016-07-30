@@ -54,7 +54,9 @@ class Database implements StorageHandlerInterface
 
         /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
         $q = $this->connection->createSelectQuery();
-        $q->select('migration, md5, path, execution_date, status')->from($this->migrationsTableName)->orderBy('migration', SelectQuery::DESC);
+        $q->select('migration, md5, path, execution_date, status')
+            ->from($this->migrationsTableName)
+            ->orderBy('migration', SelectQuery::ASC);
         $stmt = $q->prepare();
         $stmt->execute();
         $results = $stmt->fetchAll();

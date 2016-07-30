@@ -9,7 +9,6 @@ use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Implements the actions for managing (create/update/delete) Content in the system through
@@ -17,21 +16,14 @@ use Kaliop\eZMigrationBundle\API\ExecutorInterface;
  *
  * @todo add support for updating of content metadata
  */
-class ContentManager extends AbstractExecutor implements ExecutorInterface
+class ContentManager extends RepositoryExecutor
 {
-    public function supportedTypes()
-    {
-        return array('content');
-    }
-
-    public function execute($type, array $dsl = array())
-    {
-    }
+    protected $supportedStepTypes = array('content');
 
     /**
      * Handle the content create migration action type
      */
-    public function create()
+    protected function create()
     {
         $contentService = $this->repository->getContentService();
         $locationService = $this->repository->getLocationService();
@@ -94,7 +86,7 @@ class ContentManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Handle the content update migration action type
      */
-    public function update()
+    protected function update()
     {
         $contentService = $this->repository->getContentService();
         $contentTypeService = $this->repository->getContentTypeService();
@@ -153,7 +145,7 @@ class ContentManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Handle the content delete migration action type
      */
-    public function delete()
+    protected function delete()
     {
         if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id'])) {
             throw new \Exception('No object identifier provided for deletion');

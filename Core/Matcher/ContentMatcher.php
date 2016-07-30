@@ -3,10 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Repository;
-use eZ\Publish\API\Repository\SearchService;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
-use Kaliop\eZMigrationBundle\Core\Collection\ContentCollection;
+use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 
 class ContentMatcher
 {
@@ -20,6 +19,7 @@ class ContentMatcher
     protected $repository;
 
     /**
+     * @param Repository $repository
      * @todo inject the services needed, not thw whole repository
      */
     public function __construct(Repository $repository)

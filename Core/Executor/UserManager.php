@@ -5,28 +5,20 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 use eZ\Publish\API\Repository\Values\Content;
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Handles user migrations.
  */
-class UserManager extends AbstractExecutor implements ExecutorInterface
+class UserManager extends RepositoryExecutor
 {
-    public function execute($type, array $dsl = array())
-    {
-    }
-
-    public function supportedTypes()
-    {
-        return array('user');
-    }
+    protected $supportedStepTypes = array('user');
 
     /**
      * Method to handle the create operation of the migration instructions
      *
      * Creates a user based on the DSL instructions.
      */
-    public function create()
+    protected function create()
     {
         // Authenticate the user
         $this->loginUser();
@@ -71,7 +63,7 @@ class UserManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Method to handle the update operation of the migration instructions
      */
-    public function update()
+    protected function update()
     {
         if (!isset($this->dsl['id'])) {
             throw new \Exception('No user set for update.');
@@ -127,7 +119,7 @@ class UserManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Method to handle the delete operation of the migration instructions
      */
-    public function delete()
+    protected function delete()
     {
         if (!isset($this->dsl['user_id']) && !isset($this->dsl['email']) && !isset($this->dsl['username'])) {
             throw new \Exception('No user set for update.');

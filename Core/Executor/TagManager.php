@@ -6,23 +6,15 @@ use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use Netgen\TagsBundle\Core\SignalSlot\TagsService;
 use Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct;
 use Symfony\Component\Debug\Exception\ClassNotFoundException;
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
-class TagManager extends AbstractExecutor implements ExecutorInterface
+class TagManager extends RepositoryExecutor
 {
-    public function supportedTypes()
-    {
-        return array('tag');
-    }
-
-    public function execute($type, array $dsl = array())
-    {
-    }
+    protected $supportedStepTypes = array('tag');
 
     /**
      * @return mixed
      */
-    public function create()
+    protected function create()
     {
         $this->checkTagsBundleInstall();
         $this->loginUser();
@@ -49,19 +41,13 @@ class TagManager extends AbstractExecutor implements ExecutorInterface
         $this->setReferences($tag);
     }
 
-    /**
-     * @return mixed
-     */
-    public function update()
+    protected function update()
     {
         $this->checkTagsBundleInstall();
         throw new \Exception('Tag update is not implemented yet');
     }
 
-    /**
-     * @return mixed
-     */
-    public function delete()
+    protected function delete()
     {
         $this->checkTagsBundleInstall();
         throw new \Exception('Tag delete is not implemented yet');

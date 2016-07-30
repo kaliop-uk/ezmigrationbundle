@@ -8,26 +8,18 @@ use eZ\Publish\API\Repository\UserService;
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Handles the role migration definitions.
  */
-class RoleManager extends AbstractExecutor implements ExecutorInterface
+class RoleManager extends RepositoryExecutor
 {
-    public function supportedTypes()
-    {
-        return array('role');
-    }
-
-    public function execute($type, array $dsl = array())
-    {
-    }
+    protected $supportedStepTypes = array('role');
 
     /**
      * Method to handle the create operation of the migration instructions
      */
-    public function create()
+    protected function create()
     {
 
         // Authenticate the user
@@ -55,7 +47,7 @@ class RoleManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Method to handle the update operation of the migration instructions
      */
-    public function update()
+    protected function update()
     {
         // Authenticate the user
         $this->loginUser();
@@ -101,7 +93,7 @@ class RoleManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Method to handle the delete operation of the migration instructions
      */
-    public function delete()
+    protected function delete()
     {
         //Get the eZ 5 API Repository and the required services
 

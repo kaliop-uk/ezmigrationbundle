@@ -3,15 +3,17 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
-class SQLExecutor implements ExecutorInterface
+class SQLExecutor extends AbstractExecutor
 {
     /**
      * @var DatabaseHandler $connection
      */
     protected $connection;
+
+    protected $supportedStepTypes = array('sql');
 
     /**
      * @param DatabaseHandler $connection
@@ -21,17 +23,14 @@ class SQLExecutor implements ExecutorInterface
         $this->connection = $connection;
     }
 
-    public function supportedTypes()
-    {
-        return array('php_method', 'php_class', 'symfony_service');
-    }
-
     /**
-     * @param string $type
-     * @param array $dsl
+     * @param MigrationStep $step
      * @return void
      */
-    public function execute($type, array $dsl = array())
+    public function execute(MigrationStep $step)
     {
+        parent::execute($step);
+
+        /// @todo !!!
     }
 }

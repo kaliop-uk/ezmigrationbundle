@@ -10,7 +10,7 @@ use Kaliop\eZMigrationBundle\API\Collection\MigrationStepsCollection;
  * @property-read string $rawDefinition
  * @property-read integer $status
  * @property-read MigrationStepsCollection $steps
- * @property-read string parsingError
+ * @property-read string $parsingError
  */
 class MigrationDefinition extends AbstractValue
 {
@@ -31,6 +31,7 @@ class MigrationDefinition extends AbstractValue
      * @param string $rawDefinition
      * @param int $status
      * @param MigrationStep[] $steps
+     * @param string $parsingError
      */
     function __construct($name, $path, $rawDefinition, $status = 0, array $steps=array(), $parsingError = null)
     {

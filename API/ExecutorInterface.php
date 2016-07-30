@@ -2,6 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\API;
 
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+
 /**
  * Interface that all migration definition handlers need to implement.
  *
@@ -20,9 +22,9 @@ interface ExecutorInterface
     /**
      * Execute a single action in a migration version
      *
-     * @param $type
-     * @param array $dsl the definition of the action
+     * @param MigrationStep $step
      * @return void
+     * @throws \Exception
      */
-    public function execute($type, array $dsl = array());
+    public function execute(MigrationStep $step);
 }

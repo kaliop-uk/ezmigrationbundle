@@ -4,23 +4,15 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
-class LocationManager extends AbstractExecutor implements ExecutorInterface
+class LocationManager extends RepositoryExecutor
 {
-    public function supportedTypes()
-    {
-        return array('location');
-    }
-
-    public function execute($type, array $dsl = array())
-    {
-    }
+    protected $supportedStepTypes = array('location');
 
     /**
      * Method to handle the create operation of the migration instructions
      */
-    public function create()
+    protected function create()
     {
         if (!isset($this->dsl['match'])) {
             throw new \Exception('Match condition is required to perform location create operations.');
@@ -107,7 +99,7 @@ class LocationManager extends AbstractExecutor implements ExecutorInterface
      *
      * Can move a location and it's children to a new parent location or swap two locations
      */
-    public function update()
+    protected function update()
     {
         if (!isset($this->dsl['location_id'])) {
             throw new \Exception('No location set for update.');
@@ -186,7 +178,7 @@ class LocationManager extends AbstractExecutor implements ExecutorInterface
      *
      * Delete locations identified by their ids.
      */
-    public function delete()
+    protected function delete()
     {
         if (!isset($this->dsl['location_id'])) {
             throw new \Exception('No location provided for deletion');

@@ -5,26 +5,18 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\ContentTypeService;
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Methods to handle content type migrations
  */
-class ContentTypeManager extends AbstractExecutor implements ExecutorInterface
+class ContentTypeManager extends RepositoryExecutor
 {
-    public function supportedTypes()
-    {
-        return array('content_type');
-    }
-
-    public function execute($type, array $dsl = array())
-    {
-    }
+    protected $supportedStepTypes = array('content_type');
 
     /**
      * Method to handle the create operation of the migration instructions
      */
-    public function create()
+    protected function create()
     {
         // Authenticate the user
         $this->loginUser();
@@ -77,7 +69,7 @@ class ContentTypeManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Method to handle the update operation of the migration instructions
      */
-    public function update()
+    protected function update()
     {
         // Authenticate the user
         $this->loginUser();
@@ -160,7 +152,7 @@ class ContentTypeManager extends AbstractExecutor implements ExecutorInterface
     /**
      * Method to handle the delete operation of the migration instructions
      */
-    public function delete()
+    protected function delete()
     {
         if (array_key_exists('identifier', $this->dsl)) {
             // Authenticate the user

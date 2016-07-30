@@ -3,10 +3,8 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Repository;
-use eZ\Publish\API\Repository\SearchService;
-use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
-use Kaliop\eZMigrationBundle\Core\Collection\LocationCollection;
+use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 
 class LocationMatcher
 {

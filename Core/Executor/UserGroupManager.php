@@ -4,26 +4,18 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\API\Repository\Values\User\UserGroup;
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 /**
  * Handles user-group migrations.
  */
-class UserGroupManager extends AbstractExecutor implements ExecutorInterface
+class UserGroupManager extends RepositoryExecutor
 {
-    public function supportedTypes()
-    {
-        return array('user_group');
-    }
-
-    public function execute($type, array $dsl = array())
-    {
-    }
+    protected $supportedStepTypes = array('user_group');
 
     /**
      * Method to handle the create operation of the migration instructions
      */
-    public function create()
+    protected function create()
     {
         // Authenticate the user
         $this->loginUser();
@@ -72,7 +64,7 @@ class UserGroupManager extends AbstractExecutor implements ExecutorInterface
      *
      * @throws \InvalidArgumentException When the ID of the user group is missing from the migration definition.
      */
-    public function update()
+    protected function update()
     {
         if (!array_key_exists('id', $this->dsl)) {
             throw new \InvalidArgumentException('No user group has been specified for update. Please add the id of the user group to the migration definition.');
@@ -123,7 +115,7 @@ class UserGroupManager extends AbstractExecutor implements ExecutorInterface
      *
      * @throws \InvalidArgumentException When there are no groups specified for deletion.
      */
-    public function delete()
+    protected function delete()
     {
         if(!array_key_exists('group', $this->dsl)) {
             throw new \InvalidArgumentException('No groups were specified for deletion.');

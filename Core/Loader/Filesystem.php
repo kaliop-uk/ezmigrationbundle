@@ -90,7 +90,7 @@ class Filesystem implements LoaderInterface
                 throw new \Exception("Path '$path' is neither a file nor directory");
             }
         }
-        krsort($definitions);
+        ksort($definitions);
         return $definitions;
     }
 }

@@ -7,6 +7,7 @@ use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use eZ\Publish\API\Repository\Repository;
 
 class MigrationService
 {
@@ -25,10 +26,13 @@ class MigrationService
     /** @var ExecutorInterface[] $executors */
     protected $executors = array();
 
-    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler)
+    protected $repository;
+
+    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository)
     {
         $this->loader = $loader;
         $this->storageHandler = $storageHandler;
+        $this->repository = $repository;
     }
 
     public function addDefinitionParser(DefinitionParserInterface $DefinitionParser)
@@ -64,19 +68,84 @@ class MigrationService
         return $this->loader->loadDefinitions($handledDefinitions);
     }
 
+    /**
+     * Return the list of all the migrations which where executed or attempted so far
+     *
+     * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationCollection
+     */
     public function getMigrations()
     {
         return $this->storageHandler->loadMigrations();
     }
 
+    /**
+     * Parses a migration definition, return a parsed definition.
+     * If there is a parsing error, the definition status will be updated accordingly
+     *
+     * @param MigrationDefinition $migrationDefinition
+     * @return MigrationDefinition
+     * @throws \Exception if the migrationDefinition has no suitable parser for its source format
+     */
     public function parseMigrationDefinition(MigrationDefinition $migrationDefinition)
     {
         foreach($this->DefinitionParsers as $definitionParser) {
             if ($definitionParser->supports($migrationDefinition->name)) {
-                return $definitionParser->parseMigrationDefinition($migrationDefinition);
+                // parse the source file
+                $migrationDefinition = $definitionParser->parseMigrationDefinition($migrationDefinition);
+
+                // and make sure we know how to handle all steps
+                foreach($migrationDefinition->steps as $step) {
+                    if (!isset($this->executors[$step->type])) {
+                        return new MigrationDefinition(
+                            $migrationDefinition->name,
+                            $migrationDefinition->path,
+                            $migrationDefinition->rawDefinition,
+                            MigrationDefinition::STATUS_INVALID,
+                            array(),
+                            "Can not handle migration step of type '{$step->type}'"
+                        );
+                    }
+                }
+
+                return $migrationDefinition;
             }
         }
 
         throw new \Exception("No parser available to parse migration definition '$migrationDefinition'");
+    }
+
+    public function executeMigration(MigrationDefinition $migrationDefinition)
+    {
+        if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
+            $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
+        }
+
+        if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
+            throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
+        }
+
+        $this->repository->beginTransaction();
+
+        try {
+
+            // set migration as begun
+
+            foreach($migrationDefinition->steps as $step) {
+                // we validated the fact that we have a good executor at parsing time
+                $executor = $this->executors[$step->type];
+                $executor->execute($step);
+            }
+
+            // set migration as done
+
+            $this->repository->commit();
+
+        } catch(\Exception $e) {
+            $this->repository->rollBack();
+
+            // set migration as failed
+
+            throw $e;
+        }
     }
 }

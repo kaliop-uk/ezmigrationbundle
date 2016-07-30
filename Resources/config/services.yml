@@ -52,6 +52,7 @@ services:
         arguments:
             - '@ez_migration_bundle.loader'
             - '@ez_migration_bundle.storage_handler'
+            - '@ezpublish.api.repository'
 
     ez_migration_bundle.loader:
         alias: ez_migration_bundle.loader.filesystem

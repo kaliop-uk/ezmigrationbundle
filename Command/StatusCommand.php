@@ -2,16 +2,17 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
-use Kaliop\eZMigrationBundle\API\Value\Migration;
-use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use Kaliop\eZMigrationBundle\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Table;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 
 /**
  * Command to display the status of migrations.
+ *
+ * @todo add option to skip displaying already executed migrations
  */
 class StatusCommand extends AbstractCommand
 {
@@ -29,11 +30,11 @@ class StatusCommand extends AbstractCommand
                 <<<EOT
 The <info>kaliop:migration:status</info> command displays the status of all available migrations:
 
-<info>./ezpublish/console kaliop:migration:status</info>
+    <info>./ezpublish/console kaliop:migration:status</info>
 
 You can optionally specify the path to migration versions with <info>--path</info>:
 
-<info>./ezpublish/console kaliop:migrations:status --path=/path/to/bundle/version directory_name/version1 --path=/path/to/bundle/version_directory_name/version2</info>
+    <info>./ezpublish/console kaliop:migrations:status --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
 EOT
             );
     }
@@ -62,11 +63,12 @@ EOT
                 $index[$migration->name] = array('migration' => $migration);
             }
         }
-        krsort($index);
+        ksort($index);
 
         $output->writeln("\n <info>==</info> Available Migrations\n");
 
         $data = array();
+        $i = 1;
         foreach($index as $name => $value) {
             if (!isset($value['migration'])) {
                 $migrationDefinition = $migrationsService->parseMigrationDefinition($value['definition']);
@@ -75,6 +77,7 @@ EOT
                     $notes = '<error>' . $migrationDefinition->parsingError . '</error>';
                 }
                 $data[] = array(
+                    $i++,
                     $name,
                     '<error>not executed</error>',
                     '',
@@ -113,6 +116,7 @@ EOT
                 }
                 $notes = implode(' ', $notes);
                 $data[] = array(
+                    $i++,
                     $migration->name,
                     $status,
                     ($migration->executionDate != null ? date("Y-m-d H:i:s", $migration->executionDate) : ''),
@@ -123,7 +127,7 @@ EOT
 
         $table = new Table($output);
         $table
-            ->setHeaders(array('Migration', 'Status', 'Executed on', 'Notes'))
+            ->setHeaders(array('#', 'Migration', 'Status', 'Executed on', 'Notes'))
             ->setRows($data);
         $table->render();
     }

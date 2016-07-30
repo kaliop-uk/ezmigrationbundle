@@ -2,20 +2,20 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\API\ExecutorInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
-class PHPExecutor implements ExecutorInterface
+class PHPExecutor extends AbstractExecutor
 {
-    public function supportedTypes()
-    {
-        return array('sql');
-    }
+    protected $supportedStepTypes = array('php_method', 'php_class', 'symfony_service');
 
     /**
-     * @param array $dsl
+     * @param MigrationStep $step
      * @return void
      */
-    public function execute($type, array $dsl = array())
+    public function execute(MigrationStep $step)
     {
+        parent::execute($step);
+
+        /// @todo !!!
     }
 }
