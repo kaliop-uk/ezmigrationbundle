@@ -8,11 +8,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Table;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
 
 /**
  * Command to execute the available migration definitions.
  */
-class UpdateCommand extends AbstractCommand
+class ExecuteCommand extends AbstractCommand
 {
     /**
      * Set up the command.
@@ -24,7 +25,8 @@ class UpdateCommand extends AbstractCommand
         parent::configure();
 
         $this
-            ->setName('kaliop:migration:update')
+            ->setName('kaliop:migration:execute')
+            ->setAliases(array('kaliop:migration:update'))
             ->setDescription('Execute available migration definitions.')
             ->addOption(
                 'path',
@@ -32,16 +34,18 @@ class UpdateCommand extends AbstractCommand
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 "The directory or file to load the migration definitions from"
             )
+            ->addOption('ignore-failures', null, InputOption::VALUE_NONE, "Keep executing migration even if one fails")
             ->addOption('clear-cache', null, InputOption::VALUE_NONE, "Clear the cache after the command finishes")
+            ->addOption('yes', 'y', InputOption::VALUE_NONE, "Assume Yes to all queries and do not prompt")
             ->setHelp(
                 <<<EOT
                 The <info>kaliop:migration:update</info> command loads and execute migrations for your bundles:
 
-<info>./ezpublish/console kaliop:migration:update</info>
+<info>./ezpublish/console kaliop:migration:execute</info>
 
 You can optionally specify the path to migration definitions with <info>--path</info>:
 
-<info>./ezpublish/console kaliop:migrations:update --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
+<info>./ezpublish/console kaliop:migrations:execute --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
 EOT
             );
     }
@@ -70,7 +74,7 @@ EOT
         // filter away all migrations except 'to do' ones
         $toExecute = array();
         foreach($migrationDefinitions as $name => $migrationDefinition) {
-            if (!isset($migrations[$name]) || ($migration = $migrations[$name] && $migration->status == Migration::STATUS_TODO)) {
+            if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && $migration->status == Migration::STATUS_TODO)) {
                 $toExecute[$name] = $migrationsService->parseMigrationDefinition($migrationDefinition);
             }
         }
@@ -105,8 +109,8 @@ EOT
         $table->render();
 
         $output->writeln('');
-        // ask for user confirmation to make changes
-        if ($input->isInteractive()) {
+        // ask user for confirmation to make changes
+        if ($input->isInteractive() && !$input->getOption('yes')) {
             $dialog = $this->getHelperSet()->get('dialog');
             if (!$dialog->askConfirmation(
                 $output,
@@ -129,11 +133,15 @@ EOT
                 continue;
             }
 
-            $output->writeln("<info>Processing $name</info>\n");
+            $output->writeln("<info>Processing $name</info>");
 
             try {
                 $migrationsService->executeMigration($migrationDefinition);
             } catch(\Exception $e) {
+                if ($input->getOption('ignore-failures')) {
+                    $output->writeln("\n<error>Migration failed!".$e->getMessage()."</error>\n");
+                    continue;
+                }
                 $output->writeln("\n<error>Migration aborted!".$e->getMessage()."</error>");
                 return 1;
             }

@@ -3,9 +3,6 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Kaliop\eZMigrationBundle\Core\Configuration;
 
 /**
  * Base command class that all migration commands extend from.
@@ -24,7 +21,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         return $this->migrationService;
     }
 
-
+/// *** BELOW THE FOLD: TO BE REFACTORED ***
 
     /**
      * Get the paths to all registered bundles.

@@ -65,7 +65,7 @@ EOT
         }
         ksort($index);
 
-        $output->writeln("\n <info>==</info> Available Migrations\n");
+        $output->writeln("\n <info>==</info> All Migrations\n");
 
         $data = array();
         $i = 1;
@@ -103,6 +103,9 @@ EOT
                         break;
                 }
                 $notes = array();
+                if ($migration->executionError != '') {
+                    $notes[] = '<error>{$migration->executionError}</error>';
+                }
                 if (!isset($value['definition'])) {
                     $notes[] = '<warning>The migration definition file can not be found any more</warning>';
                 } else {

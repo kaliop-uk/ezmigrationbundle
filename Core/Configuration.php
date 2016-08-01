@@ -14,6 +14,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * Main configuration object holding settings for the migrations.
+ *
+ * @deprecated
  */
 class Configuration
 {

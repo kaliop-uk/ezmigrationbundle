@@ -4,6 +4,8 @@ namespace Kaliop\eZMigrationBundle\Core;
 
 /**
  * Encapsulates a migration definition. This allows for different migration definitions eg.: PHP or Yaml.
+ *
+ * @deprecated
  */
 class Version
 {

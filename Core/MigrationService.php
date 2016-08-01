@@ -6,6 +6,7 @@ use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use eZ\Publish\API\Repository\Repository;
 
@@ -114,6 +115,12 @@ class MigrationService
         throw new \Exception("No parser available to parse migration definition '$migrationDefinition'");
     }
 
+    /**
+     * @param MigrationDefinition $migrationDefinition
+     * @throws \Exception
+     *
+     * @todo add support for skipped migrations, partially executed migrations
+     */
     public function executeMigration(MigrationDefinition $migrationDefinition)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
@@ -124,11 +131,11 @@ class MigrationService
             throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
+        // set migration as begun - has to be in own db transaction
+        $migration = $this->storageHandler->startMigration($migrationDefinition);
+
         $this->repository->beginTransaction();
-
         try {
-
-            // set migration as begun
 
             foreach($migrationDefinition->steps as $step) {
                 // we validated the fact that we have a good executor at parsing time
@@ -136,14 +143,31 @@ class MigrationService
                 $executor->execute($step);
             }
 
+            $status = Migration::STATUS_DONE;
+
             // set migration as done
+            $this->storageHandler->endMigration(new Migration(
+                $migration->name,
+                $migration->md5,
+                $migration->path,
+                $migration->executionDate,
+                $status
+            ));
 
             $this->repository->commit();
 
         } catch(\Exception $e) {
             $this->repository->rollBack();
 
-            // set migration as failed
+            /// set migration as failed
+            $this->storageHandler->endMigration(new Migration(
+                $migration->name,
+                $migration->md5,
+                $migration->path,
+                $migration->executionDate,
+                Migration::STATUS_FAILED,
+                $e->getMessage()
+            ));
 
             throw $e;
         }
