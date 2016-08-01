@@ -2,10 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
-use eZ\Publish\API\Repository\Values\Content;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
-
 /**
  * Handles user migrations.
  */
@@ -176,8 +172,6 @@ class UserManager extends RepositoryExecutor
             return false;
         }
 
-        $referenceHandler = ReferenceHandler::instance();
-
         foreach ($this->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'user_id':
@@ -188,7 +182,7 @@ class UserManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('User Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
 
         return true;

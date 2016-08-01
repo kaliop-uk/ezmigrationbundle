@@ -12,11 +12,16 @@ parameters:
     ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
 
     ez_migration_bundle.loader.filesystem.class: Kaliop\eZMigrationBundle\Core\Loader\Filesystem
-    ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
 
     ez_migration_bundle.definition_parser.yaml.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\PHPDefinitionParser
     ez_migration_bundle.definition_parser.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\SQLDefinitionParser
     ez_migration_bundle.definition_parser.php.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\YamlDefinitionParser
+
+    ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
+
+    ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
+    ez_migration_bundle.executor.sql.class: Kaliop\eZMigrationBundle\Core\Executor\SQLExecutor
+    ez_migration_bundle.executor.repository.class: Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor
 
     ez_migration_bundle.executor.content_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentManager
     ez_migration_bundle.executor.content_type_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager
@@ -25,25 +30,25 @@ parameters:
     ez_migration_bundle.executor.tag_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TagManager
     ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
     ez_migration_bundle.executor.user_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserManager
-    ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
-    ez_migration_bundle.executor.sql.class: Kaliop\eZMigrationBundle\Core\Executor\SQLExecutor
 
     ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
     ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
 
+    ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
+    ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
+    ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
+    ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
+    ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
+    ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
+    ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
 
-    ez_migration_bundle.complex.field.manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
-    ez_migration_bundle.handler.role.class: Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler
-    ez_migration_bundle.complex.field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
-    ez_migration_bundle.complex.field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
-    ez_migration_bundle.complex.field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
-    ez_migration_bundle.complex.field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
-    ez_migration_bundle.complex.field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
-    ez_migration_bundle.handler.location_resolver.class: Kaliop\eZMigrationBundle\Core\Handler\LocationResolverHandler
-    ez_migration_bundle.location_resolver.repository_aware.class: Kaliop\eZMigrationBundle\Core\LocationResolver\AbstractRepositoryAwareLocationResolver
-    ez_migration_bundle.location_resolver.location_remote_id.class: Kaliop\eZMigrationBundle\Core\LocationResolver\LocationRemoteIdLocationResolver
-    ez_migration_bundle.complex.field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
+    ez_migration_bundle.reference_resolver.chain.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainResolver
+    ez_migration_bundle.reference_resolver.customreference.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\CustomReferenceResolver
+    ez_migration_bundle.reference_resolver.content.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ContentResolver
+    ez_migration_bundle.reference_resolver.location.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver
+    ez_migration_bundle.reference_resolver.tag.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\TagResolver
 
+    ez_migration_bundle.helper.role_handler.class: Kaliop\eZMigrationBundle\Core\Helper\RoleHandler
 
 services:
 
@@ -54,6 +59,8 @@ services:
             - '@ez_migration_bundle.storage_handler'
             - '@ezpublish.api.repository'
 
+    ### loaders
+
     ez_migration_bundle.loader:
         alias: ez_migration_bundle.loader.filesystem
 
@@ -63,14 +70,7 @@ services:
             - '@kernel'
             - '%ez_migration_bundle.version_directory%'
 
-    ez_migration_bundle.storage_handler:
-        alias: ez_migration_bundle.storage_handler.database
-
-    ez_migration_bundle.storage_handler.database:
-        class: '%ez_migration_bundle.storage_handler.database.class%'
-        arguments:
-            - '@ezpublish.connection'
-            - '%ez_migration_bundle.table_name%'
+    ### parsers
 
     ez_migration_bundle.definition_parser.yaml:
         class: '%ez_migration_bundle.definition_parser.yaml.class%'
@@ -91,47 +91,18 @@ services:
         tags:
             - { name: ez_migration_bundle.definition_parser }
 
-    ez_migration_bundle.executor.content_manager:
-        class: '%ez_migration_bundle.executor.content_manager.class%'
-        arguments: []
-        tags:
-            - { name: ez_migration_bundle.executor }
+    ### storage handlers
 
-    ez_migration_bundle.executor.content_type_manager:
-        class: '%ez_migration_bundle.executor.content_type_manager.class%'
-        arguments: []
-        tags:
-            - { name: ez_migration_bundle.executor }
+    ez_migration_bundle.storage_handler:
+        alias: ez_migration_bundle.storage_handler.database
 
-    ez_migration_bundle.executor.location_manager:
-        class: '%ez_migration_bundle.executor.location_manager.class%'
-        arguments: []
-        tags:
-            - { name: ez_migration_bundle.executor }
+    ez_migration_bundle.storage_handler.database:
+        class: '%ez_migration_bundle.storage_handler.database.class%'
+        arguments:
+            - '@ezpublish.connection'
+            - '%ez_migration_bundle.table_name%'
 
-    ez_migration_bundle.executor.role_manager:
-        class: '%ez_migration_bundle.executor.role_manager.class%'
-        arguments: []
-        tags:
-            - { name: ez_migration_bundle.executor }
-
-    ez_migration_bundle.executor.tag_manager:
-        class: '%ez_migration_bundle.executor.tag_manager.class%'
-        arguments: []
-        tags:
-            - { name: ez_migration_bundle.executor }
-
-    ez_migration_bundle.executor.user_group_manager:
-        class: '%ez_migration_bundle.executor.user_group_manager.class%'
-        arguments: []
-        tags:
-            - { name: ez_migration_bundle.executor }
-
-    ez_migration_bundle.executor.user_manager:
-        class: '%ez_migration_bundle.executor.user_manager.class%'
-        arguments: []
-        tags:
-            - { name: ez_migration_bundle.executor }
+    ### executors
 
     ez_migration_bundle.executor.php:
         class: '%ez_migration_bundle.executor.php.class%'
@@ -146,6 +117,67 @@ services:
         tags:
             - { name: ez_migration_bundle.executor }
 
+    ez_migration_bundle.executor.repository:
+        abstract: true
+        class: '%ez_migration_bundle.executor.repository.class%'
+        calls:
+            - ['setRepository', ['@ezpublish.api.repository']]
+            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference']]
+
+    ez_migration_bundle.executor.content_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.content_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.complex_field_manager'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.location_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.location_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.content_matcher'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.content_type_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.content_type_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.reference_resolver.location'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.user_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.user_manager.class%'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.user_group_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.user_group_manager.class%'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.role_manager:
+        class: '%ez_migration_bundle.executor.role_manager.class%'
+        parent: ez_migration_bundle.executor.repository
+        arguments:
+            - '@ez_migration_bundle.helper.role_handler'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.tag_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.tag_manager.class%'
+        arguments:
+            - '@?ezpublish.api.service.tags'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ### matchers
+
     ez_migration_bundle.content_matcher:
         class: '%ez_migration_bundle.content_matcher.class%'
         arguments:
@@ -156,39 +188,60 @@ services:
         arguments:
             - '@ezpublish.api.repository'
 
+    ### field handlers
 
-
-    ez_migration_bundle.complex.field.manager:
-        class: '%ez_migration_bundle.complex.field.manager.class%'
+    ez_migration_bundle.complex_field_manager:
+        class: '%ez_migration_bundle.complex_field_manager.class%'
         arguments:
             - '@ezpublish.api.repository'
             - '@service_container'
             - # map of fieldtypes => classes implementing ComplexFieldInterface.
-                ezimage: %ez_migration_bundle.complex.field.ezimage.class%
-                ezbinaryfile: %ez_migration_bundle.complex.field.ezbinaryfile.class%
-                ezxmltext: %ez_migration_bundle.complex.field.ezxmltext.class%
-                ezpage: %ez_migration_bundle.complex.field.ezpage.class%
-                ezauthor: %ez_migration_bundle.complex.field.ezauthor.class%
-                ezrichtext: %ez_migration_bundle.complex.field.ezrichtext.class%
+                ezimage: '%ez_migration_bundle.complex_field.ezimage.class%'
+                ezbinaryfile: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
+                ezxmltext: '%ez_migration_bundle.complex_field.ezxmltext.class%'
+                ezpage: '%ez_migration_bundle.complex_field.ezpage.class%'
+                ezauthor: '%ez_migration_bundle.complex_field.ezauthor.class%'
+                ezrichtext: '%ez_migration_bundle.complex_field.ezrichtext.class%'
 
-    ez_migration_bundle.handler.role:
-        class: '%ez_migration_bundle.handler.role.class%'
+    ### reference resolvers
+
+    ez_migration_bundle.reference_resolver:
+        alias: ez_migration_bundle.reference_resolver.chain
+
+    ez_migration_bundle.reference_resolver.chain:
+        class: '%ez_migration_bundle.reference_resolver.chain.class%'
+        arguments:
+            -
+                - '@ez_migration_bundle.reference_resolver.customreference'
+                - '@ez_migration_bundle.reference_resolver.location'
+                - '@ez_migration_bundle.reference_resolver.content'
+                - '@ez_migration_bundle.reference_resolver.tag'
+
+    ez_migration_bundle.reference_resolver.content:
+        class: '%ez_migration_bundle.reference_resolver.content.class%'
         arguments:
             - '@ezpublish.api.repository'
-            - '@service_container'
+
+    ez_migration_bundle.reference_resolver.location:
+        class: '%ez_migration_bundle.reference_resolver.location.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.reference_resolver.tag:
+        class: '%ez_migration_bundle.reference_resolver.tag.class%'
+        arguments:
+            - '@ezpublish.translation_helper'
+            - '@?ezpublish.api.service.tags'
+
+    ez_migration_bundle.reference_resolver.customreference:
+        class: '%ez_migration_bundle.reference_resolver.customreference.class%'
+        arguments: []
+
+    ### misc
+
+    ez_migration_bundle.helper.role_handler:
+        class: '%ez_migration_bundle.helper.role_handler.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+            - '@ezpublish.translation_helper'
             - '%ezpublish.siteaccess.list%'
-
-    ez_migration_bundle.handler.location_resolver:
-        class: '%ez_migration_bundle.handler.location_resolver.class%'
-
-    ez_migration_bundle.location_resolver.repository_aware:
-        class: '%ez_migration_bundle.location_resolver.repository_aware.class%'
-        abstract: true
-        arguments:
-            - '@ezpublish.api.repository'
-
-    ez_migration_bundle.location_resolver.location_remote_id:
-        class: '%ez_migration_bundle.location_resolver.location_remote_id.class%'
-        parent: ez_migration_bundle.location_resolver.repository_aware
-        tags:
-            - { name: ez_migration_bundle.location_resolver }

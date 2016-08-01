@@ -41,7 +41,7 @@ class ComplexFieldManager
 
     }
 
-    public function setBundle( $bundle )
+    public function setBundle($bundle)
     {
         $this->bundle = $bundle;
     }
@@ -51,7 +51,7 @@ class ComplexFieldManager
      * @param ContentManager $contentManager
      * @return AbstractComplexField
      */
-    public function getComplexField( $fieldTypeIdentifier = null, array $fieldValueArray, ContentManager $contentManager )
+    public function getComplexField($fieldTypeIdentifier = null, array $fieldValueArray, ContentManager $contentManager)
     {
         if ( $fieldTypeIdentifier != null )
         {

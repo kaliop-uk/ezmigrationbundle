@@ -2,7 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\API\Repository\Values\User\UserGroup;
 
 /**
@@ -149,8 +148,6 @@ class UserGroupManager extends RepositoryExecutor
             return false;
         }
 
-        $referenceHandler = ReferenceHandler::instance();
-
         foreach ($this->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
@@ -162,7 +159,7 @@ class UserGroupManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('User Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
 
         return true;

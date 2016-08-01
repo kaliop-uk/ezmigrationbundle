@@ -2,6 +2,9 @@
 
 namespace Kaliop\eZMigrationBundle\Core\LocationResolver;
 
+/**
+ * @deprecated
+ */
 interface LocationResolverInterface
 {
     /**

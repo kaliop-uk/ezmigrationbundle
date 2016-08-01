@@ -4,6 +4,9 @@ namespace Kaliop\eZMigrationBundle\Core\LocationResolver;
 
 use eZ\Publish\API\Repository\Repository;
 
+/**
+ * @deprecated
+ */
 abstract class AbstractRepositoryAwareLocationResolver implements LocationResolverInterface
 {
     /**

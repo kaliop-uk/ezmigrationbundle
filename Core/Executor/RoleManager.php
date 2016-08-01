@@ -5,9 +5,9 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
-use Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use Kaliop\eZMigrationBundle\Core\ReferenceResolver\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\Helper\RoleHandler;
 
 /**
  * Handles the role migration definitions.
@@ -15,6 +15,13 @@ use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 class RoleManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('role');
+
+    protected $roleHandler;
+
+    public function __construct(RoleHandler $roleHandler)
+    {
+        $this->roleHandler = $roleHandler;
+    }
 
     /**
      * Method to handle the create operation of the migration instructions
@@ -161,9 +168,6 @@ class RoleManager extends RepositoryExecutor
      */
     private function createLimitation(RoleService $roleService, array $limitation)
     {
-        /** @var RoleTranslationHandler $roleTranslationHandler */
-        $roleTranslationHandler = $this->container->get('ez_migration_bundle.handler.role');
-
         $limitationType = $roleService->getLimitationType($limitation['identifier']);
 
         $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
@@ -175,7 +179,7 @@ class RoleManager extends RepositoryExecutor
             }
         }
 
-        $limitationValue = $roleTranslationHandler->convertLimitationToValue($limitation['identifier'], $limitationValue);
+        $limitationValue = $this->roleHandler->convertLimitationToValue($limitation['identifier'], $limitationValue);
 
         return $limitationType->buildValue($limitationValue);
     }

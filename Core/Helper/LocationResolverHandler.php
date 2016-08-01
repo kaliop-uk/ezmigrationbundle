@@ -4,6 +4,9 @@ namespace Kaliop\eZMigrationBundle\Core\Handler;
 
 use Kaliop\eZMigrationBundle\Core\LocationResolver\LocationResolverInterface;
 
+/**
+ * @deprecated
+ */
 class LocationResolverHandler
 {
     /**

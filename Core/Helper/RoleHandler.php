@@ -1,30 +1,31 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\Handler;
+namespace Kaliop\eZMigrationBundle\Core\Helper;
 
 use eZ\Publish\API\Repository\Repository as eZRepository;
 use eZ\Publish\API\Repository\Values\User\Limitation;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class RoleTranslationHandler
+/**
+ * @todo find a better name for this class?
+ */
+class RoleHandler
 {
     /** @var eZRepository */
     var $repository;
 
-    /** @var ContainerInterface  */
-    var $container;
+    var $translationHelper;
 
     /** @var array  */
     var $siteAccessList = array();
 
     public function __construct(
         eZRepository $repository,
-        ContainerInterface $container,
+        $translationHelper,
         array $siteAccessList
     )
     {
         $this->repository = $repository;
-        $this->container = $container;
+        $this->translationHelper = $translationHelper;
 
         foreach ($siteAccessList as $siteAccess) {
             $id = sprintf( '%u', crc32( $siteAccess ) );
@@ -38,7 +39,6 @@ class RoleTranslationHandler
             'identifier' => $limitation->getIdentifier(),
             'values' => $this->getLimitationArrayWithIdentifiers($limitation)
         );
-
     }
 
     protected function getLimitationArrayWithIdentifiers(Limitation $limitation)
@@ -68,8 +68,7 @@ class RoleTranslationHandler
             case 'Class':
                 /** @var \eZ\Publish\API\Repository\ContentTypeService $contentTypeService */
                 $contentTypeService = $this->repository->getContentTypeService();
-                $translationHelper = $this->container->get( 'ezpublish.translation_helper' );
-                $availableLanguages = $translationHelper->getAvailableLanguages();
+                $availableLanguages = $this->translationHelper->getAvailableLanguages();
                 $primaryLanguage = $availableLanguages[0];
 
                 foreach($values as $value) {
@@ -96,8 +95,9 @@ class RoleTranslationHandler
      * Converts human readable limitation values to their numeric counterparts we get the array in 2 parts so the
      * referencing can be completed on it before it's sent to this method.
      *
-     * @param $limitationType
-     * @param array $limitationValues
+     * @param $limitationIdentifier
+     * @param array $values
+     * @return array
      */
     public function convertLimitationToValue($limitationIdentifier, array $values)
     {

@@ -5,9 +5,8 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
-use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
-use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
+//use Kaliop\eZMigrationBundle\Core\ReferenceResolver\ReferenceHandler;
+//use \eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 
 /**
@@ -19,6 +18,13 @@ use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 class ContentManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('content');
+
+    protected $complexFieldManager;
+
+    public function __construct($complexFieldManager)
+    {
+        $this->complexFieldManager = $complexFieldManager;
+    }
 
     /**
      * Handle the content create migration action type
@@ -262,34 +268,18 @@ class ContentManager extends RepositoryExecutor
     /**
      * Create the field value for a complex field eg.: ezimage, ezfile
      *
+     * @param string $fieldTypeIdentifier
      * @param array $fieldValueArray
-     * @throws \InvalidArgumentException
      * @return object
+     * @throws \InvalidArgumentException
      */
     protected function handleComplexField($fieldTypeIdentifier, array $fieldValueArray)
     {
-        $fieldManager = $this->container->get('ez_migration_bundle.complex.field.manager');
-        $fieldManager->setBundle($this->bundle);
+        $this->complexFieldManager->setBundle($this->bundle);
 
-        $complexField = $fieldManager->getComplexField($fieldTypeIdentifier, $fieldValueArray, $this);
+        $complexField = $this->complexFieldManager->getComplexField($fieldTypeIdentifier, $fieldValueArray, $this);
 
         return $complexField->createValue();
-
-//        switch ($fieldValueArray['type']) {
-//            case 'ezimage':
-//                $fieldValue = $this->createImageValue($fieldValueArray);
-//                break;
-//            case 'ezbinaryfile':
-//                $fieldValue = $this->createBinaryFileValue($fieldValueArray);
-//                break;
-//            case 'ezxmltext':
-//                $fieldValue = $this->parseXMLTextForReferences($fieldValueArray);
-//                break;
-//            default:
-//                throw new \InvalidArgumentException('Content manager does not support complex field type: ' . $fieldValueArray['type']);
-//        }
-//
-//        return $fieldValue;
     }
 
     /**
@@ -307,8 +297,6 @@ class ContentManager extends RepositoryExecutor
             return false;
         }
 
-        $referenceHandler = ReferenceHandler::instance();
-
         foreach ($this->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
@@ -323,7 +311,7 @@ class ContentManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
 
         return true;

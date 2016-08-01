@@ -77,11 +77,11 @@
                 -
                     type: xyz
                     value: [x, y]
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
             -
-                identifier: referenceID # A string used to identify the reference
+                identifier: referenceId # A string used to identify the reference
                 attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
                                        # The shorthand 'id' can be used instead of 'role_id'
                                        # The shorthand 'identifier' can be used instead of 'role_identifier'
@@ -111,11 +111,11 @@
                         type: xyz
                         value: [x, z]
         remove: [x, y, z] # Policy ids to remove from the role
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
                 -
-                    identifier: referenceID # A string used to identify the reference
+                    identifier: referenceId # A string used to identify the reference
                     attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
                                            # The shorthand 'id' can be used instead of 'role_id'
                                            # The shorthand 'identifier' can be used instead of 'role_identifier'

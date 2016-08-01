@@ -37,11 +37,11 @@
                 email: another@example.com
 
 
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
         -
-            identifier: referenceID # A string used to identify the reference
+            identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference (supports object_id and location_id)
 
 -
@@ -52,11 +52,11 @@
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1
         - attribute2: value2
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
         -
-            identifier: referenceID # A string used to identify the reference
+            identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference (supports object_id and location_id)
 
 -

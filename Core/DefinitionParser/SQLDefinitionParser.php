@@ -3,8 +3,6 @@
 namespace Kaliop\eZMigrationBundle\Core\DefinitionParser;
 
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 

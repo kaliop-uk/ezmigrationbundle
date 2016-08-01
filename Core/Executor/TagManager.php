@@ -2,14 +2,20 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\ReferenceResolver\ReferenceHandler;
 use Netgen\TagsBundle\Core\SignalSlot\TagsService;
 use Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct;
-use Symfony\Component\Debug\Exception\ClassNotFoundException;
 
 class TagManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('tag');
+
+    protected $tagService;
+
+    public function __construct(TagsService $tagService=null)
+    {
+        $this->tagService = $tagService;
+    }
 
     /**
      * @return mixed
@@ -18,9 +24,6 @@ class TagManager extends RepositoryExecutor
     {
         $this->checkTagsBundleInstall();
         $this->loginUser();
-
-        /** @var TagsService $tagsService */
-        $tagsService = $this->container->get('ezpublish.api.service.tags');
 
         $alwaysAvail = array_key_exists('always_available', $this->dsl) ? $this->dsl['always_available'] : true;
         $parentTagId = array_key_exists('parent_tag_id', $this->dsl) ? $this->dsl['parent_tag_id'] : 0;
@@ -37,7 +40,7 @@ class TagManager extends RepositoryExecutor
             $tagCreateStruct->setKeyword($keyword, $langCode);
         }
 
-        $tag = $tagsService->createTag($tagCreateStruct);
+        $tag = $this->tagsService->createTag($tagCreateStruct);
         $this->setReferences($tag);
     }
 
@@ -55,7 +58,7 @@ class TagManager extends RepositoryExecutor
 
     protected function checkTagsBundleInstall()
     {
-        if ( !$this->container->has('ezpublish.api.service.tags') )
+        if ( !$this->tagService )
         {
             throw new \Exception('To import tags you must have NetGen Tags Bundle installed');
         }

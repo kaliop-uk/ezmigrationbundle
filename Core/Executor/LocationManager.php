@@ -3,11 +3,18 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
 class LocationManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('location');
+
+    protected $contentMatcher;
+
+    public function __construct(ContentMatcher $contentMatcher)
+    {
+        $this->contentMatcher = $contentMatcher;
+    }
 
     /**
      * Method to handle the create operation of the migration instructions
@@ -56,7 +63,7 @@ class LocationManager extends RepositoryExecutor
         $this->loginUser();
 
         // @TODO: see if this can be simplified somehow
-        $contentCollection = $this->container->get('ez_migration_bundle.content_matcher')->matchContent($match);
+        $contentCollection = $this->contentMatcher->matchContent($match);
 
         $locationService = $this->repository->getLocationService();
 
@@ -259,7 +266,6 @@ class LocationManager extends RepositoryExecutor
         if (!array_key_exists('references', $this->dsl)) {
             return false;
         }
-        $referenceHandler = ReferenceHandler::instance();
 
         foreach ($this->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
@@ -271,7 +277,7 @@ class LocationManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Location Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
 
         return true;

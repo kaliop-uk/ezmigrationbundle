@@ -3,8 +3,8 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\ContentTypeService;
-use Kaliop\eZMigrationBundle\Core\ReferenceHandler\ReferenceHandler;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
+use Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver;
 
 /**
  * Methods to handle content type migrations
@@ -12,6 +12,13 @@ use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 class ContentTypeManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('content_type');
+
+    protected $locationReferenceResolver;
+
+    public function __construct(LocationResolver $locationReferenceResolver)
+    {
+        $this->locationReferenceResolver = $locationReferenceResolver;
+    }
 
     /**
      * Method to handle the create operation of the migration instructions
@@ -180,8 +187,6 @@ class ContentTypeManager extends RepositoryExecutor
             return false;
         }
 
-        $referenceHandler = ReferenceHandler::instance();
-
         foreach ($this->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'content_type_id':
@@ -196,7 +201,7 @@ class ContentTypeManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
     }
 
@@ -313,7 +318,7 @@ class ContentTypeManager extends RepositoryExecutor
         return $fieldDefinitionUpdateStruct;
     }
 
-    private function updateFieldSettingsFromExisting($fieldDefinitionUpdateStruct, FieldDefinition $existingFieldDefinition) {
+    /*private function updateFieldSettingsFromExisting($fieldDefinitionUpdateStruct, FieldDefinition $existingFieldDefinition) {
         if (is_null($fieldDefinitionUpdateStruct->fieldSettings)) {
             $fieldDefinitionUpdateStruct->fieldSettings = $existingFieldDefinition->getFieldSettings();
         }
@@ -367,19 +372,24 @@ class ContentTypeManager extends RepositoryExecutor
         }
 
         return $fieldDefinitionUpdateStruct;
-    }
+    }*/
 
-    private function setFieldSettings( $value )
+    private function setFieldSettings($value)
     {
         // Updating any references in the value array
-        $ret = $value;
-        if (is_array($value))
-        {
+
+        if (is_array($value)) {
             $ret = array();
             foreach ($value as $key => $val)
             {
-                $ret[$key] = $this->parseFieldSettingValue($val);
-                if ( $this->isReference($val) )
+                //$ret[$key] = $this->parseFieldSettingValue($val);
+                $ret[$key] = $val;
+
+                if ($this->referenceResolver->isReference($val)) {
+                    $ret[$key] = $this->referenceResolver->getReferenceValue($val);
+                }
+
+                /*if ( $this->isReference($val) )
                 {
                     $ret[$key] = $this->getReference($val);
                 }
@@ -390,10 +400,20 @@ class ContentTypeManager extends RepositoryExecutor
                 if ( $this->isTag($val) )
                 {
                     $ret[$key] = $this->getTagIdFromKeyword($val);
+                }*/
+                if ($this->referenceResolver->isReference($value)) {
+                    $ret[$key] = $this->referenceResolver->getReferenceValue($val);
                 }
             }
         }
-        else if ( $this->isReference($value) )
+        else {
+            $ret = $value;
+
+            if ($this->referenceResolver->isReference($value)) {
+                $ret = $this->referenceResolver->getReferenceValue($value);
+            }
+        }
+        /*else if ( $this->isReference($value) )
         {
             $ret = $this->getReference($value);
         }
@@ -404,7 +424,7 @@ class ContentTypeManager extends RepositoryExecutor
         else if ( $this->isTag($value) )
         {
             $ret = $this->getTagIdFromKeyword($value);
-        }
+        }*/
 
         return $ret;
     }
@@ -415,10 +435,10 @@ class ContentTypeManager extends RepositoryExecutor
      * @param $value
      * @return mixed
      */
-    private function parseFieldSettingValue($value)
+    /*private function parseFieldSettingValue($value)
     {
-        return $this->getLocationResolverHandler()->resolve($value);
-    }
+        return $this->locationResolverHandler->resolve($value);
+    }*/
 
     /**
      * Helper to find out if a Field is already defined in a ContentType

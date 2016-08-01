@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use eZ\Publish\API\Repository\Values\User\Limitation;
-use Kaliop\eZMigrationBundle\Core\Handler\RoleTranslationHandler;
+use Kaliop\eZMigrationBundle\Core\Helper\RoleHandler;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -39,13 +39,6 @@ class <version>_place_holder implements VersionInterface, ContainerAwareInterfac
      */
     public function execute() {
         // @TODO This method is auto generated, please modify to your needs.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setContainer(ContainerInterface $container = null) {
-        $this->container = $container;
     }
 }
 ';
@@ -243,8 +236,8 @@ return;
         /** @var \eZ\Publish\Core\SignalSlot\RoleService $roleService */
         $roleService = $repository->getRoleService();
 
-        /** @var RoleTranslationHandler $roleTranslationHandler */
-        $roleTranslationHandler = $container->get('ez_migration_bundle.handler.role');
+        /** @var RoleHandler $roleTranslationHandler */
+        $roleTranslationHandler = $container->get('ez_migration_bundle.helper.role_handler');
 
         /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
         $role = $roleService->loadRoleByIdentifier($roleName);

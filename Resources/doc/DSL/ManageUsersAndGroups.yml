@@ -8,11 +8,11 @@
     password: xyz
     main_language: xyz # Optional, default to eng-GB
     groups: [x, y, z] # The user group IDs (Object IDs) to put the user into
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
          -
-            identifier: referenceID # A string used to identify the reference
+            identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference (currently supports user_id)
                                  # The shorthand 'id' can be used instead of 'user_id'
 
@@ -26,11 +26,11 @@
     # Optional, list of group IDs the user is a member of.
     # The user will be removed from all groups that are not in the list
     groups: [x, y, z]
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
          -
-            identifier: referenceID # A string used to identify the reference
+            identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference (currently supports user_id_
                                  # The shorthand 'id' can be used instead of 'user_id'
 
@@ -49,11 +49,11 @@
     name: xyz
     description: xyz # Optional
     roles: [x, y, z] # The role names or ids to assign to the group
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
          -
-            identifier: referenceID # A string used to identify the reference
+            identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
                                  # The shorthand 'id' can be used instead of 'object_id'
 
@@ -64,11 +64,11 @@
     name: xyz # Optional
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID
-    # The list in references tells the manager to store specific attribute values for later use
-    # by other migration definitions in the current set.
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
     references: #Optional
          -
-            identifier: referenceID # A string used to identify the reference
+            identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
                                  # The shorthand 'id' can be used instead of 'object_id'
 

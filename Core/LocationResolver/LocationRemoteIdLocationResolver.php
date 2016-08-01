@@ -4,6 +4,9 @@ namespace Kaliop\eZMigrationBundle\Core\LocationResolver;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
 
+/**
+ * @deprecated
+ */
 class LocationRemoteIdLocationResolver extends AbstractRepositoryAwareLocationResolver
 {
     /**
