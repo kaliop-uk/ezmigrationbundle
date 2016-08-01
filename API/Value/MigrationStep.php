@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\API\Value;
 /**
  * @property-read string $type
  * @property-read array $dsl
+ * @property-read array $context
  */
 class MigrationStep extends AbstractValue
 {

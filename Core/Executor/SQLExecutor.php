@@ -34,13 +34,13 @@ class SQLExecutor extends AbstractExecutor
 
         $conn = $this->dbHandler->getConnection();
         // @see http://doctrine-orm.readthedocs.io/projects/doctrine-dbal/en/latest/reference/platforms.html
-        $dbType = strtolower(preg_replace( '/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()));
+        $dbType = strtolower(preg_replace( '/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()->getName()));
+
         $dsl = $step->dsl;
 
-        if (!isset($dsl[$dbtype])) {
+        if (!isset($dsl[$dbType])) {
             throw new \Exception("Current database type '$dbType' is not supported by the SQL migration");
         }
-
         $sql = $dsl[$dbType];
 
         $conn->query($sql);

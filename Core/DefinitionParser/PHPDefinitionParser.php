@@ -4,10 +4,13 @@ namespace Kaliop\eZMigrationBundle\Core\DefinitionParser;
 
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use PhpParser\Error;
+use PhpParser\ParserFactory;
 
 class PHPDefinitionParser implements DefinitionParserInterface
 {
-    protected $mandatoryInterface = 'Symfony\Component\DependencyInjection\ContainerInterface\MigrationInterface';
+    protected $mandatoryInterface = 'Kaliop\eZMigrationBundle\API\MigrationInterface';
 
     /**
      * Tells whether the given file can be handled by this handler, by checking e.g. the suffix
@@ -38,17 +41,29 @@ class PHPDefinitionParser implements DefinitionParserInterface
             $message = 'The migration definition file should contain a valid class name. The class name is the part of the filename after the 1st underscore';
         } else {
 
-            include_once($definition->path);
+            // we use smart parsing instead before plain file inclusion, by usage of nikic/php-parser
+            // this should help with broken php migrations
 
-            if (!class_exists($className)) {
-                $status = MigrationDefinition::STATUS_INVALID;
-                $message = "The migration definition file should contain a valid class '$className'";
-            } else {
-                $interfaces = class_implements($className);
-                if (!in_array($this->mandatoryInterface, $interfaces)) {
+            $pf = new ParserFactory();
+            $parser = $pf->create(ParserFactory::PREFER_PHP7);
+            try {
+                $stmts = $parser->parse(file_get_contents($definition->path));
+
+                include_once($definition->path);
+
+                if (!class_exists($className)) {
                     $status = MigrationDefinition::STATUS_INVALID;
-                    $message = "The migration definition class '$className' should implement the interface '{$this->mandatoryInterface}'";
+                    $message = "The migration definition file should contain a valid class '$className'";
+                } else {
+                    $interfaces = class_implements($className);
+                    if (!in_array($this->mandatoryInterface, $interfaces)) {
+                        $status = MigrationDefinition::STATUS_INVALID;
+                        $message = "The migration definition class '$className' should implement the interface '{$this->mandatoryInterface}'";
+                    }
                 }
+            } catch (Error $e) {
+                $status = MigrationDefinition::STATUS_INVALID;
+                $message = "The migration definition file '{$definition->path}' is not valid php'";
             }
         }
 
@@ -77,7 +92,7 @@ class PHPDefinitionParser implements DefinitionParserInterface
 
     protected function getClassNameFromFile($fileName)
     {
-        $parts = explode( '_', $fileName);
+        $parts = explode( '_', pathinfo($fileName, PATHINFO_FILENAME));
         return isset($parts[1]) ? $parts[1] : null;
     }
 }

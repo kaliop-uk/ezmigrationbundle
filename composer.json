@@ -8,17 +8,23 @@
         {
             "name": "Peter Halasz",
             "email": "peter.halasz@kaliop.co.uk",
-            "role": "Developer"
+            "role": "Creator"
         },
         {
             "name": "Daniel Clements",
             "email": "dclements@kaliop.com",
             "role": "Developer"
+        },
+        {
+            "name": "Gaetano Giunta",
+            "email": "ggiunta@kaliop.com",
+            "role": "Lead Developer"
         }
     ],
     "require": {
         "php": ">=5.3.2",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "nikic/php-parser": "2.*"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.2.0",

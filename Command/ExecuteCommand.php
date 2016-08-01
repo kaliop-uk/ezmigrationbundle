@@ -129,7 +129,7 @@ EOT
 
             // let's skip migrations that we know are invalid - user was warned and he decide to proceed anyway
             if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-                $output->writeln("<warning>Skipping $name</warning>\n");
+                $output->writeln("<comment>Skipping $name</comment>\n");
                 continue;
             }
 

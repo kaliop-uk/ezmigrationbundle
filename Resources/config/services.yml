@@ -112,7 +112,8 @@ services:
 
     ez_migration_bundle.executor.php:
         class: '%ez_migration_bundle.executor.php.class%'
-        arguments: []
+        arguments:
+            - '@service_container'
         tags:
             - { name: ez_migration_bundle.executor }
 

@@ -90,31 +90,35 @@ EOT
                         $status = '<info>executed</info>';
                         break;
                     case Migration::STATUS_STARTED:
-                        $status = '<warning>execution started</warning>';
+                        $status = '<comment>execution started</comment>';
                         break;
                     case Migration::STATUS_TODO:
+                        // bold to-migrate!
                         $status = '<error>not executed</error>';
                         break;
                     case Migration::STATUS_SKIPPED:
-                        $status = '<warning>skipped</warning>';
+                        $status = '<comment>skipped</comment>';
                         break;
                     case Migration::STATUS_PARTIALLY_DONE:
-                        $status = '<warning>partially executed</warning>';
+                        $status = '<comment>partially executed</comment>';
+                        break;
+                    case Migration::STATUS_FAILED:
+                        $status = '<error>failed</error>';
                         break;
                 }
                 $notes = array();
                 if ($migration->executionError != '') {
-                    $notes[] = '<error>{$migration->executionError}</error>';
+                    $notes[] = "<error>{$migration->executionError}</error>";
                 }
                 if (!isset($value['definition'])) {
-                    $notes[] = '<warning>The migration definition file can not be found any more</warning>';
+                    $notes[] = '<comment>The migration definition file can not be found any more</comment>';
                 } else {
                     $migrationDefinition = $value['definition'];
                     if (md5($migrationDefinition->rawDefinition) != $migration->md5) {
-                        $notes[] = '<warning>The migration definition file has now a different checksum</warning>';
+                        $notes[] = '<comment>The migration definition file has now a different checksum</comment>';
                     }
                     if ($migrationDefinition->path != $migrationDefinition->path) {
-                        $notes[] = '<warning>The migration definition file has now moved</warning>';
+                        $notes[] = '<comment>The migration definition file has now moved</comment>';
                     }
                 }
                 $notes = implode(' ', $notes);

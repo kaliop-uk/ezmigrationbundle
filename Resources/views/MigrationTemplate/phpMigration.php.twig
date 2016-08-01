@@ -1,12 +1,12 @@
 <?php
 
-namespace {{ namespace }};
+// No namespace please, this class is custom-loaded by the eZ Migrations bundle
 
 use Kaliop\eZMigrationBundle\API\MigrationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * NB: do not rename this class without renaming the migration file, and vice-versa
+ * NB: do not rename this class without renaming the containing file, and vice-versa
  */
 class {{ class_name }} implements MigrationInterface
 {
@@ -15,3 +15,4 @@ class {{ class_name }} implements MigrationInterface
     {
         // @TODO This method is auto-generated, please modify to suit your needs!
     }
+}
