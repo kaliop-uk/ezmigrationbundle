@@ -58,7 +58,7 @@ class YamlDefinitionParser implements DefinitionParserInterface, BundleAwareInte
         foreach($data as $stepDef) {
             $type = $stepDef['type'];
             unset($stepDef['type']);
-            $stepDefs[] = new MigrationStep($type, $stepDef);
+            $stepDefs[] = new MigrationStep($type, $stepDef, array('path' => $definition->path));
         }
 
         return new MigrationDefinition(

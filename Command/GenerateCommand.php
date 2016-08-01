@@ -2,7 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
-use Kaliop\eZMigrationBundle\Core\Configuration;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,47 +15,10 @@ class GenerateCommand extends AbstractCommand
 {
     const ADMIN_USER_ID = 14;
     const DIR_CREATE_PERMISSIONS = 0755;
-    private $phpTemplate = '<?php
 
-namespace <namespace>;
-
-use Kaliop\eZMigrationBundle\API\VersionInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
-/**
- * Auto-generated Migration definition: Please modify to your needs!
- */
-class <version>_place_holder implements VersionInterface, ContainerAwareInterface
-{
-    /**
-     * The dependency injection container
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @inheritdoc
-     */
-    public function execute() {
-        // @TODO This method is auto generated, please modify to your needs.
-    }
-}
-';
-
-    private $ymlTemplate = '
-# Auto-generated Migration definition: Please modify to your needs!
--
-    mode: [create/update/delete]
-    type: [content/content_type/user/user_group/role]
-    ';
-
-    private $availableMigrationTypes = array('yml', 'php', 'sql');
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    private $availableMigrationFormats = array('yml', 'php', 'sql');
+    private $availableMigrationTypes = array('generic', 'role', 'db', 'php');
+    private $thisBundle = 'EzMigrationBundle';
 
     /**
      * Configure the console command
@@ -64,11 +27,12 @@ class <version>_place_holder implements VersionInterface, ContainerAwareInterfac
     {
         $this->setName('kaliop:migration:generate')
             ->setDescription('Generate a blank migration definition file.')
-            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate. (yml, php, sql)', 'yml')
-            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, generic, db)', '')
-            ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for. (mysql, postgres)', 'mysql')
-            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'The role identifier you would like to update.', null)
-            ->addArgument('bundle', InputOption::VALUE_REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
+            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (yml, php, sql)', 'yml')
+            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, generic, db, php)', '')
+            ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, for type=db (mysql, postgresql, ...)', 'mysql')
+            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'The role identifier you would like to update, for type=role', null)
+            ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
+            ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
 The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
 
@@ -76,15 +40,20 @@ The <info>kaliop:migration:generate</info> command generates a skeleton migratio
 
 You can optionally specify the file type to generate with <info>--format</info>:
 
-<info>./ezpublish/console kaliop:migration:generate --format=yml bundlename</info>
+<info>./ezpublish/console kaliop:migration:generate --format=yml bundlename migrationname</info>
 
 For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
 
-<info>./ezpublish/console kaliop:migration:generate --format=sql --dbserver=mysql bundlename</info>
+<info>./ezpublish/console kaliop:migration:generate --format=sql bundlename migrationname</info>
 
 For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies you wish for the role. Any not defined will be removed.
 
-<info>./ezpublish/consol kaliop:migration:generate --role=Anonymous bundlename
+<info>./ezpublish/consol kaliop:migration:generate --role=Anonymous bundlename migrationname
+
+For freeform php migrations, you will receive a php class definition
+
+<info>./ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
+
 EOT
             );
     }
@@ -99,21 +68,36 @@ EOT
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $migrationsService = $this->getMigrationService();
-
-return;
-
-/// *** BELOW THE FOLD: TO BE REFACTORED ***
-
+        $bundleName = $input->getArgument('bundle');
+        $name = $input->getArgument('name');
         $fileType = $input->getOption('format');
         $migrationType = $input->getOption('type');
         $role = $input->getOption('role');
         $dbServer = $input->getOption('dbserver');
 
+        if ($bundleName == $this->thisBundle) {
+            throw new \InvalidArgumentException("It is not allowed to create migrations in bundle '$bundleName'");
+        }
+
+        $activeBundles = array();
+        foreach($this->getApplication()->getKernel()->getBundles() as $bundle)
+        {
+            $activeBundles[] = $bundle->getName();
+        }
+        arsort($activeBundles);
+        if (!in_array($bundleName, $activeBundles)) {
+            throw new \InvalidArgumentException("Bundle '$bundleName' does not exist or it is not enabled. Try with one of: " . implode(', ', $activeBundles));
+        }
+
+        $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);
+        $migrationDirectory = $bundle->getPath() . '/' . $this->getContainer()->getParameter('ez_migration_bundle.version_directory');
+
         // be kind to lazy users
         if ($migrationType == '') {
-            if ($dbServer != '') {
+            if ($fileType == 'sql') {
                 $migrationType = 'db';
+            } elseif($fileType == 'php') {
+                $migrationType = 'php';
             } elseif ($role != '') {
                 $migrationType = 'role';
             } else {
@@ -121,111 +105,112 @@ return;
             }
         }
 
-
-
-        $this->output = $output;
-
-        if (!in_array($fileType, $this->availableMigrationTypes)) {
-            throw new \InvalidArgumentException('Unsupported migration file type ' . $fileType);
+        if (!in_array($fileType, $this->availableMigrationFormats)) {
+            throw new \InvalidArgumentException('Unsupported migration file format ' . $fileType);
         }
 
-        $configuration = $this->getConfiguration($input, $output);
+        if (!in_array($migrationType, $this->availableMigrationTypes)) {
+            throw new \InvalidArgumentException('Unsupported migration type ' . $fileType);
+        }
 
-        $version = date('YmdHis');
-        $bundleName = $input->getArgument('bundle');
+        if (!is_dir($migrationDirectory)) {
+            $output->writeln(sprintf(
+                "Migrations directory <info>%s</info> does not exist. I will create it now....",
+                $migrationDirectory
+            ));
 
-        $role = $input->getOption('role');
+            if (mkdir($migrationDirectory, self::DIR_CREATE_PERMISSIONS, true)) {
+                $output->writeln(sprintf(
+                    "Migrations directory <info>%s</info> has been created",
+                    $migrationDirectory
+                ));
+            } else {
+                throw new FileException(sprintf(
+                    "Failed to create migrations directory %s.",
+                    $migrationDirectory
+                ));
+            }
+        }
 
-        $path = $this->generateMigrationFile($configuration, $version, $bundleName, $fileType, $dbServer, $role);
+        $parameters = array(
+            'dbserver' => $dbServer,
+            'role' => $role,
+        );
 
-        $output->writeln(sprintf("Generated new migration file to <info>%s</info>", $path));
+        $date = date('YmdHis');
+
+        switch ($fileType) {
+            case 'sql':
+                if ($name != '') {
+                    $name = '_' . $name;
+                }
+                $fileName = $date . '_' . $dbServer . $name . '.sql';
+                break;
+
+            case 'php':
+                $className = $name;
+                if ($className == '') {
+                    $className = 'Migration';
+                }
+                // Make sure that php class names are unique, not only migration definition file names
+                $existingMigrations = count(glob($migrationDirectory.'/*_' . $className .'*.php'));
+                if ($existingMigrations) {
+                    $className = $className . sprintf('%03d', $existingMigrations + 1);
+                }
+                $parameters = array_merge($parameters, array(
+                    'namespace' => $bundle->getNamespace(),
+                    'class_name' => $className
+                ));
+                $fileName = $date . '_' . $className . '.php';
+                break;
+
+            default:
+                if ($name == '') {
+                    $name = 'placeholder';
+                }
+                $fileName = $date . '_' . $name . '.yml';
+        }
+
+        $path = $migrationDirectory . '/' . $fileName;
+
+        $this->generateMigrationFile($path, $fileType, $migrationType, $parameters);
+
+        $output->writeln(sprintf("Generated new migration file: <info>%s</info>", $path));
     }
 
     /**
      * Generates a migration definition file.
      *
-     * @throws \InvalidArgumentException When the destination directory does not exists
-     * @param Configuration $configuration
-     * @param string $version The version string in YYYYMMDDHHMMSS format
-     * @param string $bundleName The name of the bundle to generate the migration file for
+     * @param string $path filename to file to generate (full path)
      * @param string $fileType The type of migration file to generate
-     * @param string $dbServer The type of database server the SQL migration is for.
+     * @param string $migrationType The type of migration to generate
+     * @param array $parameters passed on to twig
      * @return string The path to the migration file
+     * @throws \Exception
      */
-    protected function generateMigrationFile(
-        Configuration $configuration, $version, $bundleName, $fileType, $dbServer = 'mysql', $role = null
-    )
+    protected function generateMigrationFile($path, $fileType, $migrationType, array $parameters = array())
     {
-
-        /** @var $bundle \Symfony\Component\HttpKernel\Bundle\BundleInterface */
-        $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);
-
-        $container = $this->getApplication()->getKernel()->getContainer();
-
-        $versionDirectory = $container->getParameter('ez_migration_bundle.version_directory');
-        $bundleVersionDirectory = $bundle->getPath() . '/' . $versionDirectory;
-
-        if (!is_null($role)) {
-            $path = $bundleVersionDirectory . '/' . $version . '_' . $role . '_role_sync' . '.yml';
-            $fileType = 'yml';
-        } elseif ($fileType == 'sql') {
-            $path = $bundleVersionDirectory . '/' . $version . '_' . $dbServer . '_place_holder.' . $fileType;
-        } else {
-            $path = $bundleVersionDirectory . '/' . $version . '_place_holder.' . $fileType;
+        $template = $migrationType . 'Migration.' . $fileType . '.twig';
+        $templatePath = $this->getApplication()->getKernel()->getBundle($this->thisBundle)->getPath() . '/Resources/views/MigrationTemplate/';
+        if (!is_file($templatePath . $template) ) {
+            throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
         }
 
-        if (!is_null($role)) {
-            $template = $this->generateRoleTemplate($role);
+        if ($migrationType == 'role') {
+            $code = $this->generateRoleTemplate($parameters['role']);
         } else {
-            switch ($fileType) {
-                case 'php':
-                    $template = $this->phpTemplate;
-                    break;
-                case 'sql':
-                    $template = "-- Autogenerated migration file. Please customise for your needs.";
-                    break;
-                case 'yml':
-                default:
-                    $template = $this->ymlTemplate;
-            }
-        }
-
-        $placeholders = array(
-            '<namespace>',
-            '<version>'
-        );
-
-        $replacements = array(
-            $configuration->versionDirectory . "\\" . $bundleName,
-            $version
-        );
-
-        $code = str_replace($placeholders, $replacements, $template);
-
-        if (!file_exists($bundleVersionDirectory)) {
-            $this->output->writeln(sprintf(
-                "Migrations directory <info>%s</info> does not exist. I will create one now....",
-                $bundleVersionDirectory
-            ));
-
-            if (mkdir($bundleVersionDirectory, self::DIR_CREATE_PERMISSIONS, true)) {
-                $this->output->writeln(sprintf(
-                    "Migrations directory <info>%s</info> has been created",
-                    $bundleVersionDirectory
-                ));
-            } else {
-                throw new FileException(sprintf(
-                    "Failed to create migrations directory %s.",
-                    $bundleVersionDirectory
-                ));
-            }
+            $code = $this->getContainer()->get('twig')->render($this->thisBundle . ':MigrationTemplate:'.$template, $parameters);
         }
 
         file_put_contents($path, $code);
-
-        return $path;
     }
 
+    /**
+     * @todo to be moved into the Executor/RoleManager class
+     *
+     * @param string$roleName
+     * @return string
+     */
     protected function generateRoleTemplate($roleName)
     {
         /** @var $container \Symfony\Component\DependencyInjection\ContainerInterface */

@@ -128,12 +128,12 @@ Below is an example snippet for ezimage:
             path: /path/to/the/image.jpg
             alt_text: 'Example alt text'
 
-Images __need__ to be placed in the `MigrationVersions/images` folder.
-Binary files __need__ to be placed in the `MigrationVersions/files` folder.
+Images __need__ to be placed in the `Migrations/images` folder.
+Binary files __need__ to be placed in the `Migrations/files` folder.
 
-The paths to files/images in the definition are relative paths from the MigrationVersions/images or MigrationVersions/files folders.
+The paths to files/images in the definition are relative paths from the Migrations/images or Migrations/files folders.
 For example using the path from the snippet above the system would look for the image file in
-`MigrationVersions/images/path/to/the/image.jpg` in the bundle's directory.
+`Migrations/images/path/to/the/image.jpg` in the bundle's directory.
 
 Please see the `ManageContent.yml` DSL definition file for more information in the `Resources/doc/DSL` folder.
 

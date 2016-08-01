@@ -19,9 +19,9 @@
         # image/binary file attribute example
         - attribute5:
             type: ezimage/ezbinaryfile
-            path: '/path/to/image' # Relative path from MigrationVersions/images/
+            path: '/path/to/image' # Relative path from Migrations/images/
             alt_text: xyz #optional, only used for images
-        # xml text using references
+        # xml text, using references
         - attribute6:
             type: ezxmltext
             content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
@@ -42,7 +42,7 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports object_id and location_id)
+            attribute: attributeId # An attribute to get the value of for the reference (supports: object_id and location_id)
 
 -
     type: content

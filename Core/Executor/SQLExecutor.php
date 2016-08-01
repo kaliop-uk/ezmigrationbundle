@@ -11,26 +11,38 @@ class SQLExecutor extends AbstractExecutor
     /**
      * @var DatabaseHandler $connection
      */
-    protected $connection;
+    protected $dbHandler;
 
     protected $supportedStepTypes = array('sql');
 
     /**
-     * @param DatabaseHandler $connection
+     * @param DatabaseHandler $dbHandler
      */
-    public function __construct(DatabaseHandler $connection)
+    public function __construct(DatabaseHandler $dbHandler)
     {
-        $this->connection = $connection;
+        $this->dbHandler = $dbHandler;
     }
 
     /**
      * @param MigrationStep $step
      * @return void
+     * @throws \Exception if migration step is not for this type of db
      */
     public function execute(MigrationStep $step)
     {
         parent::execute($step);
 
-        /// @todo !!!
+        $conn = $this->dbHandler->getConnection();
+        // @see http://doctrine-orm.readthedocs.io/projects/doctrine-dbal/en/latest/reference/platforms.html
+        $dbType = strtolower(preg_replace( '/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()));
+        $dsl = $step->dsl;
+
+        if (!isset($dsl[$dbtype])) {
+            throw new \Exception("Current database type '$dbType' is not supported by the SQL migration");
+        }
+
+        $sql = $dsl[$dbType];
+
+        $conn->query($sql);
     }
 }

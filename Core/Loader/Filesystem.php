@@ -19,7 +19,7 @@ class Filesystem implements LoaderInterface
     protected $versionDirectory;
     protected $kernel;
 
-    public function __construct(KernelInterface $kernel, $versionDirectory = 'MigrationVersions')
+    public function __construct(KernelInterface $kernel, $versionDirectory = 'Migrations')
     {
         $this->versionDirectory = $versionDirectory;
         $this->kernel = $kernel;

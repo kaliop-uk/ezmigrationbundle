@@ -1,13 +1,19 @@
 parameters:
     # The directory (inside each bundle) where to look for migrations definitions
-    ez_migration_bundle.version_directory: 'MigrationVersions'
+    ez_migration_bundle.version_directory: 'Migrations'
     # The dtabase table used to store migration information. Will be created automatically
     ez_migration_bundle.table_name: 'kaliop_migrations'
     # Used to discriminate valid migration definitions
     ez_migration_bundle.valid_databases:
+        # names have to correspond to doctrine 'platform', short of version numbers and lowercase
+        # NB: this does NOT mean that eZPublish supports all of them :-)
         - 'mysql'
-        - 'postgres'
+        - 'postgresql'
         - 'oracle'
+        - 'sqlite'
+        - 'drizzle'
+        - 'sqlserver'
+        - 'sqlanywhere'
 
     ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
 

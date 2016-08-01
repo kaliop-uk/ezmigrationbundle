@@ -48,7 +48,7 @@ class SQLDefinitionParser implements DefinitionParserInterface
                 $definition->rawDefinition,
                 MigrationDefinition::STATUS_INVALID,
                 array(),
-                "Unsupported or missing database: '$dbType'"
+                "Unsupported or missing database: '$dbType'. The database name is the part of the filename after the 1st underscore"
             );
         }
 
@@ -58,7 +58,7 @@ class SQLDefinitionParser implements DefinitionParserInterface
             $definition->rawDefinition,
             MigrationDefinition::STATUS_PARSED,
             array(
-                new MigrationStep('sql', array($dbType => $definition->rawDefinition))
+                new MigrationStep('sql', array($dbType => $definition->rawDefinition), array('path' => $definition->path))
             )
         );
     }
