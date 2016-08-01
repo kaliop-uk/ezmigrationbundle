@@ -46,7 +46,19 @@ class LocationManager extends RepositoryExecutor
             throw new \Exception('Missing parent location id. This is required to create the new location.');
         }
 
-        $this->convertMatchReferences($match);
+        // convert the references passed in the match
+        // @todo probably can be moved to a separate method.
+        foreach ($match as $condition => $values) {
+            if (is_integer($values) && $this->isReference($values)) {
+                $match[$condition] = $this->getReference($values);
+            } elseif (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->isReference($value)) {
+                        $match[$condition][$position] = $this->getReference($value);
+                    }
+                }
+            }
+        }
 
         $this->loginUser();
 
@@ -269,25 +281,5 @@ class LocationManager extends RepositoryExecutor
         }
 
         return true;
-    }
-
-    /**
-     * Convert the references to values
-     *
-     * @param $match
-     */
-    protected function convertMatchReferences(&$match)
-    {
-        foreach ($match as $condition => $values) {
-            if (!is_array($values) && $this->isReference($values)) {
-                $match[$condition] = $this->getReference($values);
-            } else {
-                foreach ($values as $position => $value) {
-                    if ($this->isReference($value)) {
-                        $match[$condition][$position] = $this->getReference($value);
-                    }
-                }
-            }
-        }
     }
 }
