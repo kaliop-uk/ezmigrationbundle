@@ -92,7 +92,7 @@ class PHPDefinitionParser implements DefinitionParserInterface
 
     protected function getClassNameFromFile($fileName)
     {
-        $parts = explode( '_', pathinfo($fileName, PATHINFO_FILENAME));
+        $parts = explode( '_', pathinfo($fileName, PATHINFO_FILENAME), 2);
         return isset($parts[1]) ? $parts[1] : null;
     }
 }

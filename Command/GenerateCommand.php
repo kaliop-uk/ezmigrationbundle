@@ -141,14 +141,16 @@ EOT
 
         switch ($fileType) {
             case 'sql':
+                /// @todo this logic should come from the DefinitionParse, really
                 if ($name != '') {
-                    $name = '_' . $name;
+                    $name = '_' . ltrim('_', $name);
                 }
                 $fileName = $date . '_' . $dbServer . $name . '.sql';
                 break;
 
             case 'php':
-                $className = $name;
+                /// @todo this logic should come from the DefinitionParse, really
+                $className = ltrim('_', $name);
                 if ($className == '') {
                     $className = 'Migration';
                 }
