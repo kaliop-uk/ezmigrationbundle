@@ -69,6 +69,7 @@ class MigrateV1ToV2 implements MigrationInterface
                 $content = '';
                 $md5 = 'unknown';
             }
+            /// @todo take care: what if the migration already exists in the v2 table and is in status 'executing' ???
             $migrationDefinition = new MigrationDefinition(
                 $name, $path, $content, MigrationDefinition::STATUS_PARSED
             );

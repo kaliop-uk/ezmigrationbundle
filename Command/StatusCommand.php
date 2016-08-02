@@ -51,7 +51,7 @@ EOT
             return;
         }
 
-        // create a unique ist of all migrations and definitions
+        // create a unique ist of all migrations (coming from db) and definitions (coming from disk)
         $index = array();
         foreach($migrationDefinitions as $migrationDefinition) {
             $index[$migrationDefinition->name] = array('definition' => $migrationDefinition);
@@ -61,6 +61,19 @@ EOT
                 $index[$migration->name]['migration'] = $migration;
             } else {
                 $index[$migration->name] = array('migration' => $migration);
+
+                // no definition, but a migration is there. Check if the definition sits elsewhere on disk than we expect it to be...
+                if ($migration->path != '' && is_file($migration->path)) {
+                    try {
+                        $migrationDefinitionCollection = $migrationsService->getMigrationsDefinitions(array($migration->path));
+                        if (count($migrationDefinitionCollection))
+                        {
+                            $index[$migration->name]['definition'] = reset($migrationDefinitionCollection);
+                        }
+                    } catch(\Exception $e) {
+                        /// @todo one day we should be able to limit the kind of exceptions we have to catch here...
+                    }
+                }
             }
         }
         ksort($index);
