@@ -17,6 +17,8 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
     {
         $xmlText = $fieldValueArray['content'];
 
+        /// @todo this regexp belongs to the resolver...
+
         //Check if there are any references in the xml text and replace them.
         // $result[0][] will have the matched full string eg.: [reference::example_reference]
         // $result[1][] will have the reference id eg.: reference::example_reference

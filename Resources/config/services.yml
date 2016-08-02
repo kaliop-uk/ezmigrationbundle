@@ -15,6 +15,10 @@ parameters:
         - 'sqlserver'
         - 'sqlanywhere'
 
+    # Deprecated paremeters. Left in for the v1-to-v2 migration to work. Will be removed in v3
+    kaliop_bundle_migration.version_directory: 'MigrationVersions'
+    kaliop_bundle_migration.table_name: 'kaliop_versions'
+
     ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
 
     ez_migration_bundle.loader.filesystem.class: Kaliop\eZMigrationBundle\Core\Loader\Filesystem
@@ -55,6 +59,7 @@ parameters:
     ez_migration_bundle.reference_resolver.tag.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\TagResolver
 
     ez_migration_bundle.helper.role_handler.class: Kaliop\eZMigrationBundle\Core\Helper\RoleHandler
+    ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
 
 services:
 
@@ -288,3 +293,8 @@ services:
             - '@ezpublish.api.repository'
             - '@ezpublish.translation_helper'
             - '%ezpublish.siteaccess.list%'
+
+    ez_migration_bundle.helper.console_io:
+        class: '%ez_migration_bundle.helper.console_io.class%'
+        tags:
+            - { name: kernel.event_listener, event: console.command }

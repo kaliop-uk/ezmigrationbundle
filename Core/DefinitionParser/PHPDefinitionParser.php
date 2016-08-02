@@ -47,7 +47,7 @@ class PHPDefinitionParser implements DefinitionParserInterface
             $pf = new ParserFactory();
             $parser = $pf->create(ParserFactory::PREFER_PHP7);
             try {
-                $stmts = $parser->parse(file_get_contents($definition->path));
+                $parser->parse(file_get_contents($definition->path));
 
                 include_once($definition->path);
 

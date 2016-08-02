@@ -197,6 +197,7 @@ class Database implements StorageHandlerInterface
             array(
                 'status' => $migration->status,
                 'execution_error' => $migration->executionError,
+                'execution_date' => $migration->executionDate
             ),
             array('migration' => $migration->name)
         );
