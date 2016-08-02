@@ -39,8 +39,8 @@ class ContentManager extends RepositoryExecutor
         $this->loginUser();
 
         $contentTypeIdentifier = $this->dsl['content_type'];
-        if ($this->isReference($contentTypeIdentifier)) {
-            $contentTypeIdentifier = $this->getReference($contentTypeIdentifier);
+        if ($this->referenceResolver->isReference($contentTypeIdentifier)) {
+            $contentTypeIdentifier = $this->referenceResolver->getReference($contentTypeIdentifier);
         }
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
@@ -56,8 +56,8 @@ class ContentManager extends RepositoryExecutor
 
         // instantiate a location create struct from the parent location
         $locationId = $this->dsl['main_location'];
-        if ($this->isReference($locationId)) {
-            $locationId = $this->getReference($locationId);
+        if ($this->referenceResolver->isReference($locationId)) {
+            $locationId = $this->referenceResolver->getReference($locationId);
         }
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
         if (array_key_exists('remote_id', $this->dsl)) {
@@ -73,8 +73,8 @@ class ContentManager extends RepositoryExecutor
         if (array_key_exists('other_locations', $this->dsl)) {
             foreach ($this->dsl['other_locations'] as $otherLocation) {
                 $locationId = $otherLocation;
-                if ($this->isReference($locationId)) {
-                    $locationId = $this->getReference($otherLocation);
+                if ($this->referenceResolver->isReference($locationId)) {
+                    $locationId = $this->referenceResolver->getReference($otherLocation);
                 }
                 $secondaryLocationCreateStruct = $locationService->newLocationCreateStruct($locationId);
                 array_push($locations, $secondaryLocationCreateStruct);
@@ -101,15 +101,15 @@ class ContentManager extends RepositoryExecutor
 
         if (isset($this->dsl['object_id'])) {
             $objectId = $this->dsl['object_id'];
-            if ($this->isReference($objectId)) {
-                $objectId = $this->getReference($objectId);
+            if ($this->referenceResolver->isReference($objectId)) {
+                $objectId = $this->referenceResolver->getReference($objectId);
             }
             $contentToUpdate = $contentService->loadContent($objectId);
             $contentInfo = $contentToUpdate->contentInfo;
         } else {
             $remoteId = $this->dsl['remote_id'];
-            if ($this->isReference($remoteId)) {
-                $remoteId = $this->getReference($remoteId);
+            if ($this->referenceResolver->isReference($remoteId)) {
+                $remoteId = $this->referenceResolver->getReference($remoteId);
             }
 
             try {
@@ -258,8 +258,8 @@ class ContentManager extends RepositoryExecutor
                 $fieldValue = $value;
         }
 
-        if ($this->isReference($value)) {
-            $fieldValue = $this->getReference($value);
+        if ($this->referenceResolver->isReference($value)) {
+            $fieldValue = $this->referenceResolver->getReference($value);
         }
 
         return $fieldValue;

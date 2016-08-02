@@ -49,12 +49,12 @@ class LocationManager extends RepositoryExecutor
         // convert the references passed in the match
         // @todo probably can be moved to a separate method.
         foreach ($match as $condition => $values) {
-            if (is_integer($values) && $this->isReference($values)) {
-                $match[$condition] = $this->getReference($values);
+            if (is_integer($values) && $this->referenceResolver->isReference($values)) {
+                $match[$condition] = $this->referenceResolver->getReference($values);
             } elseif (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->isReference($value)) {
-                        $match[$condition][$position] = $this->getReference($value);
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReference($value);
                     }
                 }
             }
@@ -77,8 +77,8 @@ class LocationManager extends RepositoryExecutor
             $contentInfo = $content->contentInfo;
 
             foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
-                if ($this->isReference($parentLocationId)) {
-                    $parentLocationId = $this->getReference($parentLocationId);
+                if ($this->referenceResolver->isReference($parentLocationId)) {
+                    $parentLocationId = $this->referenceResolver->getReference($parentLocationId);
                 }
                 $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
 
@@ -121,8 +121,8 @@ class LocationManager extends RepositoryExecutor
         $locationService = $this->repository->getLocationService();
 
         $locationId = $this->dsl['location_id'];
-        if ($this->isReference($locationId)) {
-            $locationId = $this->getReference($locationId);
+        if ($this->referenceResolver->isReference($locationId)) {
+            $locationId = $this->referenceResolver->getReference($locationId);
         }
 
         $location = $locationService->loadLocation($locationId);
@@ -161,16 +161,16 @@ class LocationManager extends RepositoryExecutor
         if (isset($this->dsl['parent_location_id'])) {
             // Move the location and all it's children to a new parent
             $parentLocationId = $this->dsl['parent_location_id'];
-            if ($this->isReference($parentLocationId)) {
-                $parentLocationId = $this->getReference($parentLocationId);
+            if ($this->referenceResolver->isReference($parentLocationId)) {
+                $parentLocationId = $this->referenceResolver->getReference($parentLocationId);
             }
             $newParentLocation = $locationService->loadLocation($parentLocationId);
             $locationService->moveSubtree($location, $newParentLocation);
         } elseif (isset($this->dsl['swap_with_location'])) {
             //Swap locations
             $swapLocationId = $this->dsl['swap_with_location'];
-            if ($this->isReference($swapLocationId)) {
-                $swapLocationId = $this->getReference($swapLocationId);
+            if ($this->referenceResolver->isReference($swapLocationId)) {
+                $swapLocationId = $this->referenceResolver->getReference($swapLocationId);
             }
             $locationToSwap = $locationService->loadLocation($swapLocationId);
 
