@@ -143,14 +143,14 @@ EOT
             case 'sql':
                 /// @todo this logic should come from the DefinitionParse, really
                 if ($name != '') {
-                    $name = '_' . ltrim('_', $name);
+                    $name = '_' . ltrim($name, '_');
                 }
                 $fileName = $date . '_' . $dbServer . $name . '.sql';
                 break;
 
             case 'php':
                 /// @todo this logic should come from the DefinitionParse, really
-                $className = ltrim('_', $name);
+                $className = ltrim($name, '_');
                 if ($className == '') {
                     $className = 'Migration';
                 }
