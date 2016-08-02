@@ -1,4 +1,5 @@
-# Kaliop eZ-Migration Bundle
+Kaliop eZ-Migration Bundle
+==========================
 
 This bundle makes it easy to handle eZPlatform / eZPublish 5 content upgrades/migrations.
 
@@ -9,7 +10,7 @@ It is inspired by the DoctrineMigrationsBundle ( http://symfony.com/doc/current/
 
 In either `require` or `require-dev` at the end of the bundle list add:
 
-    "kaliop/ezmigrationbundle": "~1.0"
+    "kaliop/ezmigrationbundle": "^2.0"
 
 Save composer.json and run
 
@@ -25,7 +26,7 @@ The `registerBundles` method should look similar to:
     {
         $bundles = array(
             ... more stuff here ...
-            new Kaliop\eZMigrationBundle\EzMigrationBundle()
+            new \Kaliop\eZMigrationBundle\EzMigrationBundle()
         );
     }
 
@@ -36,19 +37,148 @@ If you run `php ezpublish/console` you should see 3 new commands in the list:
     kaliop
       kaliop:migration:generate
       kaliop:migration:status
-      kaliop:migration:update
+      kaliop:migration:execute
 
 This indicates that the bundle has been installed and registered correctly.
 
+Note: the command `kaliop:migration:update` is kept around for compatibility, and will be removed in future versions.
 
-## Updating the bundle
+### Updating the bundle
 
-To get the latest version, you can update the bundle using `composer`
+To get the latest version, you can update the bundle to the latest available version by using `composer`
 
     composer update kaliop/ezmigrationbundle
 
+### Upgrading from version 1.x to version 2
 
-## Running tests
+Please read the [dedicated documentation page](doc/Upgrading/1.x_to_2.0.md)
+
+## Getting started
+
+All commands accept the standard Symfony/eZ publish 5 options, although some of them might not have any effect on the
+command's execution.
+
+### Generating a new, empty migration definition file
+
+The bundle provides a command to easily generate a new blank migration definition file, stored in a specific bundle.
+
+For example:
+
+    php ezpublish/console kaliop:migration:generate --format=yml MyProjectBundle
+
+The above command will place a new yml skeleton file in the `Migrations` directory of the MyProjectBundle bundle.
+
+If the directory does not exists then the command will create it for you, as long as the bundle does exist and is registered.
+If the command is successful it will create a new yml file named with the following pattern: `YYYYMMDDHHMMSS_placeholder.yml`.
+You are encouraged to rename the file and change the `place_holder` part to something more meaningful, but please keep
+the timestamp part and underscore, as well as the extension
+
+(the contents of the skeleton Yaml file are stored as twig template)
+
+### Listing all migrations and their status
+
+To see all the migrations definitions available in the system and whether they have been applied or not simply run the
+status command in your eZ Publish 5 root directory:
+
+    php ezpublish/console kaliop:migration:status
+
+The list of migrations which have been already applied is stored in the database, in a table named `kaliop_migrations`.
+The bundle will automatically create the table if needed.
+In case you need to use a different name for that table, you can change the Symfony parameter `ez_migration_bundle.table_name`.
+
+### Applying migrations
+
+To apply all available migrations run the execute command in your eZ Publish 5 root directory:
+
+     php ezpublish/console kaliop:migration:execute
+
+NB: if you just executed the above command and got an error message because the migration definition file that you had
+just generated is invalid, do not worry - that is by design. Head on to the next paragraph...
+
+### Editing migration files
+
+So far so good, but what kind of actions can be actually done using a migration?
+
+Each migration definition consists of a series of steps, where each step defines an action. 
+
+In a Yaml migration, you can define the following types of actions:
+- creation, update and deletion of Contents
+- creation, update and deletion of Locations
+- creation, update and deletion of Users
+- creation, update and deletion of UserGroups
+- creation, update and deletion of Roles
+- creation, update and deletion of ContentTypes
+- creation of Tags (from the Netgen Tags Bundle)
+
+The docs describing all supported parameters are in the [DSL Language description](Resources/doc/DSL/README.md)
+
+### Custom migrations
+
+For more specific needs, you can also use 2 other types of migrations:
+- SQL migrations
+- PHP migrations
+
+#### SQL migrations 
+
+Example command to generate an SQL migration definition:
+
+     php ezpublish/console kaliop:migration:generate MyBundle create-new-table --format=sql
+
+This will create the following file, which you are free to edit:
+
+    .../MyBundle/Migrations/2016XXYYHHMMSS_mysql_create-new-table.sql
+
+*NB* if you rename the sql file, keep in mind that the type of database to which it is supposed to apply is the part
+of the filename between the first and second underscore characters.
+If you later try to execute that migration on an eZPublish installation running on, say, PostgreSQL, the migration
+will fail. You are of course free to create a specific SQL migration for a different database type.
+ 
+The Migration bundle itself imposes no limitations on the type of databases supported, but as it is based on the
+Doctrine DBAL, it will only work on the databases that Doctrine supports.
+
+#### PHP migrations
+
+If the type of manipulation that you need to do is too complex for either YML or SQL, you can use a php class as
+migration definition. To generate a PHP migration definition, execute: 
+
+     php ezpublish/console kaliop:migration:generate MyBundle AMigrationClass --format=php
+
+This will create the following file, which you are free to edit:
+
+    .../MyBundle/Migrations/2016XXYYHHMMSS_AMigrationClass.php
+
+As you can see in the generated definition, the php class to be used for a migration needs to implement a specific
+interface. The Symfony DIC container is passed to the migration class so that it can access from it all the services,
+parameters and other thing that it needs.
+
+For a more detailed example of a migration definition done in PHP, look in the Migrations folder of this very bundle.
+  
+*NB* if you rename the php file, keep in mind that the filename and the name of the class it contains are tied - the
+standard autoloading mechanism of the application does not apply when loading the migration definition. This is also
+the reason why the php classes used as migrations should not use namespaces. 
+
+
+## Extending the bundle
+
+### Supporting custom migrations
+
+The bundle has been designed to be easily extended in many ways, such as:
+* adding support for custom/complex field-types
+* adding support for completely new actions in the Yml definitions
+* adding support for a new file format for storing migration definitions
+* taking over the way that the migrations definitions are loaded from the filesystem or stored in the database
+* etc... 
+
+Following Symfony best practices, for the first 3 options in the list above all you need to do is to create a service
+and give it an appropriate tag (the class implementing service should of course implement an appropriate interface). 
+
+To find out the names of the tags that you need to implement, as well as for all the other services which you can
+override, take a look at the [services.yml file](Resources/config/services.yml).
+
+
+### Running tests
+
+*NB: the testing framework is known to be broken in the current release. It will be fixed as soon as possible*
 
 The bundle has both unit tests and BDD features.
 
@@ -60,197 +190,3 @@ The Behat instructions are left here for future reference when we get it working
 To run the BDD test with Behat:
 
     bin/behat @KaliopBundleMigrationBundle
-
-
-## Usage
-
-All commands accept the standard Symfony/eZ publish 5 options, although some of them might not have any effect on the
-command's execution.
-
-### Generating new empty migration files
-
-The bundle provides a command to easily generate a new blank migration definition file in a specific bundle.
-
-For example:
-
-    php ezpublish/console kaliop:migration:generate --type=yml KaliopKBaseSimpleContentTypesBundle
-
-The above command will place a new yml skeleton file in the `MigrationVersions` directory of the KaliopKBaseSimpleContentTypes bundle.
-
-If the directory does not exists then the command will fail with an error message.
-If the command is successful it will create a new yml file named with the following pattern: YYYYMMDDHHMMSS_place_holder.yml
-
-(the contents of the skeleton Yaml file are stored in the GenerateCommand::$ymlTemplate and the skeleton PHP file's
-contents in GenerateCommand::$phpTemplate)
-
-### Listing all migrations and their status
-
-To see all the migrations in the system and whether they have been applied or not simply run the status command in your
-eZ Publish 5 root directory:
-
-    php ezpublish/console kaliop:migration:status
-
-The list of migrations which have been already applied is stored in the database, in a table named `kaliop_versions`.
-The bundle will automatically create the table if needed.
-
-### Applying migrations
-
-To apply all available migrations run the update command in your eZ Publish 5 root directory:
-
-     php ezpublish/console kaliop:migration:update
-
-### Editing migration files
-
-So far so good, but what actions exactly can be defined in a migration file?
-
-The docs describing all supported parameters are in the [DSL Language description](Resources/doc/DSL/README.md)
-
-Specific topics are covered below
-
-#### Importing binary files
-
-To import binary files like images into attributes (ezimage, ezbinaryfile fields) the attribute needs to be defined as
-a complex type to tell the system to handle it differently.
-
-Below is a snippet of how a simple/primitive field type is defined in a content creation Yaml definition:
-
-    attributes:
-        - title: 'Example title'
-
-To define a complex attribute we need to indicate the type of the attribute and then provide the required data fields for
-the attribute.
-
-Below is an example snippet for ezimage:
-
-    attributes:
-        - image:
-            type: ezimage
-            path: /path/to/the/image.jpg
-            alt_text: 'Example alt text'
-
-Images __need__ to be placed in the `Migrations/images` folder.
-Binary files __need__ to be placed in the `Migrations/files` folder.
-
-The paths to files/images in the definition are relative paths from the Migrations/images or Migrations/files folders.
-For example using the path from the snippet above the system would look for the image file in
-`Migrations/images/path/to/the/image.jpg` in the bundle's directory.
-
-Please see the `ManageContent.yml` DSL definition file for more information in the `Resources/doc/DSL` folder.
-
-#### Using references in your migration files
-
-The Yaml definitions support setting references of values of certain attributes, that you can retrieve in the following
-instructions.
-For example you could set a reference to a folder's location id and then use that as the parent location when creating
-articles in that folder.
-
-See the following example on using references. The example creates a new content type in the system and sets a reference
-to it's id.
-The second set of instructions adds a new policy to the editor role to allow editors to create objects of the new content
-type under the node with id 2.
-
-    -
-        mode: create
-        type: content_type
-        content_type_group: 1
-        name: Section Page
-        identifier: section_page
-        name_pattern: <title>
-        is_container: true
-        attributes:
-            -
-                type: ezstring
-                name: Title
-                identifier: title
-                required: true
-                searchable: true
-                info-collector: false
-                disable-translation: false
-                default-value: New section page
-            -
-                type: ezxmltext
-                name: Body
-                identifier: body
-                required: false
-                searchable: true
-                info-collector: false
-                disable-translation: false
-        references:
-            -
-                identifier: section_page_class
-                attribute: content_type_id
-
-    -
-        mode: update
-        type: role
-        name: Editor
-        policies:
-            add:
-                -
-                    module: content
-                    function: create
-                    limitation:
-                        -
-                            type: Node
-                            value: [2]
-                        -
-                            type: Class
-                            value: [reference:section_page_class]
-
-
-To set the reference we used the `references` section of the content type DSL. As you can see we set a reference named
-`section_page_class` to store the content type id.
-In the update role action we retrieved the value of the reference by using the `reference:section_page_class`.
-
-To tell the system that you want to use a previously stored reference you need to prefix the reference name with the string
-`reference:`. This tells the system to look in the stored references for attributes that support this.
-
-Currently you can use references to store the following values:
-
--   content
-    -   content id
-    -   location id
--   content type
-    -   content type id
-    -   content type identifier
--   location
-    -   location id
--   role
-    -   role id
-    -   role identifier
--   user group
-    -   user group id
--   user
-    -   user id
-
-You can use references to set the following values:
-
--   content
-    -   content type identifier
-    -   parent location id
--   location
-    -   object id (The id of the object who's locations you want to manage)
-    -   remote id (The remote id of the object who's locations you want to manage)
-    -   parent location id (The list of parent locations where the new locations need to be created)
-    -   location id to swap the current location with (Only on update actions)
--   role
-    -   limitation values
--   user group
-    - parent user group id
--   user
-    - user group id
-
-For more information please see the DSL definitions in the `Resources/doc/DSL` folder.
-
-#### References in the XML for the eZXMLText Field
-
-To tell the system to look for references in the xml that is used to populate ezxmltext type fields the Yaml definition
-will need to use the definition used for defining complex attributes.
-Please see the importing binary files section above on how to define complex data type handling for an attribute.
-
-Below is an example snippet showing how to define references for ezxmltext.
-
-    attributes:
-        - description:
-            type: ezxmltext
-            content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:test_image]" /></paragraph></section>'
