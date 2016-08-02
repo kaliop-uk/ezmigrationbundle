@@ -31,7 +31,19 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
             }
         }
 
+        if ($container->has('ez_migration_bundle.complex_field_manager')) {
+            $migrationService = $container->findDefinition('ez_migration_bundle.complex_field_manager');
 
+            $DefinitionParsers = $container->findTaggedServiceIds('ez_migration_bundle.complex_field');
+            foreach ($DefinitionParsers as $id => $tags) {
+                foreach ($tags as $attributes) {
+                    $migrationService->addMethodCall('addComplexField', array(
+                        new Reference($id),
+                        $attributes['fieldtype']
+                    ));
+                }
+            }
+        }
 
         if ($container->has('ez_migration_bundle.handler.location_resolver')) {
             $locationResolverHandler = $container->findDefinition('ez_migration_bundle.handler.location_resolver');

@@ -141,7 +141,7 @@ EOT
 
         switch ($fileType) {
             case 'sql':
-                /// @todo this logic should come from the DefinitionParse, really
+                /// @todo this logic should come from the DefinitionParser, really
                 if ($name != '') {
                     $name = '_' . ltrim($name, '_');
                 }
@@ -149,7 +149,7 @@ EOT
                 break;
 
             case 'php':
-                /// @todo this logic should come from the DefinitionParse, really
+                /// @todo this logic should come from the DefinitionParser, really
                 $className = ltrim($name, '_');
                 if ($className == '') {
                     $className = 'Migration';

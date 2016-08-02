@@ -11,19 +11,27 @@ use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
 
 class EzPage extends AbstractComplexField implements ComplexFieldInterface
 {
+    /** @var PageService $pageService */
+    protected $pageService;
+
+    public function __construct(PageService $pageService, array $context = array())
+    {
+        $this->pageService = $pageService;
+    }
+
     /**
      * Creates a value object to use as the field value when setting an ez page field type.
      *
+     * @param array $fieldValueArray The definition of teh field value, structured in the yml file
+     * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return PageValue
      */
-    public function createValue()
+    public function createValue(array $fieldValueArray, array $context = array())
     {
-        $layout = $this->fieldValueArray['layout'];
+        $layout = $fieldValueArray['layout'];
 
-        /** @var PageService $pageService */
-        $pageService = $this->container->get('ezpublish.fieldType.ezpage.pageService');
         $hashConverter = new HashConverter();
-        $pageType = new PageType($pageService, $hashConverter);
+        $pageType = new PageType($this->pageService, $hashConverter);
 
         /** @var PageValue $pageValue */
         $pageValue = $pageType->getEmptyValue();

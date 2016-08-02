@@ -2,17 +2,15 @@
 
 namespace Kaliop\eZMigrationBundle\Core\DefinitionParser;
 
-use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
  * Handles Yaml migration definitions.
  */
-class YamlDefinitionParser implements DefinitionParserInterface, BundleAwareInterface
+class YamlDefinitionParser implements DefinitionParserInterface
 {
     /**
      * The bundle the migration version is for.
@@ -99,15 +97,5 @@ class YamlDefinitionParser implements DefinitionParserInterface, BundleAwareInte
             MigrationDefinition::STATUS_PARSED,
             $stepDefs
         );
-    }
-
-/// *** BELOW THE FOLD: TO BE REFACTORED ***
-
-    /**
-     * @inheritdoc
-     */
-    public function setBundle(BundleInterface $bundle = null)
-    {
-        $this->bundle = $bundle;
     }
 }

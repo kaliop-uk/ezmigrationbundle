@@ -44,8 +44,6 @@ class ContentManager extends RepositoryExecutor
         }
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
-
-
         // FIXME: Defaulting in language code for now
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, self::DEFAULT_LANGUAGE_CODE);
         $this->setFields($contentCreateStruct, $this->dsl['attributes']);
@@ -80,7 +78,6 @@ class ContentManager extends RepositoryExecutor
                 array_push($locations, $secondaryLocationCreateStruct);
             }
         }
-
 
         // create a draft using the content and location create struct and publish it
         $draft = $contentService->createContent($contentCreateStruct, $locations);
@@ -270,16 +267,12 @@ class ContentManager extends RepositoryExecutor
      *
      * @param string $fieldTypeIdentifier
      * @param array $fieldValueArray
+     * @param array $context
      * @return object
-     * @throws \InvalidArgumentException
      */
-    protected function handleComplexField($fieldTypeIdentifier, array $fieldValueArray)
+    protected function handleComplexField($fieldTypeIdentifier, array $fieldValueArray, array $context = array())
     {
-        $this->complexFieldManager->setBundle($this->bundle);
-
-        $complexField = $this->complexFieldManager->getComplexField($fieldTypeIdentifier, $fieldValueArray, $this);
-
-        return $complexField->createValue();
+        return $this->complexFieldManager->getComplexFieldValue($fieldTypeIdentifier, $fieldValueArray, $context);
     }
 
     /**

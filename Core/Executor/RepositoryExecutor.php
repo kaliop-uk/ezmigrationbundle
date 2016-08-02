@@ -3,7 +3,6 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\API\BundleAwareInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
@@ -12,7 +11,7 @@ use \eZ\Publish\API\Repository\Repository;
 /**
  * The core manager class that all migration action managers inherit from.
  */
-abstract class RepositoryExecutor extends AbstractExecutor implements BundleAwareInterface
+abstract class RepositoryExecutor extends AbstractExecutor
 {
     /**
      * Constant defining the default language code
@@ -29,11 +28,12 @@ abstract class RepositoryExecutor extends AbstractExecutor implements BundleAwar
     const ADMIN_USER_ID = 14;
 
     /**
-     * The parsed DSL instruction array
-     *
-     * @var array
+     * @var array $dsl The parsed DSL instruction array
      */
     protected $dsl;
+
+    /** @var array $context The context (configuration) for the execution of the current step */
+    protected $context;
 
     /**
      * The eZ Publish 5 API repository.
@@ -83,6 +83,7 @@ abstract class RepositoryExecutor extends AbstractExecutor implements BundleAwar
         }
 
         $this->dsl = $step->dsl;
+        $this->context = $step->context;
 
         if ( method_exists( $this, $action ) ) {
             $this->$action();
@@ -112,10 +113,5 @@ abstract class RepositoryExecutor extends AbstractExecutor implements BundleAwar
         // Login as admin to be able to post the content. Any other user who has access to
         // create content would be good as well
         $this->repository->setCurrentUser($this->repository->getUserService()->loadUser(self::ADMIN_USER_ID));
-    }
-
-    public function setBundle(BundleInterface $bundle = null)
-    {
-        $this->bundle = $bundle;
     }
 }

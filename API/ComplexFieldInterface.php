@@ -8,9 +8,10 @@ namespace Kaliop\eZMigrationBundle\API;
 interface ComplexFieldInterface
 {
     /**
-     * Create a non primitive field value
-     *
+     * Return a non primitive field value
+     * @param array $fieldValueArray The definition of teh field value, structured in the yml file
+     * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return mixed
      */
-    public function createValue();
+    public function createValue(array $fieldValueArray, array $context = array());
 }

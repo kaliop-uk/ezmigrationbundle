@@ -199,16 +199,52 @@ services:
 
     ez_migration_bundle.complex_field_manager:
         class: '%ez_migration_bundle.complex_field_manager.class%'
+        #arguments:
+        #    - '@ezpublish.api.repository'
+        #    - '@service_container'
+
+    ez_migration_bundle.complex_field:
+        abstract: true
+        calls:
+            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver']]
+
+    ez_migration_bundle.complex_field.ezimage:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezimage.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezimage }
+
+    ez_migration_bundle.complex_field.ezbinaryfile:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile }
+
+    ez_migration_bundle.complex_field.ezxmltext:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezxmltext.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext }
+
+    ez_migration_bundle.complex_field.ezpage:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezpage.class%'
         arguments:
-            - '@ezpublish.api.repository'
-            - '@service_container'
-            - # map of fieldtypes => classes implementing ComplexFieldInterface.
-                ezimage: '%ez_migration_bundle.complex_field.ezimage.class%'
-                ezbinaryfile: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
-                ezxmltext: '%ez_migration_bundle.complex_field.ezxmltext.class%'
-                ezpage: '%ez_migration_bundle.complex_field.ezpage.class%'
-                ezauthor: '%ez_migration_bundle.complex_field.ezauthor.class%'
-                ezrichtext: '%ez_migration_bundle.complex_field.ezrichtext.class%'
+            - '@ezpublish.fieldType.ezpage.pageService'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezpage }
+
+    ez_migration_bundle.complex_field.ezauthor:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezauthor.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezauthor }
+
+    ez_migration_bundle.complex_field.ezrichtext:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezrichtext.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezrichtext }
 
     ### reference resolvers
 

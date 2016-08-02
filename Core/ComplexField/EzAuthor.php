@@ -12,20 +12,17 @@ class EzAuthor extends AbstractComplexField implements ComplexFieldInterface
     /**
      * Creates a value object to use as the field value when setting an author field type.
      *
+     * @param array $fieldValueArray The definition of teh field value, structured in the yml file
+     * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return AuthorValue
      */
-    public function createValue()
+    public function createValue(array $fieldValueArray, array $context = array())
     {
-        $authorData = $this->fieldValueArray;
-
         $authors = array();
-
-        foreach( $authorData['authors'] as $author ) {
+        foreach($fieldValueArray['authors'] as $author) {
             $authors[] = new Author($author);
         }
 
-        $authorValue = new AuthorValue($authors);
-
-        return $authorValue;
+        return new AuthorValue($authors);
     }
 }
