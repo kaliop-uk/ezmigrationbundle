@@ -54,6 +54,37 @@ class YamlDefinitionParser implements DefinitionParserInterface, BundleAwareInte
             );
         }
 
+        // basic validation
+
+        /// @todo move to using the Validator component...
+
+        $status = MigrationDefinition::STATUS_PARSED;
+
+        if (!is_array($data)) {
+            $status = MigrationDefinition::STATUS_INVALID;
+            $message = "Yaml migration file '{$definition->path}' must contain an array as top element";
+        } else {
+            foreach($data as $i => $stepDef) {
+                if (!isset($stepDef['type']) || !is_string($stepDef['type'])) {
+                    $status = MigrationDefinition::STATUS_INVALID;
+                    $message = "Yaml migration file '{$definition->path}' misses or has a non-string 'type' element in step $i";
+                    break;
+                }
+            }
+        }
+
+        if ($status != MigrationDefinition::STATUS_PARSED)
+        {
+            return new MigrationDefinition(
+                $definition->name,
+                $definition->path,
+                $definition->rawDefinition,
+                $status,
+                array(),
+                $message
+            );
+        }
+
         $stepDefs = array();
         foreach($data as $stepDef) {
             $type = $stepDef['type'];
