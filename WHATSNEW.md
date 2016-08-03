@@ -11,7 +11,8 @@ The main changes are:
 * the bundle should now work on PostgreSQL, or any other database supported by Doctrine - it has only been tested on
     MySQL though :-)
 
-* naming change: what was previously called a `version` is now called a `migration`
+* naming change: what was previously called a `version` is now called a `migration` (in the docs, error messages,
+    source code, etc...)
 
 * the `generate` command takes an optional 2nd argument, it make it easier to create migration definition files with
     a meaningful name other than "placeholder".
@@ -26,11 +27,14 @@ The main changes are:
     It also lists *all* migrations: both the ones available on disk as definition files, and the ones stored in the
     database (previously if you deleted a migration definition, it would just not be listed any more)
 
-* the `update` command has been renamed to `execute` (but the previous name will be kept as alias for a while)
+* the `update` command has been renamed to `migrate` (but the previous name will be kept as alias for a while)
 
-* the `execute` command now prevents concurrent execution of the same migration, stores in the database the reason of
+* the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
     failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
     transactions and probably more 
+
+* the `location/create` action now allows a more flexible way to identify the objects to which the new location is to
+    be added. This will be extended to all other actions in the future
 
 * php migrations are now fully supported (they used to have naming problems)
 
