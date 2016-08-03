@@ -10,7 +10,7 @@ class TagResolver extends AbstractResolver
     /**
      * Defines the prefix for all reference identifier strings in definitions
      */
-    protected $referencePrefixes = array('tag::');
+    protected $referencePrefixes = array('tag:');
 
     /**
      * Array of all references set by the currently running migrations.

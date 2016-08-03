@@ -262,7 +262,8 @@ services:
             -
                 - '@ez_migration_bundle.reference_resolver.customreference'
                 - '@ez_migration_bundle.reference_resolver.location'
-                - '@ez_migration_bundle.reference_resolver.content'
+                # not enabled by deafult for v2, as it might break v1 migrations that don't expect it to be present
+                #- '@ez_migration_bundle.reference_resolver.content'
                 - '@ez_migration_bundle.reference_resolver.tag'
 
     ez_migration_bundle.reference_resolver.content:

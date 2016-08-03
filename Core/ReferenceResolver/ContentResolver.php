@@ -35,7 +35,7 @@ class ContentResolver extends AbstractResolver
     {
         $ref = $this->getReferenceIdentifierByPrefix($stringIdentifier);
         switch($ref['prefix']) {
-            case 'content_remote_id::':
+            case 'content_remote_id:':
                 return $this->repository->getContentService()->loadContentByRemoteId($ref['identifier'])->id;
             //case 'content_id::':
             //    return $this->repository->getLocationService()->loadContent($ref['identifier']);

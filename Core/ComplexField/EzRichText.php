@@ -22,7 +22,7 @@ class EzRichText extends AbstractComplexField implements ComplexFieldInterface
         //Check if there are any references in the xml text and replace them.
         // $result[0][] will have the matched full string eg.: [reference:example_reference]
         // $result[1][] will have the reference id eg.: example_reference
-        $count = preg_match_all('|\[(reference::[^\]\[]*)\]|', $xmlText, $result);
+        $count = preg_match_all('|\[(reference:[^\]\[]*)\]|', $xmlText, $result);
 
         if ($count !== false and count($result) > 1) {
             foreach ($result[1] as $index => $referenceIdentifier) {

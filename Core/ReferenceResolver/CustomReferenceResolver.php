@@ -10,7 +10,7 @@ class CustomReferenceResolver extends AbstractResolver
     /**
      * Defines the prefix for all reference identifier strings in definitions
      */
-    protected $referencePrefixes = array('reference::');
+    protected $referencePrefixes = array('reference:');
 
     /**
      * Array of all references set by the currently running migrations.
@@ -22,7 +22,7 @@ class CustomReferenceResolver extends AbstractResolver
     /**
      * Get a stored reference
      *
-     * @param string $identifier format: reference::<some_custom_identifier>
+     * @param string $identifier format: reference:<some_custom_identifier>
      * @return mixed
      * @throws \Exception When trying to retrieve an unset reference
      */

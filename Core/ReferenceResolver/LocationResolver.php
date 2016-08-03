@@ -35,8 +35,11 @@ class LocationResolver extends AbstractResolver
     {
         $ref = $this->getReferenceIdentifierByPrefix($stringIdentifier);
         switch($ref['prefix']) {
-            case 'location_remote_id::':
+            /// @deprecated !!!
+            case 'location:':
                 return $this->repository->getLocationService()->loadLocationByRemoteId($ref['identifier'])->id;
+            //case 'location_remote_id:':
+            //    return $this->repository->getLocationService()->loadLocationByRemoteId($ref['identifier'])->id;
             //case 'location_id::':
             //    return $this->repository->getLocationService()->loadLocation($ref['identifier']);
         }
