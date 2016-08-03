@@ -18,13 +18,13 @@ abstract class AbstractValue
      *
      * @return mixed
      */
-    public function __get( $property )
+    public function __get($property)
     {
-        if ( property_exists( $this, $property ) )
+        if (property_exists($this, $property))
         {
             return $this->$property;
         }
-        throw new PropertyNotFoundException( $property, get_class( $this ) );
+        throw new PropertyNotFoundException($property, get_class($this));
     }
 
     /**
@@ -39,8 +39,8 @@ abstract class AbstractValue
      *
      * @return boolean
      */
-    public function __isset( $property )
+    public function __isset($property)
     {
-        return property_exists( $this, $property );
+        return property_exists($this, $property);
     }
 }

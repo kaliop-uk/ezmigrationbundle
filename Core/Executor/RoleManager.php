@@ -172,7 +172,7 @@ class RoleManager extends RepositoryExecutor
 
         $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
 
-        foreach( $limitationValue as $id => $value) {
+        foreach($limitationValue as $id => $value) {
             if ($this->isReference($value)) {
                 $value = $this->getReference($value);
                 $limitationValue[$id] = $value;
@@ -191,8 +191,8 @@ class RoleManager extends RepositoryExecutor
      * $assignments = array(
      *      array(
      *          'type' => 'user',
-     *          'ids' => array( user ids ),
-     *          'limitation' => array( limitations )
+     *          'ids' => array(user ids),
+     *          'limitation' => array(limitations)
      *      )
      * )
      * </pre>

@@ -90,13 +90,13 @@ EOT
         }
 
         $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);
-        $migrationDirectory = $bundle->getPath() . '/' . $this->getContainer()->getParameter('ez_migration_bundle.version_directory');
+        $migrationDirectory = $bundle->getPath() . '/' . $this->getContainer()->getParameter('kaliop_bundle_migration.version_directory');
 
         // be kind to lazy users
         if ($migrationType == '') {
             if ($fileType == 'sql') {
                 $migrationType = 'db';
-            } elseif($fileType == 'php') {
+            } elseif ($fileType == 'php') {
                 $migrationType = 'php';
             } elseif ($role != '') {
                 $migrationType = 'role';
@@ -194,7 +194,7 @@ EOT
     {
         $template = $migrationType . 'Migration.' . $fileType . '.twig';
         $templatePath = $this->getApplication()->getKernel()->getBundle($this->thisBundle)->getPath() . '/Resources/views/MigrationTemplate/';
-        if (!is_file($templatePath . $template) ) {
+        if (!is_file($templatePath . $template)) {
             throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
         }
 
@@ -267,7 +267,7 @@ EOT
         /** @var \eZ\Publish\API\Repository\SectionService $sectionService */
         $sectionService = $repository->getSectionService();
 
-        foreach( $limitation->limitationValues as $value)
+        foreach($limitation->limitationValues as $value)
         {
 
         }

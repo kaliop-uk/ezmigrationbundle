@@ -65,7 +65,7 @@ class SQLDefinitionParser implements DefinitionParserInterface
 
     protected function getDBFromFile($fileName)
     {
-        $parts = explode( '_', $fileName);
+        $parts = explode('_', $fileName);
         return isset($parts[1]) ? $parts[1] : null;
     }
 }

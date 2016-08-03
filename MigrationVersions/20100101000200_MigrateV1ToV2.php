@@ -96,7 +96,7 @@ class MigrateV1ToV2 implements MigrationInterface
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
         $sm = $this->dbHandler->getConnection()->getSchemaManager();
         foreach($sm->listTables() as $table) {
-            if($table->getName() == $tableName) {
+            if ($table->getName() == $tableName) {
                 return true;
             }
         }
@@ -143,12 +143,12 @@ class MigrateV1ToV2 implements MigrationInterface
         }
 
         foreach($versionDefinitions as $key => $versionDefinition) {
-            if(!in_array(pathinfo($versionDefinition, PATHINFO_EXTENSION), array('php', 'yml', 'sql'))) {
+            if (!in_array(pathinfo($versionDefinition, PATHINFO_EXTENSION), array('php', 'yml', 'sql'))) {
                 unset($versionDefinitions[$key]);
             }
         }
 
-        if(empty($versionDefinitions)) {
+        if (empty($versionDefinitions)) {
             return false;
         }
 

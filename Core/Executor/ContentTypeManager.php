@@ -389,18 +389,6 @@ class ContentTypeManager extends RepositoryExecutor
                     $ret[$key] = $this->referenceResolver->getReferenceValue($val);
                 }
 
-                /*if ( $this->isReference($val) )
-                {
-                    $ret[$key] = $this->getReference($val);
-                }
-                if ( $this->isLocationRemoteId($val) )
-                {
-                    $ret[$key] = $this->getLocationByRemoteId($val);
-                }
-                if ( $this->isTag($val) )
-                {
-                    $ret[$key] = $this->getTagIdFromKeyword($val);
-                }*/
                 if ($this->referenceResolver->isReference($value)) {
                     $ret[$key] = $this->referenceResolver->getReferenceValue($val);
                 }
@@ -413,18 +401,6 @@ class ContentTypeManager extends RepositoryExecutor
                 $ret = $this->referenceResolver->getReferenceValue($value);
             }
         }
-        /*else if ( $this->isReference($value) )
-        {
-            $ret = $this->getReference($value);
-        }
-        else if ( $this->isLocationRemoteId($value) )
-        {
-            $ret = $this->getLocationByRemoteId($value);
-        }
-        else if ( $this->isTag($value) )
-        {
-            $ret = $this->getTagIdFromKeyword($value);
-        }*/
 
         return $ret;
     }

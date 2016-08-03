@@ -57,7 +57,7 @@ class Filesystem implements LoaderInterface
         if (empty($paths)) {
             $paths = array();
             /** @var $bundle \Symfony\Component\HttpKernel\Bundle\BundleInterface */
-            foreach( $this->kernel->getBundles() as $bundle )
+            foreach($this->kernel->getBundles() as $bundle)
             {
                 $path = $bundle->getPath() . "/" . $this->versionDirectory;
                 if (is_dir($path)) {

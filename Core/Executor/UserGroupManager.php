@@ -94,9 +94,9 @@ class UserGroupManager extends RepositoryExecutor
 
         $userService->updateUserGroup($userGroup, $updateStruct);
 
-        if(array_key_exists('parent_group_id', $this->dsl)) {
+        if (array_key_exists('parent_group_id', $this->dsl)) {
             $parentGroupId = $this->dsl['parent_group_id'];
-            if($this->isReference($parentGroupId)) {
+            if ($this->isReference($parentGroupId)) {
                 $parentGroupId = $this->getReference($parentGroupId);
             }
 
@@ -116,7 +116,7 @@ class UserGroupManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        if(!array_key_exists('group', $this->dsl)) {
+        if (!array_key_exists('group', $this->dsl)) {
             throw new \InvalidArgumentException('No groups were specified for deletion.');
         }
 
@@ -125,8 +125,8 @@ class UserGroupManager extends RepositoryExecutor
         $userService = $this->repository->getUserService();
 
         $groupIds = $this->dsl['group'];
-        if(!is_array($groupIds)) {
-            $groupIds = array( $groupIds);
+        if (!is_array($groupIds)) {
+            $groupIds = array($groupIds);
         }
 
         foreach($groupIds as $groupId) {

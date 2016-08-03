@@ -155,7 +155,7 @@ class Database implements StorageHandlerInterface
      */
     public function endMigration(Migration $migration)
     {
-        if ($migration->status == Migration::STATUS_STARTED ) {
+        if ($migration->status == Migration::STATUS_STARTED) {
             throw new \Exception("Migration '{$migration->name}' can not be ended as its status is 'started'...");
         }
 
@@ -263,7 +263,7 @@ class Database implements StorageHandlerInterface
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
         $sm = $this->dbHandler->getConnection()->getSchemaManager();
         foreach($sm->listTables() as $table) {
-            if($table->getName() == $tableName) {
+            if ($table->getName() == $tableName) {
                 return true;
             }
         }
@@ -293,154 +293,5 @@ class Database implements StorageHandlerInterface
             $data['status'],
             $data['execution_error']
         );
-    }
-
-/// *** BELOW THE FOLD: TO BE REFACTORED ***
-
-
-    /**
-     * Return the array of registered versions
-     *
-     * @return array
-     */
-    public function getVersions()
-    {
-        return $this->versions;
-    }
-
-    /**
-     * Mark a version as migrated in the database
-     *
-     * @param string $bundle
-     * @param int $version
-     */
-    public function markVersionMigrated($bundle, $version)
-    {
-        $this->createVersionTableIfNeeded();
-
-        /** @var $q \ezcQueryInsert */
-        $q = $this->dbHandler->createInsertQuery();
-        $q->insertInto($this->versionTableName)
-            ->set('bundle', $q->bindValue($bundle))
-            ->set('version', $q->bindValue($version));
-
-        $stmt = $q->prepare();
-        $stmt->execute();
-    }
-
-    /**
-     * Mark a version as NOT migrated in the database
-     *
-     * @param string $bundle
-     * @param int $version
-     */
-    public function markVersionNotMigrated($bundle, $version)
-    {
-        $this->createVersionTableIfNeeded();
-
-        /** @var $q \ezcQueryDelete */
-        $q = $this->dbHandler->createDeleteQuery();
-        $q->deleteFrom($this->versionTableName)
-            ->where(
-                $q->expr->lAnd(
-                    $q->expr->eq('bundle', $q->bindValue($bundle)),
-                    $q->expr->eq('version', $q->bindValue($version))
-                )
-            );
-
-        $stmt = $q->prepare();
-        $stmt->execute();
-    }
-
-    /**
-     * Return the migrated versions grouped by bundle.
-     *
-     * The list is based on the values in the version table in the database.
-     *
-     * @return array key: bundle name,
-     */
-    public function getMigratedVersions()
-    {
-        $this->createVersionTableIfNeeded();
-
-        /** @var $q \ezcQuerySelect */
-        $q = $this->dbHandler->createSelectQuery();
-        $q->select('bundle, version')->from($this->versionTableName);
-
-        $stmt = $q->prepare();
-        $stmt->execute();
-
-        $results = $stmt->fetchAll();
-
-        $bundleVersions = array();
-        foreach ($results as $result) {
-            $bundleVersions[$result['bundle']][] = $result['version'];
-        }
-
-        return $bundleVersions;
-    }
-
-    /**
-     * Method to get the current version for a specific bundle
-     *
-     * @param string $bundle The bundle we want the version for
-     * @return int The version or 0 if no version can be found
-     */
-    public function getCurrentVersionByBundle($bundle)
-    {
-        $this->createVersionTableIfNeeded();
-
-        /** @var $q \ezcQuerySelect */
-        $q = $this->dbHandler->createSelectQuery();
-        $q->select('version')
-            ->from($this->versionTableName);
-
-        if ($this->versions && $this->versions[$bundle]) {
-            $migratedVersions = array_keys($this->versions[$bundle]);
-            $q->where(
-                $q->expr->lAnd(
-                    $q->expr->eq('bundle', $bundle),
-                    $q->expr->in($q->bindValue(implode(',', $migratedVersions)))
-                )
-            );
-        } else {
-            $q->where(
-                $q->expr->eq('bundle', $q->bindValue($bundle))
-            );
-        }
-
-        $q->limit(1, 0)
-            ->orderBy('version', \ezcQuerySelect::DESC);
-
-        $stmt = $q->prepare();
-        $stmt->execute();
-        $result = $stmt->fetchColumn(0);
-
-        return $result !== false ? (int)$result : '0';
-    }
-
-
-
-    /**
-     * Helper function to get all the table names from the database
-     *
-     * @todo Make this DB independent
-     * @return array
-     */
-    protected function listTableNames()
-    {
-
-        $results = array();
-
-        $stmt = $this->dbHandler->prepare("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'");
-        $stmt->execute();
-
-        $tables = $stmt->fetchAll();
-
-        foreach ($tables as $table) {
-            $results[] = array_shift($table);
-        }
-
-        return array_values($results);
     }
 }

@@ -66,7 +66,7 @@ For example:
 
     php ezpublish/console kaliop:migration:generate --format=yml MyProjectBundle
 
-The above command will place a new yml skeleton file in the `Migrations` directory of the MyProjectBundle bundle.
+The above command will place a new yml skeleton file in the `MigrationVersion` directory of the MyProjectBundle bundle.
 
 If the directory does not exists then the command will create it for you, as long as the bundle does exist and is registered.
 If the command is successful it will create a new yml file named with the following pattern: `YYYYMMDDHHMMSS_placeholder.yml`.
@@ -151,7 +151,7 @@ As you can see in the generated definition, the php class to be used for a migra
 interface. The Symfony DIC container is passed to the migration class so that it can access from it all the services,
 parameters and other thing that it needs.
 
-For a more detailed example of a migration definition done in PHP, look in the Migrations folder of this very bundle.
+For a more detailed example of a migration definition done in PHP, look in the MigrationVersions folder of this very bundle.
   
 *NB* if you rename the php file, keep in mind that the filename and the name of the class it contains are tied - the
 standard autoloading mechanism of the application does not apply when loading the migration definition. This is also

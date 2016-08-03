@@ -59,6 +59,6 @@ class AbstractCollection extends \ArrayObject
 
     protected function throwInvalid($newval)
     {
-        throw new \InvalidArgumentException("Can not add element of type '" . (is_object($newval) ? get_class($newval) : gettype($newval) ) . "' to Collection of type '" . get_class($this) . "'");
+        throw new \InvalidArgumentException("Can not add element of type '" . (is_object($newval) ? get_class($newval) : gettype($newval)) . "' to Collection of type '" . get_class($this) . "'");
     }
 }

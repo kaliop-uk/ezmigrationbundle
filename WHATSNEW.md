@@ -11,13 +11,11 @@ The main changes are:
 * the bundle should now work on PostgreSQL, or any other database supported by Doctrine - it has only been tested on
     MySQL though :-)
 
-* the default directories used to store migrations definitions has changed as well. This because the file format for
-    the definitions files has change a little bit as well
-
 * naming change: what was previously called a `version` is now called a `migration`
 
-* the `generate` command takes an optional 2nd argument, t make it easier to create migration definition files with
-    a meaningful name other than "placeholder"
+* the `generate` command takes an optional 2nd argument, it make it easier to create migration definition files with
+    a meaningful name other than "placeholder".
+    The options it takes also changed and behave differently from before. 
 
 * the `status` command displays much more information than before:
 
@@ -25,7 +23,7 @@ The main changes are:
     - the reason for migration failure
     - any differences between migrations definitions and the definitions used at the time the migrations were executed
 
-    It also lists *all* migrations: both the ones available on disk as defintion files, and the ones stored in the
+    It also lists *all* migrations: both the ones available on disk as definition files, and the ones stored in the
     database (previously if you deleted a migration definition, it would just not be listed any more)
 
 * the `update` command has been renamed to `execute` (but the previous name will be kept as alias for a while)

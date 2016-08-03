@@ -28,7 +28,7 @@ class RoleHandler
         $this->translationHelper = $translationHelper;
 
         foreach ($siteAccessList as $siteAccess) {
-            $id = sprintf( '%u', crc32( $siteAccess ) );
+            $id = sprintf('%u', crc32($siteAccess));
             $this->siteAccessList[$id] = $siteAccess;
         }
     }

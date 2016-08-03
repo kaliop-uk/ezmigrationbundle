@@ -58,7 +58,7 @@ class TagManager extends RepositoryExecutor
 
     protected function checkTagsBundleInstall()
     {
-        if ( !$this->tagService )
+        if (!$this->tagService)
         {
             throw new \Exception('To import tags you must have NetGen Tags Bundle installed');
         }

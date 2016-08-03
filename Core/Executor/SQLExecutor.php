@@ -34,7 +34,7 @@ class SQLExecutor extends AbstractExecutor
 
         $conn = $this->dbHandler->getConnection();
         // @see http://doctrine-orm.readthedocs.io/projects/doctrine-dbal/en/latest/reference/platforms.html
-        $dbType = strtolower(preg_replace( '/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()->getName()));
+        $dbType = strtolower(preg_replace('/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()->getName()));
 
         $dsl = $step->dsl;
 

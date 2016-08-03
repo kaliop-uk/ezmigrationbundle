@@ -158,7 +158,7 @@ class ContentManager extends RepositoryExecutor
 
         $contentService = $this->repository->getContentService();
 
-        if(isset($this->dsl['object_id'])){
+        if (isset($this->dsl['object_id'])){
             if (!is_array($this->dsl['object_id'])) {
                 $this->dsl['object_id'] = array($this->dsl['object_id']);
             }
@@ -168,7 +168,7 @@ class ContentManager extends RepositoryExecutor
                 $content = $contentService->loadContent($objectId);
                 $contentService->deleteContent($content->contentInfo);
             }
-        } else if(isset($this->dsl['remote_id'])) {
+        } else if (isset($this->dsl['remote_id'])) {
             if (!is_array($this->dsl['remote_id'])) {
                 $this->dsl['remote_id'] = array($this->dsl['remote_id']);
             }
@@ -190,7 +190,7 @@ class ContentManager extends RepositoryExecutor
     {
         foreach ($fields as $field) {
             // each $field is one key value pair
-            // eg.: $field = array( $fieldIdentifier => $fieldValue )
+            // eg.: $field = array($fieldIdentifier => $fieldValue)
             $fieldIdentifier = key($field);
 
             $fieldTypeIdentifier = $createStruct->contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
@@ -218,7 +218,7 @@ class ContentManager extends RepositoryExecutor
     {
         foreach ($fields as $field) {
             // each $field is one key value pair
-            // eg.: $field = array( $fieldIdentifier => $fieldValue )
+            // eg.: $field = array($fieldIdentifier => $fieldValue)
             $fieldIdentifier = key($field);
 
             $fieldTypeIdentifier = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
@@ -249,7 +249,7 @@ class ContentManager extends RepositoryExecutor
     {
         switch ($fieldTypeIdentifier) {
             case 'ezboolean':
-                $fieldValue = new CheckboxValue( ($value == 1) ? true : false );
+                $fieldValue = new CheckboxValue(($value == 1) ? true : false);
                 break;
             default:
                 $fieldValue = $value;

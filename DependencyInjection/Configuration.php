@@ -25,8 +25,8 @@ class Configuration implements ConfigurationInterface
         // more information on that topic.
 
         $rootNode->children()
-            ->scalarNode( 'version_directory' )->defaultValue( 'MigrationVersion' )->cannotBeEmpty()->end()
-            ->scalarNode( 'table_name' )->defaultValue( 'kaliop_versions' )->cannotBeEmpty()->end()
+            ->scalarNode('version_directory')->defaultValue('MigrationVersion')->cannotBeEmpty()->end()
+            ->scalarNode('table_name')->defaultValue('kaliop_versions')->cannotBeEmpty()->end()
         ->end();
 
         return $treeBuilder;

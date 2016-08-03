@@ -72,20 +72,20 @@ abstract class RepositoryExecutor extends AbstractExecutor
         // base checks
         parent::execute($step);
 
-        if(!isset($step->dsl['mode'])) {
+        if (!isset($step->dsl['mode'])) {
             throw new \Exception("Invalid step definition: missing 'mode'");
         }
 
         $action = $step->dsl['mode'];
 
-        if(!in_array($action, $this->supportedActions)) {
+        if (!in_array($action, $this->supportedActions)) {
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         $this->dsl = $step->dsl;
         $this->context = $step->context;
 
-        if ( method_exists( $this, $action ) ) {
+        if (method_exists($this, $action)) {
             $this->$action();
         } else {
             throw new \Exception("Invalid step definition: value '$action' is not a method of " . get_class($this));
