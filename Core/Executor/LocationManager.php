@@ -21,8 +21,17 @@ class LocationManager extends RepositoryExecutor
      */
     protected function create()
     {
+        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
+            throw new \Exception('The ID or remote ID of an object or a Match Condition is required to create a new location.');
+        }
+
+        // Backwards compat
         if (!isset($this->dsl['match'])) {
-            throw new \Exception('Match condition is required to perform location create operations.');
+            if (isset($this->dsl['object_id'])) {
+                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
+            } elseif (isset($this->dsl['remote_id'])) {
+                $this->dsl['match'] = array('content_remote_id' => $this->dsl['object_id']);
+            }
         }
 
         $match = $this->dsl['match'];
@@ -39,7 +48,7 @@ class LocationManager extends RepositoryExecutor
         }
 
         if (count($match) > 1) {
-            throw new \Exception('Only one condition is allowed by now');
+            throw new \Exception('Only one match condition is allowed');
         }
 
         if (!isset($this->dsl['parent_location_id'])) {
@@ -49,20 +58,21 @@ class LocationManager extends RepositoryExecutor
         // convert the references passed in the match
         // @todo probably can be moved to a separate method.
         foreach ($match as $condition => $values) {
-            if (is_integer($values) && $this->referenceResolver->isReference($values)) {
-                $match[$condition] = $this->referenceResolver->getReference($values);
-            } elseif (is_array($values)) {
+            if (is_array($values)) {
                 foreach ($values as $position => $value) {
                     if ($this->referenceResolver->isReference($value)) {
                         $match[$condition][$position] = $this->referenceResolver->getReference($value);
                     }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReference($values);
                 }
             }
         }
 
         $this->loginUser();
 
-        // @TODO: see if this can be simplified somehow
         $contentCollection = $this->contentMatcher->matchContent($match);
 
         $locationService = $this->repository->getLocationService();
@@ -71,9 +81,7 @@ class LocationManager extends RepositoryExecutor
             $this->dsl['parent_location_id'] = array($this->dsl['parent_location_id']);
         }
 
-        /// @todo use foreach :-)
-        while ($contentCollection->valid()) {
-            $content = $contentCollection->current();
+        foreach ($contentCollection as $content) {
             $contentInfo = $content->contentInfo;
 
             foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
@@ -93,8 +101,6 @@ class LocationManager extends RepositoryExecutor
 
                 $locationService->createLocation($contentInfo, $locationCreateStruct);
             }
-
-            $contentCollection->next();
         }
     }
 
