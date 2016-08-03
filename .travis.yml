@@ -9,11 +9,11 @@ matrix:
     #- php: 5.4
     #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2?' EZ_VERSION=ezpublish-community
     - php: 5.5
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish
+      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.6
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
     - php: 7.0
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
 
 before_install:
   # No need for a web server, until we start testing using Behat
@@ -45,7 +45,7 @@ before_script:
   # Set up configuration files
   - cp vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/config/parameters.yml.dist vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/config/parameters.yml
   - cat Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml >> vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/config/config_behat.yml
-  - sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/EzPublishKernel.php
+  - sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
   - if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i 's/"vendor\/ezsystems\/ezpublish-community\/ezpublish"/"vendor\/ezsystems\/ezplatform\/app"/' phpunit.xml; fi
 
   # TODO we have to fix the autoloader for these to work... but are they needed at all?
