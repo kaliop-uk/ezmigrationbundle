@@ -32,12 +32,13 @@ The `registerBundles` method should look similar to:
 
 ### Checking that the bundle is installed correctly
 
-If you run `php ezpublish/console` you should see 3 new commands in the list:
+If you run `php ezpublish/console` you should see 4 new commands in the list:
 
     kaliop
       kaliop:migration:generate
       kaliop:migration:status
       kaliop:migration:migrate
+      kaliop:migration:migration
 
 This indicates that the bundle has been installed and registered correctly.
 
@@ -156,6 +157,14 @@ For a more detailed example of a migration definition done in PHP, look in the M
 *NB* if you rename the php file, keep in mind that the filename and the name of the class it contains are tied - the
 standard autoloading mechanism of the application does not apply when loading the migration definition. This is also
 the reason why the php classes used as migrations should not use namespaces. 
+
+### Re-executing failed migrations
+
+The easiest way to re-execute a migration in 'failed' status, is to remove it from the migrations table:
+
+    php ezpublish/console kaliop:migration:migration migration_name --delete
+
+After removing the information about the migration form the migrations table, running the `migrate` command will execute it again.
 
 
 ## Extending the bundle

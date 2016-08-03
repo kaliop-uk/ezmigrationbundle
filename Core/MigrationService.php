@@ -80,6 +80,23 @@ class MigrationService
     }
 
     /**
+     * @param string $migrationName
+     * @return Migration|null
+     */
+    public function getMigration($migrationName)
+    {
+        return $this->storageHandler->loadMigration($migrationName);
+    }
+
+    /**
+     * @param Migration $migration
+     */
+    public function deleteMigration(Migration $migration)
+    {
+        return $this->storageHandler->deleteMigration($migration);
+    }
+
+    /**
      * Parses a migration definition, return a parsed definition.
      * If there is a parsing error, the definition status will be updated accordingly
      *

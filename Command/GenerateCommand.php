@@ -36,23 +36,23 @@ class GenerateCommand extends AbstractCommand
             ->setHelp(<<<EOT
 The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
 
-<info>./ezpublish/console kaliop:migration:generate bundlename</info>
+    <info>./ezpublish/console kaliop:migration:generate bundlename</info>
 
 You can optionally specify the file type to generate with <info>--format</info>:
 
-<info>./ezpublish/console kaliop:migration:generate --format=yml bundlename migrationname</info>
+    <info>./ezpublish/console kaliop:migration:generate --format=yml bundlename migrationname</info>
 
 For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
 
-<info>./ezpublish/console kaliop:migration:generate --format=sql bundlename migrationname</info>
+    <info>./ezpublish/console kaliop:migration:generate --format=sql bundlename migrationname</info>
 
 For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies you wish for the role. Any not defined will be removed.
 
-<info>./ezpublish/consol kaliop:migration:generate --role=Anonymous bundlename migrationname
+    <info>./ezpublish/console kaliop:migration:generate --role=Anonymous bundlename migrationname
 
 For freeform php migrations, you will receive a php class definition
 
-<info>./ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
+    <info>./ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
 
 EOT
             );
@@ -61,10 +61,10 @@ EOT
     /**
      * Run the command and display the results.
      *
-     * @throws \InvalidArgumentException When an unsupported file type is selected
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return void
+     * @return null|int null or 0 if everything went fine, or an error code
+     * @throws \InvalidArgumentException When an unsupported file type is selected
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {

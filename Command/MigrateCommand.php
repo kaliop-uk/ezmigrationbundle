@@ -36,16 +36,15 @@ class MigrateCommand extends AbstractCommand
             )
             ->addOption('ignore-failures', null, InputOption::VALUE_NONE, "Keep executing migration even if one fails")
             ->addOption('clear-cache', null, InputOption::VALUE_NONE, "Clear the cache after the command finishes")
-            ->addOption('yes', 'y', InputOption::VALUE_NONE, "Assume Yes to all queries and do not prompt")
-            ->setHelp(
-                <<<EOT
-                The <info>kaliop:migration:update</info> command loads and execute migrations for your bundles:
+            ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question")
+            ->setHelp(<<<EOT
+The <info>kaliop:migration:migrate</info> command loads and executes migrations:
 
-<info>./ezpublish/console kaliop:migration:execute</info>
+    <info>./ezpublish/console kaliop:migration:migrate</info>
 
 You can optionally specify the path to migration definitions with <info>--path</info>:
 
-<info>./ezpublish/console kaliop:migrations:execute --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
+    <info>./ezpublish/console kaliop:migrations:migrate --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
 EOT
             );
     }
@@ -53,9 +52,9 @@ EOT
     /**
      * Execute the command.
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @return type
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return null|int null or 0 if everything went fine, or an error code
      *
      * @todo Add functionality to work with specified version files not just directories.
      */
@@ -110,7 +109,7 @@ EOT
 
         $output->writeln('');
         // ask user for confirmation to make changes
-        if ($input->isInteractive() && !$input->getOption('yes')) {
+        if ($input->isInteractive() && !$input->getOption('no-interaction')) {
             $dialog = $this->getHelperSet()->get('dialog');
             if (!$dialog->askConfirmation(
                 $output,
@@ -118,8 +117,8 @@ EOT
                 false
             )
             ) {
-                $output->writeln('<error>Migration cancelled!</error>');
-                return 1;
+                $output->writeln('<error>Migration execution cancelled!</error>');
+                return 0;
             }
         } else {
             $output->writeln("=============================================\n");

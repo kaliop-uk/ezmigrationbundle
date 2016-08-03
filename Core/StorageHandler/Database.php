@@ -12,6 +12,8 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 
 /**
  * Database-backed storage for info on executed migrations
+ *
+ * @todo replace all usage of the ezcdb api with the doctrine dbal one, so that we only depend on one
  */
 class Database implements StorageHandlerInterface
 {
@@ -68,6 +70,28 @@ class Database implements StorageHandlerInterface
         }
 
         return new MigrationCollection($migrations);
+    }
+
+    /**
+     * @param string $migrationName
+     * @return Migration|null
+     */
+    public function loadMigration($migrationName)
+    {
+        /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
+        $q = $this->dbHandler->createSelectQuery();
+        $q->select('migration, md5, path, execution_date, status, execution_error')
+            ->from($this->migrationsTableName)
+            ->where($q->expr->eq('migration', $q->bindValue($migrationName)));
+        $stmt = $q->prepare();
+        $stmt->execute();
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (is_array($result) && !empty($result)) {
+            return $this->arrayToMigration($result);
+        }
+
+        return null;
     }
 
     /**
@@ -203,6 +227,17 @@ class Database implements StorageHandlerInterface
         );
 
         $conn->commit();
+    }
+
+    /**
+     * Removes a Migration from the table
+     * @param Migration $migration
+     */
+    public function deleteMigration(Migration $migration)
+    {
+        $this->createMigrationsTableIfNeeded();
+        $conn = $this->dbHandler->getConnection();
+        $conn->delete($this->migrationsTableName, array('migration' => $migration->name));
     }
 
     /**
