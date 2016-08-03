@@ -96,6 +96,12 @@ To apply all available migrations run the migrate command in your eZ Publish 5 r
 NB: if you just executed the above command and got an error message because the migration definition file that you had
 just generated is invalid, do not worry - that is by design. Head on to the next paragraph...
 
+#### Applying a single migration file
+
+To apply a single migration run the migrate command passing it the path to its definition, as follows:
+
+    php ezpublish/console kaliop:migration:migrate --path=src/MyNamespace/MyBundle/MigrationsVersions/20160803193400_a_migration.yml
+
 ### Editing migration files
 
 So far so good, but what kind of actions can be actually done using a migration?
