@@ -22,14 +22,16 @@
         }
     ],
     "require": {
-        "php": ">=5.3.2",
+        "php": ">=5.4",
+        "ezsystems/ezpublish-kernel": ">=5.3|>=2014.03",
         "ext-pdo": "*",
         "nikic/php-parser": "2.*"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.2.0",
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "~4.0",
+        "codeclimate/php-test-reporter": "dev-master"
     },
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }
