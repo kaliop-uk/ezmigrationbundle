@@ -1,4 +1,4 @@
-Version 2.0.beta-1
+Version 2.0.beta-4
 ==================
 
 This version is a complete restructuring of the codebase, and brings along with it a few breaking changes.
@@ -16,7 +16,7 @@ The main changes are:
 
 * the `generate` command takes an optional 2nd argument, it make it easier to create migration definition files with
     a meaningful name other than "placeholder".
-    The options it takes also changed and behave differently from before. 
+    The options it supports also changed and behave differently from before. 
 
 * the `status` command displays much more information than before:
 
@@ -28,6 +28,9 @@ The main changes are:
     database (previously if you deleted a migration definition, it would just not be listed any more)
 
 * the `update` command has been renamed to `migrate` (but the previous name will be kept as alias for a while)
+
+* a new command `migration` is available. For the moment, it allows simply to delete existing migrations from the database
+    table, making it possible to retry migrations which previously failed.
 
 * the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
     failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
