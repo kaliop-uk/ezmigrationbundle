@@ -34,7 +34,6 @@
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }
     },
-    ,
     "repositories": [
         {
             "type": "vcs",
