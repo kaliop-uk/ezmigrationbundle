@@ -37,7 +37,7 @@ If you run `php ezpublish/console` you should see 3 new commands in the list:
     kaliop
       kaliop:migration:generate
       kaliop:migration:status
-      kaliop:migration:execute
+      kaliop:migration:migrate
 
 This indicates that the bundle has been installed and registered correctly.
 
@@ -88,9 +88,9 @@ In case you need to use a different name for that table, you can change the Symf
 
 ### Applying migrations
 
-To apply all available migrations run the execute command in your eZ Publish 5 root directory:
+To apply all available migrations run the migrate command in your eZ Publish 5 root directory:
 
-     php ezpublish/console kaliop:migration:execute
+     php ezpublish/console kaliop:migration:migrate
 
 NB: if you just executed the above command and got an error message because the migration definition file that you had
 just generated is invalid, do not worry - that is by design. Head on to the next paragraph...

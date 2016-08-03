@@ -13,7 +13,7 @@ use Kaliop\eZMigrationBundle\API\Value\Migration;
 /**
  * Command to execute the available migration definitions.
  */
-class ExecuteCommand extends AbstractCommand
+class MigrateCommand extends AbstractCommand
 {
     /**
      * Set up the command.
@@ -25,7 +25,7 @@ class ExecuteCommand extends AbstractCommand
         parent::configure();
 
         $this
-            ->setName('kaliop:migration:execute')
+            ->setName('kaliop:migration:migrate')
             ->setAliases(array('kaliop:migration:update'))
             ->setDescription('Execute available migration definitions.')
             ->addOption(

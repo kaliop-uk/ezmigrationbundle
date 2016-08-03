@@ -79,7 +79,7 @@ services:
         class: '%ez_migration_bundle.loader.filesystem.class%'
         arguments:
             - '@kernel'
-            - '%ez_migration_bundle.version_directory%'
+            - '%kaliop_bundle_migration.version_directory%'
 
     ### parsers
 
