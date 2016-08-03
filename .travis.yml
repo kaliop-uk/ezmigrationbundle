@@ -12,7 +12,7 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish
     - php: 5.6
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app
-    - php:7.0
+    - php: 7.0
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app
 
 before_install:
