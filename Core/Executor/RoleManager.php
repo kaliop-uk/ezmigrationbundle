@@ -173,8 +173,8 @@ class RoleManager extends RepositoryExecutor
         $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
 
         foreach($limitationValue as $id => $value) {
-            if ($this->isReference($value)) {
-                $value = $this->getReference($value);
+            if ($this->referenceResolver->isReference($value)) {
+                $value = $this->geferenceResolver->getReferenceValue($value);
                 $limitationValue[$id] = $value;
             }
         }

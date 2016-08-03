@@ -26,8 +26,8 @@ class UserManager extends RepositoryExecutor
         foreach ($this->dsl['groups'] as $group) {
 
             $groupId = $group;
-            if ($this->isReference($groupId)) {
-                $groupId = $this->getReference($group);
+            if ($this->referenceResolver->isReference($groupId)) {
+                $groupId = $this->referenceResolver->getReferenceValue($groupId);
             }
 
             $userGroup = $userService->loadUserGroup($groupId);

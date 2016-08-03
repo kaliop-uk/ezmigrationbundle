@@ -22,8 +22,8 @@ class UserGroupManager extends RepositoryExecutor
         $userService = $this->repository->getUserService();
 
         $parentGroupId = $this->dsl['parent_group_id'];
-        if ($this->isReference($parentGroupId)) {
-            $parentGroupId = $this->getReference($parentGroupId);
+        if ($this->referenceResolver->isReference($parentGroupId)) {
+            $parentGroupId = $this->referenceResolver->getReferenceValue($parentGroupId);
         }
 
         $parentGroup = $userService->loadUserGroup($parentGroupId);
@@ -96,8 +96,8 @@ class UserGroupManager extends RepositoryExecutor
 
         if (array_key_exists('parent_group_id', $this->dsl)) {
             $parentGroupId = $this->dsl['parent_group_id'];
-            if ($this->isReference($parentGroupId)) {
-                $parentGroupId = $this->getReference($parentGroupId);
+            if ($this->referenceResolver->isReference($parentGroupId)) {
+                $parentGroupId = $this->referenceResolver->getReferenceValue($parentGroupId);
             }
 
             $newParentGroup = $userService->loadUserGroup($parentGroupId);
