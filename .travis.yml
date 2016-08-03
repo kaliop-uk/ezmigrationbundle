@@ -7,7 +7,7 @@ sudo: required
 matrix:
   include:
     #- php: 5.4
-    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2?' EZ_VERSION=ezpublish-community
+    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2?' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.5
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.6
@@ -39,7 +39,7 @@ install:
   - 'if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
   - composer require --prefer-source --dev ${EZ_PACKAGES}
   # Q: is this needed at all ???
-  - composer update
+  #- composer update
 
 before_script:
   # Set up configuration files
@@ -65,6 +65,7 @@ script:
   # Finally! :-D
   ### @todo!!!
   ###- phpunit --colors --coverage-clover=coverage.clover Tests/phpunit
+  php ${EZ_APP_DIR}/console kaliop:migration:status
 
 after_failure:
   # Display as much info as we can to help developers

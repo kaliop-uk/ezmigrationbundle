@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<phpunit colors="true" bootstrap="Tests/bootstrap.php">
-    <testsuites>
-        <testsuite name="Kaliop Bundle Migration Test Suite">
-            <directory>./Tests/BundleMigration/</directory>
-        </testsuite>
-    </testsuites>
-</phpunit>

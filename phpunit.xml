@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<phpunit colors="true" bootstrap="Tests/bootstrap.php">
+
+    <php>
+        <server name="KERNEL_DIR" value="vendor/ezsystems/ezpublish-community/ezpublish" />
+        <server name="SYMFONY_ENV" value="behat" />
+    </php>
+
+    <!-- code coverage reporting -->
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./</directory>
+            <exclude>
+                <directory>./Resources</directory>
+                <directory>./Tests</directory>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <testsuites>
+        <testsuite name="Kaliop Bundle Migration Test Suite">
+            <directory>./Tests/phpunit/BundleMigration/</directory>
+        </testsuite>
+    </testsuites>
+
+</phpunit>
