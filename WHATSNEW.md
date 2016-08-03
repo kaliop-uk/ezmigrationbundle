@@ -49,7 +49,7 @@ The change in database structure are handled automatically by the bundle - by wa
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)
 
 
-Versions 1.4.1 to 1.4.6
-=======================
+Versions 1.4.1 to 1.4.10
+========================
 
 Please have a look at the Github releases page: https://github.com/kaliop-uk/ezmigrationbundle/releases
