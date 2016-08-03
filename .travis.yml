@@ -12,8 +12,8 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish
     - php: 5.6
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app
-    #- php:7.0
-    #  env: EZ_PACKAGES='ezsystems/ezplatform:~0.11?' EZ_VERSION=ezplatform
+    - php:7.0
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app
 
 before_install:
   # No need for a web server, until we start testing using Behat
@@ -26,7 +26,7 @@ install:
   #- composer self-update
 
   # Increase php memory limit (need to do this now or we risk composer failing)
-  - phpenv config-add WrapperBundle/Tests/travis/zzz_php.ini
+  - phpenv config-add Tests/travis/zzz_php.ini
 
   # Q: are all of these scripts ok here, or shall they be moved to the before_script step, when we add matrix combinations ???
 
@@ -44,8 +44,8 @@ install:
 before_script:
   # Set up configuration files
   - cp vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/config/parameters.yml.dist vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/config/parameters.yml
-  - cat WrapperBundle/Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml >> vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/config/config_behat.yml
-  - sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZObjectWrapperBundle\\KaliopeZObjectWrapperBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/EzPublishKernel.php
+  - cat Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml >> vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/config/config_behat.yml
+  - sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/EzPublishKernel.php
   - if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i 's/"vendor\/ezsystems\/ezpublish-community\/ezpublish"/"vendor\/ezsystems\/ezplatform\/app"/' phpunit.xml; fi
 
   # TODO we have to fix the autoloader for these to work... but are they needed at all?
@@ -64,7 +64,7 @@ before_script:
 script:
   # Finally! :-D
   ### @todo!!!
-  ###- phpunit --colors --coverage-clover=coverage.clover WrapperBundle/Tests/phpunit
+  ###- phpunit --colors --coverage-clover=coverage.clover Tests/phpunit
 
 after_failure:
   # Display as much info as we can to help developers

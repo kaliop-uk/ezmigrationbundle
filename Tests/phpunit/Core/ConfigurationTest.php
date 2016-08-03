@@ -1,7 +1,6 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Tests\Core;
-
+namespace Kaliop\eZMigrationBundle\Tests\phpunit\Core;
 
 use Doctrine\DBAL\Driver\Connection;
 use Kaliop\eZMigrationBundle\Core\Configuration;
@@ -10,7 +9,8 @@ use MyProject\Proxies\__CG__\OtherProject\Proxies\__CG__\stdClass;
 use org\bovigo\vfs\vfsStream;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class ConfigurationTest extends BundleMigrationDBTestCase {
+class ConfigurationTest extends BundleMigrationDBTestCase
+{
     /**
      * The BundleMigration Configuration instance.
      *
@@ -413,5 +413,4 @@ class ConfigurationTest extends BundleMigrationDBTestCase {
                 $this->container = $container;
             }
         }';
-
 }

@@ -1,0 +1,5 @@
+
+# This file will be appended to the equivalent on from eZPublish Community distribution
+
+ez_publish_legacy:
+    root_dir: %kernel.root_dir%/../../ezpublish-legacy
