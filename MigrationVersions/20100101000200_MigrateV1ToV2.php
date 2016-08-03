@@ -59,6 +59,7 @@ class MigrateV1ToV2 implements MigrationInterface
         $executionDate = time() - 60;
         foreach($toMigrate as $legacyMigration) {
             $name = $legacyMigration['version'];
+
             $path = $this->getLegacyMigrationDefinition($legacyMigration['version'], $legacyMigration['bundle']);
             if ($path != false) {
                 $name = basename($path);
@@ -69,7 +70,14 @@ class MigrateV1ToV2 implements MigrationInterface
                 $content = '';
                 $md5 = 'unknown';
             }
-            /// @todo take care: what if the migration already exists in the v2 table and is in status 'executing' ???
+
+            // take care: what if the migration already exists in the v2 table ???
+            $existingMigration = $migrationStorageService->loadMigration($name);
+            if ($existingMigration != null) {
+                $output->writeln("<info>Info for migration version: {$legacyMigration['bundle']} {$legacyMigration['version']} was already migrated, skipping it</info>");
+                continue;
+            }
+
             $migrationDefinition = new MigrationDefinition(
                 $name, $path, $content, MigrationDefinition::STATUS_PARSED
             );
@@ -83,7 +91,8 @@ class MigrateV1ToV2 implements MigrationInterface
             );
             $migrationStorageService->endMigration($migration);
 
-            $this->deleteLegacyMigration($legacyMigration['version'], $legacyMigration['bundle']);
+            // we leave legacy info in the legacy table, in case someone wants to roll back in the future...
+            //$this->deleteLegacyMigration($legacyMigration['version'], $legacyMigration['bundle']);
 
             $output->writeln("Updated info for migration version: {$legacyMigration['bundle']} {$legacyMigration['version']}");
         }
