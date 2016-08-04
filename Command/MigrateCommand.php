@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Helper\Table;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 
@@ -101,7 +100,7 @@ EOT
             );
         }
 
-        $table = new Table($output);
+        $table = $this->getHelperSet()->get('table');
         $table
             ->setHeaders(array('#', 'Migration', 'Notes'))
             ->setRows($data);

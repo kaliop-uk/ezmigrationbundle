@@ -5,7 +5,6 @@ namespace Kaliop\eZMigrationBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Helper\Table;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 
@@ -144,7 +143,7 @@ EOT
             }
         }
 
-        $table = new Table($output);
+        $table = $this->getHelperSet()->get('table');
         $table
             ->setHeaders(array('#', 'Migration', 'Status', 'Executed on', 'Notes'))
             ->setRows($data);

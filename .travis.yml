@@ -11,8 +11,6 @@ sudo: required
 matrix:
   include:
     # ezpublish-community 2014.3 corresponds to enterprise 5.3, still supported, installs via composer
-    - php: 5.3
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.4
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     #- php: 5.5
