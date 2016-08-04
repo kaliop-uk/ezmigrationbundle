@@ -6,14 +6,15 @@ sudo: required
 
 matrix:
   include:
+    # ezpublish-community 2014.3 corresponds to enterprise 5.3, and is a good testing target. Alas, it does not install
+    # any more, as it depends on ezsystems/comments-bundle 2014.03.01, and that is not available, according to composer...
+    #- php: 5.4 / 5.5
+    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.4
-      # ezpublish-community 2014.3 corresponds to enterprise 5.3, and is a good testing target. Alas, it does not install
-      # any more as it depends on ezsystems/comments-bundle 2014.03, and that tag is no more
-      #env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.5
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
-    - php: 5.5
+    - php: 5.6
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.6
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
