@@ -1,6 +1,6 @@
 {
     "name": "kaliop/ezmigrationbundle",
-    "type": "library",
+    "type": "symfony-bundle",
     "description": "Kaliop eZ-Migration Bundle",
     "keywords": ["migrations", "database", "ezpublish"],
     "license": "GPL-2.0",
