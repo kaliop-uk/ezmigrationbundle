@@ -6,8 +6,13 @@ sudo: required
 
 matrix:
   include:
-    #- php: 5.4
-    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2?' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
+    - php: 5.4
+      # ezpublish-community 2014.3 corresponds to enterprise 5.3, and is a good testing target. Alas, it does not install
+      # any more as it depends on ezsystems/comments-bundle 2014.03, and that tag is no more
+      #env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
+      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
+    - php: 5.5
+      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.5
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.6
@@ -76,9 +81,10 @@ script:
   - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:status
   - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:migrate -n
   - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:migration -n --delete 20100101000200_MigrateV1ToV2.php
+  - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:status
 
   ###- phpunit --colors --coverage-clover=coverage.clover Tests/phpunit
-  
+
 after_failure:
   # Display as much info as we can to help developers
   - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php -i; fi
