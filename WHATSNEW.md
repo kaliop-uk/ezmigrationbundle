@@ -1,5 +1,5 @@
-Version 2.0.beta-4
-==================
+Version 2.0.beta
+================
 
 This version is a complete restructuring of the codebase, and brings along with it a few breaking changes.
 
@@ -46,6 +46,9 @@ The main changes are:
 * the console commands now give more detailed, helpful error messages
 
 * it is much easier now to extend the bundle, as proper Dependency Injection is used everywhere, as well as tagged services
+
+* the bundle is now tested on Travis, using eZPublish versions from 2014.3 to eZPlatform 1.4.0
+    (for the moment the testsuite is not tested, only execution of the console commands)
 
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
