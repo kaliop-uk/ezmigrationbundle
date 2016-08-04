@@ -147,6 +147,6 @@ EOT
         $table
             ->setHeaders(array('#', 'Migration', 'Status', 'Executed on', 'Notes'))
             ->setRows($data);
-        $table->render();
+        $table->render($output);
     }
 }

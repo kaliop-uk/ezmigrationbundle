@@ -104,7 +104,7 @@ EOT
         $table
             ->setHeaders(array('#', 'Migration', 'Notes'))
             ->setRows($data);
-        $table->render();
+        $table->render($output);
 
         $output->writeln('');
         // ask user for confirmation to make changes
