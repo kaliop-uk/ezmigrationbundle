@@ -2,7 +2,8 @@
 
 language: php
 
-sudo: required
+# use the docker-based Travis images for a tiny speed boost
+sudo: false
 
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
@@ -96,6 +97,7 @@ script:
 after_failure:
   # Display as much info as we can to help developers
   - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php -i; fi
+  - cat composer.lock
 
 after_script:
   # Upload code-coverage to Scrutinizer
