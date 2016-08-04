@@ -14,7 +14,7 @@ class EzBinaryFile extends AbstractComplexField implements ComplexFieldInterface
      */
     public function createValue(array $fieldValueArray, array $context = array())
     {
-        $filePath = dirname($context['path']) .  '/files/' . fieldValueArray['path'];
+        $filePath = dirname($context['path']) .  '/files/' . $fieldValueArray['path'];
 
         return new BinaryFileValue(
             array(
