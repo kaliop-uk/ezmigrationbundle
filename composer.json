@@ -6,9 +6,9 @@
     "license": "GPL-2.0",
     "authors": [
         {
-            "name": "Peter Halasz",
-            "email": "peter.halasz@kaliop.co.uk",
-            "role": "Creator"
+            "name": "Gaetano Giunta",
+            "email": "ggiunta@kaliop.com",
+            "role": "Lead Developer"
         },
         {
             "name": "Daniel Clements",
@@ -16,9 +16,9 @@
             "role": "Developer"
         },
         {
-            "name": "Gaetano Giunta",
-            "email": "ggiunta@kaliop.com",
-            "role": "Lead Developer"
+            "name": "Peter Halasz",
+            "email": "peter.halasz@kaliop.co.uk",
+            "role": "Original author"
         }
     ],
     "require": {
@@ -35,6 +35,10 @@
     },
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }
+    },
+    "_comment::travis": "the following section is needed to insure that eZPublish 5 can be built on travis, using the custom directory structure where it is not in the root folder",
+    "extra": {
+        "ezpublish-legacy-dir": "vendor/ezsystems/ezpublish-legacy"
     },
     "repositories": [
         {
