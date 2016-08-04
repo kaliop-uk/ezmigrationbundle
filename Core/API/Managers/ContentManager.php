@@ -57,6 +57,11 @@ class ContentManager extends AbstractManager
         if ($this->isReference($locationId)) {
             $locationId = $this->getReference($locationId);
         }
+        if ( $this->isLocationRemoteId($locationId) )
+        {
+            $locationId = $this->getLocationByRemoteId($locationId);
+        }
+
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
         if (array_key_exists('remote_id', $this->dsl)) {
             $locationCreateStruct->remoteId = $this->dsl['remote_id'] . '_location';
