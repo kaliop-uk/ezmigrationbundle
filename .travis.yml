@@ -5,23 +5,28 @@ language: php
 sudo: required
 
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
+#     and http://php.net/supported-versions.php for EOL dates of PHP versions
+#     but don't foget that php 5.3 is still supported by RedHat: https://access.redhat.com/support/policy/updates/errata.
+# We limit the matrix to one version of eZPublish for each version of PHP
 matrix:
   include:
     # ezpublish-community 2014.3 corresponds to enterprise 5.3, still supported, installs via composer
+    - php: 5.3
+      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.4
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
-    - php: 5.5
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
+    #- php: 5.5
+    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     # the last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4
-    - php: 5.4
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
+    #- php: 5.4
+    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.5
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     - php: 5.6
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel
     # latest version currently available of eZPlatform aka eZPublish 6
-    - php: 5.6
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
+    #- php: 5.6
+    #  env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
     - php: 7.0
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
 
