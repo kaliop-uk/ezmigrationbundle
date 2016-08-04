@@ -16,7 +16,7 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
 
 before_install:
-  # No need for a web server, until we start testing using Behat
+  # No need for a web server, until we start testing using Selenium
   #- sudo apt-get update
   #- sudo apt-get install -q -y --force-yes apache2 libapache2-mod-fastcgi
   - mysql -uroot -e "CREATE DATABASE IF NOT EXISTS behattestdb; GRANT ALL ON behattestdb.* TO ezp@localhost IDENTIFIED BY 'ezp';"
@@ -30,19 +30,23 @@ install:
 
   # Q: are all of these scripts ok here, or shall they be moved to the before_script step, when we add matrix combinations ???
 
-  # Disable xdebug for speed (executing composer)
-  # NB: this should NOT be done for hhvm
-  - if [ "$TRAVIS_PHP_VERSION" != "hhvm"]; then phpenv config-rm xdebug.ini; fi
+  # Disable xdebug for speed (executing composer), but allow us to e-enable it later
+  # NB: 'php -i' does not work on hhvm
+  - if [ "$TRAVIS_PHP_VERSION" = "hhvm" ]; then export XDEBUG_INI=''; fi
+  - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
+  - if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 
   # We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix
   # For the moment, to install eZPlatform, a set of DEV packages have to be allowed; really ugly sed expression to alter composer.json follows
+  # TODO is this still needed?
   - 'if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
+
   - composer require --prefer-source --dev ${EZ_PACKAGES}
   # Q: is this needed at all ???
   #- composer update
 
   # Re-enable xdebug for when we need to generate code coverage
-  - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then phpenv config-add xdebug.ini; fi
+  - if [ "$TRAVIS_PHP_VERSION" = "5.6" -]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
 
 before_script:
   # Set up configuration files
@@ -69,7 +73,7 @@ script:
   # Finally! :-D
   ### @todo!!!
   ###- phpunit --colors --coverage-clover=coverage.clover Tests/phpunit
-  php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console kaliop:migration:status
+  php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:status
 
 after_failure:
   # Display as much info as we can to help developers
