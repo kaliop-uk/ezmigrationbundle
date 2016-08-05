@@ -6,7 +6,6 @@ use eZ\Publish\Core\Repository\Values\ContentType\ContentType;
 use eZ\Publish\Core\Repository\Values\ContentType\ContentTypeGroup;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\SPI\Persistence\Content\Location;
-use eZ\Publish\Core\Repository\Values\Content\ContentCreateStruct;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Behat\Symfony2Extension\Context\KernelAwareInterface;
 use Behat\Behat\Context\BehatContext;

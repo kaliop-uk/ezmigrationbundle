@@ -167,7 +167,7 @@ class ContentManager extends RepositoryExecutor
             $contentInfo = $content->contentInfo;
 
             if ($contentType == null) {
-                $contentTypeService->loadContentType($contentInfo->contentTypeId);
+                $contentType = $contentTypeService->loadContentType($contentInfo->contentTypeId);
             }
 
             $contentUpdateStruct = $contentService->newContentUpdateStruct();

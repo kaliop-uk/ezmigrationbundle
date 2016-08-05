@@ -52,7 +52,11 @@ The main changes are:
 
 * changes to the YML definition language:
 
-    - a vastly improved way of identifying contents and locations to update: ...
+    - a vastly improved way of identifying contents and locations to update:
+        content to update and delete can be identified via the `match` keyword;
+        for creating locations, the `match` keyword can also be used to identify the target contents.
+        In both cases, `match` allows to identify content by object id, object remote id, location id,
+        location remote id, parent location id, parent location remote id and content type identifier
 
     - the remote_id key used when updating objects will not match the location remote_id any more (it used to try that
         if matching the object remote id failed). You can use the 'match' key instead
