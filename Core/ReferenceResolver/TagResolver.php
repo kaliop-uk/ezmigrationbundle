@@ -12,13 +12,6 @@ class TagResolver extends AbstractResolver
      */
     protected $referencePrefixes = array('tag:');
 
-    /**
-     * Array of all references set by the currently running migrations.
-     *
-     * @var array
-     */
-    private $tags = array();
-
     protected $translationHelper;
     protected $tagService;
 

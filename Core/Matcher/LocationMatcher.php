@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
+use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 
 class LocationMatcher
 {
@@ -131,7 +132,7 @@ class LocationMatcher
      */
     protected function findLocationsByParentLocationIds($parentLocationIds)
     {
-        $query = new Query();
+        $query = new LocationQuery();
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
 

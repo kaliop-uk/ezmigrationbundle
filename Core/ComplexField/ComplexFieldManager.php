@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ComplexFieldManager
 {
     /** @var ComplexFieldInterface[]  */
-    var $fieldTypeMap;
+    protected $fieldTypeMap;
 
     /**
      * @param ComplexFieldInterface $complexField

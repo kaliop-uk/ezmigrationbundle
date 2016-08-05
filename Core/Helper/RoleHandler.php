@@ -11,12 +11,12 @@ use eZ\Publish\API\Repository\Values\User\Limitation;
 class RoleHandler
 {
     /** @var eZRepository */
-    var $repository;
+    protected $repository;
 
-    var $translationHelper;
+    protected $translationHelper;
 
     /** @var array  */
-    var $siteAccessList = array();
+    protected $siteAccessList = array();
 
     public function __construct(
         eZRepository $repository,
@@ -69,7 +69,6 @@ class RoleHandler
                 /** @var \eZ\Publish\API\Repository\ContentTypeService $contentTypeService */
                 $contentTypeService = $this->repository->getContentTypeService();
                 $availableLanguages = $this->translationHelper->getAvailableLanguages();
-                $primaryLanguage = $availableLanguages[0];
 
                 foreach($values as $value) {
                     $contentType = $contentTypeService->loadContentType($value);

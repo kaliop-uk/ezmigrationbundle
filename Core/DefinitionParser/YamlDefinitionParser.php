@@ -13,13 +13,6 @@ use Symfony\Component\Yaml\Yaml;
 class YamlDefinitionParser implements DefinitionParserInterface
 {
     /**
-     * The bundle the migration version is for.
-     *
-     * @var \Symfony\Component\HttpKernel\Bundle\BundleInterface
-     */
-    private $bundle;
-
-    /**
      * Tells whether the given file can be handled by this handler, by checking e.g. the suffix
      *
      * @param string $migrationName typically a filename

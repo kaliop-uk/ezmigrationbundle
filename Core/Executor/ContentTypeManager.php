@@ -382,7 +382,6 @@ class ContentTypeManager extends RepositoryExecutor
             $ret = array();
             foreach ($value as $key => $val)
             {
-                //$ret[$key] = $this->parseFieldSettingValue($val);
                 $ret[$key] = $val;
 
                 if ($this->referenceResolver->isReference($val)) {
@@ -404,17 +403,6 @@ class ContentTypeManager extends RepositoryExecutor
 
         return $ret;
     }
-
-    /**
-     * Returns transformed value if needed
-     *
-     * @param $value
-     * @return mixed
-     */
-    /*private function parseFieldSettingValue($value)
-    {
-        return $this->locationResolverHandler->resolve($value);
-    }*/
 
     /**
      * Helper to find out if a Field is already defined in a ContentType

@@ -14,7 +14,7 @@ class EzPage extends AbstractComplexField implements ComplexFieldInterface
     /** @var PageService $pageService */
     protected $pageService;
 
-    public function __construct(PageService $pageService, array $context = array())
+    public function __construct(PageService $pageService)
     {
         $this->pageService = $pageService;
     }

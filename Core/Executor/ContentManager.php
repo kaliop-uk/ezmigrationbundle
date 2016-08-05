@@ -5,8 +5,6 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
-//use Kaliop\eZMigrationBundle\Core\ReferenceResolver\ReferenceHandler;
-//use \eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 
 /**

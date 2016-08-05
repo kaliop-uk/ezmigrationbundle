@@ -257,19 +257,4 @@ EOT
 
         return Yaml::dump(array($ymlArray), 5);
     }
-
-    protected function getLimitationValues(Limitation $limitation)
-    {
-        /** @var $container \Symfony\Component\DependencyInjection\ContainerInterface */
-        $container = $this->getApplication()->getKernel()->getContainer();
-        $repository = $container->get('ezpublish.api.repository');
-
-        /** @var \eZ\Publish\API\Repository\SectionService $sectionService */
-        $sectionService = $repository->getSectionService();
-
-        foreach($limitation->limitationValues as $value)
-        {
-
-        }
-    }
 }
