@@ -68,7 +68,6 @@ class RoleHandler
             case 'Class':
                 /** @var \eZ\Publish\API\Repository\ContentTypeService $contentTypeService */
                 $contentTypeService = $this->repository->getContentTypeService();
-                $availableLanguages = $this->translationHelper->getAvailableLanguages();
 
                 foreach($values as $value) {
                     $contentType = $contentTypeService->loadContentType($value);

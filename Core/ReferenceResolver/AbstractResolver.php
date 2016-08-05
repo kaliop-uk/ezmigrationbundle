@@ -23,11 +23,11 @@ abstract class AbstractResolver implements ReferenceResolverInterface
 
     /**
      * @param string $stringIdentifier
-     * @return mixed
+     * @return bool
      */
     public function isReference($stringIdentifier)
     {
-        return preg_match($this->prefixMatchRegexp, $stringIdentifier);
+        return (bool)preg_match($this->prefixMatchRegexp, $stringIdentifier);
     }
 
     /**

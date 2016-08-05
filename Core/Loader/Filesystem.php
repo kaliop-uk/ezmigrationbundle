@@ -27,7 +27,7 @@ class Filesystem implements LoaderInterface
 
     /**
      * @param array $paths either dir names or file names
-     * @return string[] migrations definitions. key: name, value: file path
+     * @return MigrationDefinition[] migrations definitions. key: name, value: file path
      * @throws \Exception
      */
     public function listAvailableDefinitions($paths = array())
