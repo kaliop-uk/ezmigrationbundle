@@ -23,7 +23,15 @@ interface StorageHandlerInterface
     public function loadMigration($migrationName);
 
     /**
-     * Starts a migration (stores it)
+     * Creates and stores a new migration (leaving it in TODO status)
+     * @param MigrationDefinition $migrationDefinition
+     * @return mixed
+     * @throws \Exception If the migration exists already
+     */
+    public function addMigration(MigrationDefinition $migrationDefinition);
+
+    /**
+     * Starts a migration (creates and stores it, in STARTED status)
      * @param MigrationDefinition $migrationDefinition
      * @return Migration
      * @throws \Exception If the migration was already executing

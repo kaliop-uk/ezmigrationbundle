@@ -12,12 +12,12 @@ interface LoaderInterface
      * @return string[] migrations definitions. key: name, value: path
      * @throws \Exception
      */
-    public function listAvailableDefinitions($paths = array());
+    public function listAvailableDefinitions(array $paths = array());
 
     /**
      * @param array $paths
      * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection unparsed definitions. key has to be the migration name
      * @throws \Exception
      */
-    public function loadDefinitions($paths = array());
+    public function loadDefinitions(array $paths = array());
 }

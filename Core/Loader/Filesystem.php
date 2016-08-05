@@ -30,7 +30,7 @@ class Filesystem implements LoaderInterface
      * @return MigrationDefinition[] migrations definitions. key: name, value: file path
      * @throws \Exception
      */
-    public function listAvailableDefinitions($paths = array())
+    public function listAvailableDefinitions(array $paths = array())
     {
         return $this->getDefinitions($paths, true);
     }
@@ -40,7 +40,7 @@ class Filesystem implements LoaderInterface
      * @return MigrationDefinitionCollection migrations definitions. key: name, value: contents of the definition, as string
      * @throws \Exception
      */
-    public function loadDefinitions($paths = array())
+    public function loadDefinitions(array $paths = array())
     {
         return new MigrationDefinitionCollection($this->getDefinitions($paths, false));
     }
@@ -51,7 +51,7 @@ class Filesystem implements LoaderInterface
      * @return MigrationDefinition[]|string[] migrations definitions. key: name, value: contents of the definition, as string or file path
      * @throws \Exception
      */
-    protected function getDefinitions($paths = array(), $returnFilename = false)
+    protected function getDefinitions(array $paths = array(), $returnFilename = false)
     {
         // if no paths defined, we look in all bundles
         if (empty($paths)) {
@@ -91,6 +91,7 @@ class Filesystem implements LoaderInterface
             }
         }
         ksort($definitions);
+
         return $definitions;
     }
 }

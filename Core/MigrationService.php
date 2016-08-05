@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
@@ -52,9 +53,9 @@ class MigrationService
      * NB: returns UNPARSED definitions
      *
      * @param string[] $paths
-     * @return \Kaliop\eZMigrationBundle\API\Value\MigrationDefinition[] key: migration name, value: migration definition as binary string
+     * @return MigrationDefinitionCollection key: migration name, value: migration definition as binary string
      */
-    public function getMigrationsDefinitions($paths = array())
+    public function getMigrationsDefinitions(array $paths = array())
     {
         // we try to be flexible in file types we support, and the same time avoid loading all files in a directory
         $handledDefinitions = array();
@@ -66,6 +67,10 @@ class MigrationService
             }
         }
 
+        // we can not call loadDefinitions with an empty array, or it will start looking in bundles...
+        if (empty($handledDefinitions) && !empty($paths)) {
+            return new MigrationDefinitionCollection();
+        }
         return $this->loader->loadDefinitions($handledDefinitions);
     }
 
@@ -86,6 +91,14 @@ class MigrationService
     public function getMigration($migrationName)
     {
         return $this->storageHandler->loadMigration($migrationName);
+    }
+
+    /**
+     * @param Migration $migration
+     */
+    public function addMigration(MigrationDefinition $migrationDefinition)
+    {
+        return $this->storageHandler->addMigration($migrationDefinition);
     }
 
     /**

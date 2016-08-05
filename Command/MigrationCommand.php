@@ -24,13 +24,18 @@ class MigrationCommand extends AbstractCommand
             ->setName('kaliop:migration:migration')
             ->setDescription('Manually delete migrations from the database table.')
             ->addOption('delete', null, InputOption::VALUE_NONE, "Delete the specified migration.")
+            ->addOption('add', null, InputOption::VALUE_NONE, "Add the specified migration definition.")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question.")
-            ->addArgument('migration', InputArgument::REQUIRED, 'The version to add or delete.', null)
+            ->addArgument('migration', InputArgument::REQUIRED, 'The version to add (filename with full path) or delete (plain migration name).', null)
             ->setHelp(
                 <<<EOT
 The <info>kaliop:migration:migration</info> command allows you to manually delete migrations versions from the migration table:
 
-    <info>./ezpublish/console kaliop:migration:migration migration_name --delete</info>
+    <info>./ezpublish/console kaliop:migration:migration --delete migration_name</info>
+
+As well as manually adding migrations to the migration table:
+
+    <info>./ezpublish/console kaliop:migration:migration --add /path/to/migration_definition</info>
 EOT
             );
     }
@@ -44,12 +49,12 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (/*! $input->getOption('add') &&*/ ! $input->getOption('delete')) {
-            throw new \InvalidArgumentException('You must specify whether you want to --delete the specified migration.');
+        if (! $input->getOption('add') && ! $input->getOption('delete')) {
+            throw new \InvalidArgumentException('You must specify whether you want to --add or --delete the specified migration.');
         }
 
-        $migrationsService = $this->getMigrationService();
-        $migrationName = $input->getArgument('migration');
+        $migrationService = $this->getMigrationService();
+        $migrationNameOrPath = $input->getArgument('migration');
 
         // ask user for confirmation to make changes
         if ($input->isInteractive() && !$input->getOption('no-interaction')) {
@@ -65,13 +70,37 @@ EOT
             }
         }
 
-        if ($input->getOption('delete')) {
-            $migration = $migrationsService->getMigration($migrationName);
-            if ($migration == null) {
-                throw new \InvalidArgumentException(sprintf('The migration "%s" does not exist in the migrations table.', $migrationName));
+        if ($input->getOption('add')) {
+            // will throw if a file is passed and it is not found, but not if an empty dir is passed
+            $migrationDefinitionCollection = $migrationService->getMigrationsDefinitions(array($migrationNameOrPath));
+
+            if (!count($migrationDefinitionCollection))
+            {
+                throw new \InvalidArgumentException(sprintf('The path "%s" does not correspond to any migration definition.', $migrationNameOrPath));
             }
 
-            $migrationsService->deleteMigration($migration);
+            foreach($migrationDefinitionCollection as $migrationDefinition) {
+                $migrationName = basename($migrationDefinition->path);
+
+                $migration = $migrationService->getMigration($migrationNameOrPath);
+                if ($migration != null) {
+                    throw new \InvalidArgumentException(sprintf('The migration "%s" does already exist in the migrations table.', $migrationName));
+                }
+
+                $migrationService->addMigration($migrationDefinition);
+                $output->writeln('<info>Added migration' . $migrationDefinition->path . '</info>');
+            }
+
+            return;
+        }
+
+        if ($input->getOption('delete')) {
+            $migration = $migrationService->getMigration($migrationNameOrPath);
+            if ($migration == null) {
+                throw new \InvalidArgumentException(sprintf('The migration "%s" does not exist in the migrations table.', $migrationNameOrPath));
+            }
+
+            $migrationService->deleteMigration($migration);
         }
     }
 }

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Schema\Schema;
 use eZ\Publish\Core\Persistence\Database\SelectQuery;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
  * Database-backed storage for info on executed migrations
@@ -92,6 +93,34 @@ class Database implements StorageHandlerInterface
         }
 
         return null;
+    }
+
+    /**
+     * Creates and stores a new migration (leaving it in TODO status)
+     * @param MigrationDefinition $migrationDefinition
+     * @return mixed
+     * @throws \Exception If the migration exists already (we rely on the PK for that)
+     */
+    public function addMigration(MigrationDefinition $migrationDefinition)
+    {
+        $this->createMigrationsTableIfNeeded();
+
+        $conn = $this->dbHandler->getConnection();
+
+        $migration = new Migration(
+            $migrationDefinition->name,
+            md5($migrationDefinition->rawDefinition),
+            $migrationDefinition->path,
+            null,
+            Migration::STATUS_TODO
+        );
+        try {
+            $conn->insert($this->migrationsTableName, $this->migrationToArray($migration));
+        } catch(UniqueConstraintViolationException $e) {
+            throw new \Exception("Migration '{$migrationDefinition->name}' already exists");
+        }
+
+        return $migration;
     }
 
     /**
