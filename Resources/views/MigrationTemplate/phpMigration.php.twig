@@ -14,5 +14,8 @@ class {{ class_name }} implements MigrationInterface
     public static function execute(ContainerInterface $container)
     {
         // @TODO This method is auto-generated, please modify to suit your needs!
+
+        // NB: remember that you are logged in to the eZPublish repository as anonymous user; you might want to use
+        // a sudo() or setCurrentUser() call for any manipulation of content
     }
 }

@@ -205,3 +205,12 @@ The Behat instructions are left here for future reference when we get it working
 To run the BDD test with Behat:
 
     bin/behat @KaliopBundleMigrationBundle
+
+
+[![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)
+[![Latest Stable Version](https://poser.pugx.org/kaliop/ezmigrationbundle/v/stable)](https://packagist.org/packages/kaliop/ezobjectwrapperbundle)
+[![Total Downloads](https://poser.pugx.org/kaliop/ezmigrationbundle/downloads)](https://packagist.org/packages/kaliop/ezmigrationbundle)
+
+[![Build Status](https://travis-ci.org/kaliop-uk/ezmigrationbundle.svg?branch=master)](https://travis-ci.org/kaliop-uk/ezmigrationbundle)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master) 
