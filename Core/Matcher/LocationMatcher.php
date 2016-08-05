@@ -2,12 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
-use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 
-class LocationMatcher
+class LocationMatcher extends AbstractMatcher
 {
     const MATCH_CONTENT_ID = 'content_id';
     const MATCH_LOCATION_ID = 'location_id';
@@ -16,18 +15,14 @@ class LocationMatcher
     const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
 
-    protected $repository;
+    protected $allowedConditions = array(
+        self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID
+    );
+    protected $returns = 'Location';
 
     /**
-     * @todo inject the services needed, not thw whole repository
-     */
-    public function __construct(Repository $repository)
-    {
-        $this->repository = $repository;
-    }
-
-    /**
-     * @param array $conditions key: condition, value: int / array of ints
+     * @param array $conditions key: condition, value: value: int / string / int[] / string[]
      * @return LocationCollection
      */
     public function matchLocation(array $conditions)

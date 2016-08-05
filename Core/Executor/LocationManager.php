@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
+use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
 class LocationManager extends RepositoryExecutor
@@ -17,12 +18,16 @@ class LocationManager extends RepositoryExecutor
     }
 
     /**
-     * Method to handle the create operation of the migration instructions
+     * NB: weirdly enough, it returns contents, not locations
+     *
+     * @param string $action
+     * @return ContentCollection
+     * @throws \Exception
      */
-    protected function create()
+    protected function matchContents($action)
     {
         if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
-            throw new \Exception('The ID or remote ID of an object or a Match Condition is required to create a new location.');
+            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
         }
 
         // Backwards compat
@@ -30,33 +35,13 @@ class LocationManager extends RepositoryExecutor
             if (isset($this->dsl['object_id'])) {
                 $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
             } elseif (isset($this->dsl['remote_id'])) {
-                $this->dsl['match'] = array('content_remote_id' => $this->dsl['object_id']);
+                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
             }
         }
 
         $match = $this->dsl['match'];
 
-        if (!isset($match['content_id']) &&
-            !isset($match['location_id']) &&
-            !isset($match['content_remote_id']) &&
-            !isset($match['location_remote_id']) &&
-            !isset($match['parent_location_id']) &&
-            !isset($match['parent_location_remote_id'])
-        ) {
-          throw new \Exception('Either the ID or remote ID of a content, the ID or remote ID of a location or the id or remote ID
-          of the parent location of the contents you want to create a new location are required to create a new location.');
-        }
-
-        if (count($match) > 1) {
-            throw new \Exception('Only one match condition is allowed');
-        }
-
-        if (!isset($this->dsl['parent_location_id'])) {
-            throw new \Exception('Missing parent location id. This is required to create the new location.');
-        }
-
         // convert the references passed in the match
-        // @todo probably can be moved to a separate method.
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
@@ -71,23 +56,36 @@ class LocationManager extends RepositoryExecutor
             }
         }
 
-        $this->loginUser();
+        return $this->contentMatcher->matchContent($match);
+    }
 
-        $contentCollection = $this->contentMatcher->matchContent($match);
+    /**
+     * Method to handle the create operation of the migration instructions
+     */
+    protected function create()
+    {
+        $this->loginUser();
 
         $locationService = $this->repository->getLocationService();
 
+        if (!isset($this->dsl['parent_location_id'])) {
+            throw new \Exception('Missing parent location id. This is required to create the new location.');
+        }
         if (!is_array($this->dsl['parent_location_id'])) {
             $this->dsl['parent_location_id'] = array($this->dsl['parent_location_id']);
         }
+        foreach ($this->dsl['parent_location_id'] as $id => $parentLocationId) {
+            if ($this->referenceResolver->isReference($parentLocationId)) {
+                $this->dsl['parent_location_id'][$id] = $this->referenceResolver->getReferenceValue($parentLocationId);
+            }
+        }
+
+        $contentCollection = $this->matchContents('create');
 
         foreach ($contentCollection as $content) {
             $contentInfo = $content->contentInfo;
 
             foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
-                if ($this->referenceResolver->isReference($parentLocationId)) {
-                    $parentLocationId = $this->referenceResolver->getReferenceValue($parentLocationId);
-                }
                 $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
 
                 $locationCreateStruct->hidden = isset($this->dsl['is_hidden']) ?: false;
@@ -114,6 +112,10 @@ class LocationManager extends RepositoryExecutor
      */
     protected function update()
     {
+        $this->loginUser();
+
+        $locationService = $this->repository->getLocationService();
+
         if (!isset($this->dsl['location_id'])) {
             throw new \Exception('No location set for update.');
         }
@@ -121,10 +123,6 @@ class LocationManager extends RepositoryExecutor
         if (isset($this->dsl['swap_with_location']) && isset($this->dsl['patent_location_id'])) {
             throw new \Exception('Cannot move location to a new parent and swap location with another location at the same time.');
         }
-
-        $this->loginUser();
-
-        $locationService = $this->repository->getLocationService();
 
         $locationId = $this->dsl['location_id'];
         if ($this->referenceResolver->isReference($locationId)) {
@@ -193,13 +191,13 @@ class LocationManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        if (!isset($this->dsl['location_id'])) {
-            throw new \Exception('No location provided for deletion');
-        }
-
         $this->loginUser();
 
         $locationService = $this->repository->getLocationService();
+
+        if (!isset($this->dsl['location_id'])) {
+            throw new \Exception('No location provided for deletion');
+        }
 
         if (!is_array($this->dsl['location_id'])) {
             $this->dsl['location_id'] = array($this->dsl['location_id']);

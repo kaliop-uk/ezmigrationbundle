@@ -2,12 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
-use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 
-class ContentMatcher
+class ContentMatcher extends AbstractMatcher
 {
     const MATCH_CONTENT_ID = 'content_id';
     const MATCH_LOCATION_ID = 'location_id';
@@ -15,24 +14,22 @@ class ContentMatcher
     const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
     const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
+    const MATCH_CONTENT_TYPE_IDENTIFIER = 'content_type';
 
-    protected $repository;
-
-    /**
-     * @param Repository $repository
-     * @todo inject the services needed, not thw whole repository
-     */
-    public function __construct(Repository $repository)
-    {
-        $this->repository = $repository;
-    }
+    protected $allowedConditions = array(
+        self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER
+    );
+    protected $returns = 'Content';
 
     /**
-     * @param array $conditions key: condition, value: int / array of ints
+     * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ContentCollection
      */
     public function matchContent(array $conditions)
     {
+        $conditions = $this->validateConditions($conditions);
+
         foreach ($conditions as $key => $values) {
 
             if (!is_array($values)) {
@@ -57,13 +54,16 @@ class ContentMatcher
 
                 case self::MATCH_PARENT_LOCATION_REMOTE_ID:
                     return new ContentCollection($this->findContentsByParentLocationRemoteIds($values));
+
+                case self::MATCH_CONTENT_TYPE_IDENTIFIER:
+                    return new ContentCollection($this->findContentsByContentTypeIdentifiers($values));
             }
         }
     }
 
+
     /**
      * @param int[] $contentIds
-     *
      * @return Content[]
      */
     protected function findContentsByContentIds(array $contentIds)
@@ -78,8 +78,7 @@ class ContentMatcher
     }
 
     /**
-     * @param int[] $remoteContentIds
-     *
+     * @param string[] $remoteContentIds
      * @return Content[]
      */
     protected function findContentsByContentRemoteIds(array $remoteContentIds)
@@ -95,7 +94,6 @@ class ContentMatcher
 
     /**
      * @param int[] $locationIds
-     *
      * @return Content[]
      */
     protected function findContentsByLocationIds(array $locationIds)
@@ -111,8 +109,7 @@ class ContentMatcher
     }
 
     /**
-     * @param int[] $remoteLocationIds
-     *
+     * @param string[] $remoteLocationIds
      * @return Content[]
      */
     protected function findContentsByLocationRemoteIds($remoteLocationIds)
@@ -129,7 +126,6 @@ class ContentMatcher
 
     /**
      * @param int[] $parentLocationIds
-     *
      * @return Content[]
      */
     protected function findContentsByParentLocationIds($parentLocationIds)
@@ -137,11 +133,9 @@ class ContentMatcher
         $query = new Query();
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
-
         $results = $this->repository->getSearchService()->findContent($query);
 
         $contents = [];
-
         foreach ($results->searchHits as $result) {
             $contents[] = $result->valueObject;
         }
@@ -150,8 +144,7 @@ class ContentMatcher
     }
 
     /**
-     * @param int[] $remoteParentLocationIds
-     *
+     * @param string[] $remoteParentLocationIds
      * @return Content[]
      */
     protected function findContentsByParentLocationRemoteIds($remoteParentLocationIds)
@@ -164,5 +157,24 @@ class ContentMatcher
         }
 
         return $this->findContentsByParentLocationIds($locationIds);
+    }
+
+    /**
+     * @param string[] $contentTypeIdentifiers
+     * @return Content[]
+     */
+    protected function findContentsByContentTypeIdentifiers(array $contentTypeIdentifiers)
+    {
+        $query = new Query();
+        $query->limit = PHP_INT_MAX;
+        $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
+        $results = $this->repository->getSearchService()->findContent($query);
+
+        $contents = [];
+        foreach ($results->searchHits as $result) {
+            $contents[] = $result->valueObject;
+        }
+
+        return $contents;
     }
 }

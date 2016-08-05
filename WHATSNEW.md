@@ -50,6 +50,16 @@ The main changes are:
 * the bundle is now tested on Travis, using eZPublish versions from 2014.3 to eZPlatform 1.4.0
     (for the moment the testsuite is not tested, only execution of the console commands)
 
+* changes to the YML definition language:
+
+    - a vastly improved way of identifying contents and locations to update: ...
+
+    - the remote_id key used when updating objects will not match the location remote_id any more (it used to try that
+        if matching the object remote id failed). You can use the 'match' key instead
+
+    - the remote_id of the main location of a content is not updated automatically any more when the remote_id
+        of the content is. You can use a separate step in your migration for that 
+
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)

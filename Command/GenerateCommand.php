@@ -84,9 +84,9 @@ EOT
         {
             $activeBundles[] = $bundle->getName();
         }
-        arsort($activeBundles);
+        asort($activeBundles);
         if (!in_array($bundleName, $activeBundles)) {
-            throw new \InvalidArgumentException("Bundle '$bundleName' does not exist or it is not enabled. Try with one of: " . implode(', ', $activeBundles));
+            throw new \InvalidArgumentException("Bundle '$bundleName' does not exist or it is not enabled. Try with one of:\n" . implode(', ', $activeBundles));
         }
 
         $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);

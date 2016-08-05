@@ -25,16 +25,55 @@ class ContentManager extends RepositoryExecutor
     }
 
     /**
+     * @param string $action
+     * @return ContentCollection
+     * @throws \Exception
+     */
+    protected function matchContents($action)
+    {
+        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
+            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
+        }
+
+        // Backwards compat
+        if (!isset($this->dsl['match'])) {
+            if (isset($this->dsl['object_id'])) {
+                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
+            } elseif (isset($this->dsl['remote_id'])) {
+                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
+            }
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
+                    }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
+                }
+            }
+        }
+
+        return $this->contentMatcher->matchContent($match);
+    }
+
+    /**
      * Handle the content create migration action type
      */
     protected function create()
     {
+        $this->loginUser();
+
         $contentService = $this->repository->getContentService();
         $locationService = $this->repository->getLocationService();
         $contentTypeService = $this->repository->getContentTypeService();
-
-        // Authenticate the user
-        $this->loginUser();
 
         $contentTypeIdentifier = $this->dsl['content_type'];
         if ($this->referenceResolver->isReference($contentTypeIdentifier)) {
@@ -89,12 +128,12 @@ class ContentManager extends RepositoryExecutor
      */
     protected function update()
     {
+        $this->loginUser();
+
         $contentService = $this->repository->getContentService();
         $contentTypeService = $this->repository->getContentTypeService();
 
-        $this->loginUser();
-
-        if (isset($this->dsl['object_id'])) {
+        /*if (isset($this->dsl['object_id'])) {
             $objectId = $this->dsl['object_id'];
             if ($this->referenceResolver->isReference($objectId)) {
                 $objectId = $this->referenceResolver->getReferenceValue($objectId);
@@ -107,40 +146,57 @@ class ContentManager extends RepositoryExecutor
                 $remoteId = $this->referenceResolver->getReferenceValue($remoteId);
             }
 
-            try {
+            //try {
                 $contentInfo = $contentService->loadContentInfoByRemoteId($remoteId);
-            } catch (\eZ\Publish\API\Repository\Exceptions\NotFoundException $e) {
-                $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteId);
-                $contentInfo = $location->contentInfo;
+            // disabled in v2: we disallow this. For matching location-remote-id, use the 'match' keyword
+            //} catch (\eZ\Publish\API\Repository\Exceptions\NotFoundException $e) {
+            //    $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteId);
+            //    $contentInfo = $location->contentInfo;
+            //}
+        }*/
+
+        $contentCollection = $this->matchContents('update');
+
+        if (count($contentCollection) > 1 && array_key_exists('references', $this->dsl)) {
+            throw new \Exception("Can not execute Content update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
+        }
+
+        $contentType = null;
+
+        foreach ($contentCollection as $content) {
+            $contentInfo = $content->contentInfo;
+
+            if ($contentType == null) {
+                $contentTypeService->loadContentType($contentInfo->contentTypeId);
             }
+
+            $contentUpdateStruct = $contentService->newContentUpdateStruct();
+
+            if (array_key_exists('attributes', $this->dsl)) {
+                $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes'], $contentType);
+            }
+
+            $draft = $contentService->createContentDraft($contentInfo);
+            $contentService->updateContent($draft->versionInfo,$contentUpdateStruct);
+            $content = $contentService->publishVersion($draft->versionInfo);
+
+            if (array_key_exists('new_remote_id', $this->dsl)) {
+                // Update object remote ID
+                $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
+                $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
+                $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
+
+                // Update main location remote ID
+                // removed in v2: this is NOT generic!
+                //$locationService = $this->repository->getLocationService();
+                //$locationUpdateStruct = $locationService->newLocationUpdateStruct();
+                //$locationUpdateStruct->remoteId = $this->dsl['new_remote_id'] . '_location';
+                //$location = $locationService->loadLocation($content->contentInfo->mainLocationId);
+                //$locationService->updateLocation($location, $locationUpdateStruct);
+            }
+
+            $this->setReferences($contentCollection);
         }
-
-        $contentType = $contentTypeService->loadContentType($contentInfo->contentTypeId);
-        $contentUpdateStruct = $contentService->newContentUpdateStruct();
-
-        if (array_key_exists('attributes', $this->dsl)) {
-            $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes'], $contentType);
-        }
-
-        $draft = $contentService->createContentDraft($contentInfo);
-        $contentService->updateContent($draft->versionInfo,$contentUpdateStruct);
-        $content = $contentService->publishVersion($draft->versionInfo);
-
-        if (array_key_exists('new_remote_id', $this->dsl)) {
-            // Update object remote ID
-            $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
-            $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
-            $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
-
-            // Update main location remote ID
-            $locationService = $this->repository->getLocationService();
-            $locationUpdateStruct = $locationService->newLocationUpdateStruct();
-            $locationUpdateStruct->remoteId = $this->dsl['new_remote_id'] . '_location';
-            $location = $locationService->loadLocation($content->contentInfo->mainLocationId);
-            $locationService->updateLocation($location, $locationUpdateStruct);
-        }
-
-        $this->setReferences($content);
     }
 
     /**
@@ -148,33 +204,14 @@ class ContentManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id'])) {
-            throw new \Exception('No object identifier provided for deletion');
-        }
-
         $this->loginUser();
 
         $contentService = $this->repository->getContentService();
 
-        if (isset($this->dsl['object_id'])){
-            if (!is_array($this->dsl['object_id'])) {
-                $this->dsl['object_id'] = array($this->dsl['object_id']);
-            }
+        $contentCollection = $this->matchContents('delete');
 
-            foreach ($this->dsl['object_id'] as $objectId) {
-
-                $content = $contentService->loadContent($objectId);
-                $contentService->deleteContent($content->contentInfo);
-            }
-        } else if (isset($this->dsl['remote_id'])) {
-            if (!is_array($this->dsl['remote_id'])) {
-                $this->dsl['remote_id'] = array($this->dsl['remote_id']);
-            }
-
-            foreach ($this->dsl['remote_id'] as $objectId) {
-                $content = $contentService->loadContentByRemoteId($objectId);
-                $contentService->deleteContent($content->contentInfo);
-            }
+        foreach ($contentCollection as $content) {
+            $contentService->deleteContent($content->contentInfo);
         }
     }
 
@@ -202,7 +239,6 @@ class ContentManager extends RepositoryExecutor
             }
 
             $createStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
-
         }
     }
 
@@ -274,13 +310,14 @@ class ContentManager extends RepositoryExecutor
     }
 
     /**
-     * Sets references to certain attributes.
-     *
+     * Sets references to certain content attributes.
      * The Content Manager currently supports setting references to object_id and location_id
      *
      * @param \eZ\Publish\API\Repository\Values\Content\Content $content
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
+     *
+     * @todo add support for other attributes: contentTypeId, contentTypeIdentifier, section, etc...
      */
     protected function setReferences($content)
     {

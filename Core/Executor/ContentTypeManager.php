@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
+use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver;
 
 /**
@@ -27,6 +28,12 @@ class ContentTypeManager extends RepositoryExecutor
     {
         // Authenticate the user
         $this->loginUser();
+
+        foreach(array('identifier', 'content_type_group', 'name_pattern', 'name', 'attributes') as $key) {
+            if (!array_key_exists($key, $this->dsl)) {
+                throw new \Exception("The '$key' key is missing in a content type creation definition");
+            }
+        }
 
         $contentTypeService = $this->repository->getContentTypeService();
         $contentTypeGroup = $contentTypeService->loadContentTypeGroup($this->dsl['content_type_group']);
@@ -83,6 +90,10 @@ class ContentTypeManager extends RepositoryExecutor
 
         $contentTypeService = $this->repository->getContentTypeService();
 
+        if (!array_key_exists('identifier', $this->dsl)) {
+            throw new \Exception("The identifier of a content type is required in order to update it.");
+        }
+
         $contentType = $contentTypeService->loadContentTypeByIdentifier($this->dsl['identifier']);
         $contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
 
@@ -118,6 +129,11 @@ class ContentTypeManager extends RepositoryExecutor
         // Add/edit attributes
         if (array_key_exists('attributes', $this->dsl)) {
             foreach ($this->dsl['attributes'] as $key => $attribute) {
+
+                if (!array_key_exists('identifier', $attribute)) {
+                    throw new \Exception("The 'identifier' of an attribute is missing in the content type update definition.");
+                }
+
                 $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
                 if ($existingFieldDefinition) {
                     // Edit existing attribute
@@ -161,14 +177,16 @@ class ContentTypeManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        if (array_key_exists('identifier', $this->dsl)) {
-            // Authenticate the user
-            $this->loginUser();
+        $this->loginUser();
 
-            $contentTypeService = $this->repository->getContentTypeService();
-            $contentType = $contentTypeService->loadContentTypeByIdentifier($this->dsl['identifier']);
-            $contentTypeService->deleteContentType($contentType);
+        $contentTypeService = $this->repository->getContentTypeService();
+
+        if (!array_key_exists('identifier', $this->dsl)) {
+            throw new \Exception("The identifier of a content type is required in order to delete it.");
         }
+
+        $contentType = $contentTypeService->loadContentTypeByIdentifier($this->dsl['identifier']);
+        $contentTypeService->deleteContentType($contentType);
     }
 
     /**
@@ -384,12 +402,11 @@ class ContentTypeManager extends RepositoryExecutor
             {
                 $ret[$key] = $val;
 
-                if ($this->referenceResolver->isReference($val)) {
-                    $ret[$key] = $this->referenceResolver->getReferenceValue($val);
-                }
-
-                if ($this->referenceResolver->isReference($value)) {
-                    $ret[$key] = $this->referenceResolver->getReferenceValue($val);
+                // we do NOT check for refs in field settings which are arrays, even though we could, maybe *should*...
+                if (!is_array($val)) {
+                    if ($this->referenceResolver->isReference($val)) {
+                        $ret[$key] = $this->referenceResolver->getReferenceValue($val);
+                    }
                 }
             }
         }
@@ -407,16 +424,16 @@ class ContentTypeManager extends RepositoryExecutor
     /**
      * Helper to find out if a Field is already defined in a ContentType
      *
-     * @param \eZ\Publish\API\Repository\Values\ContentType\ContentType $contentType
-     * @param $fieldIdentifier
-     * @return int
+     * @param ContentType $contentType
+     * @param string $fieldIdentifier
+     * @return null|FieldDefinition
      */
-    private function contentTypeHasFieldDefinition($contentType, $fieldIdentifier)
+    private function contentTypeHasFieldDefinition(ContentType $contentType, $fieldIdentifier)
     {
         $existingFieldDefinitions = $contentType->fieldDefinitions;
 
         foreach ($existingFieldDefinitions as $existingFieldDefinition) {
-            if (strcmp($fieldIdentifier, $existingFieldDefinition->identifier) == 0) {
+            if ($fieldIdentifier == $existingFieldDefinition->identifier) {
                 return $existingFieldDefinition;
             }
         }
