@@ -41,7 +41,10 @@ class RoleManager extends RepositoryExecutor
         $role = $roleService->createRole($roleCreateStruct);
 
         if (array_key_exists('policies', $this->dsl)) {
-            $this->addPolicies($role, $roleService, $this->dsl['policies']);
+            $ymlPolicies = $this->dsl['policies'];
+            foreach($ymlPolicies as $key => $ymlPolicy) {
+                $this->addPolicy($role, $roleService, $ymlPolicy);
+            }
         }
 
         if (array_key_exists('assign', $this->dsl)) {
@@ -174,7 +177,7 @@ class RoleManager extends RepositoryExecutor
 
         foreach($limitationValue as $id => $value) {
             if ($this->referenceResolver->isReference($value)) {
-                $value = $this->geferenceResolver->getReferenceValue($value);
+                $value = $this->referenceResolver->getReferenceValue($value);
                 $limitationValue[$id] = $value;
             }
         }
@@ -287,7 +290,7 @@ class RoleManager extends RepositoryExecutor
      *
      * @param \eZ\Publish\API\Repository\Values\User\Role $role
      * @param \eZ\Publish\API\Repository\RoleService $roleService
-     * @param array $policies
+     * @param array $policy
      */
     private function addPolicy(Role $role, RoleService $roleService, array $policy)
     {

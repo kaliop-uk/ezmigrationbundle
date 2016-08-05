@@ -40,7 +40,7 @@ class TagManager extends RepositoryExecutor
             $tagCreateStruct->setKeyword($keyword, $langCode);
         }
 
-        $tag = $this->tagsService->createTag($tagCreateStruct);
+        $tag = $this->tagService->createTag($tagCreateStruct);
         $this->setReferences($tag);
     }
 
