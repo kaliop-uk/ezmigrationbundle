@@ -26,7 +26,7 @@ class Filesystem implements LoaderInterface
     }
 
     /**
-     * @param array $paths either dir names or file names
+     * @param array $paths either dir names or file names. If empty, will look in all registered bundles subdir
      * @return MigrationDefinition[] migrations definitions. key: name, value: file path
      * @throws \Exception
      */
@@ -36,7 +36,7 @@ class Filesystem implements LoaderInterface
     }
 
     /**
-     * @param array $paths either dir names or file names
+     * @param array $paths either dir names or file names. If empty, will look in all registered bundles subdir
      * @return MigrationDefinitionCollection migrations definitions. key: name, value: contents of the definition, as string
      * @throws \Exception
      */

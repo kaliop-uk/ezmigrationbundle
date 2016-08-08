@@ -62,13 +62,8 @@ EOT
     {
         $migrationsService = $this->getMigrationService();
 
-        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path')) ;
+        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path'));
         $migrations = $migrationsService->getMigrations();
-
-        if (!count($migrationDefinitions)) {
-            $output->writeln('<info>No migrations found</info>');
-            return;
-        }
 
         // filter away all migrations except 'to do' ones
         $toExecute = array();
@@ -77,7 +72,23 @@ EOT
                 $toExecute[$name] = $migrationsService->parseMigrationDefinition($migrationDefinition);
             }
         }
-        // just in case...
+
+        // if user wants to execute 'all' migrations: look for some which are registered in the database even if not
+        // found by the loader
+        if (empty($input->getOption('path'))) {
+            foreach ($migrations as $migration) {
+                if ($migration->status == Migration::STATUS_TODO && !isset($toExecute[$migration->name])) {
+                    $migrationDefinitions = $migrationsService->getMigrationsDefinitions(array($migration->path));
+                    if (count($migrationDefinitions)) {
+                        $migrationDefinition = reset($migrationDefinitions);
+                        $toExecute[$migration->name] = $migrationsService->parseMigrationDefinition($migrationDefinition);
+                    } else {
+                        // q: shall we raise a warning here ?
+                    }
+                }
+            }
+        }
+
         ksort($toExecute);
 
         if (!count($toExecute)) {
@@ -126,7 +137,7 @@ EOT
 
         foreach($toExecute as $name => $migrationDefinition) {
 
-            // let's skip migrations that we know are invalid - user was warned and he decide to proceed anyway
+            // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
             if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
                 $output->writeln("<comment>Skipping $name</comment>\n");
                 continue;

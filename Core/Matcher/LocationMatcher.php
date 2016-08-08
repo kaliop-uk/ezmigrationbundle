@@ -6,6 +6,10 @@ use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 
+/**
+ * @todo extend to allow matching by visibility, depth, ...
+ * @todo extend to allow matching on multiple conditions (AND)
+ */
 class LocationMatcher extends AbstractMatcher
 {
     const MATCH_CONTENT_ID = 'content_id';
@@ -20,6 +24,15 @@ class LocationMatcher extends AbstractMatcher
         self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID
     );
     protected $returns = 'Location';
+
+    /**
+     * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @return LocationCollection
+     */
+    public function match(array $conditions)
+    {
+        return $this->matchLocation($conditions);
+    }
 
     /**
      * @param array $conditions key: condition, value: value: int / string / int[] / string[]

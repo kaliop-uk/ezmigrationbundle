@@ -67,10 +67,11 @@ class MigrationService
             }
         }
 
-        // we can not call loadDefinitions with an empty array, or it will start looking in bundles...
+        // we can not call loadDefinitions with an empty array using the Filesystem loader, or it will start looking in bundles...
         if (empty($handledDefinitions) && !empty($paths)) {
             return new MigrationDefinitionCollection();
         }
+
         return $this->loader->loadDefinitions($handledDefinitions);
     }
 

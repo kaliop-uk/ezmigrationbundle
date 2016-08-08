@@ -3,8 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Repository;
+use Kaliop\eZMigrationBundle\API\MatcherInterface;
 
-class AbstractMatcher
+abstract class AbstractMatcher implements MatcherInterface
 {
     /** @var string[] $allowedConditions the keywords we allow to be used for matching on*/
     protected $allowedConditions = array();
@@ -41,4 +42,6 @@ class AbstractMatcher
             }
         }
     }
+
+    abstract public function match(array $conditions);
 }

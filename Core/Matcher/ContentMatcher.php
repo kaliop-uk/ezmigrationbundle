@@ -6,6 +6,10 @@ use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 
+/**
+ * @todo extend to allow matching by object state, status, section
+ * @todo extend to allow matching on multiple conditions (AND)
+ */
 class ContentMatcher extends AbstractMatcher
 {
     const MATCH_CONTENT_ID = 'content_id';
@@ -21,6 +25,15 @@ class ContentMatcher extends AbstractMatcher
         self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER
     );
     protected $returns = 'Content';
+
+    /**
+     * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @return ContentCollection
+     */
+    public function match(array $conditions)
+    {
+        return $this->matchContent($conditions);
+    }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
