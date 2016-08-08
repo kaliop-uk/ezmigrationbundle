@@ -1,5 +1,5 @@
-Version 2.0.beta
-================
+Version 2.0.0-beta
+==================
 
 This version is a complete restructuring of the codebase, and brings along with it a few breaking changes.
 
@@ -29,21 +29,19 @@ The main changes are:
 
 * the `update` command has been renamed to `migrate` (but the previous name will be kept as alias for a while)
 
-* a new command `migration` is available. For the moment, it allows simply to delete existing migrations from the database
-    table, making it possible to retry migrations which previously failed.
+* a new command `migration` is available. For the moment, it allows to delete existing migrations from the database
+    table, making it possible to retry migrations which previously failed, as well as to manually add to the table
+    migration definitions which are outside of the expected paths.
 
 * the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
     failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
     transactions and probably more 
 
-* the `location/create` action now allows a more flexible way to identify the objects to which the new location is to
-    be added. This will be extended to all other actions in the future
-
-* php migrations are now fully supported (they used to have naming problems)
+* php migrations are now fully supported (they used to have naming problems fpr the generated php classes)
 
 * the validity of migration definition files is now checked before migration execution is attempted
 
-* the console commands now give more detailed, helpful error messages
+* the console commands now give more detailed, helpful error messages. The same happens when migration yml is invalid
 
 * it is much easier now to extend the bundle, as proper Dependency Injection is used everywhere, as well as tagged services
 
@@ -56,7 +54,7 @@ The main changes are:
         content to update and delete can be identified via the `match` keyword;
         for creating locations, the `match` keyword can also be used to identify the target contents.
         In both cases, `match` allows to identify content by object id, object remote id, location id,
-        location remote id, parent location id, parent location remote id and content type identifier
+        location remote id, parent location id, parent location remote id and content type identifier.
 
     - the remote_id key used when updating objects will not match the location remote_id any more (it used to try that
         if matching the object remote id failed). You can use the 'match' key instead

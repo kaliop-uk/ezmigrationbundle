@@ -1,0 +1,7 @@
+default:
+    suites:
+        default:
+            contexts: [Kaliop\eZMigrationBundle\features\Context\FeatureContext]
+
+extensions:
+    Behat\Symfony2Extension: ~

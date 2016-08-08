@@ -7,8 +7,8 @@ use eZ\Publish\Core\Repository\Values\ContentType\ContentTypeGroup;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\SPI\Persistence\Content\Location;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Behat\Symfony2Extension\Context\KernelAwareInterface;
-use Behat\Behat\Context\BehatContext;
+use Behat\Symfony2Extension\Context\KernelAwareContext;
+//use Behat\Behat\Context\BehatContext;
 use Behat\Behat\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
 use Behat\Behat\Exception\UndefinedException;
@@ -19,10 +19,9 @@ use DateTime;
 /**
  * Feature context.
  */
-class FeatureContext extends BehatContext implements KernelAwareInterface
+class FeatureContext /*extends BehatContext*/ implements KernelAwareContext
 {
     private $kernel;
-    private $parameters;
 
     const DEFAULT_LANGUAGE_CODE = 'eng-GB';
 
@@ -39,16 +38,6 @@ class FeatureContext extends BehatContext implements KernelAwareInterface
      * @var mixed
      */
     private $stepResults;
-
-    /**
-     * Initializes context with parameters from behat.yml.
-     *
-     * @param array $parameters
-     */
-    public function __construct(array $parameters)
-    {
-        $this->parameters = $parameters;
-    }
 
     /**
      * Sets HttpKernel instance.

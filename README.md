@@ -201,10 +201,9 @@ To run the unit tests just point PHPUnit to the bundle directory:
 
     bin/phpunit vendor/kaliop/ezmigrationbundle
 
-The Behat instructions are left here for future reference when we get it working correctly with eZ Publish 5.
 To run the BDD test with Behat:
 
-    bin/behat @KaliopBundleMigrationBundle
+    bin/behat -c vendor/kaliop/ezmigrationbundle/behat.yml vendor/kaliop/ezmigrationbundle/features
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)
