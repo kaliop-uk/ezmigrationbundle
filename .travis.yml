@@ -102,7 +102,7 @@ after_script:
   - if [ "$TRAVIS_PHP_VERSION" = "5.6" -a -f coverage.clover ]; then wget https://scrutinizer-ci.com/ocular.phar; fi
   - if [ "$TRAVIS_PHP_VERSION" = "5.6" -a -f coverage.clover ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
   # Upload code-coverage to CodeClimate. NB: this works only when the CODECLIMATE_REPO_TOKEN env var has been set (we do it in the Travis config via the GUI)
-  - if [ "$TRAVIS_PHP_VERSION" = "5.6" -a -f coverage.clover ]; then ./vendor/bin/test-reporter --coverage-report=coverage.clover; fi
+  #- if [ "$TRAVIS_PHP_VERSION" = "5.6" -a -f coverage.clover ]; then ./vendor/bin/test-reporter --coverage-report=coverage.clover; fi
 
 # reduce depth (history) of git checkout
 git:

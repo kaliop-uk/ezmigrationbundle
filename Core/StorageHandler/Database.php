@@ -310,6 +310,7 @@ class Database implements StorageHandlerInterface
         $t->addColumn('status', 'integer', array('default ' => Migration::STATUS_TODO));
         $t->addColumn('execution_error', 'string', array('length' => 4000, 'notnull' => false));
         $t->setPrimaryKey(array('migration'));
+        $t->addIndex(array('path')); // in case users want to look up migrations by their full path
 
         foreach($schema->toSql($dbPlatform) as $sql) {
             $this->dbHandler->exec($sql);

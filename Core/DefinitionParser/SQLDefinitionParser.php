@@ -63,9 +63,10 @@ class SQLDefinitionParser implements DefinitionParserInterface
         );
     }
 
+    // allow both aaaa_mysql_etc.sql and aaaa_mysql.sql
     protected function getDBFromFile($fileName)
     {
-        $parts = explode('_', $fileName);
+        $parts = explode('_', preg_replace('/\.sql$/', '', $fileName));
         return isset($parts[1]) ? $parts[1] : null;
     }
 }
