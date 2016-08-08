@@ -15,6 +15,12 @@ abstract class CommandTest extends WebTestCase
     protected $output;
 
 
+    public function __construct($name = null, array $data = array(), $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+        // seems like this can not be used outside of the constructor...
+        $this->dslDir = __DIR__ . '/../dsl';
+    }
     protected function setUp()
     {
         $this->container = $this->getContainer();
@@ -23,7 +29,6 @@ abstract class CommandTest extends WebTestCase
         $this->app->setAutoExit(false);
         $this->output = new BufferedOutput();
         $this->leftovers = array();
-        $this->dslDir = __DIR__ . '/../dsl';
     }
 
     protected function tearDown()
