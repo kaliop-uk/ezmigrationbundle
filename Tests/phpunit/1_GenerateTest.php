@@ -50,7 +50,6 @@ class GenerateTest extends CommandTest
 
     protected function saveGeneratedFile($output)
     {
-var_dump($output);
         if (preg_match('/Generated new migration file: +(.*)/', $output, $matches)) {
             $this->leftovers[] = $matches[1];
             return $matches[1];

@@ -65,7 +65,7 @@ install:
   #- composer update
 
   # Re-enable xdebug for when we need to generate code coverage
-  - if [ "$TRAVIS_PHP_VERSION" = "5.6" -]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
+  - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
 
 before_script:
   # Set up configuration files
