@@ -14,37 +14,37 @@ class GenerateTest extends CommandTest
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, '--format' => 'sql'));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, '--format' => 'php'));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated'));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated', '--format' => 'sql'));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated', '--format' => 'php'));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
     }
 

@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\FieldType;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
@@ -83,7 +84,7 @@ class ContentManager extends RepositoryExecutor
 
         // FIXME: Defaulting in language code for now
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, self::DEFAULT_LANGUAGE_CODE);
-        $this->setFields($contentCreateStruct, $this->dsl['attributes']);
+        $this->setFields($contentCreateStruct, $this->dsl['attributes'], $contentType);
 
         if (array_key_exists('remote_id', $this->dsl)) {
             $contentCreateStruct->remoteId = $this->dsl['remote_id'];
@@ -125,6 +126,8 @@ class ContentManager extends RepositoryExecutor
 
     /**
      * Handle the content update migration action type
+     *
+     * @todo handle updating of more metadata fields
      */
     protected function update()
     {
@@ -173,7 +176,7 @@ class ContentManager extends RepositoryExecutor
             $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
             if (array_key_exists('attributes', $this->dsl)) {
-                $this->setFieldsToUpdate($contentUpdateStruct, $this->dsl['attributes'], $contentType);
+                $this->setFields($contentUpdateStruct, $this->dsl['attributes'], $contentType);
             }
 
             $draft = $contentService->createContentDraft($contentInfo);
@@ -218,54 +221,28 @@ class ContentManager extends RepositoryExecutor
     /**
      * Helper function to set the fields of a ContentCreateStruct based on the DSL attribute settings.
      *
-     * @param ContentCreateStruct $createStruct
+     * @param ContentCreateStruct|ContentUpdateStruct $createOrUpdateStruct
+     * @param ContentType $contentType
      * @param array $fields
      */
-    protected function setFields(ContentCreateStruct &$createStruct, array $fields)
+    protected function setFields(&$createOrUpdateStruct, array $fields, ContentType $contentType)
     {
         foreach ($fields as $field) {
             // each $field is one key value pair
             // eg.: $field = array($fieldIdentifier => $fieldValue)
             $fieldIdentifier = key($field);
 
-            $fieldTypeIdentifier = $createStruct->contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
+            $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
 
             if (is_array($field[$fieldIdentifier])) {
                 // Complex field needs special handling eg.: ezimage, ezbinaryfile
-                $fieldValue = $this->handleComplexField($fieldTypeIdentifier, $field[$fieldIdentifier]);
+                $fieldValue = $this->getComplexFieldValue($field[$fieldIdentifier], $fieldType, $this->context);
             } else {
                 // Primitive field eg.: ezstring, ezxml etc.
-                $fieldValue = $this->handleSingleField($fieldTypeIdentifier, $fieldIdentifier, $field[$fieldIdentifier]);
+                $fieldValue = $this->getSingleFieldValue($field[$fieldIdentifier], $fieldType, $this->context);
             }
 
-            $createStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
-        }
-    }
-
-    /**
-     * Helper function to set the fields of a ContentUpdateStruct based on the DSL attribute settings.
-     *
-     * @param ContentUpdateStruct $updateStruct
-     * @param array $fields
-     */
-    protected function setFieldsToUpdate(ContentUpdateStruct &$updateStruct, array $fields, ContentType $contentType)
-    {
-        foreach ($fields as $field) {
-            // each $field is one key value pair
-            // eg.: $field = array($fieldIdentifier => $fieldValue)
-            $fieldIdentifier = key($field);
-
-            $fieldTypeIdentifier = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier]->fieldTypeIdentifier;
-
-            if (is_array($field[$fieldIdentifier])) {
-                // Complex field needs special handling eg.: ezimage, ezbinaryfile
-                $fieldValue = $this->handleComplexField($fieldTypeIdentifier, $field[$fieldIdentifier]);
-            } else {
-                // Primitive field eg.: ezstring, ezxml etc.
-                $fieldValue = $this->handleSingleField($fieldTypeIdentifier, $fieldIdentifier, $field[$fieldIdentifier]);
-            }
-
-            $updateStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
+            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
         }
     }
 
@@ -273,15 +250,15 @@ class ContentManager extends RepositoryExecutor
      * Create the field value for a primitive field
      * This function is needed to get past validation on Checkbox fieldtype (eZP bug)
      *
-     * @param string $fieldTypeIdentifier
-     * @param string $identifier
      * @param mixed $value
+     * @param FieldType $fieldType
+     * @param array $context
      * @throws \InvalidArgumentException
      * @return object
      */
-    protected function handleSingleField($fieldTypeIdentifier, $identifier, $value)
+    protected function getSingleFieldValue($value, FieldType $fieldType, array $context = array())
     {
-        switch ($fieldTypeIdentifier) {
+        switch ($fieldType->getFieldTypeIdentifier()) {
             case 'ezboolean':
                 $fieldValue = new CheckboxValue(($value == 1) ? true : false);
                 break;
@@ -299,14 +276,14 @@ class ContentManager extends RepositoryExecutor
     /**
      * Create the field value for a complex field eg.: ezimage, ezfile
      *
-     * @param string $fieldTypeIdentifier
+     * @param FieldType $fieldType
      * @param array $fieldValueArray
      * @param array $context
      * @return object
      */
-    protected function handleComplexField($fieldTypeIdentifier, array $fieldValueArray, array $context = array())
+    protected function getComplexFieldValue(array $fieldValueArray, FieldType $fieldType, array $context = array())
     {
-        return $this->complexFieldManager->getComplexFieldValue($fieldTypeIdentifier, $fieldValueArray, $context);
+        return $this->complexFieldManager->getComplexFieldValue($fieldType, $fieldValueArray, $context);
     }
 
     /**

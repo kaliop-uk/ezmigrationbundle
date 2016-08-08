@@ -62,6 +62,7 @@ The main changes are:
     - the remote_id of the main location of a content is not updated automatically any more when the remote_id
         of the content is. You can use a separate step in your migration for that 
 
+    - the 'identifier' field used to identify content types can now be a reference
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)

@@ -22,26 +22,26 @@ class MigrateTest extends CommandTest
 
         // Make user migration is not in the db: delete it, ignoring errors
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
+        $this->app->run($input, $this->output);
+        $this->fetchOutput();
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegexp('?Added migration?', $output);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         // check that there are no notes after adding the migration
         $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
     }
 
     /**
@@ -57,26 +57,26 @@ class MigrateTest extends CommandTest
 
         // Make user migration is not in the db: delete it, ignoring errors
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
+        $this->app->run($input, $this->output);
+        $this->fetchOutput();
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegexp('?Added migration?', $output);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         // check that there are no notes after adding the migration
         $this->assertRegexp('?Skipping ' . basename($filePath) . '?', $output);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
     }
 
     public function goodDSLProvider()

@@ -3,10 +3,12 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Author\Value as AuthorValue;
-use eZ\Publish\Core\FieldType\Author\AuthorCollection;
 use eZ\Publish\Core\FieldType\Author\Author;
 use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
 
+/**
+ * @todo is this needed at all ?
+ */
 class EzAuthor extends AbstractComplexField implements ComplexFieldInterface
 {
     /**

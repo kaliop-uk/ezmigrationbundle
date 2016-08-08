@@ -1,0 +1,46 @@
+# test  creation/updating/deleting of a custom content type
+
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    name: Kaliop Migration Bundle Test Class 1
+    identifier: kmb_test_1
+    description: Kaliop Migration Bundle Test Class 1
+    name_pattern: <title>
+    attributes:
+        -
+            type: ezstring
+            name: Title
+            identifier: title
+            description: Title
+            required: true
+            searchable: true
+    references:
+        -
+            identifier: kmb_test_1
+            attribute: identifier
+
+-
+    type: content_type
+    mode: update
+    identifier: reference:kmb_test_1
+    attributes:
+        -
+            type: ezstring
+            name: Title
+            identifier: title
+            description: Title
+            required: true
+            searchable: true
+        -
+            type: ezstring
+            name: Subtitle
+            identifier: subtitle
+            required: false
+            searchable: false
+
+-
+    type: content_type
+    mode: delete
+    identifier: reference:kmb_test_1

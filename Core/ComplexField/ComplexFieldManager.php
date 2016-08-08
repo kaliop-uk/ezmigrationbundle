@@ -24,6 +24,7 @@ class ComplexFieldManager
     /**
      * @param string $fieldTypeIdentifier
      * @param array $fieldValueArray
+     * @param array $context
      * @return ComplexFieldInterface
      */
     public function getComplexFieldValue($fieldTypeIdentifier, array $fieldValueArray, array $context = array())
@@ -35,7 +36,8 @@ class ComplexFieldManager
         }
         else
         {
-            throw new \InvalidArgumentException("Field of type '$fieldTypeIdentifier' can not be handled as it does not have a complex field class defined");
+            // use the fromHash method
+            //throw new \InvalidArgumentException("Field of type '$fieldTypeIdentifier' can not be handled as it does not have a complex field class defined");
         }
     }
 }

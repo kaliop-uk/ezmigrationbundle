@@ -94,7 +94,12 @@ class ContentTypeManager extends RepositoryExecutor
             throw new \Exception("The identifier of a content type is required in order to update it.");
         }
 
-        $contentType = $contentTypeService->loadContentTypeByIdentifier($this->dsl['identifier']);
+        $contentTypeIdentifier = $this->dsl['identifier'];
+        if ($this->referenceResolver->isReference($contentTypeIdentifier)) {
+            $contentTypeIdentifier = $this->referenceResolver->getReferenceValue($contentTypeIdentifier);
+        }
+        $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
+
         $contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
 
         $contentTypeUpdateStruct = $contentTypeService->newContentTypeUpdateStruct();
@@ -185,7 +190,12 @@ class ContentTypeManager extends RepositoryExecutor
             throw new \Exception("The identifier of a content type is required in order to delete it.");
         }
 
-        $contentType = $contentTypeService->loadContentTypeByIdentifier($this->dsl['identifier']);
+        $contentTypeIdentifier = $this->dsl['identifier'];
+        if ($this->referenceResolver->isReference($contentTypeIdentifier)) {
+            $contentTypeIdentifier = $this->referenceResolver->getReferenceValue($contentTypeIdentifier);
+        }
+        $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
+
         $contentTypeService->deleteContentType($contentType);
     }
 
