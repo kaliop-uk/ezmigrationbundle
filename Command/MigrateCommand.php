@@ -62,7 +62,8 @@ EOT
     {
         $migrationsService = $this->getMigrationService();
 
-        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path'));
+        $paths = $input->getOption('path');
+        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($paths);
         $migrations = $migrationsService->getMigrations();
 
         // filter away all migrations except 'to do' ones
@@ -75,7 +76,7 @@ EOT
 
         // if user wants to execute 'all' migrations: look for some which are registered in the database even if not
         // found by the loader
-        if (empty($input->getOption('path'))) {
+        if (empty($paths)) {
             foreach ($migrations as $migration) {
                 if ($migration->status == Migration::STATUS_TODO && !isset($toExecute[$migration->name])) {
                     $migrationDefinitions = $migrationsService->getMigrationsDefinitions(array($migration->path));
