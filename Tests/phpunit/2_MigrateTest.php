@@ -82,6 +82,10 @@ class MigrateTest extends CommandTest
     public function goodDSLProvider()
     {
         $dslDir = $this->dslDir.'/good';
+        if(!is_dir($dslDir)) {
+            return array();
+        }
+
         $out = array();
         foreach(scandir($dslDir) as $fileName) {
             $filePath = $dslDir . '/' . $fileName;
@@ -95,6 +99,10 @@ class MigrateTest extends CommandTest
     public function badDSLProvider()
     {
         $dslDir = $this->dslDir.'/bad';
+        if(!is_dir($dslDir)) {
+            return array();
+        }
+
         $out = array();
         foreach(scandir($dslDir) as $fileName) {
             $filePath = $dslDir . '/' . $fileName;

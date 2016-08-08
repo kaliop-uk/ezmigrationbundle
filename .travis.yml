@@ -29,6 +29,10 @@ matrix:
     - php: 7.0
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/behatbundle:~6.3' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel
 
+  allow_failures:
+    # this currently fails because of eZPublish services.yml not quoting usage of @, despite it being tested with Sf 2.8...
+    - php: 7.0
+
 before_install:
   # No need for a web server, until we start testing using Selenium
   #- sudo apt-get update

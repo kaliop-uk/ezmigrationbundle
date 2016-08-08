@@ -6,13 +6,14 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 abstract class CommandTest extends WebTestCase
 {
-    protected $dslDir =  __DIR__.'/../dsl';
+    protected $dslDir;
     protected $targetBundle = 'EzPublishCoreBundle'; // it is always present :-)
     protected $leftovers = array();
 
     protected $container;
     protected $app;
     protected $output;
+
 
     protected function setUp()
     {
@@ -22,6 +23,7 @@ abstract class CommandTest extends WebTestCase
         $this->app->setAutoExit(false);
         $this->output = new BufferedOutput();
         $this->leftovers = array();
+        $this->dslDir = __DIR__ . '/../dsl';
     }
 
     protected function tearDown()
