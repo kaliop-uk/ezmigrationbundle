@@ -2,7 +2,7 @@
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\StreamOutput;
 
 abstract class CommandTest extends WebTestCase
 {
@@ -21,14 +21,38 @@ abstract class CommandTest extends WebTestCase
         // seems like this can not be used outside of the constructor...
         $this->dslDir = __DIR__ . '/../dsl';
     }
+
     protected function setUp()
     {
         $this->container = $this->getContainer();
 
         $this->app = new Application(static::$kernel);
         $this->app->setAutoExit(false);
-        $this->output = new BufferedOutput();
+        $fp = fopen('php://temp', 'r+');
+        $this->output = new StreamOutput($fp);
         $this->leftovers = array();
+    }
+
+    /**
+     * Fetches the data from the output buffer, resetting it.
+     * It would be nice to use BufferedOutput, but that is not available in Sf 2.3...
+     * @return null|string
+     */
+    protected function fetchOutput()
+    {
+        if (!$this->output) {
+            return null;
+        }
+
+        $fp = $this->output->getStream();
+        rewind($fp);
+        $out = stream_get_contents($fp);
+
+        fclose($fp);
+        $fp = fopen('php://temp', 'r+');
+        $this->output = new StreamOutput($fp);
+
+        return $out;
     }
 
     protected function tearDown()
@@ -38,7 +62,9 @@ abstract class CommandTest extends WebTestCase
         }
 
         // clean buffer, just in case...
-        $this->output->fetch();
+        $fp = $this->output->getStream();
+        fclose($fp);
+        $this->output = null;
     }
 
     protected function getContainer()

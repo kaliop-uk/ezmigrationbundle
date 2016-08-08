@@ -13,43 +13,44 @@ class GenerateTest extends CommandTest
     {
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle));
         $exitCode = $this->app->run($input, $this->output);
-        $output = $this->output->fetch();
+        $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, '--format' => 'sql'));
         $exitCode = $this->app->run($input, $this->output);
-        $output = $this->output->fetch();
+        $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, '--format' => 'php'));
         $exitCode = $this->app->run($input, $this->output);
-        $output = $this->output->fetch();
+        $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated'));
         $exitCode = $this->app->run($input, $this->output);
-        $output = $this->output->fetch();
+        $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated', '--format' => 'sql'));
         $exitCode = $this->app->run($input, $this->output);
-        $output = $this->output->fetch();
+        $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated', '--format' => 'php'));
         $exitCode = $this->app->run($input, $this->output);
-        $output = $this->output->fetch();
+        $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
     }
 
     protected function saveGeneratedFile($output)
     {
+var_dump($output);
         if (preg_match('/Generated new migration file: +(.*)/', $output, $matches)) {
             $this->leftovers[] = $matches[1];
             return $matches[1];
@@ -62,7 +63,7 @@ class GenerateTest extends CommandTest
     {
         $input = new ArrayInput(array('command' => 'kaliop:migration:status'));
         $exitCode = $this->app->run($input, $this->output);
-        $output = $this->output->fetch();
+        $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode);
         $this->assertRegExp('?\| ' . basename($filePath) . ' +\| not executed \|?', $output );
     }
