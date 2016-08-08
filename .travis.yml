@@ -86,13 +86,7 @@ before_script:
 
 script:
   # Finally! :-D
-  # TODO run proper tests - not this poor man's substitute!!!
-  - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:status
-  - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:migrate -n
-  - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:migration -n --delete 20100101000200_MigrateV1ToV2.php
-  - php vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/console --env=behat kaliop:migration:status
-
-  ###- phpunit --colors --coverage-clover=coverage.clover Tests/phpunit
+  - phpunit --colors --coverage-clover=coverage.clover Tests/phpunit
 
 after_failure:
   # Display as much info as we can to help developers

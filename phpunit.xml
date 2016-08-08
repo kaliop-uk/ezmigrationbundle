@@ -21,7 +21,7 @@
 
     <testsuites>
         <testsuite name="Kaliop Bundle Migration Test Suite">
-            <directory>./Tests/phpunit/BundleMigration/</directory>
+            <directory>./Tests/phpunit/</directory>
         </testsuite>
     </testsuites>
 

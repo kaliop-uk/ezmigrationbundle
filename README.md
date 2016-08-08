@@ -193,15 +193,17 @@ override, take a look at the [services.yml file](Resources/config/services.yml).
 
 ### Running tests
 
-*NB: the testing framework is known to be broken in the current release. It will be fixed as soon as possible*
+The bundle uses both PHPUnit and Behat to run functional tests.
+*NB: the Behat tests are known to be broken in the current release. This will be fixed as soon as possible*
 
-The bundle has both unit tests and BDD features.
+To run the PHPUnit tests:
 
-To run the unit tests just point PHPUnit to the bundle directory:
+    export KERNEL_DIR=ezpublish
+    export SYMFONY_ENV=behat (or whatever your test env is)
 
     bin/phpunit vendor/kaliop/ezmigrationbundle
 
-To run the BDD test with Behat:
+To run the Behat tests:
 
     bin/behat -c vendor/kaliop/ezmigrationbundle/behat.yml vendor/kaliop/ezmigrationbundle/features
 
