@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
+use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
 /**
  * Implements the actions for managing (create/update/delete) Content in the system through
@@ -19,9 +20,11 @@ class ContentManager extends RepositoryExecutor
     protected $supportedStepTypes = array('content');
 
     protected $complexFieldManager;
+    protected $contentMatcher;
 
-    public function __construct($complexFieldManager)
+    public function __construct(ContentMatcher $contentMatcher, $complexFieldManager)
     {
+        $this->contentMatcher = $contentMatcher;
         $this->complexFieldManager = $complexFieldManager;
     }
 

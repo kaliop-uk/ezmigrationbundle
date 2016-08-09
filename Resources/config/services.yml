@@ -140,6 +140,7 @@ services:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.content_manager.class%'
         arguments:
+            - '@ez_migration_bundle.content_matcher'
             - '@ez_migration_bundle.complex_field_manager'
         tags:
             - { name: ez_migration_bundle.executor }

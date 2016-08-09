@@ -218,7 +218,7 @@ class MigrationService
                 $e->getMessage()
             ));
 
-            throw new MigrationStepExecutionException($this->getFullExceptionMessage($e), $i, $e);
+            throw new MigrationStepExecutionException($this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine(), $i, $e);
         }
     }
 

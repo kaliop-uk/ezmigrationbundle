@@ -41,7 +41,7 @@ class ContentMatcher extends AbstractMatcher
      */
     public function matchContent(array $conditions)
     {
-        $conditions = $this->validateConditions($conditions);
+        $this->validateConditions($conditions);
 
         foreach ($conditions as $key => $values) {
 

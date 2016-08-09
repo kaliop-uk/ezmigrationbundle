@@ -1,5 +1,5 @@
 
-# This file will be appended to the equivalent on from eZPublish Community distribution
+# This file will be appended to the equivalent one from eZPublish Community distribution
 
 parameters:
     ezpublish.kernel.root_dir: %kernel.root_dir%/../../ezpublish-kernel

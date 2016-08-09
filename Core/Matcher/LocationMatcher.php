@@ -40,6 +40,8 @@ class LocationMatcher extends AbstractMatcher
      */
     public function matchLocation(array $conditions)
     {
+        $this->validateConditions($conditions);
+
         foreach ($conditions as $key => $values) {
 
             if (!is_array($values)) {
