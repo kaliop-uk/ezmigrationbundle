@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 
 /**
- * @todo extend to allow matching by visibility, depth, ...
+ * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
  * @todo extend to allow matching on multiple conditions (AND)
  */
 class LocationMatcher extends AbstractMatcher

@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\FieldType;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
+use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
@@ -254,14 +255,14 @@ class ContentManager extends RepositoryExecutor
      * This function is needed to get past validation on Checkbox fieldtype (eZP bug)
      *
      * @param mixed $value
-     * @param FieldType $fieldType
+     * @param FieldDefinition $fieldDefinition
      * @param array $context
      * @throws \InvalidArgumentException
      * @return object
      */
-    protected function getSingleFieldValue($value, FieldType $fieldType, array $context = array())
+    protected function getSingleFieldValue($value, FieldDefinition $fieldDefinition, array $context = array())
     {
-        switch ($fieldType->getFieldTypeIdentifier()) {
+        switch ($fieldDefinition->fieldTypeIdentifier) {
             case 'ezboolean':
                 $fieldValue = new CheckboxValue(($value == 1) ? true : false);
                 break;
@@ -279,14 +280,14 @@ class ContentManager extends RepositoryExecutor
     /**
      * Create the field value for a complex field eg.: ezimage, ezfile
      *
-     * @param FieldType $fieldType
+     * @param FieldDefinition $fieldDefinition
      * @param array $fieldValueArray
      * @param array $context
      * @return object
      */
-    protected function getComplexFieldValue(array $fieldValueArray, FieldType $fieldType, array $context = array())
+    protected function getComplexFieldValue(array $fieldValueArray, FieldDefinition $fieldDefinition, array $context = array())
     {
-        return $this->complexFieldManager->getComplexFieldValue($fieldType, $fieldValueArray, $context);
+        return $this->complexFieldManager->getComplexFieldValue($fieldDefinition->fieldTypeIdentifier, $fieldValueArray, $context);
     }
 
     /**
