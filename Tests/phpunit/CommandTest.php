@@ -74,11 +74,18 @@ abstract class CommandTest extends WebTestCase
         if (null !== static::$kernel) {
             static::$kernel->shutdown();
         }
+        if (!isset($_SERVER['SYMFONY_ENV'])) {
+            throw new \Exception("Please define the environment variable SYMFONY_ENV to specify the environment to use for the tests");
+        }
         // run in our own test environment. Sf by default uses the 'test' one. We let phpunit.xml set it...
         $options = array(
             'environment' => $_SERVER['SYMFONY_ENV']
         );
-        static::$kernel = static::createKernel($options);
+        try {
+            static::$kernel = static::createKernel($options);
+        } catch(\RuntimeException $e) {
+            throw new \RuntimeException($e->getMessage() . " Did you forget to define the environment variable KERNEL_DIR?", $e->getCode(), $e->getPrevious());
+        }
         static::$kernel->boot();
         return static::$kernel->getContainer();
     }

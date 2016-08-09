@@ -22,6 +22,8 @@ class AbstractCollection extends \ArrayObject
                 $this->throwInvalid($value);
             }
         }
+
+        parent::__construct($input, $flags, $iterator_class);
     }
 
     /**
@@ -32,10 +34,13 @@ class AbstractCollection extends \ArrayObject
         if (!is_a($value, $this->allowedClass)) {
             $this->throwInvalid($value);
         }
+
+        return parent::append($value);
     }
 
     /**
      * @param mixed $input
+     * @return array the old array
      */
     public function exchangeArray ($input)
     {
@@ -44,6 +49,8 @@ class AbstractCollection extends \ArrayObject
                 $this->throwInvalid($value);
             }
         }
+
+        return parent::exchangeArray($input);
     }
 
     /**
@@ -55,6 +62,8 @@ class AbstractCollection extends \ArrayObject
         if (!is_a($newval, $this->allowedClass)) {
             $this->throwInvalid($newval);
         }
+
+        return parent::offsetSet($index , $newval);
     }
 
     protected function throwInvalid($newval)

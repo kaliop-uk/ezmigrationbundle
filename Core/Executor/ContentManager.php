@@ -298,7 +298,7 @@ class ContentManager extends RepositoryExecutor
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      *
-     * @todo add support for other attributes: contentTypeId, contentTypeIdentifier, section, etc...
+     * @todo add support for other attributes: remote ids, contentTypeId, contentTypeIdentifier, section, etc...
      */
     protected function setReferences($content)
     {
