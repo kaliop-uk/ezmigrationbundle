@@ -10,6 +10,7 @@ use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use eZ\Publish\API\Repository\Repository;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 
 class MigrationService
 {
@@ -95,7 +96,8 @@ class MigrationService
     }
 
     /**
-     * @param Migration $migration
+     * @param MigrationDefinition $migrationDefinition
+     * @return Migration
      */
     public function addMigration(MigrationDefinition $migrationDefinition)
     {
@@ -168,10 +170,14 @@ class MigrationService
         $this->repository->beginTransaction();
         try {
 
+            $i = 1;
+
             foreach($migrationDefinition->steps as $step) {
                 // we validated the fact that we have a good executor at parsing time
                 $executor = $this->executors[$step->type];
                 $executor->execute($step);
+
+                $i++;
             }
 
             $status = Migration::STATUS_DONE;
@@ -185,10 +191,22 @@ class MigrationService
                 $status
             ));
 
-            $this->repository->commit();
+            try {
+                $this->repository->commit();
+            } catch(\RuntimeException $e) {
+                // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
+                // already, we get an exception a this point. Extremely poor design, but what can we do ?
+                /// @todo log warning
+            }
 
         } catch(\Exception $e) {
-            $this->repository->rollBack();
+            try {
+                $this->repository->rollBack();
+            } catch(\RuntimeException $e2) {
+                // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
+                // already, we get an exception a this point. Extremely poor design, but what can we do ?
+                /// @todo log error
+            }
 
             /// set migration as failed
             $this->storageHandler->endMigration(new Migration(
@@ -200,7 +218,44 @@ class MigrationService
                 $e->getMessage()
             ));
 
-            throw $e;
+            throw new MigrationStepExecutionException($this->getFullExceptionMessage($e), $i, $e);
         }
+    }
+
+    /**
+     * Turns eZPublish cryptic exceptions into something more palatable for random devs
+     * @todo should this be moved to a lower layer ?
+     *
+     * @param \Exception $e
+     * @return string
+     */
+    protected function getFullExceptionMessage(\Exception $e)
+    {
+        $message = $e->getMessage();
+        if (is_a($e, '\eZ\Publish\API\Repository\Exceptions\ContentTypeFieldDefinitionValidationException') ||
+            is_a($e, '\eZ\Publish\API\Repository\Exceptions\ContentTypeFieldValidationException') ||
+            is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')
+        ) {
+            if (is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')) {
+                $errorsArray = array($e->getValidationErrors());
+            } else {
+                $errorsArray = $e->getFieldErrors();
+            }
+
+            foreach ($errorsArray as $errors) {
+                foreach ($errors as $error) {
+                    /// @todo find out what is the proper eZ way of getting a translated message for these errors
+                    $translatableMessage = $error->getTranslatableMessage();
+                    if (is_a($e, 'eZ\Publish\API\Repository\Values\Translation\Plural')) {
+                        $msgText = $translatableMessage->plural;
+                    } else {
+                        $msgText = $translatableMessage->message;
+                    }
+
+                    $message .= "\n" . $msgText . " - " . var_export($translatableMessage->values, true);
+                }
+            }
+        }
+        return $message;
     }
 }

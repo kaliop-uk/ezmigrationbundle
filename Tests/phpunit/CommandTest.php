@@ -62,9 +62,11 @@ abstract class CommandTest extends WebTestCase
         }
 
         // clean buffer, just in case...
-        $fp = $this->output->getStream();
-        fclose($fp);
-        $this->output = null;
+        if ($this->output) {
+            $fp = $this->output->getStream();
+            fclose($fp);
+            $this->output = null;
+        }
     }
 
     protected function getContainer()
