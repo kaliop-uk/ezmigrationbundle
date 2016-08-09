@@ -2,10 +2,10 @@
     type: content_type
     mode: create
     content_type_group: x # Id of the group we want to put the new content class into
-    name: xyz # Name of new class
     identifier: xyz # Class identifier
+    name: xyz # Name of new class
+    name_pattern: pattern # Pattern to use for the name of the object (ex: <title>)
     description: xyz # Optional
-    name_pattern: pattern # Optional, pattern to use for the name of the object (ex: <title>)
     url_name_pattern: pattern # Optional
     is_container: true|false # Optional, defaults to false
     attributes:
@@ -21,14 +21,14 @@
             category: default|meta # Optional
             default-value: # Optional
             field-settings: array # Optional, can be used for various field type specific settings
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current
+    # migration.
     references: #Optional
         -
-            identifier: referenceID # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports content type id and content type identifier)
-                                   # The shorthand 'id' can be used instead of 'content_type_id
-                                   # The shorthand 'identifier' can be used instead of 'content_type_identifier
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference. Supports content type id and content type identifier
+                                   # The shorthand 'id' can be used instead of 'content_type_id'
+                                   # The shorthand 'identifier' can be used instead of 'content_type_identifier'
 
 -
     type: content_type
@@ -64,8 +64,8 @@
             -
                 identifier: referenceId # A string used to identify the reference
                 attribute: attributeId # An attribute to get the value of for the reference (supports content type id and content type identifier)
-                                       # The shorthand 'id' can be used instead of 'content_type_id
-                                       # The shorthand 'identifier' can be used instead of 'content_type_identifier
+                                       # The shorthand 'id' can be used instead of 'content_type_id'
+                                       # The shorthand 'identifier' can be used instead of 'content_type_identifier'
 
 -
     # Delete a content type
@@ -79,45 +79,45 @@
 
 # Object Relation List
     -
-      identifier: class_identifier
-      type: ezobjectrelationlist
-      name: Name
-      description: Description of stuff
-      required: false
-      searchable: true
-      info-collector: false
-      disable-translation: false
-      category: meta
-      field-settings:
-        selectionDefaultLocation: reference:some_reference_location_id # OR a location ID
-        selectionContentTypes: [content_type_identifier] #This MUST be an array
-        selectionMethod: 0 # 0 is browse - 1 is dropdown
-      position: 60
+        identifier: class_identifier
+        type: ezobjectrelationlist
+        name: Name
+        description: Description of stuff
+        required: false
+        searchable: true
+        info-collector: false
+        disable-translation: false
+        category: meta
+        field-settings:
+          selectionDefaultLocation: reference:some_reference_location_id # OR a location ID
+          selectionContentTypes: [content_type_identifier] # This MUST be an array
+          selectionMethod: 0 # 0 is browse - 1 is dropdown
+        position: 60
 
 # Object Relation
     -
-      identifier: image
-      type: ezobjectrelation
-      name: Image
-      description: The image to use for the article
-      required: false
-      searchable: true
-      info-collector: false
-      disable-translation: false
-      category: default
-      field-settings:
-        selectionRoot: reference:some_reference_location_id # OR a location ID
-      position: 50
+        identifier: image
+        type: ezobjectrelation
+        name: Image
+        description: The image to use for the article
+        required: false
+        searchable: true
+        info-collector: false
+        disable-translation: false
+        category: default
+        field-settings:
+          selectionRoot: reference:some_reference_location_id # OR a location ID
+        position: 50
 
 # Nova SEO Metas
     -
-      type: novaseometas
-      name: SEO Meta
-      identifier: seo_meta
-      description: The meta data settings for SEO
-      required: false
-      info-collector: false
-      searchable: false # CANNOT be searchable
-      disable-translation: false
-      category: meta
-      position: 130
+        type: novaseometas
+        name: SEO Meta
+        identifier: seo_meta
+        description: The meta data settings for SEO
+        required: false
+        info-collector: false
+        searchable: false # CANNOT be searchable
+        disable-translation: false
+        category: meta
+        position: 130

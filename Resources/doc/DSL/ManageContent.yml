@@ -16,18 +16,15 @@
         - attribute4: >
                       value on multiple
                       lines, but new line is not preserved on parsing
-        # image/binary file attribute example
+        # ezimage/ezbinaryfile file attribute example
         - attribute5:
-            type: ezimage/ezbinaryfile
-            path: '/path/to/image' # Relative path from Migrations/images/
+            path: '/path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/
             alt_text: xyz #optional, only used for images
-        # xml text, using references
+        # ezxmltext, using references
         - attribute6:
-            type: ezxmltext
             content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
         - attribute7:
-            type: ezauthor 
             authors: 
               - 
                 name: Test Author 
@@ -35,7 +32,6 @@
               -
                 name: Another Author 
                 email: another@example.com
-
 
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
@@ -49,6 +45,15 @@
     mode: update
     object_id: x # The id of the object to update.
     remote_id: xxx # The 'remote_id' of the object to update. Can be used as alternative to the object_id. NB: this does *not* mean 'set the remote-id to what I want'
+    match: # An alternative to object_id and remote_id specified directly. NB: only one of the 3 can be used.
+           # Specify ONLY ONE of the following, to match a content or a set of contents
+        - content_id: x # int|int[]
+        - content_remote_id: xxx # string|string[]
+        - content_id: x # int|int[]
+        - content_remote_id: xxx # string|string[]
+        - parent_location_id: x # int|int[]
+        - parent_location_remote_id: xxx # string|string[]
+        - content_type: yyy # string|string[] a content type identifier
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1
         - attribute2: value2
@@ -63,7 +68,18 @@
     type: content
     mode: delete
     object_id: x # the content/object id or a list of ids
-    remote_id: x # the content/object id or a list of ids. Used when object_id is not set
+    remote_id: x # the content/object id or a list of ids. Used when object_id and match are not set
+    match: # An alternative to object_id and remote_id specified directly. NB: only one of the 3 can be used.
+           # Specify ONLY ONE of the following, to match a content or a set of contents
+        - content_id: x # int|int[]
+        - content_remote_id: xxx # string|string[]
+        - content_id: x # int|int[]
+        - content_remote_id: xxx # string|string[]
+        - parent_location_id: x # int|int[]
+        - parent_location_remote_id: xxx # string|string[]
+        - content_type: yyy # string|string[] a content type identifier
+
+# Other examples for how to identify objects to delete
 
 -
     type: content
