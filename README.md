@@ -205,7 +205,7 @@ To run the PHPUnit tests:
 
 To run the Behat tests:
 
-    bin/behat -c vendor/kaliop/ezmigrationbundle/behat.yml vendor/kaliop/ezmigrationbundle/features
+    bin/behat -c vendor/kaliop/ezmigrationbundle/behat.yml
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)

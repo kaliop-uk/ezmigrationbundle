@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\features\Context;
+namespace Kaliop\eZMigrationBundle\Tests\behat;
 
 use eZ\Publish\Core\Repository\Values\ContentType\ContentType;
 use eZ\Publish\Core\Repository\Values\ContentType\ContentTypeGroup;

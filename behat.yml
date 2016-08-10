@@ -1,7 +1,8 @@
 default:
     suites:
         default:
-            contexts: [Kaliop\eZMigrationBundle\features\Context\FeatureContext]
+            contexts: [ Kaliop\eZMigrationBundle\Tests\behat\FeatureContext ]
+            paths: [ '%paths.base%/Tests/features' ]
 
 extensions:
     Behat\Symfony2Extension: ~
