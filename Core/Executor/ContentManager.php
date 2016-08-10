@@ -50,7 +50,7 @@ class ContentManager extends RepositoryExecutor
         }
 
         $match = $this->dsl['match'];
-var_dump($match);
+
         // convert the references passed in the match
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
@@ -65,7 +65,7 @@ var_dump($match);
                 }
             }
         }
-var_dump($match);
+
         return $this->contentMatcher->matchContent($match);
     }
 

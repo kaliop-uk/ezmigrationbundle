@@ -48,8 +48,7 @@ class ContentMatcher extends AbstractMatcher
             if (!is_array($values)) {
                 $values = array($values);
             }
-var_dump($key);
-var_dump($values);
+
             switch ($key) {
                 case self::MATCH_CONTENT_ID:
                    return new ContentCollection($this->findContentsByContentIds($values));
@@ -179,7 +178,6 @@ var_dump($values);
      */
     protected function findContentsByContentTypeIdentifiers(array $contentTypeIdentifiers)
     {
-echo 'YOYO!';
         $query = new Query();
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
