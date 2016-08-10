@@ -1,0 +1,3 @@
+<?php
+
+I do not think that this is valid php...

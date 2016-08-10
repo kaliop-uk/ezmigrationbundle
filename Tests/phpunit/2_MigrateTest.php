@@ -43,12 +43,11 @@ class MigrateTest extends CommandTest
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
     }
-
     /**
      * @param string $filePath
-     * @dataProvider badDSLProvider
+     * @dataProvider invalidDSLProvider
      */
-    public function testExecuteBadDSL($filePath = '')
+    public function testExecuteInvalidDSL($filePath = '')
     {
         if ($filePath == '') {
             $this->markTestSkipped();
@@ -79,6 +78,41 @@ class MigrateTest extends CommandTest
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
     }
 
+    /**
+     * @param string $filePath
+     * @dataProvider badDSLProvider
+     */
+    public function testExecuteBadDSL($filePath = '')
+    {
+        if ($filePath == '') {
+            $this->markTestSkipped();
+            return;
+        }
+
+        // Make user migration is not in the db: delete it, ignoring errors
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
+        $this->app->run($input, $this->output);
+        $this->fetchOutput();
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->assertRegexp('?Added migration?', $output);
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertNotSame(0, $exitCode, 'CLI Command should have failed. Output: ' . $output);
+        // check that there are no notes after adding the migration
+        $this->assertRegexp('?Migration aborted.?', $output);
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+    }
+
     public function goodDSLProvider()
     {
         $dslDir = $this->dslDir.'/good';
@@ -96,9 +130,26 @@ class MigrateTest extends CommandTest
         return $out;
     }
 
+    public function invalidDSLProvider()
+    {
+        $dslDir = $this->dslDir.'/bad/parsing';
+        if(!is_dir($dslDir)) {
+            return array();
+        }
+
+        $out = array();
+        foreach(scandir($dslDir) as $fileName) {
+            $filePath = $dslDir . '/' . $fileName;
+            if (is_file($filePath)) {
+                $out[] = array($filePath);
+            }
+        }
+        return $out;
+    }
+
     public function badDSLProvider()
     {
-        $dslDir = $this->dslDir.'/bad';
+        $dslDir = $this->dslDir.'/bad/execution';
         if(!is_dir($dslDir)) {
             return array();
         }
