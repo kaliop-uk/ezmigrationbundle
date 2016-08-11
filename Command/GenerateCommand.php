@@ -194,7 +194,7 @@ EOT
     {
         $template = $migrationType . 'Migration.' . $fileType . '.twig';
         $templatePath = $this->getApplication()->getKernel()->getBundle($this->thisBundle)->getPath() . '/Resources/views/MigrationTemplate/';
-        if (!is_file($templatePath . $template)) {
+        if (!is_file($templatePath . $template) && $migrationType != 'role') {
             throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
         }
 

@@ -9,6 +9,7 @@
     identifier: kmb_test_2
     name: Kaliop Migration Bundle Test Class 2
     name_pattern: '<ezstring>'
+    is_container: true
     attributes:
         -
             type: ezstring

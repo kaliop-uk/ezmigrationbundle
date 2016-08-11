@@ -46,6 +46,12 @@ class GenerateTest extends CommandTest
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated_role', '--role' => 'Anonymous'));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->checkGeneratedFile($this->saveGeneratedFile($output));
     }
 
     protected function saveGeneratedFile($output)
