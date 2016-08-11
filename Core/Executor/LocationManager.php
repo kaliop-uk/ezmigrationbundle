@@ -64,8 +64,6 @@ class LocationManager extends RepositoryExecutor
      */
     protected function create()
     {
-        $this->loginUser();
-
         $locationService = $this->repository->getLocationService();
 
         if (!isset($this->dsl['parent_location_id'])) {
@@ -112,8 +110,6 @@ class LocationManager extends RepositoryExecutor
      */
     protected function update()
     {
-        $this->loginUser();
-
         $locationService = $this->repository->getLocationService();
 
         if (!isset($this->dsl['location_id'])) {
@@ -191,8 +187,6 @@ class LocationManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        $this->loginUser();
-
         $locationService = $this->repository->getLocationService();
 
         if (!isset($this->dsl['location_id'])) {

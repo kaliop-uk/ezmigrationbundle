@@ -86,7 +86,18 @@ abstract class RepositoryExecutor extends AbstractExecutor
         $this->context = $step->context;
 
         if (method_exists($this, $action)) {
-            $this->$action();
+
+            $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+            try {
+                $this->$action();
+            } catch (\Exception $e) {
+                $this->loginUser($previousUserId);
+                throw $e;
+            }
+
+            // reset the environment as much as possible as we had found it before the migration
+            $this->loginUser($previousUserId);
+
         } else {
             throw new \Exception("Invalid step definition: value '$action' is not a method of " . get_class($this));
         }
@@ -107,11 +118,25 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
     /**
      * Helper method to log in a user that can make changes to the system.
+     * @param int $userId
+     * @return int id of the previously logged in user
      */
-    protected function loginUser()
+    protected function loginUser($userId)
     {
-        // Login as admin to be able to post the content. Any other user who has access to
-        // create content would be good as well
-        $this->repository->setCurrentUser($this->repository->getUserService()->loadUser(self::ADMIN_USER_ID));
+        $previousUser = $this->repository->getCurrentUser();
+
+        if ($userId != $previousUser->id) {
+            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($userId));
+        }
+
+        return $previousUser->id;
     }
+
+    /*protected function logoutUser()
+    {
+        $currentUser = $this->repository->getCurrentUser();
+        if ($currentUser->id != $this->previousUser->id) {
+            $this->repository->setCurrentUser($this->previousUser);
+        }
+    }*/
 }

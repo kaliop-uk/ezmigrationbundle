@@ -16,9 +16,6 @@ class UserGroupManager extends RepositoryExecutor
      */
     protected function create()
     {
-        // Authenticate the user
-        $this->loginUser();
-
         $userService = $this->repository->getUserService();
 
         $parentGroupId = $this->dsl['parent_group_id'];
@@ -69,8 +66,6 @@ class UserGroupManager extends RepositoryExecutor
             throw new \InvalidArgumentException('No user group has been specified for update. Please add the id of the user group to the migration definition.');
         }
 
-        $this->loginUser();
-
         $userService = $this->repository->getUserService();
         $contentService = $this->repository->getContentService();
 
@@ -119,8 +114,6 @@ class UserGroupManager extends RepositoryExecutor
         if (!array_key_exists('group', $this->dsl)) {
             throw new \InvalidArgumentException('No groups were specified for deletion.');
         }
-
-        $this->loginUser();
 
         $userService = $this->repository->getUserService();
 

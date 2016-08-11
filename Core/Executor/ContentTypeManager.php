@@ -26,9 +26,6 @@ class ContentTypeManager extends RepositoryExecutor
      */
     protected function create()
     {
-        // Authenticate the user
-        $this->loginUser();
-
         foreach(array('identifier', 'content_type_group', 'name_pattern', 'name', 'attributes') as $key) {
             if (!array_key_exists($key, $this->dsl)) {
                 throw new \Exception("The '$key' key is missing in a content type creation definition");
@@ -85,9 +82,6 @@ class ContentTypeManager extends RepositoryExecutor
      */
     protected function update()
     {
-        // Authenticate the user
-        $this->loginUser();
-
         $contentTypeService = $this->repository->getContentTypeService();
 
         if (!array_key_exists('identifier', $this->dsl)) {
@@ -182,8 +176,6 @@ class ContentTypeManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        $this->loginUser();
-
         $contentTypeService = $this->repository->getContentTypeService();
 
         if (!array_key_exists('identifier', $this->dsl)) {

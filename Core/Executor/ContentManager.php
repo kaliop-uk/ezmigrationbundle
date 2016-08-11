@@ -74,8 +74,6 @@ class ContentManager extends RepositoryExecutor
      */
     protected function create()
     {
-        $this->loginUser();
-
         $contentService = $this->repository->getContentService();
         $locationService = $this->repository->getLocationService();
         $contentTypeService = $this->repository->getContentTypeService();
@@ -135,8 +133,6 @@ class ContentManager extends RepositoryExecutor
      */
     protected function update()
     {
-        $this->loginUser();
-
         $contentService = $this->repository->getContentService();
         $contentTypeService = $this->repository->getContentTypeService();
 
@@ -211,8 +207,6 @@ class ContentManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        $this->loginUser();
-
         $contentService = $this->repository->getContentService();
 
         $contentCollection = $this->matchContents('delete');

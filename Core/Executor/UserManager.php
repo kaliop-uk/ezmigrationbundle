@@ -16,9 +16,6 @@ class UserManager extends RepositoryExecutor
      */
     protected function create()
     {
-        // Authenticate the user
-        $this->loginUser();
-
         $userService = $this->repository->getUserService();
         $contentTypeService = $this->repository->getContentTypeService();
 
@@ -64,8 +61,6 @@ class UserManager extends RepositoryExecutor
         if (!isset($this->dsl['id'])) {
             throw new \Exception('No user set for update.');
         }
-
-        $this->loginUser();
 
         $userService = $this->repository->getUserService();
 
@@ -120,8 +115,6 @@ class UserManager extends RepositoryExecutor
         if (!isset($this->dsl['user_id']) && !isset($this->dsl['email']) && !isset($this->dsl['username'])) {
             throw new \Exception('No user set for update.');
         }
-
-        $this->loginUser();
 
         $userService = $this->repository->getUserService();
 

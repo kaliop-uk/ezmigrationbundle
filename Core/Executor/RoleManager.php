@@ -28,10 +28,6 @@ class RoleManager extends RepositoryExecutor
      */
     protected function create()
     {
-
-        // Authenticate the user
-        $this->loginUser();
-
         $roleService = $this->repository->getRoleService();
         $userService = $this->repository->getUserService();
 
@@ -59,9 +55,6 @@ class RoleManager extends RepositoryExecutor
      */
     protected function update()
     {
-        // Authenticate the user
-        $this->loginUser();
-
         $roleService = $this->repository->getRoleService();
         $userService = $this->repository->getUserService();
 
@@ -105,11 +98,7 @@ class RoleManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        //Get the eZ 5 API Repository and the required services
-
-        // Authenticate the user
-        $this->loginUser();
-
+        // Get the eZ 5 API Repository and the required services
         $roleService = $this->repository->getRoleService();
 
         if (array_key_exists('name', $this->dsl)) {

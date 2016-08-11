@@ -69,7 +69,7 @@ class GenerateTest extends CommandTest
         $input = new ArrayInput(array('command' => 'kaliop:migration:status'));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode);
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegExp('?\| ' . basename($filePath) . ' +\| not executed \|?', $output );
     }
 }

@@ -23,7 +23,6 @@ class TagManager extends RepositoryExecutor
     protected function create()
     {
         $this->checkTagsBundleInstall();
-        $this->loginUser();
 
         $alwaysAvail = array_key_exists('always_available', $this->dsl) ? $this->dsl['always_available'] : true;
         $parentTagId = array_key_exists('parent_tag_id', $this->dsl) ? $this->dsl['parent_tag_id'] : 0;
@@ -87,15 +86,5 @@ class TagManager extends RepositoryExecutor
 
             $referenceHandler->addReference($reference['identifier'], $value);
         }
-    }
-
-    /**
-     * Helper method to log in a user that can make changes to the system.
-     */
-    protected function loginUser()
-    {
-        // Login as admin to be able to post the content. Any other user who has access to
-        // create content would be good as well
-        $this->repository->setCurrentUser($this->repository->getUserService()->loadUser(self::ADMIN_USER_ID));
     }
 }
