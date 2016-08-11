@@ -10,6 +10,15 @@ class ChainResolver implements ReferenceResolverInterface
     protected $resolvers = array();
 
     /**
+     * ChainResolver constructor.
+     * @param ReferenceResolverInterface[] $resolvers
+     */
+    public function __construct(array $resolvers)
+    {
+        $this->resolvers = $resolvers;
+    }
+
+    /**
      * @param string $stringIdentifier
      * @return bool
      */
@@ -32,7 +41,7 @@ class ChainResolver implements ReferenceResolverInterface
     {
         foreach ($this->resolvers as $resolver) {
             if ($resolver->isReference($stringIdentifier)) {
-                return true;
+                return $resolver->getReferenceValue($stringIdentifier);
             }
         }
 

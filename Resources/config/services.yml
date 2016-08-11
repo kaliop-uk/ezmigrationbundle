@@ -45,12 +45,14 @@ parameters:
     ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
 
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
-    ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
-    ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
-    ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
-    ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
-    ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
+    ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
+    ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
+    ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
+    ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
+    ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelationList
+    ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
+    ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
 
     ez_migration_bundle.reference_resolver.chain.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainResolver
     ez_migration_bundle.reference_resolver.customreference.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\CustomReferenceResolver
@@ -215,11 +217,11 @@ services:
         calls:
             - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver']]
 
-    ez_migration_bundle.complex_field.ezimage:
+    ez_migration_bundle.complex_field.ezauthor:
         parent: ez_migration_bundle.complex_field
-        class: '%ez_migration_bundle.complex_field.ezimage.class%'
+        class: '%ez_migration_bundle.complex_field.ezauthor.class%'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezimage }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezauthor }
 
     ez_migration_bundle.complex_field.ezbinaryfile:
         parent: ez_migration_bundle.complex_field
@@ -227,11 +229,11 @@ services:
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile }
 
-    ez_migration_bundle.complex_field.ezxmltext:
+    ez_migration_bundle.complex_field.ezimage:
         parent: ez_migration_bundle.complex_field
-        class: '%ez_migration_bundle.complex_field.ezxmltext.class%'
+        class: '%ez_migration_bundle.complex_field.ezimage.class%'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezimage }
 
     ez_migration_bundle.complex_field.ezpage:
         parent: ez_migration_bundle.complex_field
@@ -241,17 +243,29 @@ services:
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezpage }
 
-    ez_migration_bundle.complex_field.ezauthor:
+    ez_migration_bundle.complex_field.ezrelation:
         parent: ez_migration_bundle.complex_field
-        class: '%ez_migration_bundle.complex_field.ezauthor.class%'
+        class: '%ez_migration_bundle.complex_field.ezrelation.class%'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezauthor }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelation }
+
+    ez_migration_bundle.complex_field.ezrelationlist:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezrelationlist.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelationlist }
 
     ez_migration_bundle.complex_field.ezrichtext:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezrichtext.class%'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezrichtext }
+
+    ez_migration_bundle.complex_field.ezxmltext:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezxmltext.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext }
 
     ### reference resolvers
 
@@ -264,7 +278,7 @@ services:
             -
                 - '@ez_migration_bundle.reference_resolver.customreference'
                 - '@ez_migration_bundle.reference_resolver.location'
-                # not enabled by deafult for v2, as it might break v1 migrations that don't expect it to be present
+                # not enabled by default for v2, as it might break v1 migrations that don't expect it to be present
                 #- '@ez_migration_bundle.reference_resolver.content'
                 - '@ez_migration_bundle.reference_resolver.tag'
 

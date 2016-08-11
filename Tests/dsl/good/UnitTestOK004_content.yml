@@ -8,7 +8,7 @@
     content_type_group: 1
     identifier: kmb_test_2
     name: Kaliop Migration Bundle Test Class 2
-    name_pattern: ezstring
+    name_pattern: '<ezstring>'
     attributes:
         -
             type: ezstring
@@ -132,10 +132,23 @@
     mode: create
     content_type: reference:kmb_test_2
     main_location: 2
+    attributes:
+        - ezstring: hello world 2
+        - ezobjectrelation: 'reference:kmb_test_2_1'
+        - ezobjectrelationlist: [ 'reference:kmb_test_2_1' ]
+    references:
+        -
+            identifier: kmb_test_2_2
+            attribute: object_id
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_2
+    main_location: 2
     priority: 1999
     remote_id: this_is_a_test_remoteid
     attributes:
-        - ezstring: hello world 2
+        - ezstring: hello world 3
         - ezimage:
             path: blank.jpg
             alt_text: a blank 1x1 px image
@@ -154,21 +167,10 @@
             - Afghanistan
             - AX
             - ALB
-        #- ezobjectrelation:
-
-        #- ezobjectrelationlist:
-
-    references:
-        -
-            identifier: kmb_test_2_2
-            attribute: object_id
--
-    type: content
-    mode: create
-    content_type: reference:kmb_test_2
-    main_location: 2
-    attributes:
-        - ezstring: hello world 3
+        - ezobjectrelation:
+            destinationContentId: 'reference:kmb_test_2_1'
+        - ezobjectrelationlist:
+            destinationContentIds: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
 -
     type: content
     mode: delete

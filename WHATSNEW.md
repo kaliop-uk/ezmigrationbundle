@@ -70,6 +70,8 @@ The main changes are:
         fromHash method. F.e. the ezcountry field type is now supported.
         The details of the hash structure have to be looked up in dcs or code for each field type
 
+    - references are now supported for setting the values to object relation and object relation list attributes
+
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)
 

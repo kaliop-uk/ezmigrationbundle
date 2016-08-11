@@ -31,7 +31,10 @@
               -
                 name: Another Author 
                 email: another@example.com
-
+        # Adding values to an ezobjectrelation field
+        - attribute8: x # object id or string: reference:xxx
+        # Adding values to an ezobjectrelationlist field
+        - ezobjectrelationlist: [ x, reference:xxx ] # array of object ids or reference strings
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional
