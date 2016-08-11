@@ -1,46 +1,23 @@
+# test  creation / updating / deleting of content. We use a custom content type for that, not to rely on the standard ones...
+
 # test  creation/updating/deleting of a custom content type
 
 -
     type: content_type
     mode: create
     content_type_group: 1
-    name: Kaliop Migration Bundle Test Class 1
-    identifier: kmb_test_1
-    description: Kaliop Migration Bundle Test Class 1
-    name_pattern: <title>
+    identifier: kmb_test_2
+    name: Kaliop Migration Bundle Test Class 2
+    name_pattern: ezstring
     attributes:
-        -
-            type: ezstring
-            name: Title
-            identifier: title
-            description: Title
-            required: true
-            searchable: true
-    references:
-        -
-            identifier: kmb_test_1
-            attribute: identifier
-
--
-    type: content_type
-    mode: update
-    identifier: reference:kmb_test_1
-    attributes:
-        -
-            type: ezstring
-            name: Title
-            identifier: title
-            description: Title field
-            required: false
-            searchable: false
-            disable-translation: true
-            category: meta
-            default-value: hello world
-            field-settings: []
         -
             type: ezstring
             name: ezstring
             identifier: ezstring
+        -
+            type: ezauthor
+            name: ezauthor
+            identifier: ezauthor
         -
             type: ezbinaryfile
             name: ezbinaryfile
@@ -132,15 +109,71 @@
             type: ezxmltext
             name: ezxmltext
             identifier: ezxmltext
+    references:
+        -
+            identifier: kmb_test_2
+            attribute: identifier
 
 -
-    type: content_type
-    mode: update
-    identifier: 'reference:kmb_test_1'
-    remove_attributes:
-        - ezstring
+    type: content
+    mode: create
+    content_type: reference:kmb_test_2
+    main_location: 2
+    attributes:
+        - ezstring: hello world 1
+    references:
+        -
+            identifier: kmb_test_2_1
+            attribute: object_id
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_2
+    main_location: 2
+    priority: 1999
+    remote_id: this_is_a_test_remoteid
+    attributes:
+        - ezstring: hello world 2
+        - ezimage:
+            path: blank.jpg
+            alt_text: a blank 1x1 px image
+        - ezbinaryfile:
+            path: emptyfile.txt
+        - ezxmltext:
+            content: '<section><paragraph>Hello there</paragraph></section>'
+        - ezauthor:
+            -
+                name: Author 1
+                email: test1@example.com
+            -
+                name: Author 2
+                email: test2@example.com
 
+        - ezobjectrelation:
+
+        - ezobjectrelationlist:
+
+    references:
+        -
+            identifier: kmb_test_2_2
+            attribute: object_id
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_2
+    main_location: 2
+    attributes:
+        - ezstring: hello world 3
+-
+    type: content
+    mode: delete
+    object_id: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
+-
+    type: content
+    mode: delete
+    match:
+        content_type: reference:kmb_test_2
 -
     type: content_type
     mode: delete
-    identifier: 'reference:kmb_test_1'
+    identifier: 'reference:kmb_test_2'

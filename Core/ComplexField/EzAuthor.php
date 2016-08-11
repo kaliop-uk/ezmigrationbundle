@@ -21,8 +21,17 @@ class EzAuthor extends AbstractComplexField implements ComplexFieldInterface
     public function createValue(array $fieldValueArray, array $context = array())
     {
         $authors = array();
-        foreach($fieldValueArray['authors'] as $author) {
-            $authors[] = new Author($author);
+
+        /// @deprecated
+        if (isset($fieldValueArray['authors'])) {
+            foreach($fieldValueArray['authors'] as $author) {
+                $authors[] = new Author($author);
+            }
+        } else if (is_array($fieldValueArray)) {
+            /// same as what fromHash() does, really
+            foreach($fieldValueArray as $author) {
+                $authors[] = new Author($author);
+            }
         }
 
         return new AuthorValue($authors);
