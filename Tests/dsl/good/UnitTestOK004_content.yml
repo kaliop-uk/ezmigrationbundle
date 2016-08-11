@@ -30,6 +30,8 @@
             type: ezcountry
             name: ezcountry
             identifier: ezcountry
+            field-settings:
+                isMultiple: true
         -
             type: ezdatetime
             name: ezdatetime
@@ -148,10 +150,13 @@
             -
                 name: Author 2
                 email: test2@example.com
+        - ezcountry:
+            - Afghanistan
+            - AX
+            - ALB
+        #- ezobjectrelation:
 
-        - ezobjectrelation:
-
-        - ezobjectrelationlist:
+        #- ezobjectrelationlist:
 
     references:
         -

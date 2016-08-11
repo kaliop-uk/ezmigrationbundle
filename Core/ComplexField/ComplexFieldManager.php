@@ -3,14 +3,18 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
-use eZ\Publish\API\Repository\Repository as eZRepository;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use eZ\Publish\API\Repository\FieldTypeService;
 
 class ComplexFieldManager
 {
     /** @var ComplexFieldInterface[]  */
     protected $fieldTypeMap;
+    protected $fieldTypeService;
+
+    public function __construct(FieldTypeService $fieldTypeService)
+    {
+        $this->fieldTypeService = $fieldTypeService;
+    }
 
     /**
      * @param ComplexFieldInterface $complexField
@@ -36,7 +40,9 @@ class ComplexFieldManager
         }
         else
         {
-            // use the fromHash method
+            $fieldType = $this->fieldTypeService->getFieldType($fieldTypeIdentifier);
+            return $fieldType->fromHash($fieldValueArray);
+            // was: error
             //throw new \InvalidArgumentException("Field of type '$fieldTypeIdentifier' can not be handled as it does not have a complex field class defined");
         }
     }

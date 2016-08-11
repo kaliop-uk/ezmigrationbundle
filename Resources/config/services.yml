@@ -205,7 +205,8 @@ services:
 
     ez_migration_bundle.complex_field_manager:
         class: '%ez_migration_bundle.complex_field_manager.class%'
-        #arguments:
+        arguments:
+             - '@ezpublish.api.service.field_type'
         #    - '@ezpublish.api.repository'
         #    - '@service_container'
 

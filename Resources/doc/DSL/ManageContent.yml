@@ -25,7 +25,6 @@
             content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
         - attribute7:
-            authors: 
               - 
                 name: Test Author 
                 email: test@example.com 

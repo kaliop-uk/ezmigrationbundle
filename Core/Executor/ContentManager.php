@@ -239,7 +239,7 @@ class ContentManager extends RepositoryExecutor
             $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
 
             if (is_array($field[$fieldIdentifier])) {
-                // Complex field needs special handling eg.: ezimage, ezbinaryfile
+                // Complex field might need special handling eg.: ezimage, ezbinaryfile
                 $fieldValue = $this->getComplexFieldValue($field[$fieldIdentifier], $fieldType, $this->context);
             } else {
                 // Primitive field eg.: ezstring, ezxml etc.

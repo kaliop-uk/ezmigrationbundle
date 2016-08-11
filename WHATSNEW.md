@@ -64,6 +64,12 @@ The main changes are:
 
     - the 'identifier' field used to identify content types can now be a reference
 
+    - when specifying values for a field of type 'ezauthor', it is not necessary to have a sub-key named 'authors'
+    
+    - when creating/updating contents, values for more 'complex' field types are supported via usage of the
+        fromHash method. F.e. the ezcountry field type is now supported.
+        The details of the hash structure have to be looked up in dcs or code for each field type
+
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)
 
