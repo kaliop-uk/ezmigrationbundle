@@ -116,7 +116,6 @@
         -
             identifier: kmb_test_2
             attribute: identifier
-
 -
     type: content
     mode: create
@@ -128,6 +127,9 @@
         -
             identifier: kmb_test_2_1
             attribute: object_id
+        -
+            identifier: kmb_test_2_1_loc
+            attribute: location_id
 -
     type: content
     mode: create
@@ -145,11 +147,18 @@
     type: content
     mode: create
     content_type: reference:kmb_test_2
+    main_location: reference:kmb_test_2_1_loc
+    attributes:
+        - ezstring: hello world 3
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_2
     main_location: 2
     priority: 1999
     remote_id: this_is_a_test_remoteid
     attributes:
-        - ezstring: hello world 3
+        - ezstring: hello world 4
         - ezimage:
             path: blank.jpg
             alt_text: a blank 1x1 px image
