@@ -183,16 +183,16 @@
             destinationContentId: 'reference:kmb_test_2_1'
         - ezobjectrelationlist:
             destinationContentIds: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
-#-
-#    type: content
-#    mode: delete
-#    object_id: [ 'reference:kmb_test_2_2', 'reference:kmb_test_2_3' ]
-#-
-#    type: content
-#    mode: delete
-#    match:
-#        content_type: reference:kmb_test_2
-#-
-#    type: content_type
-#    mode: delete
-#    identifier: 'reference:kmb_test_2'
+-
+    type: content
+    mode: delete
+    object_id: [ 'reference:kmb_test_2_2', 'reference:kmb_test_2_3' ]
+-
+    type: content
+    mode: delete
+    match:
+        content_type: reference:kmb_test_2
+-
+    type: content_type
+    mode: delete
+    identifier: 'reference:kmb_test_2'
