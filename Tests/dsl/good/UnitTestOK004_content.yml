@@ -167,7 +167,7 @@
         - ezbinaryfile:
             path: emptyfile.txt
         - ezxmltext:
-            content: '<section><paragraph>Hello there</paragraph></section>'
+            content: '<section><paragraph>Hello there! Here is an embedded object: <embed view="embed" size="medium" object_id="[reference:kmb_test_2_1]" /></paragraph></section>'
         - ezauthor:
             -
                 name: Author 1
@@ -183,16 +183,16 @@
             destinationContentId: 'reference:kmb_test_2_1'
         - ezobjectrelationlist:
             destinationContentIds: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
--
-    type: content
-    mode: delete
-    object_id: [ 'reference:kmb_test_2_2', 'reference:kmb_test_2_3' ]
--
-    type: content
-    mode: delete
-    match:
-        content_type: reference:kmb_test_2
--
-    type: content_type
-    mode: delete
-    identifier: 'reference:kmb_test_2'
+#-
+#    type: content
+#    mode: delete
+#    object_id: [ 'reference:kmb_test_2_2', 'reference:kmb_test_2_3' ]
+#-
+#    type: content
+#    mode: delete
+#    match:
+#        content_type: reference:kmb_test_2
+#-
+#    type: content_type
+#    mode: delete
+#    identifier: 'reference:kmb_test_2'
