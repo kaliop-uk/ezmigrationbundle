@@ -74,7 +74,6 @@ class ContentMatcher extends AbstractMatcher
         }
     }
 
-
     /**
      * @param int[] $contentIds
      * @return Content[]
@@ -84,7 +83,9 @@ class ContentMatcher extends AbstractMatcher
         $contents = [];
 
         foreach ($contentIds as $contentId) {
-            $contents[] = $this->repository->getContentService()->loadContent($contentId);
+            // return unique contents
+            $content = $this->repository->getContentService()->loadContent($contentId);
+            $contents[$content->contentInfo->id] = $content;
         }
 
         return $contents;
@@ -99,7 +100,9 @@ class ContentMatcher extends AbstractMatcher
         $contents = [];
 
         foreach ($remoteContentIds as $remoteContentId) {
-            $contents[] = $this->repository->getContentService()->loadContentByRemoteId($remoteContentId);
+            // return unique contents
+            $content = $this->repository->getContentService()->loadContentByRemoteId($remoteContentId);
+            $contents[$content->contentInfo->id] = $content;
         }
 
         return $contents;
@@ -115,7 +118,8 @@ class ContentMatcher extends AbstractMatcher
 
         foreach ($locationIds as $locationId) {
             $location = $this->repository->getLocationService()->loadLocation($locationId);
-            $contentIds[] = $location->contentId;
+            // return unique ids
+            $contentIds[$location->contentId] = $location->contentId;
         }
 
         return $this->findContentsByContentIds($contentIds);
@@ -131,7 +135,8 @@ class ContentMatcher extends AbstractMatcher
 
         foreach ($remoteLocationIds as $remoteLocationId) {
             $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteLocationId);
-            $contentIds[] = $location->contentId;
+            // return unique ids
+            $contentIds[$location->contentId] = $location->contentId;
         }
 
         return $this->findContentsByContentIds($contentIds);
@@ -150,7 +155,8 @@ class ContentMatcher extends AbstractMatcher
 
         $contents = [];
         foreach ($results->searchHits as $result) {
-            $contents[] = $result->valueObject;
+            // make sure we return every object only once
+            $contents[$result->valueObject->contentInfo->id] = $result->valueObject;
         }
 
         return $contents;
@@ -166,7 +172,8 @@ class ContentMatcher extends AbstractMatcher
 
         foreach ($remoteParentLocationIds as $remoteParentLocationId) {
             $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteParentLocationId);
-            $locationIds[] = $location->id;
+            // unique locations
+            $locationIds[$location->id] = $location->id;
         }
 
         return $this->findContentsByParentLocationIds($locationIds);
@@ -181,11 +188,15 @@ class ContentMatcher extends AbstractMatcher
         $query = new Query();
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
+        // sort objects by depth, lower to higher, so that deleting them has less chances of failure
+        /// @todo replace with a location querty, as we are using deprecated functionality
+        $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
         $results = $this->repository->getSearchService()->findContent($query);
 
         $contents = [];
         foreach ($results->searchHits as $result) {
-            $contents[] = $result->valueObject;
+            // make sure we return every object only once
+            $contents[$result->valueObject->contentInfo->id] = $result->valueObject;
         }
 
         return $contents;

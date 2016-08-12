@@ -70,7 +70,7 @@ The main changes are:
         fromHash method. F.e. the ezcountry field type is now supported.
         The details of the hash structure have to be looked up in dcs or code for each field type
 
-    - references can now be created when creating new locations
+    - references can now be set when creating new locations
 
     - references are now supported for setting the values to object relation and object relation list attributes
 

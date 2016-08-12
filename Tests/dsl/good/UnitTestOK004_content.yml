@@ -148,6 +148,10 @@
     main_location: reference:kmb_test_2_1_loc
     attributes:
         - ezstring: hello world 3
+    references:
+        -
+            identifier: kmb_test_2_3
+            attribute: object_id
 -
     type: content
     mode: create
@@ -182,7 +186,7 @@
 -
     type: content
     mode: delete
-    object_id: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
+    object_id: [ 'reference:kmb_test_2_2', 'reference:kmb_test_2_3' ]
 -
     type: content
     mode: delete

@@ -99,12 +99,17 @@
     priority: 1998
     is_hidden: false
     sort_order: ASC
-#-
-#    type: content
-#    mode: delete
-#    match:
-#        content_type: reference:kmb_test_3
-#-
-#    type: content_type
-#    mode: delete
-#    identifier: 'reference:kmb_test_3'
+-
+    type: location
+    mode: update
+    location_id: reference:kmb_test_3_3_loc_3
+    swap_with_location: reference:kmb_test_3_2_loc
+-
+    type: content
+    mode: delete
+    match:
+        content_type: reference:kmb_test_3
+-
+    type: content_type
+    mode: delete
+    identifier: 'reference:kmb_test_3'

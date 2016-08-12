@@ -2,7 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use eZ\Publish\API\Repository\FieldType;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
@@ -10,6 +9,7 @@ use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
+use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 /**
  * Implements the actions for managing (create/update/delete) Content in the system through
@@ -213,7 +213,12 @@ class ContentManager extends RepositoryExecutor
         $contentCollection = $this->matchContents('delete');
 
         foreach ($contentCollection as $content) {
-            $contentService->deleteContent($content->contentInfo);
+            try {
+                $contentService->deleteContent($content->contentInfo);
+            } catch (NotFoundException $e) {
+                // Someone else (or even us, by virtue of location tree?) removed the content which we found just a
+                // second ago. We can safely ignore this
+            }
         }
     }
 
