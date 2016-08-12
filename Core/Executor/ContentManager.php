@@ -8,6 +8,7 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
+use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
 /**
@@ -288,7 +289,7 @@ class ContentManager extends RepositoryExecutor
      * Sets references to certain content attributes.
      * The Content Manager currently supports setting references to object_id and location_id
      *
-     * @param \eZ\Publish\API\Repository\Values\Content\Content $content
+     * @param \eZ\Publish\API\Repository\Values\Content\Content|ContentCollection $content
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      *
@@ -300,10 +301,18 @@ class ContentManager extends RepositoryExecutor
             return false;
         }
 
+        if ($content instanceof ContentCollection) {
+            if (count($content) > 1) {
+                throw new \InvalidArgumentException('Content Manager does not support setting references for creating/updating of multiple contents');
+            }
+            $content = reset($content);
+        }
+
         foreach ($this->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
                 case 'object_id':
+                case 'content_id':
                 case 'id':
                     $value = $content->id;
                     break;

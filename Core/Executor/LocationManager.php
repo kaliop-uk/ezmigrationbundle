@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
+use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
 class LocationManager extends RepositoryExecutor
@@ -80,6 +81,7 @@ class LocationManager extends RepositoryExecutor
 
         $contentCollection = $this->matchContents('create');
 
+        $locations = null;
         foreach ($contentCollection as $content) {
             $contentInfo = $content->contentInfo;
 
@@ -95,18 +97,19 @@ class LocationManager extends RepositoryExecutor
                 $locationCreateStruct->sortOrder = $this->getSortOrder();
                 $locationCreateStruct->sortField = $this->getSortField();
 
-                $locationService->createLocation($contentInfo, $locationCreateStruct);
+                $locations[] = $locationService->createLocation($contentInfo, $locationCreateStruct);
             }
         }
+
+        $this->setReferences(new LocationCollection($locations));
     }
 
     /**
-     * Method to handle the update operation of the migration instructions
-     *
      * Updates basic information for a location like priority, sort field and sort order.
-     * Updates the visibility of the location when needed
+     * Updates the visibility of the location when needed.
+     * Can move a location and its children to a new parent location or swap two locations.
      *
-     * Can move a location and it's children to a new parent location or swap two locations
+     * @todo add support for flexible matchers
      */
     protected function update()
     {
@@ -181,9 +184,9 @@ class LocationManager extends RepositoryExecutor
     }
 
     /**
-     * Method to handle the delete operation of the migration instructions
-     *
      * Delete locations identified by their ids.
+     *
+     * @todo add support for flexible matchers
      */
     protected function delete()
     {
@@ -256,13 +259,20 @@ class LocationManager extends RepositoryExecutor
      * The Location Manager currently supports setting references to location id.
      *
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute.
-     * @param \eZ\Publish\API\Repository\Values\Content\Location $location
+     * @param \eZ\Publish\API\Repository\Values\Content\Location|LocationCollection $location
      * @return boolean
      */
     protected function setReferences($location)
     {
         if (!array_key_exists('references', $this->dsl)) {
             return false;
+        }
+
+        if ($location instanceof LocationCollection) {
+            if (count($location) > 1) {
+                throw new \InvalidArgumentException('Location Manager does not support setting references for creating/updating of multiple locations');
+            }
+            $location = reset($location);
         }
 
         foreach ($this->dsl['references'] as $reference) {

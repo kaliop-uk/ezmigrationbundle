@@ -1,7 +1,5 @@
 # test  creation / updating / deleting of content. We use a custom content type for that, not to rely on the standard ones...
 
-# test  creation/updating/deleting of a custom content type
-
 -
     type: content_type
     mode: create

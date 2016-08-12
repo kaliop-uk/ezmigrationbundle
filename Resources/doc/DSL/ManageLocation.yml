@@ -3,7 +3,7 @@
     type: location
     mode: create
     match:
-    # Possible values for matching. only one of them will allowed by now. All of them can be single or array
+    # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
         - content_id: # the content id(s) of the content we want to add a location to
         - content_remote_id: # the remote content id(s) of the content we want to add a location to
         - location_id: # the location id(s) of the content we want to add a location to
@@ -40,7 +40,7 @@
 -
     type: location
     mode: create
-    object_id: x
+    object_id: x # deprecated, please use the 'match' key as documented above
     # Can use both syntax for sequences to define the list
     parent_location_id: [x, y, z]
     priority: x # Optional

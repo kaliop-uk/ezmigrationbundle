@@ -1,0 +1,110 @@
+# test  creation / updating / deleting of locations. We use a custom content type for that, not to rely on the standard ones...
+
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_3
+    name: Kaliop Migration Bundle Test Class 3
+    name_pattern: '<ezstring>'
+    is_container: true
+    attributes:
+        -
+            type: ezstring
+            name: ezstring
+            identifier: ezstring
+    references:
+        -
+            identifier: kmb_test_3
+            attribute: identifier
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_3
+    main_location: 2
+    attributes:
+        - ezstring: hello world 1
+    references:
+        -
+            identifier: kmb_test_3_1_loc
+            attribute: location_id
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_3
+    main_location: 2
+    attributes:
+        - ezstring: hello world 2
+    references:
+        -
+            identifier: kmb_test_3_2_loc
+            attribute: location_id
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_3
+    main_location: 2
+    attributes:
+        - ezstring: hello world 3
+    references:
+        -
+            identifier: kmb_test_3_3
+            attribute: object_id
+        -
+            identifier: kmb_test_3_3_loc
+            attribute: location_id
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_3
+    main_location: 2
+    attributes:
+        - ezstring: hello world 4
+    references:
+        -
+            identifier: kmb_test_3_4
+            attribute: object_id
+        -
+            identifier: kmb_test_3_4_loc
+            attribute: location_id
+-
+    type: location
+    mode: create
+    parent_location_id: reference:kmb_test_3_1_loc
+    match:
+        content_id: reference:kmb_test_3_3
+    references:
+        -
+            identifier: kmb_test_3_3_loc_2
+            attribute: id
+-
+    type: location
+    mode: create
+    parent_location_id: reference:kmb_test_3_2_loc
+    priority: 1999
+    is_hidden: true
+    sort_field: path
+    sort_order: DESC
+    match:
+        location_id: reference:kmb_test_3_3_loc
+    references:
+        -
+            identifier: kmb_test_3_3_loc_3
+            attribute: location_id
+-
+    type: location
+    mode: update
+    location_id: reference:kmb_test_3_3_loc_3
+    parent_location_id: reference:kmb_test_3_4_loc
+    priority: 1998
+    is_hidden: false
+    sort_order: ASC
+#-
+#    type: content
+#    mode: delete
+#    match:
+#        content_type: reference:kmb_test_3
+#-
+#    type: content_type
+#    mode: delete
+#    identifier: 'reference:kmb_test_3'

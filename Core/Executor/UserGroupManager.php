@@ -145,6 +145,7 @@ class UserGroupManager extends RepositoryExecutor
 
             switch ($reference['attribute']) {
                 case 'object_id':
+                case 'content_id':
                 case 'id':
                     $value = $userGroup->id;
                     break;

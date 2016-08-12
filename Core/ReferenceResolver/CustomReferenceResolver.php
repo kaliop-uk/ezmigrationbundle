@@ -30,6 +30,7 @@ class CustomReferenceResolver extends AbstractResolver
     {
         $identifier = $this->getReferenceIdentifier($identifier);
         if (!array_key_exists($identifier, $this->references)) {
+var_dump($this->references);
             throw new \Exception("No reference set with identifier '$identifier'");
         }
 
