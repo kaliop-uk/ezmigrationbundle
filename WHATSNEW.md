@@ -46,7 +46,7 @@ The main changes are:
 * it is much easier now to extend the bundle, as proper Dependency Injection is used everywhere, as well as tagged services
 
 * the bundle is now tested on Travis, using eZPublish versions from 2014.3 to eZPlatform 1.4.0
-    (for the moment the testsuite is very light, more tests will come in the future)
+    (for the moment the testsuite is light, more tests will come in the future)
 
 * changes to the YML definition language:
 
