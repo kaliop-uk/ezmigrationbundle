@@ -141,10 +141,35 @@
     type: content_type
     mode: update
     identifier: 'reference:kmb_test_1'
+    attributes:
+        -
+            name: The Subtitle
+            identifier: ezstring
+            new_identifier: subtitle
+        -
+            name: An Image
+            description: An Image Field
+            identifier: ezimage
+            new_identifier: image
+
+-
+    type: content_type
+    mode: update
+    identifier: 'reference:kmb_test_1'
     remove_attributes:
-        - ezstring
+        - subtitle
+
+-
+    type: content_type
+    mode: update
+    identifier: 'reference:kmb_test_1'
+    new_identifier: kmb_test_1_1
+    references:
+        -
+            identifier: kmb_test_1_1
+            attribute: identifier
 
 -
     type: content_type
     mode: delete
-    identifier: 'reference:kmb_test_1'
+    identifier: 'reference:kmb_test_1_1'

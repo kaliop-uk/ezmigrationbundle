@@ -167,7 +167,12 @@ class ContentTypeManager extends RepositoryExecutor
         $contentTypeService->publishContentTypeDraft($contentTypeDraft);
 
         // Set references
-        $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeDraft->identifier);
+        if (array_key_exists('new_identifier', $this->dsl)) {
+            $contentType = $contentTypeService->loadContentTypeByIdentifier($this->dsl['new_identifier']);
+        } else {
+            $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeDraft->identifier);
+        }
+
         $this->setReferences($contentType);
     }
 
