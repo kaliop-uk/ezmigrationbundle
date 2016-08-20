@@ -1,0 +1,24 @@
+-
+    type: user_group
+    mode: create
+    parent_group_id: 4
+    name: Kaliop Migration Bundle Test User Group 1
+    description: Kaliop Migration Bundle Test User Group 1
+    roles: [1, 2] # Anon, admin
+    references:
+         -
+            identifier: kmb_test_6
+            attribute: id
+
+-
+    type: user_group
+    mode: update
+    id: reference:kmb_test_6
+    name: Kaliop Migration Bundle Test User Group 1, updated
+    description: Kaliop Migration Bundle Test User Group 1, updated
+    parent_group_id: 42 # Anon users
+
+-
+    type: user_group
+    mode: delete
+    id: reference:kmb_test_6

@@ -69,7 +69,12 @@ class UserGroupManager extends RepositoryExecutor
         $userService = $this->repository->getUserService();
         $contentService = $this->repository->getContentService();
 
-        $userGroup = $userService->loadUserGroup($this->dsl['id']);
+        $groupId = $this->dsl['id'];
+        if ($this->referenceResolver->isReference($groupId)) {
+            $groupId = $this->referenceResolver->getReferenceValue($groupId);
+        }
+
+        $userGroup = $userService->loadUserGroup($groupId);
 
         /** @var $updateStruct \eZ\Publish\API\Repository\Values\User\UserGroupUpdateStruct */
         $updateStruct = $userService->newUserGroupUpdateStruct();
@@ -111,18 +116,28 @@ class UserGroupManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        if (!array_key_exists('group', $this->dsl)) {
+        if (!array_key_exists('id', $this->dsl) && !array_key_exists('group', $this->dsl)) {
             throw new \InvalidArgumentException('No groups were specified for deletion.');
         }
 
-        $userService = $this->repository->getUserService();
-
-        $groupIds = $this->dsl['group'];
+        // legacy support
+        /// @deprecated tag
+        if (!array_key_exists('id', $this->dsl) && array_key_exists('group', $this->dsl)) {
+            $this->dsl['id'] = $this->dsl['group'];
+        }
+        $groupIds = $this->dsl['id'];
         if (!is_array($groupIds)) {
             $groupIds = array($groupIds);
         }
 
+        $userService = $this->repository->getUserService();
+
         foreach($groupIds as $groupId) {
+
+            if ($this->referenceResolver->isReference($groupId)) {
+                $groupId = $this->referenceResolver->getReferenceValue($groupId);
+            }
+
             $userGroup = $userService->loadUserGroup($groupId);
             $userService->deleteUserGroup($userGroup);
         }
