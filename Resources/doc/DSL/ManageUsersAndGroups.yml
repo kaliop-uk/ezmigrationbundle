@@ -76,4 +76,4 @@
     # The users which are not assigned to other groups will be deleted.
     type: user_group
     mode: delete
-    group: x # Id of the group to be deleted. Can also be a list of ids.
+    id: x # Id (or array of Ids) of groups to delete

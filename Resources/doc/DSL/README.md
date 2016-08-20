@@ -3,8 +3,9 @@ About the Migration Domain Specific Language (DSL)
 
 This directory contains the definitions of each action in the migration DSL, in the form of a commented Yaml file.
 
-Specific topics are covered below
+Specific topics are covered below.
 
+*NB* For more examples of valid Yaml files describing migrations, have a look in the directory Tests/dsl/good
 
 ## Importing binary files
 
