@@ -1,0 +1,27 @@
+-
+    type: user
+    mode: create
+    first_name: Kaliop
+    last_name: Test User
+    username: kmb_test_user_1
+    email: kmb_test_user_1@test.com
+    password: anUnsafePassword
+    groups: [12, 42] # Anons, Admins
+    references:
+         -
+            identifier: kmb_test_7
+            attribute: id
+
+-
+    type: user
+    mode: update
+    id: reference:kmb_test_7
+    email: kmb_test_user_1_bis@test.com
+    password: aMuchSaferPassword
+    enabled: false
+    groups: 4 # Users
+
+-
+    type: user
+    mode: delete
+    user_id: reference:kmb_test_7

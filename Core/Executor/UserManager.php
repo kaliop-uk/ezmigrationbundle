@@ -16,6 +16,14 @@ class UserManager extends RepositoryExecutor
      */
     protected function create()
     {
+        if (!isset($this->dsl['groups'])) {
+            throw new \Exception('No user groups set to create user in.');
+        }
+
+        if (!is_array($this->dsl['groups'])) {
+            $this->dsl['groups'] = array($this->dsl['groups']);
+        }
+
         $userService = $this->repository->getUserService();
         $contentTypeService = $this->repository->getContentTypeService();
 
@@ -64,9 +72,14 @@ class UserManager extends RepositoryExecutor
             throw new \Exception('No user set for update.');
         }
 
+        $userId = $this->dsl['id'];
+        if ($this->referenceResolver->isReference($userId)) {
+            $userId = $this->referenceResolver->getReferenceValue($userId);
+        }
+
         $userService = $this->repository->getUserService();
 
-        $user = $userService->loadUser($this->dsl['id']);
+        $user = $userService->loadUser($userId);
 
         $userUpdateStruct = $userService->newUserUpdateStruct();
 
@@ -83,25 +96,32 @@ class UserManager extends RepositoryExecutor
         $userService->updateUser($user, $userUpdateStruct);
 
         if (isset($this->dsl['groups'])) {
+            if (!is_array($this->dsl['groups'])) {
+                $this->dsl['groups'] = array($this->dsl['groups']);
+            }
+
             $assignedGroups = $userService->loadUserGroupsOfUser($user);
+
+            // Assigning new groups to the user
+            foreach ($this->dsl['groups'] as $groupToAssignId) {
+                $present = false;
+                foreach ($assignedGroups as $assignedGroup) {
+                    // Make sure we assign the user only to groups he isn't already assigned to
+                    if ($assignedGroup->id == $groupToAssignId) {
+                        $present = true;
+                        break;
+                    }
+                }
+                if (!$present) {
+                    $groupToAssign = $userService->loadUserGroup($groupToAssignId);
+                    $userService->assignUserToUserGroup($user, $groupToAssign);
+                }
+            }
 
             // Unassigning groups that are not in the list in the migration
             foreach ($assignedGroups as $assignedGroup) {
                 if (!in_array($assignedGroup->id, $this->dsl['groups'])) {
                     $userService->unAssignUserFromUserGroup($user, $assignedGroup);
-                }
-            }
-
-            // Assigning groups to the user
-            foreach ($this->dsl['groups'] as $groupToAssignId) {
-                foreach ($assignedGroups as $assignedGroup) {
-                    // Make sure we assign the user only to groups he isn't already assigned to
-                    if ($assignedGroup->id == $groupToAssignId) {
-                        break;
-                    } else {
-                        $groupToAssign = $userService->loadUserGroup($groupToAssignId);
-                        $userService->assignUserToUserGroup($user, $groupToAssign);
-                    }
                 }
             }
         }
@@ -122,14 +142,19 @@ class UserManager extends RepositoryExecutor
 
         $usersToDelete = array();
 
+        /// @todo add support for alias 'id'
         if (isset($this->dsl['user_id'])) {
             if (!is_array($this->dsl['user_id'])) {
                 $this->dsl['user_id'] = array($this->dsl['user_id']);
             }
-            foreach ($this->dsl['user_id'] as $id) {
-                array_push($usersToDelete,$userService->loadUser($id));
+            foreach ($this->dsl['user_id'] as $userId) {
+                if ($this->referenceResolver->isReference($userId)) {
+                    $userId = $this->referenceResolver->getReferenceValue($userId);
+                }
+                array_push($usersToDelete,$userService->loadUser($userId));
             }
         }
+
         if (isset($this->dsl['email'])) {
             if (!is_array($this->dsl['email'])) {
                 $this->dsl['email'] = array($this->dsl['email']);
@@ -138,6 +163,7 @@ class UserManager extends RepositoryExecutor
                 $usersToDelete = array_merge($usersToDelete,$userService->loadUsersByEmail($email));
             }
         }
+
         if (isset($this->dsl['username'])) {
             if (!is_array($this->dsl['username'])) {
                 $this->dsl['username'] = array($this->dsl['username']);
@@ -147,7 +173,7 @@ class UserManager extends RepositoryExecutor
             }
         }
 
-        foreach($usersToDelete as $user){
+        foreach($usersToDelete as $user) {
             $userService->deleteUser($user);
         }
     }

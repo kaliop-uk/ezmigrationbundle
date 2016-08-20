@@ -76,6 +76,10 @@ The main changes are:
 
     - references can now be used when updating or deleting user groups to identify the group(s) to act upon
 
+    - references can now be used in ids when updating or deleting users to identify the users(s) to act upon
+    
+    - when creating/updating users, it is possible to assign them to a single group
+    
     - deprecated keys: 'group' for user group delete operations, in favour of 'id' 
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!

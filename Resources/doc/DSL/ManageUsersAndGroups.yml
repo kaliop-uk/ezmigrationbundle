@@ -7,7 +7,7 @@
     email: xyz
     password: xyz
     main_language: xyz # Optional, default to eng-GB
-    groups: [x, y, z] # The user group IDs (Object IDs) to put the user into
+    groups: [x, y, z] # The user group ID or IDs (Object IDs) to put the user into
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional
@@ -23,7 +23,7 @@
     email: xyz # Optional
     password: xyz # Optional
     enabled: true|false # Optional
-    # Optional, list of group IDs the user is a member of.
+    # Optional, Group ID / list of group IDs the user has to be a member of.
     # The user will be removed from all groups that are not in the list
     groups: [x, y, z]
     # The list in references tells the manager to store specific values for later use
