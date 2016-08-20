@@ -27,6 +27,9 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     const ADMIN_USER_ID = 14;
 
+    /** @todo inject via config parameter */
+    const USER_CONTENT_TYPE = 'user';
+
     /**
      * @var array $dsl The parsed DSL instruction array
      */

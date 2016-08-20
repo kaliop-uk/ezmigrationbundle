@@ -10,9 +10,9 @@ class UserManager extends RepositoryExecutor
     protected $supportedStepTypes = array('user');
 
     /**
-     * Method to handle the create operation of the migration instructions
-     *
      * Creates a user based on the DSL instructions.
+     *
+     * @todo allow setting extra profile attributes!
      */
     protected function create()
     {
@@ -35,7 +35,7 @@ class UserManager extends RepositoryExecutor
         }
 
         // FIXME: Hard coding content type to user for now
-        $userContentType = $contentTypeService->loadContentTypeByIdentifier('user');
+        $userContentType = $contentTypeService->loadContentTypeByIdentifier(self::USER_CONTENT_TYPE);
 
         $userCreateStruct = $userService->newUserCreateStruct(
             $this->dsl['username'],
@@ -55,6 +55,8 @@ class UserManager extends RepositoryExecutor
 
     /**
      * Method to handle the update operation of the migration instructions
+     *
+     * @todo allow setting extra profile attributes!
      */
     protected function update()
     {

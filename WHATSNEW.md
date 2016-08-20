@@ -68,11 +68,15 @@ The main changes are:
     
     - when creating/updating contents, values for more 'complex' field types are supported via usage of the
         fromHash method. F.e. the ezcountry field type is now supported.
-        The details of the hash structure have to be looked up in dcs or code for each field type
+        The details of the hash structure have to be looked up in docs or code for each field type
 
     - references can now be set when creating new locations
 
     - references are now supported for setting the values to object relation and object relation list attributes
+
+    - references can now be used when updating or deleting user groups to identify the group(s) to act upon
+
+    - deprecated keys: 'group' for user group delete operations, in favour of 'id' 
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)
