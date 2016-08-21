@@ -85,6 +85,10 @@
         #    type: ezpage
         #    name: ezpage
         #    identifier: ezpage
+        -
+            type: ezrichtext
+            name: ezrichtext
+            identifier: ezrichtext
         # nb: ezsrrating fieldType seems to be enabled by default, but the db table might *not* be present...
         #-
         #    type: ezsrrating
@@ -168,6 +172,8 @@
             path: emptyfile.txt
         - ezxmltext:
             content: '<section><paragraph>Hello there! Here is an embedded object: <embed view="embed" size="medium" object_id="[reference:kmb_test_2_1]" /></paragraph></section>'
+        - ezrichtext:
+            content: '<?xml version="1.0" encoding="UTF-8"?><section xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ezxhtml="http://ez.no/xmlns/ezpublish/docbook/xhtml" xmlns:ezcustom="http://ez.no/xmlns/ezpublish/docbook/custom" version="5.0-variant ezpublish-1.0"><para><link xlink:href="ezcontent://[reference:kmb_test_2_1]">Content link</link></para></section>'
         - ezauthor:
             -
                 name: Author 1
