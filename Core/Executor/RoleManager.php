@@ -6,7 +6,6 @@ use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\ReferenceHandler;
 use Kaliop\eZMigrationBundle\Core\Helper\RoleHandler;
 
 /**
@@ -122,8 +121,6 @@ class RoleManager extends RepositoryExecutor
             return false;
         }
 
-        $referenceHandler = ReferenceHandler::instance();
-
         foreach ($this->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'role_id':
@@ -131,14 +128,14 @@ class RoleManager extends RepositoryExecutor
                     $value = $role->id;
                     break;
                 case 'identifier':
-                case 'role_identidier':
+                case 'role_identifier':
                     $value = $role->identifier;
                     break;
                 default:
                     throw new \InvalidArgumentException('Role Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
 
         return true;
@@ -149,8 +146,8 @@ class RoleManager extends RepositoryExecutor
      *
      * <pre>
      * $limitation = array(
-     *  'type' => Type of the limitation
-     *  'value' => array(Values to base the limitation on)
+     *  'identifier' => Type of the limitation
+     *  'values' => array(Values to base the limitation on)
      * )
      * </pre>
      *
@@ -170,9 +167,7 @@ class RoleManager extends RepositoryExecutor
                 $limitationValue[$id] = $value;
             }
         }
-
         $limitationValue = $this->roleHandler->convertLimitationToValue($limitation['identifier'], $limitationValue);
-
         return $limitationType->buildValue($limitationValue);
     }
 

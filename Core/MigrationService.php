@@ -237,12 +237,17 @@ class MigrationService
             is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')
         ) {
             if (is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')) {
-                $errorsArray = array($e->getValidationErrors());
+                $errorsArray = $e->getLimitationErrors();
+                if ($errorsArray == null) {
+                    return $message;
+                }
+                $errorsArray = array($errorsArray);
             } else {
                 $errorsArray = $e->getFieldErrors();
             }
 
             foreach ($errorsArray as $errors) {
+
                 foreach ($errors as $error) {
                     /// @todo find out what is the proper eZ way of getting a translated message for these errors
                     $translatableMessage = $error->getTranslatableMessage();

@@ -39,13 +39,13 @@
 #  type: Section
 #  value: [1, 2, 3] # List of section ids
 #
-#  Siteaccess limitation example: (Not implemented yet in eZ Publish 5 API
+#  Siteaccess limitation example: (Not implemented yet in eZ Publish 5 API)
 #  type: SiteAccess
 #  value: [siteaccess, siteaccess] # List of siteaccess name strings
 #
 #  Subtree limitation example:
 #  type: Subtree
-#  value: [1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location id path
+#  value: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location id path
 #
 #  UserGroup limitation example:
 #  type: UserGroup
@@ -60,23 +60,23 @@
             function: xyz # to grant access to all function, use '*' (including simple quotes)
             limitation: # Optional
                 -
-                    type: xyz
-                    value: [x, y]
+                    identifier: xyz
+                    values: [x, y]
         -
             module: xyz
             function: xyz
             limitation:
                 -
-                    type: xyz
-                    value: [x, y]
+                    identifier: xyz
+                    values: [x, y]
     assign: # Optional
         -
             type: # Must be user or group
             ids: [x, y, z] # List of user IDs to assign the new role to
             limitation: # Optional role limitation on assignment
                 -
-                    type: xyz
-                    value: [x, y]
+                    identifier: xyz
+                    values: [x, y]
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional
@@ -96,8 +96,8 @@
             ids: [x, y, z] # List of user IDs to assign the new role to
             limitation: # Optional role limitation on assignment
                 -
-                    type: xyz
-                    value: [x, y]
+                    identifier: xyz
+                    values: [x, y]
     unassign: # Optional
         users: [x, z, y]
         groups: [x, z, y]
@@ -108,8 +108,8 @@
                 function: xyz
                 limitation:
                     -
-                        type: xyz
-                        value: [x, z]
+                        identifier: xyz
+                        values: [x, z]
         remove: [x, y, z] # Policy ids to remove from the role
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
