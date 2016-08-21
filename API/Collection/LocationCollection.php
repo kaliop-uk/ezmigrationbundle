@@ -5,7 +5,7 @@ namespace Kaliop\eZMigrationBundle\API\Collection;
 /**
  * @todo add phpdoc to suggest typehinting
  */
-class LocationCollection extends \ArrayObject
+class LocationCollection extends AbstractCollection
 {
     protected $allowedClass = 'eZ\Publish\API\Repository\Values\Content\Location';
 }
