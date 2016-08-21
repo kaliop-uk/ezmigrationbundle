@@ -4,51 +4,51 @@
 # All values must be arrays even if it is a single value
 #
 #  ContentType limitation example:
-#  type: Class
+#  identifier: Class
 #  value: [1, 2, 3] # List of content type ids
 #
 #  Language limitation example:
-#  type: Language
+#  identifier: Language
 #  value: [eng-GB, eng-US] # List of valid language codes
 #
 #  Location limitation example"
-#  type: Node
+#  identifier: Node
 #  value: [2, 345] # List of location ids
 #
 #  Owner limitation
-#  type: Owner
+#  identifier: Owner
 #  value: [x] # must be either 1 (owner) or 2 (session)
 #
 #  ParentContentType limitation example:
-#  type: ParentClass
+#  identifier: ParentClass
 #  value: [1, 2, 3] # List of content type ids.
 #
 #  ParentDepth limitation example:
-#  type: ParentDepth
+#  identifier: ParentDepth
 #  value: [x]
 #
 #  ParentOwner limitation example:
-#  type: ParentOwner
+#  identifier: ParentOwner
 #  value: [x] # either 1 (owner) or 2 (session)
 #
 #  ParentUserGroup limitation example:
-#  type: ParentGroup
+#  identifier: ParentGroup
 #  value: [1] # must be 1 (owner)
 #
 #  Section limitation example:
-#  type: Section
+#  identifier: Section
 #  value: [1, 2, 3] # List of section ids
 #
 #  Siteaccess limitation example: (Not implemented yet in eZ Publish 5 API)
-#  type: SiteAccess
+#  identifier: SiteAccess
 #  value: [siteaccess, siteaccess] # List of siteaccess name strings
 #
 #  Subtree limitation example:
-#  type: Subtree
+#  identifier: Subtree
 #  value: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location id path
 #
 #  UserGroup limitation example:
-#  type: UserGroup
+#  identifier: UserGroup
 #  value: [1] # must be 1 (owner)
 -
     type: role
@@ -101,16 +101,14 @@
     unassign: # Optional
         users: [x, z, y]
         groups: [x, z, y]
-    policies: # Optional
-        add:
-            -
-                module: xyz
-                function: xyz
-                limitation:
-                    -
-                        identifier: xyz
-                        values: [x, z]
-        remove: [x, y, z] # Policy ids to remove from the role
+    policies: # Optional. NB: if set, all existing policies not specified in this list will be removed
+        -
+            module: xyz
+            function: xyz
+            limitation:
+                -
+                    identifier: xyz
+                    values: [x, z]
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional

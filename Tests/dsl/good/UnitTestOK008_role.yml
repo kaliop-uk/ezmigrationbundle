@@ -34,6 +34,14 @@
     type: role
     mode: update
     name: Kaliop Migration Bundle Test Role 1
+    policies:
+        -
+            module: content
+            function: read
+            limitation:
+                -
+                    identifier: Language
+                    values: [eng-GB]
     assign:
         -
             type: user
