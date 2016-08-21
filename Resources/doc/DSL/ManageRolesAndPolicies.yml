@@ -80,11 +80,11 @@
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional
-            -
-                identifier: referenceId # A string used to identify the reference
-                attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
-                                       # The shorthand 'id' can be used instead of 'role_id'
-                                       # The shorthand 'identifier' can be used instead of 'role_identifier'
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
+                                   # The shorthand 'id' can be used instead of 'role_id'
+                                   # The shorthand 'identifier' can be used instead of 'role_identifier'
 
 -
     type: role
@@ -114,11 +114,11 @@
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional
-                -
-                    identifier: referenceId # A string used to identify the reference
-                    attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
-                                           # The shorthand 'id' can be used instead of 'role_id'
-                                           # The shorthand 'identifier' can be used instead of 'role_identifier'
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
+                                   # The shorthand 'id' can be used instead of 'role_id'
+                                   # The shorthand 'identifier' can be used instead of 'role_identifier'
 
 # Not implemented
 #-
