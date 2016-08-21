@@ -158,6 +158,7 @@
     identifier: 'reference:kmb_test_1'
     remove_attributes:
         - subtitle
+        - image
 
 -
     type: content_type

@@ -72,12 +72,12 @@ class UserManager extends RepositoryExecutor
             throw new \Exception('No user set for update.');
         }
 
+        $userService = $this->repository->getUserService();
+
         $userId = $this->dsl['id'];
         if ($this->referenceResolver->isReference($userId)) {
             $userId = $this->referenceResolver->getReferenceValue($userId);
         }
-
-        $userService = $this->repository->getUserService();
 
         $user = $userService->loadUser($userId);
 

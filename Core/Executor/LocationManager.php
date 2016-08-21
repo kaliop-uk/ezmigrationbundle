@@ -19,48 +19,6 @@ class LocationManager extends RepositoryExecutor
     }
 
     /**
-     * NB: weirdly enough, it returns contents, not locations
-     *
-     * @param string $action
-     * @return ContentCollection
-     * @throws \Exception
-     */
-    protected function matchContents($action)
-    {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
-        }
-
-        // Backwards compat
-        if (!isset($this->dsl['match'])) {
-            if (isset($this->dsl['object_id'])) {
-                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
-            } elseif (isset($this->dsl['remote_id'])) {
-                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
-            }
-        }
-
-        $match = $this->dsl['match'];
-
-        // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
-                }
-            } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
-            }
-        }
-
-        return $this->contentMatcher->matchContent($match);
-    }
-
-    /**
      * Method to handle the create operation of the migration instructions
      */
     protected function create()
@@ -204,6 +162,48 @@ class LocationManager extends RepositoryExecutor
             $location = $locationService->loadLocation($locationId);
             $locationService->deleteLocation($location);
         }
+    }
+
+    /**
+     * NB: weirdly enough, it returns contents, not locations
+     *
+     * @param string $action
+     * @return ContentCollection
+     * @throws \Exception
+     */
+    protected function matchContents($action)
+    {
+        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
+            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
+        }
+
+        // Backwards compat
+        if (!isset($this->dsl['match'])) {
+            if (isset($this->dsl['object_id'])) {
+                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
+            } elseif (isset($this->dsl['remote_id'])) {
+                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
+            }
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
+                    }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
+                }
+            }
+        }
+
+        return $this->contentMatcher->matchContent($match);
     }
 
     protected function getSortField($currentValue = null)

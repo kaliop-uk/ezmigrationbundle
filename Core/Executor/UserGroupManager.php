@@ -120,6 +120,8 @@ class UserGroupManager extends RepositoryExecutor
             throw new \InvalidArgumentException('No groups were specified for deletion.');
         }
 
+        $userService = $this->repository->getUserService();
+
         // legacy support
         /// @deprecated tag
         if (!array_key_exists('id', $this->dsl) && array_key_exists('group', $this->dsl)) {
@@ -129,8 +131,6 @@ class UserGroupManager extends RepositoryExecutor
         if (!is_array($groupIds)) {
             $groupIds = array($groupIds);
         }
-
-        $userService = $this->repository->getUserService();
 
         foreach($groupIds as $groupId) {
 
