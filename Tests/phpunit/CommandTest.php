@@ -84,13 +84,6 @@ abstract class CommandTest extends WebTestCase
         );
         if (isset($_SERVER['SYMFONY_DEBUG'])) {
             $options['debug'] = $_SERVER['SYMFONY_DEBUG'];
-
-            // in case the user wants no debug, we also silence notices and warnings. This is needed to fix eZPublish code
-            // which emits warnings, such as: https://jira.ez.no/browse/EZP-26189
-            if (!$_SERVER['SYMFONY_DEBUG']) {
-                $errorLevel = error_reporting();
-                error_reporting($errorLevel & ~E_WARNING & ~E_NOTICE);
-            }
         }
         try {
             static::$kernel = static::createKernel($options);
