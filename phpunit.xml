@@ -5,6 +5,7 @@
     <php>
         <server name="KERNEL_DIR" value="vendor/ezsystems/ezpublish-community/ezpublish" />
         <server name="SYMFONY_ENV" value="behat" />
+        <server name="SYMFONY_DEBUG" value="false" />
     </php>
 
     <!-- code coverage reporting -->

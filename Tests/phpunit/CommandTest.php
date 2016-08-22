@@ -77,10 +77,21 @@ abstract class CommandTest extends WebTestCase
         if (!isset($_SERVER['SYMFONY_ENV'])) {
             throw new \Exception("Please define the environment variable SYMFONY_ENV to specify the environment to use for the tests");
         }
-        // run in our own test environment. Sf by default uses the 'test' one. We let phpunit.xml set it...
+        // Run in our own test environment. Sf by default uses the 'test' one. We let phpunit.xml set it...
+        // We also allow to disable debug mode
         $options = array(
             'environment' => $_SERVER['SYMFONY_ENV']
         );
+        if (isset($_SERVER['SYMFONY_DEBUG'])) {
+            $options['debug'] = $_SERVER['SYMFONY_DEBUG'];
+
+            // in case the user wants no debug, we also silence notices and warnings. This is needed to fix eZPublish code
+            // which emits warnings, such as: https://jira.ez.no/browse/EZP-26189
+            if (!$_SERVER['SYMFONY_DEBUG']) {
+                $errorLevel = error_reporting();
+                error_reporting($errorLevel & ~E_WARNING & ~E_NOTICE);
+            }
+        }
         try {
             static::$kernel = static::createKernel($options);
         } catch(\RuntimeException $e) {
