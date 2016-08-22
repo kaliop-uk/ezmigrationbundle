@@ -286,7 +286,7 @@ class RoleManager extends AbstractManager
      *
      * @param \eZ\Publish\API\Repository\Values\User\Role $role
      * @param \eZ\Publish\API\Repository\RoleService $roleService
-     * @param array $policies
+     * @param array $policy
      */
     private function addPolicy(Role $role, RoleService $roleService, array $policy)
     {

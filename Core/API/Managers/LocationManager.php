@@ -79,7 +79,7 @@ class LocationManager extends AbstractManager
      */
     public function update()
     {
-        if (!isset($this->dsl['location_id'])) {
+        if (!isset($this->dsl['location_id']) and !isset($this->dsl['remote_id'])) {
             throw new \Exception('No location set for update.');
         }
 
@@ -91,12 +91,16 @@ class LocationManager extends AbstractManager
 
         $locationService = $this->repository->getLocationService();
 
-        $locationId = $this->dsl['location_id'];
-        if ($this->isReference($locationId)) {
-            $locationId = $this->getReference($locationId);
-        }
+        if (isset($this->dsl['remote_id'])) {
+            $location = $locationService->loadLocationByRemoteId($this->dsl['remote_id']);
+        } else {
+            $locationId = $this->dsl['location_id'];
+            if ($this->isReference($locationId)) {
+                $locationId = $this->getReference($locationId);
+            }
 
-        $location = $locationService->loadLocation($locationId);
+            $location = $locationService->loadLocation($locationId);
+        }
 
         if (array_key_exists('priority', $this->dsl)
             || array_key_exists('sort_field', $this->dsl)
@@ -126,6 +130,14 @@ class LocationManager extends AbstractManager
             } else {
                 $locationService->unhideLocation($location);
             }
+        }
+
+        // Set location section
+        if ($this->dsl['section']) {
+            $sectionService = $this->repository->getSectionService();
+            $section = $sectionService->loadSectionByIdentifier($this->dsl['section']);
+            $contentInfo = $location->getContentInfo();
+            $sectionService->assignSection($contentInfo, $section);
         }
 
         // Move or swap location

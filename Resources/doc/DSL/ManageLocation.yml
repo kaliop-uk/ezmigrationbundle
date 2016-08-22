@@ -44,13 +44,15 @@
 -
     mode: update
     type: location
-    location_id: x # The ID of the location to update
+    location_id: x # The ID of the location to update (can use this OR remote_id)
+    remote_id: x # The remote ID of the location to update (can use this OR location_id)
     swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set the same time parent_location_id is set.
     priority: x # Optional, will be updated if set
     parent_location_id: x # Optional The parent location to move the subtree to. Cannot be set the same time when swap_with_location is set.
     is_hidden: true|false # Optional, Set the visibility of the location
     sort_field: x # Optional
     sort_order: ASC|DESC # Optional
+    section: restricted # Optional, set the section of the location by section identifier
 
 -
     mode: delete
