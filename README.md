@@ -26,7 +26,7 @@ In either `require` or `require-dev` at the end of the bundle list add:
 
 Save composer.json and run
 
-    composer update --dev kaliop/migration
+    composer update --dev kaliop/ezmigrationbundle
 
 This will install the bundle and all its dependencies.
 
