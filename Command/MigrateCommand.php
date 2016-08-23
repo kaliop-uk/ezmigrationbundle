@@ -33,9 +33,10 @@ class MigrateCommand extends AbstractCommand
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 "The directory or file to load the migration definitions from"
             )
-            ->addOption('ignore-failures', null, InputOption::VALUE_NONE, "Keep executing migration even if one fails")
+            ->addOption('ignore-failures', null, InputOption::VALUE_NONE, "Keep executing migrations even if one fails")
             ->addOption('clear-cache', null, InputOption::VALUE_NONE, "Clear the cache after the command finishes")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question")
+            ->addOption('no-transactions', 'u', InputOption::VALUE_NONE, "Do not use a repository transaction to wrap each migration. Unsafe, but needed for legacy slot handlers")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:migrate</info> command loads and executes migrations:
 
@@ -146,7 +147,7 @@ EOT
             $output->writeln("<info>Processing $name</info>");
 
             try {
-                $migrationsService->executeMigration($migrationDefinition);
+                $migrationsService->executeMigration($migrationDefinition, !$input->getOption('no-transactions'));
             } catch(\Exception $e) {
                 if ($input->getOption('ignore-failures')) {
                     $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");

@@ -99,11 +99,14 @@
     priority: 1998
     is_hidden: false
     sort_order: ASC
--
-    type: location
-    mode: update
-    location_id: reference:kmb_test_3_3_loc_3
-    swap_with_location: reference:kmb_test_3_2_loc
+
+# BUG in EZP 2014.03! reintroduce another test specifically for this...
+#-
+#    type: location
+#    mode: update
+#    location_id: reference:kmb_test_3_3_loc_3
+#    swap_with_location: reference:kmb_test_3_2_loc
+
 -
     type: content
     mode: delete

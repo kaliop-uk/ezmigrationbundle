@@ -31,7 +31,7 @@ class MigrateTest extends CommandTest
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegexp('?Added migration?', $output);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true));
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
@@ -65,7 +65,7 @@ class MigrateTest extends CommandTest
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegexp('?Added migration?', $output);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true));
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
@@ -100,7 +100,7 @@ class MigrateTest extends CommandTest
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegexp('?Added migration?', $output);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true));
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertNotSame(0, $exitCode, 'CLI Command should have failed. Output: ' . $output);

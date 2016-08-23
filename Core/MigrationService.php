@@ -150,11 +150,12 @@ class MigrationService
 
     /**
      * @param MigrationDefinition $migrationDefinition
+     * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
      * @throws \Exception
      *
      * @todo add support for skipped migrations, partially executed migrations
      */
-    public function executeMigration(MigrationDefinition $migrationDefinition)
+    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction=true)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
@@ -167,7 +168,9 @@ class MigrationService
         // set migration as begun - has to be in own db transaction
         $migration = $this->storageHandler->startMigration($migrationDefinition);
 
-        $this->repository->beginTransaction();
+        if ($useTransaction) {
+            $this->repository->beginTransaction();
+        }
         try {
 
             $i = 1;
@@ -191,21 +194,26 @@ class MigrationService
                 $status
             ));
 
-            try {
-                $this->repository->commit();
-            } catch(\RuntimeException $e) {
-                // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
-                // already, we get an exception a this point. Extremely poor design, but what can we do ?
-                /// @todo log warning
+            if ($useTransaction) {
+                try {
+                    $this->repository->commit();
+                } catch(\RuntimeException $e) {
+                    // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
+                    // already, we get an exception a this point. Extremely poor design, but what can we do ?
+                    /// @todo log warning
+                }
             }
 
         } catch(\Exception $e) {
-            try {
-                $this->repository->rollBack();
-            } catch(\RuntimeException $e2) {
-                // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
-                // already, we get an exception a this point. Extremely poor design, but what can we do ?
-                /// @todo log error
+
+            if ($useTransaction) {
+                try {
+                    $this->repository->rollBack();
+                } catch(\RuntimeException $e2) {
+                    // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
+                    // already, we get an exception a this point. Extremely poor design, but what can we do ?
+                    /// @todo log error
+                }
             }
 
             /// set migration as failed

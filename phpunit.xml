@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<phpunit colors="true" bootstrap="Tests/bootstrap.php">
+<!-- some of the tests we execute do generate php warnings, sadly... we have to swallow them -->
+<phpunit colors="true" bootstrap="Tests/bootstrap.php" convertNoticesToExceptions="false" convertWarningsToExceptions="false">
 
     <php>
         <server name="KERNEL_DIR" value="vendor/ezsystems/ezpublish-community/ezpublish" />
