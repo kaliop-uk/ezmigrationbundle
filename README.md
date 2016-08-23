@@ -1,9 +1,21 @@
 Kaliop eZ-Migration Bundle
 ==========================
 
-This bundle makes it easy to handle eZPlatform / eZPublish 5 content upgrades/migrations.
+This bundle makes it easy to programmatically deploy changes to eZPlatform / eZPublish 5 database structure and contents.
 
-It is inspired by the DoctrineMigrationsBundle ( http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html )
+It is inspired by the [DoctrineMigrationsBundle](http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html)
+
+You can think of it as the grandson of the legacy [ezxmlinstaller](https://github.com/ezsystems/ezxmlinstaller) extension.
+
+
+## Requirements
+
+* PHP 5.4 or later.
+
+* eZ Publish Enterprise 5.4 or Community 2014.11 or later.
+
+    It is possible to use the bundle with Enterprise 5.3/Community 2014.3, but there is a known bug with those versions:
+    https://github.com/kaliop-uk/ezmigrationbundle/issues/53
 
 
 ## Installation
@@ -53,6 +65,7 @@ To get the latest version, you can update the bundle to the latest available ver
 ### Upgrading from version 1.x to version 2
 
 Please read the [dedicated documentation page](doc/Upgrading/1.x_to_2.0.md)
+
 
 ## Getting started
 
@@ -214,4 +227,4 @@ To run the Behat tests:
 
 [![Build Status](https://travis-ci.org/kaliop-uk/ezmigrationbundle.svg?branch=master)](https://travis-ci.org/kaliop-uk/ezmigrationbundle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master) 
+[![Code Coverage](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)

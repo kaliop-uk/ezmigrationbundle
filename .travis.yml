@@ -79,7 +79,7 @@ before_script:
   # Fix the ez5 autoload configuration for the unexpected directory layout
   - sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/autoload.php
   # Generate legacy autoloads
-  - cat Tests/ezpublish-legacy/config.php vendor/ezsystems/ezpublish-legacy/config.php
+  - cat Tests/ezpublish-legacy/config.php > vendor/ezsystems/ezpublish-legacy/config.php
   - cd vendor/ezsystems/ezpublish-legacy && php bin/php/ezpgenerateautoloads.php
   # Fix the phpunit configuration if needed
   - if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i 's/"vendor\/ezsystems\/ezpublish-community\/ezpublish"/"vendor\/ezsystems\/ezplatform\/app"/' phpunit.xml; fi
