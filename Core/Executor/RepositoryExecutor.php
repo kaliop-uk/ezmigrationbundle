@@ -107,7 +107,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * Method that each executor has to implement.
+     * Method that each executor (subclass) has to implement.
      *
      * It is used to set references based on the DSL instructions executed in the current step, for later steps to reuse.
      *
@@ -116,8 +116,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @return boolean
      */
     abstract protected function setReferences($object);
-
-/// *** BELOW THE FOLD: TO BE REFACTORED ***
 
     /**
      * Helper method to log in a user that can make changes to the system.
@@ -134,12 +132,4 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         return $previousUser->id;
     }
-
-    /*protected function logoutUser()
-    {
-        $currentUser = $this->repository->getCurrentUser();
-        if ($currentUser->id != $this->previousUser->id) {
-            $this->repository->setCurrentUser($this->previousUser);
-        }
-    }*/
 }

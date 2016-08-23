@@ -1,7 +1,7 @@
 <?php
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
+use eZ\Bundle\EzPublishCoreBundle\Console\Application;
 use Symfony\Component\Console\Output\StreamOutput;
 
 abstract class CommandTest extends WebTestCase
@@ -14,6 +14,8 @@ abstract class CommandTest extends WebTestCase
     protected $app;
     protected $output;
 
+    // tell to phpunit not to mess with ezpublish legacy global vars...
+    protected $backupGlobalsBlacklist = array('eZCurrentAccess');
 
     public function __construct($name = null, array $data = array(), $dataName = '')
     {
