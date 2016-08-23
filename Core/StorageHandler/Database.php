@@ -143,7 +143,7 @@ class Database implements StorageHandlerInterface
 
         $qb = $conn->createQueryBuilder();
         $qb->select('*')
-            ->from($this->migrationsTableName, $this->migrationsTableName)
+            ->from($this->migrationsTableName, 'm')
             ->where('migration = ?');
         $sql = $qb->getSQL() . ' FOR UPDATE';
 
@@ -222,7 +222,7 @@ class Database implements StorageHandlerInterface
 
         $qb = $conn->createQueryBuilder();
         $qb->select('*')
-            ->from($this->migrationsTableName)
+            ->from($this->migrationsTableName, 'm')
             ->where('migration = ?');
         $sql = $qb->getSQL() . ' FOR UPDATE';
 
