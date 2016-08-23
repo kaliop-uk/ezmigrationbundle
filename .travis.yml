@@ -80,7 +80,7 @@ before_script:
   - sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/autoload.php
   # Generate legacy autoloads
   - cat Tests/ezpublish-legacy/config.php > vendor/ezsystems/ezpublish-legacy/config.php
-  - cd vendor/ezsystems/ezpublish-legacy && php bin/php/ezpgenerateautoloads.php
+  - cd vendor/ezsystems/ezpublish-legacy && php bin/php/ezpgenerateautoloads.php; cd ../../..
   # Fix the phpunit configuration if needed
   - if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i 's/"vendor\/ezsystems\/ezpublish-community\/ezpublish"/"vendor\/ezsystems\/ezplatform\/app"/' phpunit.xml; fi
 
