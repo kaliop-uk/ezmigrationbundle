@@ -37,7 +37,11 @@ class RoleManager extends AbstractManager
         $role = $roleService->createRole($roleCreateStruct);
 
         if (array_key_exists('policies', $this->dsl)) {
-            $this->addPolicies($role, $roleService, $this->dsl['policies']);
+            $ymlPolicies = $this->dsl['policies'];
+
+            foreach($ymlPolicies as $key => $ymlPolicy) {
+                $this->addPolicy($role, $roleService, $ymlPolicy);
+            }
         }
 
         if (array_key_exists('assign', $this->dsl)) {
