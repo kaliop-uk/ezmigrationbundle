@@ -27,15 +27,16 @@ The main changes are:
     It also lists *all* migrations: both the ones available on disk as definition files, and the ones stored in the
     database (previously if you deleted a migration definition, it would just not be listed any more)
 
-* the `update` command has been renamed to `migrate` (but the previous name will be kept as alias for a while)
+* the `update` command has been renamed to `migrate` (but the previous name will be kept as alias for a while).
+
+* the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
+    failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
+    transactions. It also has a new option to disable the wrapping of each migration in a database transaction and
+    probably more 
 
 * a new command `migration` is available. For the moment, it allows to delete existing migrations from the database
     table, making it possible to retry migrations which previously failed, as well as to manually add to the table
     migration definitions which are outside of the expected paths.
-
-* the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
-    failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
-    transactions and probably more 
 
 * php migrations are now fully supported (they used to have naming problems fpr the generated php classes)
 
@@ -46,7 +47,7 @@ The main changes are:
 * it is much easier now to extend the bundle, as proper Dependency Injection is used everywhere, as well as tagged services
 
 * the bundle is now tested on Travis, using eZPublish versions from 2014.3 to eZPlatform 1.4.0
-    (for the moment the testsuite is light, more tests will come in the future)
+    (for the moment the test suite is not 100% complete, more tests will come in the future)
 
 * changes to the YML definition language:
 
