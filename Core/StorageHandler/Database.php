@@ -310,7 +310,10 @@ class Database implements StorageHandlerInterface
         $t->addColumn('status', 'integer', array('default ' => Migration::STATUS_TODO));
         $t->addColumn('execution_error', 'string', array('length' => 4000, 'notnull' => false));
         $t->setPrimaryKey(array('migration'));
-        $t->addIndex(array('path')); // in case users want to look up migrations by their full path
+        // in case users want to look up migrations by their full path
+        // NB: disabled for the moment, as it causes problems on some versions of mysql which limit index length to 767 bytes,
+        // and 767 bytes can be either 255 chars or 191 chars depending on charset utf8 or utf8mb4...
+        //$t->addIndex(array('path'));
 
         foreach($schema->toSql($dbPlatform) as $sql) {
             $this->dbHandler->exec($sql);
