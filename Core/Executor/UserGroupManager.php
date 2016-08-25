@@ -27,7 +27,7 @@ class UserGroupManager extends RepositoryExecutor
 
         $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier("user_group");
 
-        $userGroupCreateStruct = $userService->newUserGroupCreateStruct(self::DEFAULT_LANGUAGE_CODE, $contentType);
+        $userGroupCreateStruct = $userService->newUserGroupCreateStruct($this->getLanguageCode(), $contentType);
         $userGroupCreateStruct->setField('name', $this->dsl['name']);
 
         if (array_key_exists('description', $this->dsl)) {

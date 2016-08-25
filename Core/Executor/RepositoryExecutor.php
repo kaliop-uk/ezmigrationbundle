@@ -46,6 +46,13 @@ abstract class RepositoryExecutor extends AbstractExecutor
     protected $repository;
 
     /**
+     * Language code for current step.
+     *
+     * @var string
+     */
+    private $languageCode;
+
+    /**
      * The bundle object representing the bundle the currently processed migration is in.
      *
      * @var BundleInterface
@@ -87,6 +94,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $this->dsl = $step->dsl;
         $this->context = $step->context;
+        $this->languageCode = isset($this->dsl['lang']) ? $this->dsl['lang'] : self::DEFAULT_LANGUAGE_CODE;
 
         if (method_exists($this, $action)) {
 
@@ -131,5 +139,15 @@ abstract class RepositoryExecutor extends AbstractExecutor
         }
 
         return $previousUser->id;
+    }
+
+    /**
+     * Returns selected language code.
+     *
+     * @return string
+     */
+    protected function getLanguageCode()
+    {
+        return $this->languageCode;
     }
 }
