@@ -55,9 +55,13 @@ class ContentTypeManager extends AbstractManager
 
         // Add attributes
         foreach ($this->dsl['attributes'] as $position => $attribute) {
-            $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute);
-            $fieldDefinition->position = ++$position;
-            $contentTypeCreateStruct->addFieldDefinition($fieldDefinition);
+            try {
+                $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute);
+                $fieldDefinition->position = ++$position;
+                $contentTypeCreateStruct->addFieldDefinition($fieldDefinition);
+            } catch (\Exception $e) {
+                var_dump($e);die();
+            }
         }
 
         // Publish new class

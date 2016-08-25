@@ -225,6 +225,22 @@ class RoleManager extends AbstractManager
                     break;
                 case 'group':
                     foreach ($assign['ids'] as $groupId) {
+
+                        if (!is_numeric($groupId)) {
+                            if ( $this->isReference($groupId) )
+                            {
+                                $groupId = $this->getReference($groupId);
+                            }
+                            if ( $this->isLocationRemoteId($groupId) )
+                            {
+                                $locationId = $this->getLocationByRemoteId($groupId);
+
+                                $locationService = $this->getContainer()->get('ezpublish.api.repository')->getLocationService();
+                                $location = $locationService->loadLocation($locationId);
+                                $groupId = $location->contentId;
+                            }
+                        }
+
                         $group = $userService->loadUserGroup($groupId);
 
                         if (!array_key_exists('limitation', $assign)) {
