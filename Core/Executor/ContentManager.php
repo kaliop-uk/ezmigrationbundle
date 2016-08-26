@@ -85,8 +85,7 @@ class ContentManager extends RepositoryExecutor
         }
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
-        // FIXME: Defaulting in language code for now
-        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, self::DEFAULT_LANGUAGE_CODE);
+        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode());
         $this->setFields($contentCreateStruct, $this->dsl['attributes'], $contentType);
 
         if (array_key_exists('remote_id', $this->dsl)) {
@@ -246,7 +245,7 @@ class ContentManager extends RepositoryExecutor
                 $fieldValue = $this->getSingleFieldValue($field[$fieldIdentifier], $fieldType, $this->context);
             }
 
-            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
+            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
         }
     }
 

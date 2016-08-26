@@ -36,20 +36,20 @@ class ContentTypeManager extends RepositoryExecutor
         $contentTypeGroup = $contentTypeService->loadContentTypeGroup($this->dsl['content_type_group']);
 
         $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($this->dsl['identifier']);
-        $contentTypeCreateStruct->mainLanguageCode = self::DEFAULT_LANGUAGE_CODE;
+        $contentTypeCreateStruct->mainLanguageCode = $this->getLanguageCode();
 
         // Object Name pattern
         $contentTypeCreateStruct->nameSchema = $this->dsl['name_pattern'];
 
         // set names for the content type
         $contentTypeCreateStruct->names = array(
-            self::DEFAULT_LANGUAGE_CODE => $this->dsl['name'],
+            $this->getLanguageCode() => $this->dsl['name'],
         );
 
         if (array_key_exists('description', $this->dsl)) {
             // set description for the content type
             $contentTypeCreateStruct->descriptions = array(
-                self::DEFAULT_LANGUAGE_CODE => $this->dsl['description'],
+                $this->getLanguageCode() => $this->dsl['description'],
             );
         }
 
@@ -97,19 +97,19 @@ class ContentTypeManager extends RepositoryExecutor
         $contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
 
         $contentTypeUpdateStruct = $contentTypeService->newContentTypeUpdateStruct();
-        $contentTypeUpdateStruct->mainLanguageCode = self::DEFAULT_LANGUAGE_CODE;
+        $contentTypeUpdateStruct->mainLanguageCode = $this->getLanguageCode();
 
         if (array_key_exists('new_identifier', $this->dsl)) {
             $contentTypeUpdateStruct->identifier = $this->dsl['new_identifier'];
         }
 
         if (array_key_exists('name', $this->dsl)) {
-            $contentTypeUpdateStruct->names = array(self::DEFAULT_LANGUAGE_CODE => $this->dsl['name']);
+            $contentTypeUpdateStruct->names = array($this->getLanguageCode() => $this->dsl['name']);
         }
 
         if (array_key_exists('description', $this->dsl)) {
             $contentTypeUpdateStruct->descriptions = array(
-                self::DEFAULT_LANGUAGE_CODE => $this->dsl['description'],
+                $this->getLanguageCode() => $this->dsl['description'],
             );
         }
 
@@ -249,10 +249,10 @@ class ContentTypeManager extends RepositoryExecutor
             if (!in_array($key, array('identifier', 'type'))) {
                 switch ($key) {
                     case 'name':
-                        $fieldDefinition->names = array(self::DEFAULT_LANGUAGE_CODE => $value);
+                        $fieldDefinition->names = array($this->getLanguageCode() => $value);
                         break;
                     case 'description':
-                        $fieldDefinition->descriptions = array(self::DEFAULT_LANGUAGE_CODE => $value);
+                        $fieldDefinition->descriptions = array($this->getLanguageCode() => $value);
                         break;
                     case 'required':
                         $fieldDefinition->isRequired = $value;
@@ -304,10 +304,10 @@ class ContentTypeManager extends RepositoryExecutor
                         $fieldDefinitionUpdateStruct->identifier = $value;
                         break;
                     case 'name':
-                        $fieldDefinitionUpdateStruct->names = array(self::DEFAULT_LANGUAGE_CODE => $value);
+                        $fieldDefinitionUpdateStruct->names = array($this->getLanguageCode() => $value);
                         break;
                     case 'description':
-                        $fieldDefinitionUpdateStruct->descriptions = array(self::DEFAULT_LANGUAGE_CODE => $value);
+                        $fieldDefinitionUpdateStruct->descriptions = array($this->getLanguageCode() => $value);
                         break;
                     case 'required':
                         $fieldDefinitionUpdateStruct->isRequired = $value;

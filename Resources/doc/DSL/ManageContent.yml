@@ -6,6 +6,7 @@
     priority: 0 # Set the priority of the main location
     other_locations: [x, y, z] # Optional, node ids of other parent location
     remote_id: custom_remote_id # Optional, will set an object remote id as the remote ID and a location remote ID with a _location suffix
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     attributes:
         - attribute1: value1
         - attribute2: value2
@@ -56,6 +57,7 @@
         - parent_location_id: x # int|int[]
         - parent_location_remote_id: xxx # string|string[]
         - content_type: yyy # string|string[] a content type identifier
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1
         - attribute2: value2

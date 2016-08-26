@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core;
 
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
+use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
@@ -155,7 +156,7 @@ class MigrationService
      *
      * @todo add support for skipped migrations, partially executed migrations
      */
-    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction=true)
+    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true, $defaultLanguageCode = null)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
@@ -163,6 +164,15 @@ class MigrationService
 
         if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
             throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
+        }
+
+        // Inject default language code in executors that support it.
+        if ($defaultLanguageCode) {
+            foreach ($this->executors as $executor) {
+                if ($executor instanceof LanguageAwareInterface) {
+                    $executor->setDefaultLanguageCode($defaultLanguageCode);
+                }
+            }
         }
 
         // set migration as begun - has to be in own db transaction

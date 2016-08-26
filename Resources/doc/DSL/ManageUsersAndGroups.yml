@@ -6,7 +6,7 @@
     username: xyz
     email: xyz
     password: xyz
-    main_language: xyz # Optional, default to eng-GB
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     groups: [x, y, z] # The user group ID or IDs (Object IDs) to put the user into
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
@@ -64,6 +64,7 @@
     name: xyz # Optional
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional
