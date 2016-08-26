@@ -97,7 +97,7 @@ type under the node with id 2.
                             value: [2]
                         -
                             type: Class
-                            value: [reference:section_page_class]
+                            value: [ "reference:section_page_class" ]
 
 To set the reference we used the `references` section of the content type DSL. As you can see we set a reference named
 `section_page_class` to store the content type id.
