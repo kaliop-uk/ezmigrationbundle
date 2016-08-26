@@ -45,10 +45,10 @@ class CustomReferenceResolver extends AbstractResolver
      */
     public function addReference($identifier, $value)
     {
-            if (array_key_exists($identifier, $this->references)) {
-                throw new \Exception("A reference with identifier '$identifier' already exists");
-            }
+        if (array_key_exists($identifier, $this->references)) {
+            throw new \Exception("A reference with identifier '$identifier' already exists");
+        }
 
-            $this->references[$identifier] = $value;
+        $this->references[$identifier] = $value;
     }
 }
