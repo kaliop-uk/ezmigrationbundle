@@ -156,3 +156,7 @@ Below is an example snippet showing how to define references for ezxmltext.
         - description:
             type: ezxmltext
             content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:test_image]" /></paragraph></section>'
+
+*NB:* when using references in xml texts you must include the two extra characters `[` and `]`, which are not needed
+when using them as part of other elements in the yml file.
+This is done to minimize the chances that some random bits of text get modified by error.
