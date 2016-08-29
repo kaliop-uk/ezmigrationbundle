@@ -5,7 +5,7 @@
     main_location: x # The location (node) id of the parent node
     priority: 0 # Set the priority of the main location
     other_locations: [x, y, z] # Optional, node ids of other parent location
-    remote_id: custom_remote_id # Optional, will set an object remote id as the remote ID and a location remote ID with a _location suffix
+    remote_id: custom_remote_id # Optional, will set an object remote id as the remote ID
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     attributes:
         - attribute1: value1
@@ -88,17 +88,17 @@
 -
     type: content
     mode: delete
-    remote_id: x # the remote id of the object
+    remote_id: x # DEPRECATED the remote id of the object to delete
 
 -
     type: content
     mode: delete
-    object_id: [id1, id2, id3] # Defining a sequence with []
+    object_id: [id1, id2, id3] # DEPRECATED Defining an array with []
 
 -
     type: content
     mode: delete
-    # Sequences with the standard list syntax
+    # DEPRECATED Array with the list syntax
     object_id: - id1
                - id2
                - id3
