@@ -56,7 +56,7 @@ articles in that folder.
 See the following example on using references. The first step creates a new content type in the system and sets a reference
 to its id.
 The second step adds a new policy to the editor role to allow editors to create objects of the new content
-type under the node with id 2.
+type under the location with id 2.
 
     -
         mode: create
@@ -143,8 +143,8 @@ You can use references to set the following values:
     -   `content_type_identifier`
     -   `parent_location_id`
 -   location
-    -   `object_id` (The id of the object who's locations you want to manage)
-    -   `remote_id` (The remote id of the object who's locations you want to manage)
+    -   `object_id` (The id of the content whose locations you want to manage)
+    -   `remote_id` (The remote id of the content whose locations you want to manage)
     -   `parent_location_id` (The list of parent locations where the new locations need to be created)
     -   `location_id_to_swap` the current location with (Only on update actions)
 -   role

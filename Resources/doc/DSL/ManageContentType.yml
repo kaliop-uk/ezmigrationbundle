@@ -4,7 +4,7 @@
     content_type_group: x # Id of the group we want to put the new content class into
     identifier: xyz # Class identifier
     name: xyz # Name of new class
-    name_pattern: pattern # Pattern to use for the name of the object (ex: <title>)
+    name_pattern: pattern # Pattern to use for the name of the contents (ex: <title>)
     description: xyz # Optional
     url_name_pattern: pattern # Optional
     is_container: true|false # Optional, defaults to false

@@ -7,7 +7,7 @@
     email: xyz
     password: xyz
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
-    groups: [x, y, z] # The user group ID or IDs (Object IDs) to put the user into
+    groups: [x, y, z] # The user group ID or IDs (Content IDs) to put the user into
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: #Optional
@@ -45,7 +45,7 @@
 -
     type: user_group
     mode: create
-    parent_group_id: x # The object ID of the user group to put the new group into, can be an array
+    parent_group_id: x # The content ID of the user group to put the new group into, can be an array
     name: xyz
     description: xyz # Optional
     roles: [x, y, z] # The role names or ids to assign to the group
@@ -55,7 +55,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
-                                 # The shorthand 'id' can be used instead of 'object_id'
+                                 # The shorthand 'id' can be used instead of 'content_id'
 
 -
     type: user_group
@@ -71,7 +71,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
-                                 # The shorthand 'id' can be used instead of 'object_id'
+                                 # The shorthand 'id' can be used instead of 'content_id'
 
 -
     # The users which are not assigned to other groups will be deleted.
