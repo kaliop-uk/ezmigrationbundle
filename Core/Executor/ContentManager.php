@@ -67,7 +67,7 @@ class ContentManager extends RepositoryExecutor
             }
         }
 
-        return $this->contentMatcher->matchContent($match);
+        return $this->contentMatcher->match($match);
     }
 
     /**

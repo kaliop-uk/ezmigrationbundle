@@ -100,6 +100,13 @@
     is_hidden: false
     sort_order: ASC
 
+-
+    type: location
+    mode: update
+    match:
+        location_id: reference:kmb_test_3_3_loc_3
+    is_hidden: true
+
 # BUG in EZP 2014.03! https://jira.ez.no/browse/EZP-26199 - reintroduce another test specifically for this when fixed...
 #-
 #    type: location
