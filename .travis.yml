@@ -37,7 +37,6 @@ before_install:
   # No need for a web server, until we start testing using Selenium
   #- sudo apt-get update -qq
   #- sudo apt-get install -qq -y --force-yes apache2 libapache2-mod-fastcgi
-  - mysql -uroot -e "CREATE DATABASE IF NOT EXISTS behattestdb; GRANT ALL ON behattestdb.* TO ezp@localhost IDENTIFIED BY 'ezp';"
 
 install:
   # Latest version of composer breaks downloading eZ, so we can not run self-update. See https://github.com/composer/composer/issues/4582
@@ -67,6 +66,9 @@ install:
   # Re-enable xdebug for when we need to generate code coverage
   - if [ "$CODE_COVERAGE" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
 
+  # Create the database from sql files present in either the legacy stack or kernel
+  - .Tests/travis/create-db.sh ${EZ_VERSION} behattest root
+
 before_script:
   # Set up configuration files:
   # eZ5 config files
@@ -85,12 +87,6 @@ before_script:
   # TODO are these needed at all?
   #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat assetic:dump
   #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat cache:clear --no-debug
-
-  # Create the database from sql files present in either the legacy stack or kernel
-  - if [ "$EZ_VERSION" = "ezpublish-community" ]; then mysql -uroot behattestdb < vendor/ezsystems/ezpublish-legacy/kernel/sql/mysql/kernel_schema.sql; fi
-  - if [ "$EZ_VERSION" = "ezpublish-community" ]; then mysql -uroot behattestdb < vendor/ezsystems/ezpublish-legacy/kernel/sql/common/cleandata.sql; fi
-  - if [ "$EZ_VERSION" = "ezplatform" ]; then mysql -uroot behattestdb < vendor/ezsystems/ezpublish-kernel/data/mysql/schema.sql; fi
-  - if [ "$EZ_VERSION" = "ezplatform" ]; then mysql -uroot behattestdb < vendor/ezsystems/ezpublish-kernel/data/cleandata.sql; fi
 
   # TODO for eZPlatform, do we need to set up SOLR as well ?
   #- if [ "$EZ_VERSION" = "ezplatform" ]; then ./vendor/ezsystems/ezplatform-solr-search-engine:bin/.travis/init_solr.sh; fi
