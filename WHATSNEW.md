@@ -56,12 +56,14 @@ The main changes are:
 
     - a vastly improved way of identifying contents and locations to update or delete:
         contents/locations to update and delete can be identified via the `match` keyword;
-        for creating locations, the `match` keyword can also be used to identify the target contents.
+        for adding locations, the `match` keyword can also be used to identify the target contents.
         In both cases, `match` allows to identify by object id, object remote id, location id,
         location remote id, parent location id, parent location remote id and content type identifier.
 
     - it is now possible, using the key `lang`, to specify the language to be used for content creation/update,
         contentType creation/update, user creation and user_group creation
+
+    - it is now possible to create and delete languages. See the unit test for an example of the syntax
 
     - the remote_id key used when updating objects will not match the location remote_id any more (it used to try that
         if matching the object remote id failed). You can use the 'match' key instead
@@ -93,6 +95,7 @@ The main changes are:
         * 'group' for user group delete operations, in favour of 'id'
         * 'object_id' and 'remote_id' for content update operations, in favour of 'match'
         * 'object_id' and 'remote_id' for location create operations, in favour of 'match'
+        * 'authors' for fields of type ezauthor
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)

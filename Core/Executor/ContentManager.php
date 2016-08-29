@@ -31,46 +31,6 @@ class ContentManager extends RepositoryExecutor
     }
 
     /**
-     * @param string $action
-     * @return ContentCollection
-     * @throws \Exception
-     */
-    protected function matchContents($action)
-    {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
-        }
-
-        // Backwards compat
-        if (!isset($this->dsl['match'])) {
-            if (isset($this->dsl['object_id'])) {
-                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
-            } elseif (isset($this->dsl['remote_id'])) {
-                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
-            }
-        }
-
-        $match = $this->dsl['match'];
-
-        // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
-                }
-            } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
-            }
-        }
-
-        return $this->contentMatcher->match($match);
-    }
-
-    /**
      * Handle the content create migration action type
      */
     protected function create()
@@ -219,6 +179,46 @@ class ContentManager extends RepositoryExecutor
                 // second ago. We can safely ignore this
             }
         }
+    }
+
+    /**
+     * @param string $action
+     * @return ContentCollection
+     * @throws \Exception
+     */
+    protected function matchContents($action)
+    {
+        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
+            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
+        }
+
+        // Backwards compat
+        if (!isset($this->dsl['match'])) {
+            if (isset($this->dsl['object_id'])) {
+                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
+            } elseif (isset($this->dsl['remote_id'])) {
+                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
+            }
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
+                    }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
+                }
+            }
+        }
+
+        return $this->contentMatcher->match($match);
     }
 
     /**
