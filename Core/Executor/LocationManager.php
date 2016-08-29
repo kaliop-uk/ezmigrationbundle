@@ -101,20 +101,25 @@ class LocationManager extends RepositoryExecutor
             if (array_key_exists('priority', $this->dsl)
                 || array_key_exists('sort_field', $this->dsl)
                 || array_key_exists('sort_order', $this->dsl)
+                || array_key_exists('remote_id', $this->dsl)
             ) {
                 $locationUpdateStruct = $locationService->newLocationUpdateStruct();
 
-                if (isset($this->dsl['priority'])) {
-                    $locationUpdateStruct->priority = $this->dsl['priority'];
-                }
+                    if (isset($this->dsl['priority'])) {
+                        $locationUpdateStruct->priority = $this->dsl['priority'];
+                    }
 
-                if (isset($this->dsl['sort_field'])) {
-                    $locationUpdateStruct->sortField = $this->getSortField($location->sortField);
-                }
+                    if (isset($this->dsl['sort_field'])) {
+                        $locationUpdateStruct->sortField = $this->getSortField($location->sortField);
+                    }
 
-                if (isset($this->dsl['sort_order'])) {
-                    $locationUpdateStruct->sortOrder = $this->getSortOrder($location->sortOrder);
-                }
+                    if (isset($this->dsl['sort_order'])) {
+                        $locationUpdateStruct->sortOrder = $this->getSortOrder($location->sortOrder);
+                    }
+
+                    if (isset($this->dsl['remote_id'])) {
+                        $locationUpdateStruct->remoteId = $this->dsl['remote_id'];
+                    }
 
                 $locationService->updateLocation($location, $locationUpdateStruct);
             }

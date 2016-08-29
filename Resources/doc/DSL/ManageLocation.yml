@@ -65,6 +65,7 @@
     is_hidden: true|false # Optional, Set the visibility of the location
     sort_field: x # Optional
     sort_order: ASC|DESC # Optional
+    remote_id: # Optional, Set the remote_id of the location
 
 -
     type: location
