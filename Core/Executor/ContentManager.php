@@ -323,6 +323,11 @@ class ContentManager extends RepositoryExecutor
                 case 'location_id':
                     $value = $content->contentInfo->mainLocationId;
                     break;
+                case 'remote_id':
+                case 'content_remote_id':
+                    $value = $content->contentInfo->remoteId;
+                    break;
+
                 default:
                     throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
             }

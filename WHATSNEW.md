@@ -77,7 +77,9 @@ The main changes are:
         fromHash method. F.e. the ezcountry field type is now supported.
         The details of the hash structure have to be looked up in docs or code for each field type
 
-    - references can now be set when creating new locations
+    - references can now be set when creating new locations, for the location id or its remote id
+
+    - references can now be set to the remote id when creating contents
 
     - references are now supported for setting the values to object relation and object relation list attributes
 
