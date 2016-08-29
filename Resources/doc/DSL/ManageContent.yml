@@ -46,8 +46,8 @@
 -
     type: content
     mode: update
-    object_id: x # The id of the object to update.
-    remote_id: xxx # The 'remote_id' of the object to update. Can be used as alternative to the object_id. NB: this does *not* mean 'set the remote-id to what I want'
+    object_id: x # DEPRECATED The id of the object to update.
+    remote_id: xxx # DEPRECATED The 'remote_id' of the object to update. Can be used as alternative to the object_id. NB: this does *not* mean 'set the remote-id to what I want'
     match: # An alternative to object_id and remote_id specified directly. NB: only one of the 3 can be used.
            # Specify ONLY ONE of the following, to match a content or a set of contents
         - content_id: x # int|int[]
@@ -71,8 +71,8 @@
 -
     type: content
     mode: delete
-    object_id: x # the content/object id or a list of ids
-    remote_id: x # the content/object id or a list of ids. Used when object_id and match are not set
+    object_id: x # DEPRECATED the content/object id or a list of ids
+    remote_id: x # DEPRECATED the content/object id or a list of ids. Used when object_id and match are not set
     match: # An alternative to object_id and remote_id specified directly. NB: only one of the 3 can be used.
            # Specify ONLY ONE of the following, to match a content or a set of contents
         - content_id: x # int|int[]

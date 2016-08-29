@@ -7,6 +7,13 @@ Specific topics are covered below.
 
 *NB* For more examples of valid Yaml files describing migrations, have a look in the directory Tests/dsl/good
 
+## Content language
+
+By default the bundle uses eng-GB for creating all multilingual entities (contents, contentTypes, users, etc...). 
+In order to create content in a different language, either specify it in your yml definition files (recommended), or
+use a command-line switch.
+
+
 ## Importing binary files
 
 To import binary files like images into attributes (ezimage, ezbinaryfile fields) the attribute needs to be defined as

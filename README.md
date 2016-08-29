@@ -199,7 +199,7 @@ applying a given migration. We recommend always taking a database snapshot befor
 case you need to roll back your changes. Another approach consists in writing a separate migration to undo the changes. 
 
 
-## Known Issues
+## Known Issues and limitations
 
 * if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
     related to how the dual-kernel works in eZPublish, and the fact that the legacy and Symfony kernels use a separate
@@ -208,6 +208,18 @@ case you need to roll back your changes. Another approach consists in writing a 
     can not see the database changes applied by the Symfony kernel, and, depending on the specific Slot in use, might
     fail with a fatal error.
     The simplest workaround is to disable usage of transactions by passing the `-u` flag to the `migrate` command.
+
+* if you get fatal errors without any error message when running a migration which involves a lot of content changes,
+    such as f.e. altering a contentType with many contents, it light be that you are running out of memory for your
+    php process.
+    Known workarounds involve:
+    - increase the maximum amount of memory allowed for the php script by running it with option '-d memory_limit=-1'
+    - execute the migration command using a Symfony environment which has reduced logging and kernel debug disabled:
+        the default configuration for the `dev` environment is known to leak memory
+
+* the bundle does not at the moment support creation of user accounts using a custom contentType
+
+* the bundle at the moment does not support creating entities with a creator other than user id 14 ('admin')
 
 
 ## Extending the bundle

@@ -31,7 +31,7 @@
 -
     type: location
     mode: create
-    remote_id: x # The remote ID of the object we want to add a location to
+    remote_id: x # DEPRECATED The remote ID of the object we want to add a location to
     parent_location_id: y
     priority: x # Optional
     is_hidden: true|false # Optional
@@ -40,7 +40,7 @@
 -
     type: location
     mode: create
-    object_id: x # deprecated, please use the 'match' key as documented above
+    object_id: x # DEPRECATED please use the 'match' key as documented above
     # Can use both syntax for sequences to define the list
     parent_location_id: [x, y, z]
     priority: x # Optional
