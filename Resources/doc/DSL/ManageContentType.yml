@@ -11,7 +11,7 @@
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     attributes:
         -
-            type: xyz # Attribute type (See list https://confluence.ez.no/display/EZP/FieldTypes)
+            type: xyz # Attribute type (See list https://doc.ez.no/display/EZP/FieldTypes+reference)
             name: xyz
             identifier: xyz
             description: # Optional
