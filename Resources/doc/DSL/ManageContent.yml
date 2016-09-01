@@ -52,8 +52,6 @@
            # Specify ONLY ONE of the following, to match a content or a set of contents
         - content_id: x # int|int[]
         - content_remote_id: xxx # string|string[]
-        - content_id: x # int|int[]
-        - content_remote_id: xxx # string|string[]
         - parent_location_id: x # int|int[]
         - parent_location_remote_id: xxx # string|string[]
         - content_type: yyy # string|string[] a content type identifier
@@ -75,8 +73,6 @@
     remote_id: x # the content/object id or a list of ids. Used when object_id and match are not set
     match: # An alternative to object_id and remote_id specified directly. NB: only one of the 3 can be used.
            # Specify ONLY ONE of the following, to match a content or a set of contents
-        - content_id: x # int|int[]
-        - content_remote_id: xxx # string|string[]
         - content_id: x # int|int[]
         - content_remote_id: xxx # string|string[]
         - parent_location_id: x # int|int[]
