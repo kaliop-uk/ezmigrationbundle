@@ -52,6 +52,8 @@
            # Specify ONLY ONE of the following, to match a content or a set of contents
         - content_id: x # int|int[]
         - content_remote_id: xxx # string|string[]
+        - location_id: x # int|int[]
+        - location_remote_id: xxx # string|string[]
         - parent_location_id: x # int|int[]
         - parent_location_remote_id: xxx # string|string[]
         - content_type: yyy # string|string[] a content type identifier
@@ -75,6 +77,8 @@
            # Specify ONLY ONE of the following, to match a content or a set of contents
         - content_id: x # int|int[]
         - content_remote_id: xxx # string|string[]
+        - location_id: x # int|int[]
+        - location_remote_id: xxx # string|string[]
         - parent_location_id: x # int|int[]
         - parent_location_remote_id: xxx # string|string[]
         - content_type: yyy # string|string[] a content type identifier
