@@ -4,13 +4,14 @@
     content_type_group: x # Id of the group we want to put the new content class into
     identifier: xyz # Class identifier
     name: xyz # Name of new class
-    name_pattern: pattern # Pattern to use for the name of the object (ex: <title>)
+    name_pattern: pattern # Pattern to use for the name of the contents (ex: <title>)
     description: xyz # Optional
     url_name_pattern: pattern # Optional
     is_container: true|false # Optional, defaults to false
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     attributes:
         -
-            type: xyz # Attribute type (See list https://confluence.ez.no/display/EZP/FieldTypes)
+            type: xyz # Attribute type (See list https://doc.ez.no/display/EZP/FieldTypes+reference)
             name: xyz
             identifier: xyz
             description: # Optional
@@ -40,6 +41,7 @@
     name_pattern: xyz # Optional, will be updated if set
     url_name_pattern: xyz # Optional, will be updated if set
     is_container: true|false # Optional, will be updated if set
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     attributes: # Optional, if set will update existing ones or add new ones.
         -
             identifier: xyz # Identifier of the attribute to update or identifier of the new attribute to add

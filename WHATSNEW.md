@@ -27,15 +27,19 @@ The main changes are:
     It also lists *all* migrations: both the ones available on disk as definition files, and the ones stored in the
     database (previously if you deleted a migration definition, it would just not be listed any more)
 
-* the `update` command has been renamed to `migrate` (but the previous name will be kept as alias for a while)
+* the `update` command has been renamed to `migrate` (but the previous name will be kept as alias for a while).
+
+* the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
+    failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
+    transactions. It also has a new option to disable the wrapping of each migration in a database transaction and
+    probably more 
+
+* it is now possible to specify the language to be used for content creation, either in the yml definition file, or
+    using a command-line option (the value set in yml file takes precedence)
 
 * a new command `migration` is available. For the moment, it allows to delete existing migrations from the database
     table, making it possible to retry migrations which previously failed, as well as to manually add to the table
     migration definitions which are outside of the expected paths.
-
-* the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
-    failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
-    transactions and probably more 
 
 * php migrations are now fully supported (they used to have naming problems fpr the generated php classes)
 
@@ -46,15 +50,20 @@ The main changes are:
 * it is much easier now to extend the bundle, as proper Dependency Injection is used everywhere, as well as tagged services
 
 * the bundle is now tested on Travis, using eZPublish versions from 2014.3 to eZPlatform 1.4.0
-    (for the moment the test suite is light, more tests will come in the future)
+    (for the moment the test suite is not 100% complete, more tests will come in the future)
 
 * changes to the YML definition language:
 
-    - a vastly improved way of identifying contents and locations to update:
-        content to update and delete can be identified via the `match` keyword;
-        for creating locations, the `match` keyword can also be used to identify the target contents.
-        In both cases, `match` allows to identify content by object id, object remote id, location id,
+    - a vastly improved way of identifying contents and locations to update or delete:
+        contents/locations to update and delete can be identified via the `match` keyword;
+        for adding locations, the `match` keyword can also be used to identify the target contents.
+        In both cases, `match` allows to identify by object id, object remote id, location id,
         location remote id, parent location id, parent location remote id and content type identifier.
+
+    - it is now possible, using the key `lang`, to specify the language to be used for content creation/update,
+        contentType creation/update, user creation and user_group creation
+
+    - it is now possible to create and delete languages. See the unit test for an example of the syntax
 
     - the remote_id key used when updating objects will not match the location remote_id any more (it used to try that
         if matching the object remote id failed). You can use the 'match' key instead
@@ -70,7 +79,11 @@ The main changes are:
         fromHash method. F.e. the ezcountry field type is now supported.
         The details of the hash structure have to be looked up in docs or code for each field type
 
-    - references can now be set when creating new locations
+    - when updating a location, it is now possible to change its remote_id
+
+    - references can now be set when creating new locations, for the location id or its remote id
+
+    - references can now be set to the remote id when creating contents
 
     - references are now supported for setting the values to object relation and object relation list attributes
 
@@ -80,7 +93,11 @@ The main changes are:
     
     - when creating/updating users, it is possible to assign them to a single group
     
-    - deprecated keys: 'group' for user group delete operations, in favour of 'id' 
+    - deprecated keys:
+        * 'group' for user group delete operations, in favour of 'id'
+        * 'object_id' and 'remote_id' for content update operations, in favour of 'match'
+        * 'object_id' and 'remote_id' for location create operations, in favour of 'match'
+        * 'authors' for fields of type ezauthor
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
 For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)

@@ -1,0 +1,59 @@
+-
+    type: language
+    mode: create
+    lang: abc-DE
+    name: Kaliop Migration Bundle Language 1
+    references:
+        -
+            identifier: kmb_test_9_1
+            attribute: id
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_9
+    name: Kaliop Migration Bundle Test Class 9
+    name_pattern: '<ezstring>'
+    lang: abc-DE
+    attributes:
+        -
+            type: ezstring
+            name: ezstring
+            identifier: ezstring
+    references:
+        -
+            identifier: kmb_test_9
+            attribute: identifier
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_9
+    main_location: 2
+    lang: abc-DE
+    attributes:
+        - ezstring: hello world 1
+    references:
+        -
+            identifier: kmb_test_9_content
+            attribute: id
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_9_content
+    lang: eng-GB
+    attributes:
+        - ezstring: hello world 2
+-
+    type: content
+    mode: delete
+    match:
+        content_id: reference:kmb_test_9_content
+-
+    type: content_type
+    mode: delete
+    identifier: reference:kmb_test_9
+-
+    type: language
+    mode: delete
+    lang: abc-DE

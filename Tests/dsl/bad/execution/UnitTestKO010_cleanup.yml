@@ -1,0 +1,11 @@
+# removes the class created in previous migration, then fails as expected
+
+-
+    type: content_type
+    mode: delete
+    identifier: reference:kmb_test_9
+
+-
+    type: content_type
+    mode: delete
+    identifier: reference:kmb_test_9

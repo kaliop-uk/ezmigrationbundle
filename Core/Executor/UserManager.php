@@ -49,7 +49,7 @@ class UserManager extends RepositoryExecutor
             $this->dsl['username'],
             $this->dsl['email'],
             $this->dsl['password'],
-            self::DEFAULT_LANGUAGE_CODE,
+            $this->getLanguageCode(),
             $userContentType
         );
         $userCreateStruct->setField('first_name', $this->dsl['first_name']);

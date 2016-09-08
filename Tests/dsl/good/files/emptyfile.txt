@@ -1,0 +1,1 @@
+actually, a 0-bytes file generates a warning in eZPublish, so we make this one not empty :-)

@@ -1,20 +1,29 @@
 Kaliop eZ-Migration Bundle
 ==========================
 
-This bundle makes it easy to handle eZPlatform / eZPublish 5 content upgrades/migrations.
+This bundle makes it easy to programmatically deploy changes to eZPlatform / eZPublish 5 database structure and contents.
 
-It is inspired by the DoctrineMigrationsBundle ( http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html )
+It is inspired by the [DoctrineMigrationsBundle](http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html)
+
+You can think of it as the grandson of the legacy [ezxmlinstaller](https://github.com/ezsystems/ezxmlinstaller) extension.
+
+
+## Requirements
+
+* PHP 5.4 or later.
+
+* eZPublish Enterprise 5.3 or Community 2014.3 or later.
 
 
 ## Installation
 
-In either `require` or `require-dev` at the end of the bundle list add:
+In either `require` or `require-dev` at the end of the bundle list in the composer.json file add:
 
     "kaliop/ezmigrationbundle": "^2.0"
 
-Save composer.json and run
+Save it and run
 
-    composer update --dev kaliop/migration
+    composer update --dev kaliop/ezmigrationbundle
 
 This will install the bundle and all its dependencies.
 
@@ -54,9 +63,10 @@ To get the latest version, you can update the bundle to the latest available ver
 
 Please read the [dedicated documentation page](doc/Upgrading/1.x_to_2.0.md)
 
+
 ## Getting started
 
-All commands accept the standard Symfony/eZ publish 5 options, although some of them might not have any effect on the
+All commands accept the standard Symfony/eZPublish 5 options, although some of them might not have any effect on the
 command's execution.
 
 ### Generating a new, empty migration definition file
@@ -71,7 +81,7 @@ The above command will place a new yml skeleton file in the `MigrationVersion` d
 
 If the directory does not exists then the command will create it for you, as long as the bundle does exist and is registered.
 If the command is successful it will create a new yml file named with the following pattern: `YYYYMMDDHHMMSS_placeholder.yml`.
-You are encouraged to rename the file and change the `place_holder` part to something more meaningful, but please keep
+You are encouraged to rename the file and change the `placeholder` part to something more meaningful, but please keep
 the timestamp part and underscore, as well as the extension
 
 (the contents of the skeleton Yaml file are stored as twig template)
@@ -79,7 +89,7 @@ the timestamp part and underscore, as well as the extension
 ### Listing all migrations and their status
 
 To see all the migrations definitions available in the system and whether they have been applied or not simply run the
-status command in your eZ Publish 5 root directory:
+status command in your eZPublish 5 root directory:
 
     php ezpublish/console kaliop:migration:status
 
@@ -89,7 +99,7 @@ In case you need to use a different name for that table, you can change the Symf
 
 ### Applying migrations
 
-To apply all available migrations run the migrate command in your eZ Publish 5 root directory:
+To apply all available migrations run the migrate command in your eZPublish 5 root directory:
 
      php ezpublish/console kaliop:migration:migrate
 
@@ -115,6 +125,7 @@ In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of UserGroups
 - creation, update and deletion of Roles
 - creation, update and deletion of ContentTypes
+- creation and deletion of Languages
 - creation of Tags (from the Netgen Tags Bundle)
 
 The docs describing all supported parameters are in the [DSL Language description](Resources/doc/DSL/README.md)
@@ -173,6 +184,45 @@ The easiest way to re-execute a migration in 'failed' status, is to remove it fr
 After removing the information about the migration form the migrations table, running the `migrate` command will execute it again.
 
 
+## Usage of transactions / rolling back changes
+
+By default the bundle runs each migration in a database transaction.
+This means that if a step fails, all of the previous steps get rolled back, and the database is left at its previous state.
+This is a safety feature built in by design; if you prefer the migration steps to be executed in separate transactions
+the easiest way is to create a separate migration file for each step.
+
+Note also that by default the `migrate` command stops on the 1st failed migration, but it can be executed with a flag
+to allow it to continue and execute all available migrations even in case of failures.
+
+As for rolling back changes: given the nature of the eZPublish API, rolling back changes to Content is not an easy feat.
+As such, the bundle does not provide built-in support for rolling back the database to the version it had before
+applying a given migration. We recommend always taking a database snapshot before applying migrations, and use it in
+case you need to roll back your changes. Another approach consists in writing a separate migration to undo the changes. 
+
+
+## Known Issues and limitations
+
+* if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
+    related to how the dual-kernel works in eZPublish, and the fact that the legacy and Symfony kernels use a separate
+    connection to the database. Since the migration bundle by default wraps all database changes for a migration in a
+    database transaction, when the Slots are fired which allow the legacy kernel to clear its caches, the legacy kernel
+    can not see the database changes applied by the Symfony kernel, and, depending on the specific Slot in use, might
+    fail with a fatal error.
+    The simplest workaround is to disable usage of transactions by passing the `-u` flag to the `migrate` command.
+
+* if you get fatal errors without any error message when running a migration which involves a lot of content changes,
+    such as f.e. altering a contentType with many contents, it light be that you are running out of memory for your
+    php process.
+    Known workarounds involve:
+    - increase the maximum amount of memory allowed for the php script by running it with option '-d memory_limit=-1'
+    - execute the migration command using a Symfony environment which has reduced logging and kernel debug disabled:
+        the default configuration for the `dev` environment is known to leak memory
+
+* the bundle does not at the moment support creation of user accounts using a custom contentType
+
+* the bundle at the moment does not support creating entities with a creator other than user id 14 ('admin')
+
+
 ## Extending the bundle
 
 ### Supporting custom migrations
@@ -189,7 +239,6 @@ and give it an appropriate tag (the class implementing service should of course 
 
 To find out the names of the tags that you need to implement, as well as for all the other services which you can
 override, take a look at the [services.yml file](Resources/config/services.yml).
-
 
 ### Running tests
 
@@ -214,4 +263,4 @@ To run the Behat tests:
 
 [![Build Status](https://travis-ci.org/kaliop-uk/ezmigrationbundle.svg?branch=master)](https://travis-ci.org/kaliop-uk/ezmigrationbundle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master) 
+[![Code Coverage](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)

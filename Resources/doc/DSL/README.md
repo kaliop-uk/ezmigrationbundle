@@ -7,6 +7,13 @@ Specific topics are covered below.
 
 *NB* For more examples of valid Yaml files describing migrations, have a look in the directory Tests/dsl/good
 
+## Content language
+
+By default the bundle uses eng-GB for creating all multilingual entities (contents, contentTypes, users, etc...). 
+In order to create content in a different language, either specify it in your yml definition files (recommended), or
+use a command-line switch.
+
+
 ## Importing binary files
 
 To import binary files like images into attributes (ezimage, ezbinaryfile fields) the attribute needs to be defined as
@@ -49,7 +56,7 @@ articles in that folder.
 See the following example on using references. The first step creates a new content type in the system and sets a reference
 to its id.
 The second step adds a new policy to the editor role to allow editors to create objects of the new content
-type under the node with id 2.
+type under the location with id 2.
 
     -
         mode: create
@@ -97,7 +104,7 @@ type under the node with id 2.
                             value: [2]
                         -
                             type: Class
-                            value: [reference:section_page_class]
+                            value: [ "reference:section_page_class" ]
 
 To set the reference we used the `references` section of the content type DSL. As you can see we set a reference named
 `section_page_class` to store the content type id.
@@ -106,40 +113,46 @@ In the update role action we retrieved the value of the reference by using the `
 To tell the system that you want to use a previously stored reference you need to prefix the reference name with the string
 `reference:`. This tells the system to look in the stored references for attributes that support this.
 
+> **Important**: Please note that the reference **must be a quoted string**, as `reference:<reference_name>` uses
+> YAML reserved characters.
+>
+> **Bad**: `some_key: reference:foo`<br>
+> **Good**: `some_key: 'reference:foo'`
+
 Currently you can use references to store the following values:
 
 -   content
-    -   content id
-    -   location id
+    -   `content_id`
+    -   `location_id`
 -   content type
-    -   content type id
-    -   content type identifier
+    -   `content_type_id`
+    -   `content_type_identifier`
 -   location
-    -   location id
+    -   `location_id`
 -   role
-    -   role id
-    -   role identifier
+    -   `role_id`
+    -   `role_identifier`
 -   user group
-    -   user group id
+    -   `user_group_id`
 -   user
-    -   user id
+    -   `user_id`
 
 You can use references to set the following values:
 
 -   content
-    -   content type identifier
-    -   parent location id
+    -   `content_type_identifier`
+    -   `parent_location_id`
 -   location
-    -   object id (The id of the object who's locations you want to manage)
-    -   remote id (The remote id of the object who's locations you want to manage)
-    -   parent location id (The list of parent locations where the new locations need to be created)
-    -   location id to swap the current location with (Only on update actions)
+    -   `object_id` (The id of the content whose locations you want to manage)
+    -   `remote_id` (The remote id of the content whose locations you want to manage)
+    -   `parent_location_id` (The list of parent locations where the new locations need to be created)
+    -   `location_id_to_swap` the current location with (Only on update actions)
 -   role
-    -   limitation values
+    -   `limitation_values`
 -   user group
-    - parent user group id
+    - `parent_user_group_id`
 -   user
-    - user group id
+    - `user_group_id`
 
 For more information please see the DSL definitions in the `Resources/doc/DSL` folder.
 
@@ -156,3 +169,7 @@ Below is an example snippet showing how to define references for ezxmltext.
         - description:
             type: ezxmltext
             content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:test_image]" /></paragraph></section>'
+
+*NB:* when using references in xml texts you must include the two extra characters `[` and `]`, which are not needed
+when using them as part of other elements in the yml file.
+This is done to minimize the chances that some random bits of text get modified by error.

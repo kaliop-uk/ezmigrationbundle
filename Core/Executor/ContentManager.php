@@ -31,46 +31,6 @@ class ContentManager extends RepositoryExecutor
     }
 
     /**
-     * @param string $action
-     * @return ContentCollection
-     * @throws \Exception
-     */
-    protected function matchContents($action)
-    {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
-        }
-
-        // Backwards compat
-        if (!isset($this->dsl['match'])) {
-            if (isset($this->dsl['object_id'])) {
-                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
-            } elseif (isset($this->dsl['remote_id'])) {
-                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
-            }
-        }
-
-        $match = $this->dsl['match'];
-
-        // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
-                }
-            } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
-            }
-        }
-
-        return $this->contentMatcher->matchContent($match);
-    }
-
-    /**
      * Handle the content create migration action type
      */
     protected function create()
@@ -85,8 +45,7 @@ class ContentManager extends RepositoryExecutor
         }
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
-        // FIXME: Defaulting in language code for now
-        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, self::DEFAULT_LANGUAGE_CODE);
+        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode());
         $this->setFields($contentCreateStruct, $this->dsl['attributes'], $contentType);
 
         if (array_key_exists('remote_id', $this->dsl)) {
@@ -223,6 +182,46 @@ class ContentManager extends RepositoryExecutor
     }
 
     /**
+     * @param string $action
+     * @return ContentCollection
+     * @throws \Exception
+     */
+    protected function matchContents($action)
+    {
+        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
+            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
+        }
+
+        // Backwards compat
+        if (!isset($this->dsl['match'])) {
+            if (isset($this->dsl['object_id'])) {
+                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
+            } elseif (isset($this->dsl['remote_id'])) {
+                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
+            }
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
+                    }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
+                }
+            }
+        }
+
+        return $this->contentMatcher->match($match);
+    }
+
+    /**
      * Helper function to set the fields of a ContentCreateStruct based on the DSL attribute settings.
      *
      * @param ContentCreateStruct|ContentUpdateStruct $createOrUpdateStruct
@@ -246,7 +245,7 @@ class ContentManager extends RepositoryExecutor
                 $fieldValue = $this->getSingleFieldValue($field[$fieldIdentifier], $fieldType, $this->context);
             }
 
-            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, self::DEFAULT_LANGUAGE_CODE);
+            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
         }
     }
 
@@ -324,6 +323,11 @@ class ContentManager extends RepositoryExecutor
                 case 'location_id':
                     $value = $content->contentInfo->mainLocationId;
                     break;
+                case 'remote_id':
+                case 'content_remote_id':
+                    $value = $content->contentInfo->remoteId;
+                    break;
+
                 default:
                     throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
             }

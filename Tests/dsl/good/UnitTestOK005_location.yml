@@ -67,6 +67,9 @@
         -
             identifier: kmb_test_3_4_loc
             attribute: location_id
+        -
+            identifier: kmb_test_3_4_rid
+            attribute: remote_id
 -
     type: location
     mode: create
@@ -91,6 +94,9 @@
         -
             identifier: kmb_test_3_3_loc_3
             attribute: location_id
+        -
+            identifier: kmb_test_3_3_loc_3_rid
+            attribute: remote_id
 -
     type: location
     mode: update
@@ -102,8 +108,23 @@
 -
     type: location
     mode: update
-    location_id: reference:kmb_test_3_3_loc_3
-    swap_with_location: reference:kmb_test_3_2_loc
+    match:
+        location_id: reference:kmb_test_3_3_loc_3
+    is_hidden: true
+-
+    type: location
+    mode: update
+    match:
+        location_remote_id: reference:kmb_test_3_3_loc_3_rid
+    is_hidden: false
+
+# BUG in EZP 2014.03! https://jira.ez.no/browse/EZP-26199 - reintroduce another test specifically for this when fixed...
+#-
+#    type: location
+#    mode: update
+#    location_id: reference:kmb_test_3_3_loc_3
+#    swap_with_location: reference:kmb_test_3_2_loc
+
 -
     type: content
     mode: delete

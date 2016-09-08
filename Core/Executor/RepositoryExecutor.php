@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
@@ -11,12 +12,10 @@ use \eZ\Publish\API\Repository\Repository;
 /**
  * The core manager class that all migration action managers inherit from.
  */
-abstract class RepositoryExecutor extends AbstractExecutor
+abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAwareInterface
 {
     /**
      * Constant defining the default language code
-     *
-     * @todo inject via config parameter
      */
     const DEFAULT_LANGUAGE_CODE = 'eng-GB';
 
@@ -44,6 +43,18 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @var \eZ\Publish\API\Repository\Repository
      */
     protected $repository;
+
+    /**
+     * Language code for current step.
+     *
+     * @var string
+     */
+    private $languageCode;
+
+    /**
+     * @var string
+     */
+    private $defaultLanguageCode;
 
     /**
      * The bundle object representing the bundle the currently processed migration is in.
@@ -87,6 +98,9 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $this->dsl = $step->dsl;
         $this->context = $step->context;
+        if (isset($this->dsl['lang'])) {
+            $this->setLanguageCode($this->dsl['lang']);
+        }
 
         if (method_exists($this, $action)) {
 
@@ -131,5 +145,25 @@ abstract class RepositoryExecutor extends AbstractExecutor
         }
 
         return $previousUser->id;
+    }
+
+    public function setLanguageCode($languageCode)
+    {
+        $this->languageCode = $languageCode;
+    }
+
+    public function getLanguageCode()
+    {
+        return $this->languageCode ?: $this->getDefaultLanguageCode();
+    }
+
+    public function setDefaultLanguageCode($languageCode)
+    {
+        $this->defaultLanguageCode = $languageCode;
+    }
+
+    public function getDefaultLanguageCode()
+    {
+        return $this->defaultLanguageCode ?: self::DEFAULT_LANGUAGE_CODE;
     }
 }
