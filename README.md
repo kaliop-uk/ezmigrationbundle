@@ -264,3 +264,4 @@ To run the Behat tests:
 [![Build Status](https://travis-ci.org/kaliop-uk/ezmigrationbundle.svg?branch=master)](https://travis-ci.org/kaliop-uk/ezmigrationbundle)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/7f16a049-a738-44ae-b947-f39401aec2d5/mini.png)](https://insight.sensiolabs.com/projects/7f16a049-a738-44ae-b947-f39401aec2d5)
