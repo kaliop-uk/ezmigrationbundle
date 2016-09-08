@@ -79,6 +79,7 @@
     mode: delete
     type: content
     # Sequences with the standard list syntax
-    object_id: - id1
-               - id2
-               - id3
+    object_id:
+        - id1
+        - id2
+        - id3

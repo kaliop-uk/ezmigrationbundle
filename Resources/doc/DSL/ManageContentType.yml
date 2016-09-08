@@ -13,13 +13,13 @@
             type: xyz # Attribute type (See list https://confluence.ez.no/display/EZP/FieldTypes)
             name: xyz
             identifier: xyz
-            description: # Optional
+            description: abc # Optional
             required: true|false # Optional
             searchable: true|false # Optional
             info-collector: true|false # Optional
             disable-translation: true|false # Optional
             category: default|meta # Optional
-            default-value: # Optional
+            default-value: abc # Optional
             field-settings: array # Optional, can be used for various field type specific settings
     # The list in references tells the manager to store specific attribute values for later use
     # by other migration definitions in the current set.
@@ -45,16 +45,16 @@
             identifier: xyz # Identifier of the attribute to update or identifier of the new attribute to add
             new_identifier: xyz # Optional, will update the identifier if set. Not used if adding a new attribute
             type: xyz # Mandatory if adding a new attribute. Not used otherwise
-            name: # Optional, will be updated if set
-            description: # Optional, will be updated if set
+            name: abc # Optional, will be updated if set
+            description: abc # Optional, will be updated if set
             required: true|false # Optional, will be updated if set
             searchable: true|false # Optional, will be updated if set
             info-collector: true|false # Optional, will be updated if set
             disable-translation: true|false # Optional, will be updated if set
             category: default|meta # Optional, will be updated if set
-            default-value: # Optional, will be updated if set
+            default-value: abc # Optional, will be updated if set
             field-settings: array # Optional, can be used for various field type specific settings
-            position: # Optional, will move the attribute to this position
+            position: 1 # Optional, will move the attribute to this position
     # Remove all attributes that have their identifiers listed here
     # Can use both ways to define the list of identifiers.
     remove_attributes: [identifier1, identifier2, identifier3]
@@ -79,45 +79,45 @@
 
 # Object Relation List
 -
-  identifier: class_identifier
-  type: ezobjectrelationlist
-  name: Name
-  description: Description of stuff
-  required: false
-  searchable: true
-  info-collector: false
-  disable-translation: false
-  category: meta
-  field-settings:
-    selectionDefaultLocation: reference:some_reference_location_id # OR a location ID
-    selectionContentTypes: [content_type_identifier] #This MUST be an array
-    selectionMethod: 0 # 0 is browse - 1 is dropdown
-  position: 60
+    identifier: class_identifier
+    type: ezobjectrelationlist
+    name: Name
+    description: Description of stuff
+    required: false
+    searchable: true
+    info-collector: false
+    disable-translation: false
+    category: meta
+    field-settings:
+        selectionDefaultLocation: reference:some_reference_location_id # OR a location ID
+        selectionContentTypes: [content_type_identifier] #This MUST be an array
+        selectionMethod: 0 # 0 is browse - 1 is dropdown
+    position: 60
 
 # Object Relation
 -
-  identifier: image
-  type: ezobjectrelation
-  name: Image
-  description: The image to use for the article
-  required: false
-  searchable: true
-  info-collector: false
-  disable-translation: false
-  category: default
-  field-settings:
-    selectionRoot: reference:some_reference_location_id # OR a location ID
-  position: 50
+    identifier: image
+    type: ezobjectrelation
+    name: Image
+    description: The image to use for the article
+    required: false
+    searchable: true
+    info-collector: false
+    disable-translation: false
+    category: default
+    field-settings:
+        selectionRoot: reference:some_reference_location_id # OR a location ID
+    position: 50
 
 # Nova SEO Metas
 -
-  type: novaseometas
-  name: SEO Meta
-  identifier: seo_meta
-  description: The meta data settings for SEO
-  required: false
-  info-collector: false
-  searchable: false # CANNOT be searchable
-  disable-translation: false
-  category: meta
-  position: 130
+    type: novaseometas
+    name: SEO Meta
+    identifier: seo_meta
+    description: The meta data settings for SEO
+    required: false
+    info-collector: false
+    searchable: false # CANNOT be searchable
+    disable-translation: false
+    category: meta
+    position: 130
