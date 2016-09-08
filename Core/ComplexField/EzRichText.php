@@ -24,7 +24,7 @@ class EzRichText extends AbstractComplexField implements ComplexFieldInterface
         // $result[1][] will have the reference id eg.: example_reference
         $count = preg_match_all('|\[(reference:[^\]\[]*)\]|', $xmlText, $result);
 
-        if ($count !== false and count($result) > 1) {
+        if ($count !== false && count($result) > 1) {
             foreach ($result[1] as $index => $referenceIdentifier) {
                 $reference = $this->referenceResolver->getReferenceValue($referenceIdentifier);
 

@@ -151,7 +151,7 @@ class RoleHandler
 
                     /** @var \eZ\Publish\API\Repository\Values\Content\Section $section */
                     foreach ($sections as $section) {
-                        if ($value == $section->name or $value == $section->identifier or $value == $section->id) {
+                        if ($value == $section->name || $value == $section->identifier || $value == $section->id) {
                             $retValues[] = $section->id;
                         }
                     }
