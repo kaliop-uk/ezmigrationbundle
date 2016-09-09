@@ -251,7 +251,7 @@ class MigrationService
     {
         $message = $e->getMessage();
         if (is_a($e, '\eZ\Publish\API\Repository\Exceptions\ContentTypeFieldDefinitionValidationException') ||
-            is_a($e, '\eZ\Publish\API\Repository\Exceptions\ContentTypeFieldValidationException') ||
+            //is_a($e, '\eZ\Publish\API\Repository\Exceptions\ContentTypeFieldValidationException') ||
             is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')
         ) {
             if (is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')) {
@@ -259,13 +259,15 @@ class MigrationService
                 if ($errorsArray == null) {
                     return $message;
                 }
-                $errorsArray = array($errorsArray);
             } else {
                 $errorsArray = $e->getFieldErrors();
             }
 
             foreach ($errorsArray as $errors) {
-
+                // sometimes error arrays are 2-level deep, sometimes 1...
+                if (!is_array($errors)) {
+                    $errors = array($errors);
+                }
                 foreach ($errors as $error) {
                     /// @todo find out what is the proper eZ way of getting a translated message for these errors
                     $translatableMessage = $error->getTranslatableMessage();
