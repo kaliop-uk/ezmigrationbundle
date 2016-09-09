@@ -222,6 +222,10 @@ case you need to roll back your changes. Another approach consists in writing a 
 
 * the bundle at the moment does not support creating entities with a creator other than user id 14 ('admin')
 
+* if you are using eZPublish versions prior to 2015.9, you will not be able to create/update Role definitions that
+    contain policies with limitations for custom modules/functions. The known workaround is to take over the
+    RoleService and alter its constructor to inject into it the desired limitations
+
 
 ## Extending the bundle
 
