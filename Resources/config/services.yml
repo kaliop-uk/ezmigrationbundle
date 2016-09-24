@@ -72,6 +72,7 @@ services:
             - '@ez_migration_bundle.loader'
             - '@ez_migration_bundle.storage_handler'
             - '@ezpublish.api.repository'
+            - '@event_dispatcher'
 
     ### loaders
 

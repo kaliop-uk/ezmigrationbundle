@@ -43,6 +43,6 @@ class SQLExecutor extends AbstractExecutor
         }
         $sql = $dsl[$dbType];
 
-        $conn->exec($sql);
+        return $conn->exec($sql);
     }
 }

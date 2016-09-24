@@ -50,6 +50,6 @@ class PHPExecutor extends AbstractExecutor
             throw new \Exception("The migration definition class '$class' should implement the interface '{$this->mandatoryInterface}'");
         }
 
-        call_user_func(array($class, 'execute'), $this->container);
+        return call_user_func(array($class, 'execute'), $this->container);
     }
 }

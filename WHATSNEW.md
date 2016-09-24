@@ -1,5 +1,15 @@
-Version 2.0.0-beta
-==================
+Version 2.1
+===========
+
+* Added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
+
+    * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
+
+    * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
+
+
+Version 2.0.0
+=============
 
 This version is a complete restructuring of the codebase, and brings along with it a few breaking changes.
 

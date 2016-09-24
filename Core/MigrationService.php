@@ -2,6 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
 use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
@@ -10,8 +12,9 @@ use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
+use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
+use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 
 class MigrationService
 {
@@ -32,11 +35,14 @@ class MigrationService
 
     protected $repository;
 
-    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository)
+    protected $dispatcher;
+
+    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository, EventDispatcherInterface $eventDispatcher)
     {
         $this->loader = $loader;
         $this->storageHandler = $storageHandler;
         $this->repository = $repository;
+        $this->dispatcher = $eventDispatcher;
     }
 
     public function addDefinitionParser(DefinitionParserInterface $DefinitionParser)
@@ -152,6 +158,7 @@ class MigrationService
     /**
      * @param MigrationDefinition $migrationDefinition
      * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
+     * @param string $defaultLanguageCode
      * @throws \Exception
      *
      * @todo add support for skipped migrations, partially executed migrations
@@ -188,7 +195,12 @@ class MigrationService
             foreach($migrationDefinition->steps as $step) {
                 // we validated the fact that we have a good executor at parsing time
                 $executor = $this->executors[$step->type];
-                $executor->execute($step);
+
+                $this->dispatcher->dispatch('ez_migration.before_execution', new BeforeStepExecutionEvent($step, $executor));
+
+                $result = $executor->execute($step);
+
+                $this->dispatcher->dispatch('ez_migration.step_executed', new StepExecutedEvent($step, $result));
 
                 $i++;
             }

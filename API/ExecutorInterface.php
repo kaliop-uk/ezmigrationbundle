@@ -23,7 +23,7 @@ interface ExecutorInterface
      * Execute a single action in a migration version
      *
      * @param MigrationStep $step
-     * @return void
+     * @return mixed the results of the execution step are wrapped in an event which can be listened to
      * @throws \Exception
      */
     public function execute(MigrationStep $step);
