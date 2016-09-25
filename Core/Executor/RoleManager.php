@@ -94,7 +94,7 @@ class RoleManager extends RepositoryExecutor
                     $roleService->deletePolicy($policy);
                 }
 
-                foreach($ymlPolicies as $key => $ymlPolicy) {
+                foreach($ymlPolicies as $ymlPolicy) {
                     $this->addPolicy($role, $roleService, $ymlPolicy);
                 }
             }
