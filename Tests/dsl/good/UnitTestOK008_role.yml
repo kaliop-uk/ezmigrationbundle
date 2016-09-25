@@ -59,4 +59,5 @@
 -
     type: role
     mode: delete
-    name: Kaliop Migration Bundle Test Role 2
+    match:
+        identifier: Kaliop Migration Bundle Test Role 2

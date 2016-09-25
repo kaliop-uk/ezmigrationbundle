@@ -43,3 +43,13 @@ stash:
             drivers: [ FileSystem ]
             inMemory: true
             registerDoctrineAdapter: false
+
+services:
+    ez_migration_bundle.test.step_executed_listener:
+        class: Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener
+        tags:
+            - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
+    ez_migration_bundle.test.before_step_execution_listener:
+        class: Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener
+        tags:
+            - { name: kernel.event_listener, event: ez_migration.before_execution, method: onBeforeStepExecution }
