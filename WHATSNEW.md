@@ -1,4 +1,4 @@
-Version 2.1.0
+Version 3.0.0
 =============
 
 * Added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
@@ -10,9 +10,6 @@ Version 2.1.0
 * Updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of the
     elements to act upon, and comprehensive resolution of references.
 
-* *NB* BC break: when deleting users, a single migration step can not be used any more to match users based at the same
-     time on id, email and login. Use separate steps for that
-
 * It is now possible to assign a section when creating and updating Contents
 
 * changes to the YML definition language:
@@ -22,6 +19,15 @@ Version 2.1.0
 
     * a new tag `section` is available for content creation and update
 
+* BC breaks:
+
+    * when deleting users, a single migration step can not be used any more to match users based at the same time on id,
+        email and login. Use separate steps for that
+
+    * changes for developers who extended the bundle: the MatcherInterface has a new method; many Executor services
+        now have a different constructor signature
+
+    * when creating an object and defining ist remote_id, the location remote_id is not automatically set
 
 Version 2.0.0
 =============

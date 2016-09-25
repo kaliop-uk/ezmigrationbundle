@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
+use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
@@ -61,9 +62,9 @@ class ContentManager extends RepositoryExecutor
             $locationId = $this->referenceResolver->getReferenceValue($locationId);
         }
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
-        if (array_key_exists('remote_id', $this->dsl)) {
+        /*if (array_key_exists('remote_id', $this->dsl)) {
             $locationCreateStruct->remoteId = $this->dsl['remote_id'] . '_location';
-        }
+        }*/
 
         if (array_key_exists('priority', $this->dsl)) {
             $locationCreateStruct->priority = $this->dsl['priority'];
@@ -268,9 +269,15 @@ class ContentManager extends RepositoryExecutor
         }
     }
 
-    protected function setSection($content, $sectionId)
+    protected function setSection(Content $content, $sectionId)
     {
+        if ($this->referenceResolver->isReference($sectionId)) {
+            $sectionId = $this->referenceResolver->getReferenceValue($sectionId);
+        }
+        $section = $this->sectionMatcher->matchByKey($sectionId);
 
+        $sectionService = $this->repository->getSectionService();
+        $sectionService->assignSection($content->contentInfo, $section);
     }
 
     /**

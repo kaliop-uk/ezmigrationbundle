@@ -123,6 +123,7 @@
     mode: create
     content_type: reference:kmb_test_2
     main_location: 2
+    section: 3
     attributes:
         - ezstring: hello world 1
     references:
@@ -189,6 +190,13 @@
             destinationContentId: 'reference:kmb_test_2_1'
         - ezobjectrelationlist:
             destinationContentIds: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_2_1
+    section: users
+    new_remote_id: is_this_a_very_unlikely_remoteid
 -
     type: content
     mode: delete

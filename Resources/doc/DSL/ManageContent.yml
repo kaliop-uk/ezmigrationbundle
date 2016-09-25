@@ -7,6 +7,7 @@
     other_locations: [x, y, z] # Optional, ids of extra parent locations
     remote_id: custom_remote_id # Optional, will set a custom remote id
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    section: x # string|int Optional section id or identifier
     attributes:
         - attribute1: value1
         - attribute2: value2
@@ -58,6 +59,8 @@
         - parent_location_remote_id: xxx # string|string[]
         - content_type: yyy # string|string[] a content type identifier
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    section: x # string|int Optional section id or identifier
+    new_remote_id: xxx # string Optional set a new RemoteId
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1
         - attribute2: value2
