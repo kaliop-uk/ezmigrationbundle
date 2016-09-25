@@ -10,10 +10,12 @@ use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
  */
 class UserGroupMatcher extends AbstractMatcher
 {
-    const MATCH_USERGROUP_ID = 'id';
+    const MATCH_USERGROUP_ID = 'usergroup_id';
 
     protected $allowedConditions = array(
-        self::MATCH_USERGROUP_ID
+        self::MATCH_USERGROUP_ID,
+        // aliases
+        'id'
     );
     protected $returns = 'UserGroup';
 
@@ -41,6 +43,7 @@ class UserGroupMatcher extends AbstractMatcher
             }
 
             switch ($key) {
+                case 'id':
                 case self::MATCH_USERGROUP_ID:
                    return new UserGroupCollection($this->findUserGroupsById($values));
             }

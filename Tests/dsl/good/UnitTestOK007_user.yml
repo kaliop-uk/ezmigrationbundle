@@ -24,7 +24,8 @@
     type: user
     mode: update
     match:
-        email: kmb_test_user_1_bis@test.com
+        email: kmb_test_user_1@test.com
+    email: kmb_test_user_1_bis@test.com
     password: aMuchSaferPassword?
     enabled: false
     groups: 4 # Users

@@ -7,15 +7,15 @@ Version 2.1.0
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
 
-* Updating and deleting of Users, User Groups and Roles now accepts more flexible definitions of the elements to act
-    upon, and comprehensive resolution of references.
+* Updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of the
+    elements to act upon, and comprehensive resolution of references.
 
 * *NB* BC break: when deleting users, a single migration step can not be used any more to match users based at the same
      time on id, email and login. Use separate steps for that
 
 * changes to the YML definition language:
 
-    * Updating and deleting of Users, User Groups and Roles/ usage of a 'match' key is allowed; previous ways of
+    * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a 'match' key is allowed; previous ways of
         defining elements to match are deprecated
 
 

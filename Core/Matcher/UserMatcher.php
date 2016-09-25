@@ -10,12 +10,14 @@ use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
  */
 class UserMatcher extends AbstractMatcher
 {
-    const MATCH_USER_ID = 'id';
+    const MATCH_USER_ID = 'user_id';
     const MATCH_USER_LOGIN = 'login';
     const MATCH_USER_EMAIL = 'email';
 
     protected $allowedConditions = array(
-        self::MATCH_USER_ID, self::MATCH_USER_LOGIN, self::MATCH_USER_EMAIL
+        self::MATCH_USER_ID, self::MATCH_USER_LOGIN, self::MATCH_USER_EMAIL,
+        // aliases
+        'id'
     );
     protected $returns = 'User';
 
@@ -43,6 +45,7 @@ class UserMatcher extends AbstractMatcher
             }
 
             switch ($key) {
+                case 'id':
                 case self::MATCH_USER_ID:
                    return new UserCollection($this->findUsersById($values));
 

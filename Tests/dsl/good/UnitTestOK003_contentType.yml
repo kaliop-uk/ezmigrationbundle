@@ -24,7 +24,8 @@
 -
     type: content_type
     mode: update
-    identifier: reference:kmb_test_1
+    match:
+        identifier: reference:kmb_test_1
     attributes:
         -
             type: ezstring
@@ -132,15 +133,16 @@
             type: ezuser
             name: ezuser
             identifier: ezuser
-        -
-            type: ezxmltext
-            name: ezxmltext
-            identifier: ezxmltext
+        #-
+        #    type: ezxmltext
+        #    name: ezxmltext
+        #    identifier: ezxmltext
 
 -
     type: content_type
     mode: update
-    identifier: 'reference:kmb_test_1'
+    match:
+        identifier: 'reference:kmb_test_1'
     attributes:
         -
             name: The Subtitle
@@ -155,7 +157,8 @@
 -
     type: content_type
     mode: update
-    identifier: 'reference:kmb_test_1'
+    match:
+        identifier: 'reference:kmb_test_1'
     remove_attributes:
         - subtitle
         - image
@@ -163,7 +166,8 @@
 -
     type: content_type
     mode: update
-    identifier: 'reference:kmb_test_1'
+    match:
+        identifier: 'reference:kmb_test_1'
     new_identifier: kmb_test_1_1
     references:
         -
@@ -173,4 +177,5 @@
 -
     type: content_type
     mode: delete
-    identifier: 'reference:kmb_test_1_1'
+    match:
+        identifier: 'reference:kmb_test_1_1'

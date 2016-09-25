@@ -47,6 +47,7 @@ parameters:
     ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
     ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
     ez_migration_bundle.role_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher
+    ez_migration_bundle.content_type_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher
 
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
@@ -165,6 +166,7 @@ services:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.content_type_manager.class%'
         arguments:
+            - '@ez_migration_bundle.content_type_matcher'
             - '@ez_migration_bundle.reference_resolver.location'
         tags:
             - { name: ez_migration_bundle.executor }
@@ -232,6 +234,11 @@ services:
 
     ez_migration_bundle.role_matcher:
         class: '%ez_migration_bundle.role_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.content_type_matcher:
+        class: '%ez_migration_bundle.content_type_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
 

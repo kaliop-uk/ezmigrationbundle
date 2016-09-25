@@ -7,11 +7,13 @@ use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 
 class RoleMatcher extends AbstractMatcher
 {
-    const MATCH_ROLE_ID = 'id';
-    const MATCH_ROLE_IDENTIFIER = 'identifier';
+    const MATCH_ROLE_ID = 'role_id';
+    const MATCH_ROLE_IDENTIFIER = 'role_identifier';
 
     protected $allowedConditions = array(
-        self::MATCH_ROLE_ID, self::MATCH_ROLE_IDENTIFIER
+        self::MATCH_ROLE_ID, self::MATCH_ROLE_IDENTIFIER,
+        // aliases
+        'id', 'identifier'
     );
     protected $returns = 'Role';
 
@@ -39,9 +41,11 @@ class RoleMatcher extends AbstractMatcher
             }
 
             switch ($key) {
+                case 'id':
                 case self::MATCH_ROLE_ID:
                    return new RoleCollection($this->findRolesById($values));
 
+                case 'identifier':
                 case self::MATCH_ROLE_IDENTIFIER:
                     return new RoleCollection($this->findRolesByIdentifier($values));
             }

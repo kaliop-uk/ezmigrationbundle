@@ -34,7 +34,10 @@
 -
     type: content_type
     mode: update
-    identifier: xyz # The identifier of the content type
+    match: # Only one of the following can be specified, to define which content type(s) to update
+        identifier: xyz # string|string[] The identifier of the content type
+        id: x # int|int[]
+        remote_id: abc # string|string[]
     new_identifier: xyz # Optional, will update the identifier if set
     name: xyz # Optional, will be updated if set
     description: xyz # Optional, will be updated if set
@@ -73,7 +76,10 @@
     # Delete a content type
     type: content_type
     mode: delete
-    identifier: xyz # The identifier of the content type
+    match: # Only one of the following can be specified, to define which content type(s) to delete
+        identifier: xyz # string|string[] The identifier of the content type
+        id: x # int|int[]
+        remote_id: abc # string|string[]
 
 # Attribute examples.
 
