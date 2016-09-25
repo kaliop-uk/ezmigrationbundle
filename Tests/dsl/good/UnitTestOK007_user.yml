@@ -16,8 +16,15 @@
     type: user
     mode: update
     id: reference:kmb_test_7
-    email: kmb_test_user_1_bis@test.com
     password: aMuchSaferPassword
+    enabled: false
+    groups: 4 # Users
+
+-
+    type: user
+    mode: update
+    email: kmb_test_user_1_bis@test.com
+    password: aMuchSaferPassword?
     enabled: false
     groups: 4 # Users
 

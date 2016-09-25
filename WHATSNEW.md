@@ -1,11 +1,22 @@
-Version 2.1
-===========
+Version 2.1.0
+=============
 
 * Added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
 
     * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
+
+* Updating and deleting of Users, User Groups and Roles now accepts more flexible definitions of the elements to act
+    upon, and comprehensive resolution of references.
+
+* *NB* BC break: when deleting users, a single migration step can not be used any more to match users based at the same
+     time on id, email and login. Use separate steps for that
+
+* changes to the YML definition language:
+
+    * Updating and deleting of Users, User Groups and Roles/ usage of a 'match' key is allowed; previous ways of
+        defining elements to match are deprecated
 
 
 Version 2.0.0

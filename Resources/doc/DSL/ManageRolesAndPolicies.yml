@@ -89,7 +89,9 @@
 -
     type: role
     mode: update
-    name: xyz # Name of the role to be updated
+    match: # Only one of the following can be specified, to define which roles to update
+        - id: x # int|int[]
+        - identifier: xyz # string|string[]
     assign: # Optional
         -
             type: # Must be user or group
@@ -131,4 +133,6 @@
 -
     type: role
     mode: delete
-    name: xyz # Name of the role to be removed
+    match: # Only one of the following can be specified, to define which roles to remove
+        - id: x # int|int[]
+        - identifier: xyz # string|string[]

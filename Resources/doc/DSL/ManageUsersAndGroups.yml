@@ -19,8 +19,11 @@
 -
     type: user
     mode: update
-    id: x # The ID of the user to update.
-    email: xyz # Optional
+    match: # Only one of the following can be specified, to define which users to update
+        - id: x # int|int[]
+        - email: xyz # string|string[]
+        - login: # string|string[]
+    email: xyz # Optional. NB: can only be set if the match definition latches a single user
     password: xyz # Optional
     enabled: true|false # Optional
     # Optional, Group ID / list of group IDs the user has to be a member of.
@@ -37,10 +40,10 @@
 -
     type: user
     mode: delete
-    user_id: x # Optional
-    email: xyz # Optional
-    username: xyz # Optional
-    # user_id, email, username could also be list of items as well
+    match: # Only one of the following can be specified, to define which users to delete
+        - id: x # int|int[]
+        - email: xyz # string|string[]
+        - login: # string|string[]
 
 -
     type: user_group
@@ -60,8 +63,9 @@
 -
     type: user_group
     mode: update
-    id: x # The ID of the user group to update.
-    name: xyz # Optional
+    match: # Define which groups to update
+        - id: x # int|int[]
+    name: xyz # Optional. Can only be used when the group to be updted is single
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
@@ -74,7 +78,8 @@
                                  # The shorthand 'id' can be used instead of 'content_id'
 
 -
-    # The users which are not assigned to other groups will be deleted.
+    # Note: The users which are not assigned to other groups will be deleted.
     type: user_group
     mode: delete
-    id: x # Id (or array of Ids) of groups to delete
+    match: # Only one of the following can be specified, to define which groups to delete
+        - id: x # int|int[]

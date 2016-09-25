@@ -84,6 +84,8 @@ class ContentManager extends RepositoryExecutor
         $content = $contentService->publishVersion($draft->versionInfo);
 
         $this->setReferences($content);
+
+        return $content;
     }
 
     /**
@@ -126,7 +128,7 @@ class ContentManager extends RepositoryExecutor
 
         $contentType = null;
 
-        foreach ($contentCollection as $content) {
+        foreach ($contentCollection as $key => $content) {
             $contentInfo = $content->contentInfo;
 
             if ($contentType == null) {
@@ -158,8 +160,12 @@ class ContentManager extends RepositoryExecutor
                 //$locationService->updateLocation($location, $locationUpdateStruct);
             }
 
-            $this->setReferences($contentCollection);
+            $contentCollection[$key] = $content;
         }
+
+        $this->setReferences($contentCollection);
+
+        return $contentCollection;
     }
 
     /**
@@ -179,6 +185,8 @@ class ContentManager extends RepositoryExecutor
                 // second ago. We can safely ignore this
             }
         }
+
+        return $contentCollection;
     }
 
     /**

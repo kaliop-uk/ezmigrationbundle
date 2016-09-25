@@ -50,6 +50,8 @@ class TagManager extends RepositoryExecutor
 
         $tag = $this->tagService->createTag($tagCreateStruct);
         $this->setReferences($tag);
+
+        return $tag;
     }
 
     protected function update()

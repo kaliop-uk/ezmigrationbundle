@@ -62,7 +62,11 @@ class LocationManager extends RepositoryExecutor
             }
         }
 
-        $this->setReferences(new LocationCollection($locations));
+        $locationCollection = new LocationCollection($locations);
+
+        $this->setReferences($locationCollection);
+
+        return $locationCollection;
     }
 
     /**
@@ -83,7 +87,7 @@ class LocationManager extends RepositoryExecutor
         }
 
         if (count($locationCollection) > 1 && array_key_exists('swap_with_location', $this->dsl)) {
-            throw new \Exception("Can not execute Location update because multiple contents match, and a swap_with_location is specified in the dsl. References can be set when only 1 content matches");
+            throw new \Exception("Can not execute Location update because multiple contents match, and a swap_with_location is specified in the dsl.");
         }
 
         if (isset($this->dsl['swap_with_location']) && isset($this->dsl['parent_location_id'])) {
@@ -95,7 +99,7 @@ class LocationManager extends RepositoryExecutor
             $locationId = $this->referenceResolver->getReferenceValue($locationId);
         }*/
 
-        foreach ($locationCollection as $location) {
+        foreach ($locationCollection as $key => $location) {
             //$location = $locationService->loadLocation($locationId);
 
             if (array_key_exists('priority', $this->dsl)
@@ -121,15 +125,15 @@ class LocationManager extends RepositoryExecutor
                         $locationUpdateStruct->remoteId = $this->dsl['remote_id'];
                     }
 
-                $locationService->updateLocation($location, $locationUpdateStruct);
+                $location = $locationService->updateLocation($location, $locationUpdateStruct);
             }
 
             // Check if visibility needs to be updated
             if (isset($this->dsl['is_hidden'])) {
                 if ($this->dsl['is_hidden']) {
-                    $locationService->hideLocation($location);
+                    $location = $locationService->hideLocation($location);
                 } else {
-                    $locationService->unhideLocation($location);
+                    $location = $locationService->unhideLocation($location);
                 }
             }
 
@@ -153,8 +157,12 @@ class LocationManager extends RepositoryExecutor
                 $locationService->swapLocation($location, $locationToSwap);
             }
 
-            $this->setReferences($location);
+            $locationCollection[$key] = $location;
         }
+
+        $this->setReferences($locationCollection);
+
+        return $locationCollection;
     }
 
     /**
@@ -172,6 +180,8 @@ class LocationManager extends RepositoryExecutor
             //$location = $locationService->loadLocation($locationId);
             $locationService->deleteLocation($location);
         }
+
+        return $locationCollection;
     }
 
     /**

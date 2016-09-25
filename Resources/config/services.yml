@@ -44,6 +44,9 @@ parameters:
 
     ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
     ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
+    ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
+    ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
+    ez_migration_bundle.role_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher
 
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
@@ -169,12 +172,16 @@ services:
     ez_migration_bundle.executor.user_manager:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.user_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.user_matcher'
         tags:
             - { name: ez_migration_bundle.executor }
 
     ez_migration_bundle.executor.user_group_manager:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.user_group_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.user_group_matcher'
         tags:
             - { name: ez_migration_bundle.executor }
 
@@ -182,6 +189,7 @@ services:
         class: '%ez_migration_bundle.executor.role_manager.class%'
         parent: ez_migration_bundle.executor.repository
         arguments:
+            - '@ez_migration_bundle.role_matcher'
             - '@ez_migration_bundle.helper.role_handler'
         tags:
             - { name: ez_migration_bundle.executor }
@@ -209,6 +217,21 @@ services:
 
     ez_migration_bundle.location_matcher:
         class: '%ez_migration_bundle.location_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.user_matcher:
+        class: '%ez_migration_bundle.user_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.user_group_matcher:
+        class: '%ez_migration_bundle.user_group_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.role_matcher:
+        class: '%ez_migration_bundle.role_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
 

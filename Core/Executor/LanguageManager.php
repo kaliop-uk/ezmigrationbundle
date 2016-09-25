@@ -34,6 +34,8 @@ class LanguageManager extends RepositoryExecutor
         $language = $languageService->createLanguage($languageCreateStruct);
 
         $this->setReferences($language);
+
+        return $language;
     }
 
     /**
@@ -67,6 +69,8 @@ class LanguageManager extends RepositoryExecutor
         $language = $languageService->loadLanguage($this->dsl['lang']);
 
         $languageService->deleteLanguage($language);
+
+        return $language;
     }
 
     /**

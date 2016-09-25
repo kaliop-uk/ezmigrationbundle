@@ -6,7 +6,9 @@ use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\Core\Helper\RoleHandler;
+use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 
 /**
  * Handles the role migration definitions.
@@ -16,9 +18,11 @@ class RoleManager extends RepositoryExecutor
     protected $supportedStepTypes = array('role');
 
     protected $roleHandler;
+    protected $roleMatcher;
 
-    public function __construct(RoleHandler $roleHandler)
+    public function __construct(RoleMatcher $roleMatcher, RoleHandler $roleHandler)
     {
+        $this->roleMatcher = $roleMatcher;
         $this->roleHandler = $roleHandler;
     }
 
@@ -47,6 +51,8 @@ class RoleManager extends RepositoryExecutor
         }
 
         $this->setReferences($role);
+
+        return $role;
     }
 
     /**
@@ -54,10 +60,21 @@ class RoleManager extends RepositoryExecutor
      */
     protected function update()
     {
+        $roleCollection = $this->matchRoles('update');
+
+        if (count($roleCollection) > 1 && array_key_exists('references', $this->dsl)) {
+            throw new \Exception("Can not execute Role update because multiple roles match, and a references section is specified in the dsl. References can be set when only 1 role matches");
+        }
+
+        if (count($roleCollection) > 1 && array_key_exists('new_name', $this->dsl)) {
+            throw new \Exception("Can not execute Role update because multiple roles match, and a new_name is specified in the dsl.");
+        }
+
         $roleService = $this->repository->getRoleService();
         $userService = $this->repository->getUserService();
 
-        if (array_key_exists('name', $this->dsl)) {
+        foreach ($roleCollection as $key => $role) {
+
             /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
             $role = $roleService->loadRoleByIdentifier($this->dsl['name']);
 
@@ -65,7 +82,7 @@ class RoleManager extends RepositoryExecutor
             if (array_key_exists('new_name', $this->dsl)) {
                 $update = $roleService->newRoleUpdateStruct();
                 $update->identifier = $this->dsl['new_name'];
-                $roleService->updateRole($role, $update);
+                $role = $roleService->updateRole($role, $update);
             }
 
             if (array_key_exists('policies', $this->dsl)) {
@@ -87,9 +104,12 @@ class RoleManager extends RepositoryExecutor
                 $this->assignRole($role, $roleService, $userService, $this->dsl['assign']);
             }
 
-            $this->setReferences($role);
+            $roleCollection[$key] = $role;
         }
 
+        $this->setReferences($roleCollection);
+
+        return $roleCollection;
     }
 
     /**
@@ -97,13 +117,51 @@ class RoleManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        // Get the eZ 5 API Repository and the required services
+        $roleCollection = $this->matchRoles('delete');
+
         $roleService = $this->repository->getRoleService();
 
-        if (array_key_exists('name', $this->dsl)) {
-            $role = $roleService->loadRoleByIdentifier($this->dsl['name']);
+        foreach ($roleCollection as $role) {
             $roleService->deleteRole($role);
         }
+
+        return $roleCollection;
+    }
+
+    /**
+     * @param string $action
+     * @return RoleCollection
+     * @throws \Exception
+     */
+    protected function matchRoles($action)
+    {
+        if (!isset($this->dsl['name']) && !isset($this->dsl['match'])) {
+            throw new \Exception("The name of a role or a match condition is required to $action it.");
+        }
+
+        // Backwards compat
+        if (!isset($this->dsl['match'])) {
+            $this->dsl['match'] = array('identifier' => $this->dsl['name']);
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
+                    }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
+                }
+            }
+        }
+
+        return $this->roleMatcher->match($match);
     }
 
     /**
@@ -111,7 +169,7 @@ class RoleManager extends RepositoryExecutor
      *
      * The Role Manager currently support setting references to role_ids.
      *
-     * @param \eZ\Publish\API\Repository\Values\User\Role $role
+     * @param \eZ\Publish\API\Repository\Values\User\Role|RoleCollection $role
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return boolean
      */
@@ -119,6 +177,13 @@ class RoleManager extends RepositoryExecutor
     {
         if (!array_key_exists('references', $this->dsl)) {
             return false;
+        }
+
+        if ($role instanceof RoleCollection) {
+            if (count($role) > 1) {
+                throw new \InvalidArgumentException('Role Manager does not support setting references for creating/updating of multiple roles');
+            }
+            $role = reset($role);
         }
 
         foreach ($this->dsl['references'] as $reference) {
