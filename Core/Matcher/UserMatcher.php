@@ -4,12 +4,13 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\User\User;
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
+use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-/**
- * @todo allow matching users by email
- */
-class UserMatcher extends AbstractMatcher
+class UserMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
+    use FlexibleKeyMatcher;
+
     const MATCH_USER_ID = 'user_id';
     const MATCH_USER_LOGIN = 'login';
     const MATCH_USER_EMAIL = 'email';
@@ -56,6 +57,22 @@ class UserMatcher extends AbstractMatcher
                     return new UserCollection($this->findUsersByEmail($values));
             }
         }
+    }
+
+    /**
+     * NB: bad luck if user login contains an email or otherwise @ character
+     * @param string $key
+     * @return array
+     */
+    protected function getConditionsFromKey($key)
+    {
+        if (is_int($key) || ctype_digit($key)) {
+            return array(self::MATCH_USER_ID => $key);
+        }
+        if (strpos($key, '@') !== false) {
+            return array(self::MATCH_USER_EMAIL => $key);
+        }
+        return array(self::MATCH_USER_LOGIN => $key);
     }
 
     /**

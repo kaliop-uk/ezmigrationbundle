@@ -4,9 +4,13 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\User\Role;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
+use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-class RoleMatcher extends AbstractMatcher
+class RoleMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
+    use FlexibleKeyMatcher;
+
     const MATCH_ROLE_ID = 'role_id';
     const MATCH_ROLE_IDENTIFIER = 'role_identifier';
 
@@ -50,6 +54,14 @@ class RoleMatcher extends AbstractMatcher
                     return new RoleCollection($this->findRolesByIdentifier($values));
             }
         }
+    }
+
+    protected function getConditionsFromKey($key)
+    {
+        if (is_int($key) || ctype_digit($key)) {
+            return array(self::MATCH_ROLE_ID => $key);
+        }
+        return array(self::MATCH_ROLE_IDENTIFIER => $key);
     }
 
     /**

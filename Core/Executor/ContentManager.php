@@ -9,6 +9,7 @@ use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 /**
@@ -23,10 +24,12 @@ class ContentManager extends RepositoryExecutor
 
     protected $complexFieldManager;
     protected $contentMatcher;
+    protected $sectionMatcher;
 
-    public function __construct(ContentMatcher $contentMatcher, $complexFieldManager)
+    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, $complexFieldManager)
     {
         $this->contentMatcher = $contentMatcher;
+        $this->sectionMatcher = $sectionMatcher;
         $this->complexFieldManager = $complexFieldManager;
     }
 
@@ -82,6 +85,10 @@ class ContentManager extends RepositoryExecutor
         // create a draft using the content and location create struct and publish it
         $draft = $contentService->createContent($contentCreateStruct, $locations);
         $content = $contentService->publishVersion($draft->versionInfo);
+
+        if (isset($this->dsl['section'])) {
+            $this->setSection($content, $this->dsl['section']);
+        }
 
         $this->setReferences($content);
 
@@ -158,6 +165,10 @@ class ContentManager extends RepositoryExecutor
                 //$locationUpdateStruct->remoteId = $this->dsl['new_remote_id'] . '_location';
                 //$location = $locationService->loadLocation($content->contentInfo->mainLocationId);
                 //$locationService->updateLocation($location, $locationUpdateStruct);
+            }
+
+            if (isset($this->dsl['section'])) {
+                $this->setSection($content, $this->dsl['section']);
             }
 
             $contentCollection[$key] = $content;
@@ -255,6 +266,11 @@ class ContentManager extends RepositoryExecutor
 
             $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
         }
+    }
+
+    protected function setSection($content, $sectionId)
+    {
+
     }
 
     /**

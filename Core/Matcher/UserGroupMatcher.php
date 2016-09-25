@@ -4,12 +4,16 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\User\UserGroup;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
+use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 /**
  * @todo add matching all groups of a user, all child groups of a group
  */
-class UserGroupMatcher extends AbstractMatcher
+class UserGroupMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
+    use FlexibleKeyMatcher;
+
     const MATCH_USERGROUP_ID = 'usergroup_id';
 
     protected $allowedConditions = array(
@@ -48,6 +52,11 @@ class UserGroupMatcher extends AbstractMatcher
                    return new UserGroupCollection($this->findUserGroupsById($values));
             }
         }
+    }
+
+    protected function getConditionsFromKey($key)
+    {
+        return array(self::MATCH_USERGROUP_ID => $key);
     }
 
     /**

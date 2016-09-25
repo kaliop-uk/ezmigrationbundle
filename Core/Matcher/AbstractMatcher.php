@@ -32,7 +32,7 @@ abstract class AbstractMatcher implements MatcherInterface
         }
 
         if (count($conditions) > $this->maxConditions) {
-            throw new \Exception($this->returns . ' can not be matched because multiple matching conditions are specified. Only a single condition is supported');
+            throw new \Exception($this->returns . " can not be matched because multiple matching conditions are specified. Only {this->maxConditions} condition(s) are supported");
         }
 
         foreach ($conditions as $key => $value) {
@@ -41,6 +41,16 @@ abstract class AbstractMatcher implements MatcherInterface
                     implode(', ', $this->allowedConditions));
             }
         }
+    }
+
+    public function matchOne(array $conditions)
+    {
+        $results = $this->match($conditions);
+        $count = count($results);
+        if ($count !== 1) {
+            throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
+        }
+        return reset($results);
     }
 
     abstract public function match(array $conditions);

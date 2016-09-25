@@ -40,8 +40,7 @@ class RoleManager extends RepositoryExecutor
         $role = $roleService->createRole($roleCreateStruct);
 
         if (array_key_exists('policies', $this->dsl)) {
-            $ymlPolicies = $this->dsl['policies'];
-            foreach($ymlPolicies as $key => $ymlPolicy) {
+            foreach($this->dsl['policies'] as $key => $ymlPolicy) {
                 $this->addPolicy($role, $roleService, $ymlPolicy);
             }
         }

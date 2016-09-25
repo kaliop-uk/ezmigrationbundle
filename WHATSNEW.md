@@ -13,10 +13,14 @@ Version 2.1.0
 * *NB* BC break: when deleting users, a single migration step can not be used any more to match users based at the same
      time on id, email and login. Use separate steps for that
 
+* It is now possible to assign a section when creating and updating Contents
+
 * changes to the YML definition language:
 
     * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a 'match' key is allowed; previous ways of
         defining elements to match are deprecated
+
+    * a new tag `section` is available for content creation and update
 
 
 Version 2.0.0

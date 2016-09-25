@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
+use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 
 /**
  * Handles user-group migrations.
@@ -13,10 +14,12 @@ class UserGroupManager extends RepositoryExecutor
     protected $supportedStepTypes = array('user_group');
 
     protected $userGroupMatcher;
+    protected $roleMatcher;
 
-    public function __construct(UserGroupMatcher $userGroupMatcher)
+    public function __construct(UserGroupMatcher $userGroupMatcher, RoleMatcher $roleMatcher)
     {
         $this->userGroupMatcher = $userGroupMatcher;
+        $this->roleMatcher = $roleMatcher;
     }
 
     /**
@@ -46,13 +49,9 @@ class UserGroupManager extends RepositoryExecutor
 
         if (array_key_exists('roles', $this->dsl)) {
             $roleService = $this->repository->getRoleService();
+            // we support both Ids and Identifiers
             foreach ($this->dsl['roles'] as $roleId) {
-                if (is_int($roleId)) {
-                    $role = $roleService->loadRole($roleId);
-                } else {
-                    // Assume it is an identifier if it is not an int
-                    $role = $roleService->loadRoleByIdentifier($roleId);
-                }
+                $role = $this->roleMatcher->matchByKey($roleId);
                 $roleService->assignRoleToUserGroup($role, $userGroup);
             }
         }
