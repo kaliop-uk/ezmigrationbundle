@@ -75,6 +75,8 @@ class ContentTypeManager extends RepositoryExecutor
         // Set references
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeDraft->identifier);
         $this->setReferences($contentType);
+
+        return $contentType;
     }
 
     /**
@@ -174,6 +176,8 @@ class ContentTypeManager extends RepositoryExecutor
         }
 
         $this->setReferences($contentType);
+
+        return $contentType;
     }
 
     /**
@@ -194,6 +198,8 @@ class ContentTypeManager extends RepositoryExecutor
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
         $contentTypeService->deleteContentType($contentType);
+
+        return $contentType;
     }
 
     /**

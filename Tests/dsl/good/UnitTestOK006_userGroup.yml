@@ -21,4 +21,5 @@
 -
     type: user_group
     mode: delete
-    id: reference:kmb_test_6
+    match:
+        id: reference:kmb_test_6

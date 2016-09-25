@@ -23,7 +23,8 @@
 -
     type: user
     mode: update
-    email: kmb_test_user_1_bis@test.com
+    match:
+        email: kmb_test_user_1_bis@test.com
     password: aMuchSaferPassword?
     enabled: false
     groups: 4 # Users
@@ -31,4 +32,5 @@
 -
     type: user
     mode: delete
-    user_id: reference:kmb_test_7
+    match:
+        id: reference:kmb_test_7

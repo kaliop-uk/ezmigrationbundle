@@ -10,6 +10,9 @@ class StepExecutedListener
 
     public function onStepExecuted(StepExecutedEvent $event)
     {
+        if ($event->getResult() === null) {
+            throw new \Exception('Received null as step execution event result');
+        }
         self::$executions++;
     }
 
