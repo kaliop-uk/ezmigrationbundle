@@ -200,6 +200,36 @@ applying a given migration. We recommend always taking a database snapshot befor
 case you need to roll back your changes. Another approach consists in writing a separate migration to undo the changes. 
 
 
+## Customizing the migration logic via Event Listeners
+
+An easy way to hook up custom logic to the execution of migration steps - without having to implement your own
+customized action executors - is to use Event Listeners.
+
+Two events are fired *for each step* during execution of migrations:
+
+    * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
+    * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
+
+In order to act on those events, you will need to declare tagged services, such as for ex:
+
+    my.step_executed_listener:
+        class: my\helper\StepExecutedListener
+        tags:
+            - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
+
+and the corresponding php class:
+
+    use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
+    
+    class StepExecutedListener
+    {
+        public function onStepExecuted(StepExecutedEvent $event)
+        {
+            // do something...
+        }
+    }
+
+
 ## Known Issues and limitations
 
 * if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
