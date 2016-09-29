@@ -34,6 +34,9 @@ class RoleManager extends RepositoryExecutor
 
         // Publish new role
         $role = $roleService->createRole($roleCreateStruct);
+        if (is_callable(array($roleService, 'publishRoleDraft'))) {
+            $roleService->publishRoleDraft($role);
+        }
 
         if (array_key_exists('policies', $this->dsl)) {
             $ymlPolicies = $this->dsl['policies'];
