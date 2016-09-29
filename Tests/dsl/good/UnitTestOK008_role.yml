@@ -15,7 +15,7 @@
         -
             module: content
             function: create
-            limitation:
+            limitations:
                 -
                     identifier: Node
                     values: [ 2 ]
@@ -38,7 +38,7 @@
         -
             module: content
             function: read
-            limitation:
+            limitations:
                 -
                     identifier: Language
                     values: [eng-GB]
@@ -46,7 +46,7 @@
         -
             type: user
             ids: [ 10 ]
-            limitation:
+            limitations:
                 -
                     identifier: Subtree
                     values: [ /1/2 ]

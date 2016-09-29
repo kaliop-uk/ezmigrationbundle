@@ -200,10 +200,10 @@ class RoleManager extends RepositoryExecutor
                     foreach ($assign['ids'] as $userId) {
                         $user = $userService->loadUser($userId);
 
-                        if (!array_key_exists('limitation', $assign)) {
+                        if (!array_key_exists('limitations', $assign)) {
                             $roleService->assignRoleToUser($role, $user);
                         } else {
-                            foreach ($assign['limitation'] as $limitation) {
+                            foreach ($assign['limitations'] as $limitation) {
                                 $limitationObject = $this->createLimitation($roleService, $limitation);
                                 $roleService->assignRoleToUser($role, $user, $limitationObject);
                             }
@@ -214,15 +214,17 @@ class RoleManager extends RepositoryExecutor
                     foreach ($assign['ids'] as $groupId) {
                         $group = $userService->loadUserGroup($groupId);
 
-                        if (!array_key_exists('limitation', $assign)) {
+                        if (!array_key_exists('limitations', $assign)) {
                             try {
                                 $roleService->assignRoleToUserGroup($role, $group);
+                                // q: why are we swallowing exceptions here ?
                             } catch (InvalidArgumentException $e) {}
                         } else {
-                            foreach ($assign['limitation'] as $limitation) {
+                            foreach ($assign['limitations'] as $limitation) {
                                 $limitationObject = $this->createLimitation($roleService, $limitation);
                                 try {
                                     $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
+                                // q: why are we swallowing exceptions here ?
                                 } catch (InvalidArgumentException $e) {}
                             }
                         }
