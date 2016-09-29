@@ -89,9 +89,7 @@
 -
     type: role
     mode: update
-    match: # Only one of the following can be specified, to define which roles to update
-        - id: x # int|int[]
-        - identifier: xyz # string|string[]
+    name: xyz # Name of the role
     assign: # Optional
         -
             type: # Must be user or group
