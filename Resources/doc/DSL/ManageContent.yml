@@ -50,13 +50,13 @@
     remote_id: xxx # DEPRECATED The 'remote_id' of the content to update. Can be used as alternative to the object_id. NB: this does *not* mean 'set the remote-id to what I want'
     match: # An alternative to object_id and remote_id specified directly. NB: only one of the 3 can be used.
            # Specify ONLY ONE of the following, to match a content or a set of contents
-        - content_id: x # int|int[]
-        - content_remote_id: xxx # string|string[]
-        - content_id: x # int|int[]
-        - content_remote_id: xxx # string|string[]
-        - parent_location_id: x # int|int[]
-        - parent_location_remote_id: xxx # string|string[]
-        - content_type: yyy # string|string[] a content type identifier
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        content_type: yyy # string|string[] a content type identifier
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1
@@ -75,13 +75,13 @@
     remote_id: x # DEPRECATED the content remote id or a list of remote ids. Used when object_id and match are not set
     match: # An alternative to object_id and remote_id specified directly. NB: only one of the 3 can be used.
            # Specify ONLY ONE of the following, to match a content or a set of contents
-        - content_id: x # int|int[]
-        - content_remote_id: xxx # string|string[]
-        - content_id: x # int|int[]
-        - content_remote_id: xxx # string|string[]
-        - parent_location_id: x # int|int[]
-        - parent_location_remote_id: xxx # string|string[]
-        - content_type: yyy # string|string[] a content type identifier
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        content_type: yyy # string|string[] a content type identifier
 
 # Other examples for how to identify objects to delete
 
