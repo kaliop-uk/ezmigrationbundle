@@ -38,7 +38,7 @@ class RoleManager extends RepositoryExecutor
 
         // Publish new role
         $role = $roleService->createRole($roleCreateStruct);
-        if(is_callable(array($roleService, 'publishRoleDraft')) {
+        if (is_callable(array($roleService, 'publishRoleDraft'))) {
             $roleService->publishRoleDraft($role);
         }
 
