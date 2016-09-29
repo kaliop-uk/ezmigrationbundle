@@ -1,5 +1,19 @@
-Version 2.0.0-beta
-==================
+Version 2.1.0
+=============
+
+* Fix: the documentation describing usage of the 'match' keyword for updating/deleting contents and locations was
+    incorrect 
+
+* Fix: the documentation describing usage of the 'limitations' keyword for managing roles was incorrect
+
+* Fix: Role creation would not work when using eZPlatform
+
+* BC BREAK: the 'limitation' keyword used to describe role assignments has been replaced by 'limitations' 
+    (it was documented using the plural form before)
+
+
+Version 2.0.0
+=============
 
 This version is a complete restructuring of the codebase, and brings along with it a few breaking changes.
 
