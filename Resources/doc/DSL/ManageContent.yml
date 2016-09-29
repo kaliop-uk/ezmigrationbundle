@@ -42,7 +42,7 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports: content_id and location_id)
+            attribute: attributeId # An attribute to get the value of for the reference (supports: content_id, content_remote_id, location_id, path)
 
 -
     type: content
@@ -51,13 +51,13 @@
     remote_id: xxx # DEPRECATED The 'remote_id' of the content to update. Can be used as alternative to the object_id. NB: this does *not* mean 'set the remote-id to what I want'
     match: # An alternative to object_id and remote_id specified directly. NB: only one of these can be used.
            # Specify ONLY ONE of the following, to match a content or a set of contents
-        - content_id: x # int|int[]
-        - content_remote_id: xxx # string|string[]
-        - location_id: x # int|int[]
-        - location_remote_id: xxx # string|string[]
-        - parent_location_id: x # int|int[]
-        - parent_location_remote_id: xxx # string|string[]
-        - content_type: yyy # string|string[] a content type identifier
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        location_id: x # int|int[]
+        location_remote_id: xxx # string|string[]
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        content_type: yyy # string|string[] a content type identifier
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier
     new_remote_id: xxx # string Optional set a new RemoteId
@@ -78,6 +78,7 @@
     remote_id: x # DEPRECATED the content remote id or a list of remote ids. Used when object_id and match are not set
     match: # An alternative to object_id and remote_id specified directly. NB: only one of these can be used.
            # Specify ONLY ONE of the following, to match a content or a set of contents
+<<<<<<< HEAD
         - content_id: x # int|int[]
         - content_remote_id: xxx # string|string[]
         - location_id: x # int|int[]
@@ -85,6 +86,15 @@
         - parent_location_id: x # int|int[]
         - parent_location_remote_id: xxx # string|string[]
         - content_type: yyy # string|string[] a content type identifier
+=======
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        content_type: yyy # string|string[] a content type identifier
+>>>>>>> stable-2.x
 
 # Other examples for how to identify objects to delete
 

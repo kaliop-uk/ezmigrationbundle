@@ -1,25 +1,27 @@
 Version 3.0.0
 =============
 
-* Added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
+* New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
 
     * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
 
-* Updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of the
+* New: apdating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of the
     elements to act upon, and comprehensive resolution of references.
 
-* It is now possible to assign a section when creating and updating Contents
+* New: it is now possible to assign a section when creating and updating Contents
 
-* changes to the YML definition language:
+* New: references are now resolved for user_id and group_id when assigning Roles 
+
+* Changes to the YML definition language:
 
     * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a 'match' key is allowed; previous ways of
         defining elements to match are deprecated
 
     * a new tag `section` is available for content creation and update
 
-* BC breaks:
+* BC BREAKS:
 
     * when deleting users, a single migration step can not be used any more to match users based at the same time on id,
         email and login. Use separate steps for that
@@ -28,6 +30,24 @@ Version 3.0.0
         now have a different constructor signature
 
     * when creating an object and defining ist remote_id, the location remote_id is not automatically set
+
+
+Version 2.1.0
+=============
+
+* New: it is now possible to set a reference to the path of a created Content/Location.
+    This allow to use it subsequently when assigning a role with subtree limitation
+
+* Fix: the documentation describing usage of the 'match' keyword for updating/deleting contents and locations was
+    incorrect 
+
+* Fix: the documentation describing usage of the 'limitations' keyword for managing roles was incorrect
+
+* Fix: Role creation would not work when using eZPlatform
+
+* BC BREAK: the 'limitation' keyword used to describe role assignments has been replaced by 'limitations' 
+    (it was documented using the plural form before)
+
 
 Version 2.0.0
 =============

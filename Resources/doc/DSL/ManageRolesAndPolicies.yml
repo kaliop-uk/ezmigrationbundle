@@ -45,7 +45,7 @@
 #
 #  Subtree limitation example:
 #  identifier: Subtree
-#  value: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location id path
+#  value: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location path
 #
 #  UserGroup limitation example:
 #  identifier: UserGroup
@@ -58,14 +58,14 @@
         -
             module: xyz
             function: xyz # to grant access to all function, use '*' (including simple quotes)
-            limitation: # Optional
+            limitations: # Optional
                 -
                     identifier: xyz
                     values: [x, y]
         -
             module: xyz
             function: xyz
-            limitation:
+            limitations:
                 -
                     identifier: xyz
                     values: [x, y]
@@ -73,7 +73,7 @@
         -
             type: # Must be user or group
             ids: [x, y, z] # List of user IDs to assign the new role to
-            limitation: # Optional role limitation on assignment
+            limitations: # Optional limitation on role assignment
                 -
                     identifier: xyz
                     values: [x, y]
@@ -96,7 +96,7 @@
         -
             type: # Must be user or group
             ids: [x, y, z] # List of user IDs to assign the new role to
-            limitation: # Optional role limitation on assignment
+            limitations: # Optional role limitation on assignment
                 -
                     identifier: xyz
                     values: [x, y]
@@ -107,7 +107,7 @@
         -
             module: xyz
             function: xyz
-            limitation:
+            limitations:
                 -
                     identifier: xyz
                     values: [x, z]

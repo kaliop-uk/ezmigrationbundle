@@ -38,6 +38,9 @@ class RoleManager extends RepositoryExecutor
 
         // Publish new role
         $role = $roleService->createRole($roleCreateStruct);
+        if (is_callable(array($roleService, 'publishRoleDraft'))) {
+            $roleService->publishRoleDraft($role);
+        }
 
         if (array_key_exists('policies', $this->dsl)) {
             foreach($this->dsl['policies'] as $key => $ymlPolicy) {
@@ -264,10 +267,10 @@ class RoleManager extends RepositoryExecutor
                         }
                         $user = $userService->loadUser($userId);
 
-                        if (!array_key_exists('limitation', $assign)) {
+                        if (!array_key_exists('limitations', $assign)) {
                             $roleService->assignRoleToUser($role, $user);
                         } else {
-                            foreach ($assign['limitation'] as $limitation) {
+                            foreach ($assign['limitations'] as $limitation) {
                                 $limitationObject = $this->createLimitation($roleService, $limitation);
                                 $roleService->assignRoleToUser($role, $user, $limitationObject);
                             }
@@ -281,15 +284,17 @@ class RoleManager extends RepositoryExecutor
                         }
                         $group = $userService->loadUserGroup($groupId);
 
-                        if (!array_key_exists('limitation', $assign)) {
+                        if (!array_key_exists('limitations', $assign)) {
                             try {
                                 $roleService->assignRoleToUserGroup($role, $group);
+                                // q: why are we swallowing exceptions here ?
                             } catch (InvalidArgumentException $e) {}
                         } else {
-                            foreach ($assign['limitation'] as $limitation) {
+                            foreach ($assign['limitations'] as $limitation) {
                                 $limitationObject = $this->createLimitation($roleService, $limitation);
                                 try {
                                     $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
+                                // q: why are we swallowing exceptions here ?
                                 } catch (InvalidArgumentException $e) {}
                             }
                         }

@@ -15,13 +15,10 @@
         -
             module: content
             function: create
-            limitation:
+            limitations:
                 -
                     identifier: Node
                     values: [ 2 ]
-                -
-                   identifier: Owner
-                   values: [ 1 ]
         -
             module: user
             function: '*'
@@ -37,8 +34,8 @@
     policies:
         -
             module: content
-            function: read
-            limitation:
+            function: create
+            limitations:
                 -
                     identifier: Language
                     values: [eng-GB]
@@ -46,7 +43,7 @@
         -
             type: user
             ids: [ 10 ]
-            limitation:
+            limitations:
                 -
                     identifier: Subtree
                     values: [ /1/2 ]

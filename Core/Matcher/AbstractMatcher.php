@@ -36,7 +36,7 @@ abstract class AbstractMatcher implements MatcherInterface
         }
 
         foreach ($conditions as $key => $value) {
-            if (!in_array($key, $this->allowedConditions)) {
+            if (!in_array((string)$key, $this->allowedConditions)) {
                 throw new \Exception($this->returns . " can not be matched because matching condition '$key' is not supported. Supported conditions are: " .
                     implode(', ', $this->allowedConditions));
             }
