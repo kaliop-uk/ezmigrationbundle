@@ -41,7 +41,7 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports: content_id and location_id)
+            attribute: attributeId # An attribute to get the value of for the reference (supports: content_id, content_remote_id, location_id, path)
 
 -
     type: content

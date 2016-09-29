@@ -331,6 +331,9 @@ class LocationManager extends RepositoryExecutor
                 case 'location_remote_id':
                     $value = $location->remoteId;
                     break;
+                case 'path':
+                    $value = $location->pathString;
+                    break;
                 default:
                     throw new \InvalidArgumentException('Location Manager does not support setting references for attribute ' . $reference['attribute']);
             }

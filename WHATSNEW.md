@@ -1,6 +1,9 @@
 Version 2.1.0
 =============
 
+* New: it is now possible to set a reference to the path of a created Content/Location.
+    This allow to use it subsequently when assigning a role with subtree limitation
+
 * Fix: the documentation describing usage of the 'match' keyword for updating/deleting contents and locations was
     incorrect 
 

@@ -45,7 +45,7 @@
 #
 #  Subtree limitation example:
 #  identifier: Subtree
-#  value: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location id path
+#  value: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location path
 #
 #  UserGroup limitation example:
 #  identifier: UserGroup
