@@ -34,7 +34,7 @@
     policies:
         -
             module: content
-            function: read
+            function: create
             limitations:
                 -
                     identifier: Language
