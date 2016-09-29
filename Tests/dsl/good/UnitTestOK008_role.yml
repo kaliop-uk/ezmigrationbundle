@@ -14,7 +14,7 @@
     policies:
         -
             module: content
-            function: create
+            function: edit
             limitations:
                 -
                     identifier: Node
