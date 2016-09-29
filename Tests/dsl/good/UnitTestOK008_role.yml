@@ -19,9 +19,6 @@
                 -
                     identifier: Node
                     values: [ 2 ]
-                -
-                   identifier: Owner
-                   values: [ 1 ]
         -
             module: user
             function: '*'
