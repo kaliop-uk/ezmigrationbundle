@@ -58,14 +58,14 @@
         -
             module: xyz
             function: xyz # to grant access to all function, use '*' (including simple quotes)
-            limitation: # Optional
+            limitations: # Optional
                 -
                     identifier: xyz
                     values: [x, y]
         -
             module: xyz
             function: xyz
-            limitation:
+            limitations:
                 -
                     identifier: xyz
                     values: [x, y]
@@ -107,7 +107,7 @@
         -
             module: xyz
             function: xyz
-            limitation:
+            limitations:
                 -
                     identifier: xyz
                     values: [x, z]
