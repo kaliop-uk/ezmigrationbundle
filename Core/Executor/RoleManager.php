@@ -259,6 +259,9 @@ class RoleManager extends RepositoryExecutor
             switch ($assign['type']) {
                 case 'user':
                     foreach ($assign['ids'] as $userId) {
+                        if($this->referenceResolver->isReference($userId)) {
+                            $userId = $this->referenceResolver->getReferenceValue($userId);
+                        }
                         $user = $userService->loadUser($userId);
 
                         if (!array_key_exists('limitation', $assign)) {
@@ -273,6 +276,9 @@ class RoleManager extends RepositoryExecutor
                     break;
                 case 'group':
                     foreach ($assign['ids'] as $groupId) {
+                        if($this->referenceResolver->isReference($groupId)) {
+                            $groupId = $this->referenceResolver->getReferenceValue($groupId);
+                        }
                         $group = $userService->loadUserGroup($groupId);
 
                         if (!array_key_exists('limitation', $assign)) {
