@@ -56,6 +56,14 @@ class ContentManager extends RepositoryExecutor
             $contentCreateStruct->remoteId = $this->dsl['remote_id'];
         }
 
+        if (array_key_exists('owner_id', $this->dsl)) {
+            $ownerId = $this->dsl['owner_id'];
+            if ($this->referenceResolver->isReference($ownerId)) {
+                $ownerId = $this->referenceResolver->getReferenceValue($ownerId);
+            }
+            $contentCreateStruct->ownerId = $ownerId;
+        }
+
         // instantiate a location create struct from the parent location
         $locationId = $this->dsl['main_location'];
         if ($this->referenceResolver->isReference($locationId)) {
