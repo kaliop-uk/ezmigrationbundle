@@ -31,7 +31,7 @@ class ContentTypeManager extends RepositoryExecutor
     protected function create()
     {
         foreach(array('identifier', 'content_type_group', 'name_pattern', 'name', 'attributes') as $key) {
-            if (!array_key_exists($key, $this->dsl)) {
+            if (!isset($this->dsl[$key])) {
                 throw new \Exception("The '$key' key is missing in a content type creation definition");
             }
         }
@@ -50,18 +50,18 @@ class ContentTypeManager extends RepositoryExecutor
             $this->getLanguageCode() => $this->dsl['name'],
         );
 
-        if (array_key_exists('description', $this->dsl)) {
+        if (isset($this->dsl['description'])) {
             // set description for the content type
             $contentTypeCreateStruct->descriptions = array(
                 $this->getLanguageCode() => $this->dsl['description'],
             );
         }
 
-        if (array_key_exists('url_name_pattern', $this->dsl)) {
+        if (isset($this->dsl['url_name_pattern'])) {
             $contentTypeCreateStruct->urlAliasSchema = $this->dsl['url_name_pattern'];
         }
 
-        if (array_key_exists('is_container', $this->dsl)) {
+        if (isset($this->dsl['is_container'])) {
             $contentTypeCreateStruct->isContainer = $this->dsl['is_container'];
         }
 
@@ -106,34 +106,34 @@ class ContentTypeManager extends RepositoryExecutor
             $contentTypeUpdateStruct = $contentTypeService->newContentTypeUpdateStruct();
             $contentTypeUpdateStruct->mainLanguageCode = $this->getLanguageCode();
 
-            if (array_key_exists('new_identifier', $this->dsl)) {
+            if (isset($this->dsl['new_identifier'])) {
                 $contentTypeUpdateStruct->identifier = $this->dsl['new_identifier'];
             }
 
-            if (array_key_exists('name', $this->dsl)) {
+            if (isset($this->dsl['name'])) {
                 $contentTypeUpdateStruct->names = array($this->getLanguageCode() => $this->dsl['name']);
             }
 
-            if (array_key_exists('description', $this->dsl)) {
+            if (isset($this->dsl['description'])) {
                 $contentTypeUpdateStruct->descriptions = array(
                     $this->getLanguageCode() => $this->dsl['description'],
                 );
             }
 
-            if (array_key_exists('name_pattern', $this->dsl)) {
+            if (isset($this->dsl['name_pattern'])) {
                 $contentTypeUpdateStruct->nameSchema = $this->dsl['name_pattern'];
             }
 
-            if (array_key_exists('url_name_pattern', $this->dsl)) {
+            if (isset($this->dsl['url_name_pattern'])) {
                 $contentTypeUpdateStruct->urlAliasSchema = $this->dsl['url_name_pattern'];
             }
 
-            if (array_key_exists('is_container', $this->dsl)) {
+            if (isset($this->dsl['is_container'])) {
                 $contentTypeUpdateStruct->isContainer = $this->dsl['is_container'];
             }
 
             // Add/edit attributes
-            if (array_key_exists('attributes', $this->dsl)) {
+            if (isset($this->dsl['attributes'])) {
                 foreach ($this->dsl['attributes'] as $attribute) {
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
                     if ($existingFieldDefinition) {
@@ -156,7 +156,7 @@ class ContentTypeManager extends RepositoryExecutor
             }
 
             // Remove attributes
-            if (array_key_exists('remove_attributes', $this->dsl)) {
+            if (isset($this->dsl['remove_attributes'])) {
                 foreach ($this->dsl['remove_attributes'] as $attribute) {
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute);
                     if ($existingFieldDefinition) {
@@ -169,7 +169,7 @@ class ContentTypeManager extends RepositoryExecutor
             $contentTypeService->publishContentTypeDraft($contentTypeDraft);
 
             // Set references
-            if (array_key_exists('new_identifier', $this->dsl)) {
+            if (isset($this->dsl['new_identifier'])) {
                 $contentType = $contentTypeService->loadContentTypeByIdentifier($this->dsl['new_identifier']);
             } else {
                 $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeDraft->identifier);
@@ -345,7 +345,7 @@ class ContentTypeManager extends RepositoryExecutor
      */
     private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute)
     {
-        if (!array_key_exists('identifier', $attribute)) {
+        if (!isset($attribute['identifier'])) {
             throw new \Exception("The 'identifier' of an attribute is missing in the content type update definition.");
         }
 

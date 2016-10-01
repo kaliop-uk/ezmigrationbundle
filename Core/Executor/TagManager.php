@@ -24,8 +24,8 @@ class TagManager extends RepositoryExecutor
     {
         $this->checkTagsBundleInstall();
 
-        $alwaysAvail = array_key_exists('always_available', $this->dsl) ? $this->dsl['always_available'] : true;
-        $parentTagId = array_key_exists('parent_tag_id', $this->dsl) ? $this->dsl['parent_tag_id'] : 0;
+        $alwaysAvail = isset($this->dsl['always_available']) ? $this->dsl['always_available'] : true;
+        $parentTagId = isset($this->dsl['parent_tag_id']) ? $this->dsl['parent_tag_id'] : 0;
 
         if (isset($this->dsl['lang'])) {
             $lang = $this->dsl['lang'];

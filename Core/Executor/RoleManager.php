@@ -42,13 +42,13 @@ class RoleManager extends RepositoryExecutor
             $roleService->publishRoleDraft($role);
         }
 
-        if (array_key_exists('policies', $this->dsl)) {
+        if (isset($this->dsl['policies'])) {
             foreach($this->dsl['policies'] as $key => $ymlPolicy) {
                 $this->addPolicy($role, $roleService, $ymlPolicy);
             }
         }
 
-        if (array_key_exists('assign', $this->dsl)) {
+        if (isset($this->dsl['assign'])) {
             $this->assignRole($role, $roleService, $userService, $this->dsl['assign']);
         }
 
@@ -64,11 +64,11 @@ class RoleManager extends RepositoryExecutor
     {
         $roleCollection = $this->matchRoles('update');
 
-        if (count($roleCollection) > 1 && array_key_exists('references', $this->dsl)) {
+        if (count($roleCollection) > 1 && isset($this->dsl['references'])) {
             throw new \Exception("Can not execute Role update because multiple roles match, and a references section is specified in the dsl. References can be set when only 1 role matches");
         }
 
-        if (count($roleCollection) > 1 && array_key_exists('new_name', $this->dsl)) {
+        if (count($roleCollection) > 1 && isset($this->dsl['new_name'])) {
             throw new \Exception("Can not execute Role update because multiple roles match, and a new_name is specified in the dsl.");
         }
 
@@ -79,13 +79,13 @@ class RoleManager extends RepositoryExecutor
         foreach ($roleCollection as $key => $role) {
 
             // Updating role name
-            if (array_key_exists('new_name', $this->dsl)) {
+            if (isset($this->dsl['new_name'])) {
                 $update = $roleService->newRoleUpdateStruct();
                 $update->identifier = $this->dsl['new_name'];
                 $role = $roleService->updateRole($role, $update);
             }
 
-            if (array_key_exists('policies', $this->dsl)) {
+            if (isset($this->dsl['policies'])) {
                 $ymlPolicies = $this->dsl['policies'];
 
                 // Removing all policies so we can add them back.
@@ -100,7 +100,7 @@ class RoleManager extends RepositoryExecutor
                 }
             }
 
-            if (array_key_exists('assign', $this->dsl)) {
+            if (isset($this->dsl['assign'])) {
                 $this->assignRole($role, $roleService, $userService, $this->dsl['assign']);
             }
 
@@ -265,7 +265,7 @@ class RoleManager extends RepositoryExecutor
                         }
                         $user = $userService->loadUser($userId);
 
-                        if (!array_key_exists('limitations', $assign)) {
+                        if (!isset($assign['limitations'])) {
                             $roleService->assignRoleToUser($role, $user);
                         } else {
                             foreach ($assign['limitations'] as $limitation) {
@@ -282,7 +282,7 @@ class RoleManager extends RepositoryExecutor
                         }
                         $group = $userService->loadUserGroup($groupId);
 
-                        if (!array_key_exists('limitations', $assign)) {
+                        if (!isset($assign['limitations'])) {
                             try {
                                 $roleService->assignRoleToUserGroup($role, $group);
                                 // q: why are we swallowing exceptions here ?

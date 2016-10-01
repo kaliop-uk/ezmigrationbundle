@@ -151,6 +151,7 @@ services:
         arguments:
             - '@ez_migration_bundle.content_matcher'
             - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.user_matcher'
             - '@ez_migration_bundle.complex_field_manager'
             - '@ez_migration_bundle.executor.location_manager'
         tags:

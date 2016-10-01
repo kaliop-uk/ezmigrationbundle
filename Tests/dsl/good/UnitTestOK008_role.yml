@@ -69,20 +69,6 @@
             identifier: kmb_test_8_ctid
             attribute: id
 -
-    type: content
-    mode: create
-    content_type: kmb_test_8_ct
-    main_location: 2
-    attributes:
-        - title: hello world 8
-    references:
-        -
-            identifier: kmb_test_8_path
-            attribute: path
-        -
-            identifier: kmb_test_8_id
-            attribute: id
--
     type: user
     mode: create
     first_name: Kaliop
@@ -95,6 +81,27 @@
          -
             identifier: kmb_test_8_user
             attribute: id
+-
+    type: content
+    mode: create
+    content_type: kmb_test_8_ct
+    main_location: 2
+    owner: reference:kmb_test_8_user
+    attributes:
+        - title: hello world 8
+    references:
+        -
+            identifier: kmb_test_8_path
+            attribute: path
+        -
+            identifier: kmb_test_8_id
+            attribute: id
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_8_id
+    owner: kmb_test_user_8
 -
     type: role
     mode: update

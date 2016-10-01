@@ -89,11 +89,11 @@ class LocationManager extends RepositoryExecutor
 
         $locationCollection = $this->matchLocations('update');
 
-        if (count($locationCollection) > 1 && array_key_exists('references', $this->dsl)) {
+        if (count($locationCollection) > 1 && isset($this->dsl['references'])) {
             throw new \Exception("Can not execute Location update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
         }
 
-        if (count($locationCollection) > 1 && array_key_exists('swap_with_location', $this->dsl)) {
+        if (count($locationCollection) > 1 && isset($this->dsl['swap_with_location'])) {
             throw new \Exception("Can not execute Location update because multiple contents match, and a swap_with_location is specified in the dsl.");
         }
 
@@ -109,10 +109,10 @@ class LocationManager extends RepositoryExecutor
         foreach ($locationCollection as $key => $location) {
             //$location = $locationService->loadLocation($locationId);
 
-            if (array_key_exists('priority', $this->dsl)
-                || array_key_exists('sort_field', $this->dsl)
-                || array_key_exists('sort_order', $this->dsl)
-                || array_key_exists('remote_id', $this->dsl)
+            if (isset($this->dsl['priority'])
+                || isset($this->dsl['sort_field'])
+                || isset($this->dsl['sort_order'])
+                || isset($this->dsl['remote_id'])
             ) {
                 $locationUpdateStruct = $locationService->newLocationUpdateStruct();
 

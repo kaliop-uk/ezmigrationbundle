@@ -11,6 +11,7 @@ use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 /**
@@ -23,15 +24,17 @@ class ContentManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('content');
 
-    protected $complexFieldManager;
     protected $contentMatcher;
     protected $sectionMatcher;
+    protected $userMatcher;
+    protected $complexFieldManager;
     protected $locationManager;
 
-    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, $complexFieldManager, $locationManager)
+    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, UserMatcher $userMatcher, $complexFieldManager, $locationManager)
     {
         $this->contentMatcher = $contentMatcher;
         $this->sectionMatcher = $sectionMatcher;
+        $this->userMatcher = $userMatcher;
         $this->complexFieldManager = $complexFieldManager;
         $this->locationManager = $locationManager;
     }
@@ -52,9 +55,10 @@ class ContentManager extends RepositoryExecutor
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode());
+
         $this->setFields($contentCreateStruct, $this->dsl['attributes'], $contentType);
 
-        if (array_key_exists('remote_id', $this->dsl)) {
+        if (isset($this->dsl['remote_id'])) {
             $contentCreateStruct->remoteId = $this->dsl['remote_id'];
         }
 
@@ -66,6 +70,11 @@ class ContentManager extends RepositoryExecutor
             $contentCreateStruct->sectionId = $sectionId;
         }
 
+        if (isset($this->dsl['owner'])) {
+            $owner = $this->getUser($this->dsl['owner']);
+            $contentCreateStruct->ownerId = $owner->id;
+        }
+
         // instantiate a location create struct from the parent location
         $locationId = $this->dsl['main_location'];
         if ($this->referenceResolver->isReference($locationId)) {
@@ -73,7 +82,7 @@ class ContentManager extends RepositoryExecutor
         }
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
 
-        if (array_key_exists('priority', $this->dsl)) {
+        if (isset($this->dsl['priority'])) {
             $locationCreateStruct->priority = $this->dsl['priority'];
         }
 
@@ -91,7 +100,7 @@ class ContentManager extends RepositoryExecutor
 
         $locations = array($locationCreateStruct);
 
-        if (array_key_exists('other_locations', $this->dsl)) {
+        if (isset($this->dsl['other_locations'])) {
             foreach ($this->dsl['other_locations'] as $otherLocation) {
                 $locationId = $otherLocation;
                 if ($this->referenceResolver->isReference($locationId)) {
@@ -121,31 +130,9 @@ class ContentManager extends RepositoryExecutor
         $contentService = $this->repository->getContentService();
         $contentTypeService = $this->repository->getContentTypeService();
 
-        /*if (isset($this->dsl['object_id'])) {
-            $objectId = $this->dsl['object_id'];
-            if ($this->referenceResolver->isReference($objectId)) {
-                $objectId = $this->referenceResolver->getReferenceValue($objectId);
-            }
-            $contentToUpdate = $contentService->loadContent($objectId);
-            $contentInfo = $contentToUpdate->contentInfo;
-        } else {
-            $remoteId = $this->dsl['remote_id'];
-            if ($this->referenceResolver->isReference($remoteId)) {
-                $remoteId = $this->referenceResolver->getReferenceValue($remoteId);
-            }
-
-            //try {
-                $contentInfo = $contentService->loadContentInfoByRemoteId($remoteId);
-            // disabled in v2: we disallow this. For matching location-remote-id, use the 'match' keyword
-            //} catch (\eZ\Publish\API\Repository\Exceptions\NotFoundException $e) {
-            //    $location = $this->repository->getLocationService()->loadLocationByRemoteId($remoteId);
-            //    $contentInfo = $location->contentInfo;
-            //}
-        }*/
-
         $contentCollection = $this->matchContents('update');
 
-        if (count($contentCollection) > 1 && array_key_exists('references', $this->dsl)) {
+        if (count($contentCollection) > 1 && isset($this->dsl['references'])) {
             throw new \Exception("Can not execute Content update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
         }
 
@@ -160,7 +147,7 @@ class ContentManager extends RepositoryExecutor
 
             $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
-            if (array_key_exists('attributes', $this->dsl)) {
+            if (isset($this->dsl['attributes'])) {
                 $this->setFields($contentUpdateStruct, $this->dsl['attributes'], $contentType);
             }
 
@@ -168,12 +155,19 @@ class ContentManager extends RepositoryExecutor
             $contentService->updateContent($draft->versionInfo,$contentUpdateStruct);
             $content = $contentService->publishVersion($draft->versionInfo);
 
-            if (array_key_exists('new_remote_id', $this->dsl)) {
-                // Update object remote ID
+            if (isset($this->dsl['new_remote_id']) || isset($this->dsl['new_remote_id'])) {
                 $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
-                $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
-                $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
 
+                if (isset($this->dsl['new_remote_id'])) {
+                    $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
+                }
+
+                if (isset($this->dsl['owner'])) {
+                    $owner = $this->getUser($this->dsl['owner']);
+                    $contentMetaDataUpdateStruct->ownerId = $owner->id;
+                }
+
+                $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
             }
 
             if (isset($this->dsl['section'])) {
@@ -330,6 +324,19 @@ class ContentManager extends RepositoryExecutor
     protected function getComplexFieldValue(array $fieldValueArray, FieldDefinition $fieldDefinition, array $context = array())
     {
         return $this->complexFieldManager->getComplexFieldValue($fieldDefinition->fieldTypeIdentifier, $fieldValueArray, $context);
+    }
+
+    /**
+     * Load user using either login, email, id - resolving eventual references
+     * @param int|string $key
+     * @return \eZ\Publish\API\Repository\Values\User\User
+     */
+    protected function getUser($key)
+    {
+        if ($this->referenceResolver->isReference($key)) {
+            $key = $this->referenceResolver->getReferenceValue($key);
+        }
+        return $this->userMatcher->matchByKey($key);
     }
 
     /**

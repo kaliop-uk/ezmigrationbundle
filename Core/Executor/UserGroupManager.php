@@ -41,13 +41,13 @@ class UserGroupManager extends RepositoryExecutor
         $userGroupCreateStruct = $userService->newUserGroupCreateStruct($this->getLanguageCode(), $contentType);
         $userGroupCreateStruct->setField('name', $this->dsl['name']);
 
-        if (array_key_exists('description', $this->dsl)) {
+        if (isset($this->dsl['description'])) {
             $userGroupCreateStruct->setField('description', $this->dsl['description']);
         }
 
         $userGroup = $userService->createUserGroup($userGroupCreateStruct, $parentGroup);
 
-        if (array_key_exists('roles', $this->dsl)) {
+        if (isset($this->dsl['roles'])) {
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
             foreach ($this->dsl['roles'] as $roleId) {
@@ -70,7 +70,7 @@ class UserGroupManager extends RepositoryExecutor
     {
         $userGroupCollection = $this->matchUserGroups('delete');
 
-        if (count($userGroupCollection) > 1 && array_key_exists('references', $this->dsl)) {
+        if (count($userGroupCollection) > 1 && isset($this->dsl['references'])) {
             throw new \Exception("Can not execute Group update because multiple groups match, and a references section is specified in the dsl. References can be set when only 1 group matches");
         }
 
@@ -97,7 +97,7 @@ class UserGroupManager extends RepositoryExecutor
 
             $userGroup = $userService->updateUserGroup($userGroup, $updateStruct);
 
-            if (array_key_exists('parent_group_id', $this->dsl)) {
+            if (isset($this->dsl['parent_group_id'])) {
                 $parentGroupId = $this->dsl['parent_group_id'];
                 if ($this->referenceResolver->isReference($parentGroupId)) {
                     $parentGroupId = $this->referenceResolver->getReferenceValue($parentGroupId);

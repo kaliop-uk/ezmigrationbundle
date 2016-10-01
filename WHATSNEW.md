@@ -7,19 +7,21 @@ Version 3.0.0
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
 
-* New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of the
-    elements to act upon, and comprehensive resolution of references.
+* New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of
+    the elements to act upon, and comprehensive resolution of references
 
 * New: it is now possible to assign a section when creating and updating Contents
+
+* New: it is now possible to assign an owner when creating and updating Contents
 
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
 * Changes to the YML definition language:
 
-    * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a `match` key is allowed; previous ways of
-        defining elements to match are deprecated
+    * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a `match` key is allowed; previous
+        ways of defining elements to match are deprecated
 
-    * a new tag `section` is available for content creation and update
+    * new tags `section` and `owner` are available for content creation and update
 
     * content creation supports the following new tags: `is_hidden`, `sort_field`, `sort_order`
 
@@ -28,13 +30,13 @@ Version 3.0.0
     * when deleting users, a single migration step can not be used any more to match users based at the same time on id,
         email and login. Use separate steps for that
 
+    * when creating an object and defining its remote_id, the location remote_id is not automatically set any more
+
+    * when adding locations without defining sort field and sort order, the defaults from the content type definition
+        are used, instead of publication-date/asc
+
     * changes for developers who extended the bundle: the MatcherInterface has a new method; many Executor services
         now have a different constructor signature
-
-    * when creating an object and defining ist remote_id, the location remote_id is not automatically set
-
-    * when adding locations without defining sort filed and sort order, the defaults from the content type definition
-        are used, instead of publications date / asc
 
 
 Version 2.1.0
