@@ -20,6 +20,8 @@ Version 3.0.0
 
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
+* Changed: removed unused Behat and Phpunit tests as well as one leftover Interface 
+
 * Changes to the YML definition language:
 
     * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a `match` key is allowed; previous
