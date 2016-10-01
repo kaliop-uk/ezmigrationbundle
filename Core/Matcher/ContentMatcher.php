@@ -18,11 +18,14 @@ class ContentMatcher extends AbstractMatcher
     const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
     const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
-    const MATCH_CONTENT_TYPE_IDENTIFIER = 'content_type';
+    const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
+    const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
 
     protected $allowedConditions = array(
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
-        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER,
+        // aliases
+        'content_type', 'content_type_id', 'content_type_identifier'
     );
     protected $returns = 'Content';
 
@@ -49,6 +52,15 @@ class ContentMatcher extends AbstractMatcher
                 $values = array($values);
             }
 
+            // BC support
+            if ($key == 'content_type') {
+                if (is_int($key) || ctype_digit($key)) {
+                    $key = self::MATCH_CONTENT_TYPE_ID;
+                } else {
+                    $key = self::MATCH_CONTENT_TYPE_IDENTIFIER;
+                }
+            }
+
             switch ($key) {
                 case self::MATCH_CONTENT_ID:
                    return new ContentCollection($this->findContentsByContentIds($values));
@@ -68,6 +80,11 @@ class ContentMatcher extends AbstractMatcher
                 case self::MATCH_PARENT_LOCATION_REMOTE_ID:
                     return new ContentCollection($this->findContentsByParentLocationRemoteIds($values));
 
+                case 'content_type_id':
+                case self::MATCH_CONTENT_TYPE_ID:
+                    return new ContentCollection($this->findContentsByContentTypeIds($values));
+
+                case 'content_type_identifier':
                 case self::MATCH_CONTENT_TYPE_IDENTIFIER:
                     return new ContentCollection($this->findContentsByContentTypeIdentifiers($values));
             }
@@ -189,7 +206,30 @@ class ContentMatcher extends AbstractMatcher
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
-        /// @todo replace with a location querty, as we are using deprecated functionality
+        /// @todo replace with a location query, as we are using deprecated functionality
+        $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        $results = $this->repository->getSearchService()->findContent($query);
+
+        $contents = [];
+        foreach ($results->searchHits as $result) {
+            // make sure we return every object only once
+            $contents[$result->valueObject->contentInfo->id] = $result->valueObject;
+        }
+
+        return $contents;
+    }
+
+    /**
+     * @param int[] $contentTypeIds
+     * @return Content[]
+     */
+    protected function findContentsByContentTypeIds(array $contentTypeIds)
+    {
+        $query = new Query();
+        $query->limit = PHP_INT_MAX;
+        $query->filter = new Query\Criterion\ContentTypeId($contentTypeIds);
+        // sort objects by depth, lower to higher, so that deleting them has less chances of failure
+        /// @todo replace with a location query, as we are using deprecated functionality
         $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
         $results = $this->repository->getSearchService()->findContent($query);
 

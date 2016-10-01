@@ -133,6 +133,9 @@
         -
             identifier: kmb_test_2_1_loc
             attribute: location_id
+        -
+            identifier: kmb_test_2_1_path
+            attribute: path
 -
     type: content
     mode: create

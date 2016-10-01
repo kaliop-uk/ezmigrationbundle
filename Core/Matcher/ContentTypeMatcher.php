@@ -4,17 +4,25 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
+use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-class ContentTypeMatcher extends AbstractMatcher
+/**
+ * Note: disallowing matches by remote_id allows us to implement KeyMatcherInterface without the risk of users getting
+ * confused as to what they are matching...
+ */
+class ContentTypeMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
+    use FlexibleKeyMatcher;
+
     const MATCH_CONTENTTYPE_ID = 'contenttype_id';
     const MATCH_CONTENTTYPE_IDENTIFIER = 'contenttype_identifier';
-    const MATCH_CONTENTTYPE_REMOTE_ID = 'contenttype_remote_id';
+    //const MATCH_CONTENTTYPE_REMOTE_ID = 'contenttype_remote_id';
 
     protected $allowedConditions = array(
-        self::MATCH_CONTENTTYPE_ID, self::MATCH_CONTENTTYPE_IDENTIFIER, self::MATCH_CONTENTTYPE_REMOTE_ID,
+        self::MATCH_CONTENTTYPE_ID, self::MATCH_CONTENTTYPE_IDENTIFIER, //self::MATCH_CONTENTTYPE_REMOTE_ID,
         // aliases
-        'id', 'identifier', 'remote_id'
+        'id', 'identifier', // 'remote_id'
     );
     protected $returns = 'ContentType';
 
@@ -50,11 +58,19 @@ class ContentTypeMatcher extends AbstractMatcher
                 case self::MATCH_CONTENTTYPE_IDENTIFIER:
                     return new ContentTypeCollection($this->findContentTypesByIdentifier($values));
 
-                case 'remote_id':
+                /*case 'remote_id':
                 case self::MATCH_CONTENTTYPE_REMOTE_ID:
-                    return new ContentTypeCollection($this->findContentTypesByRemoteId($values));
+                    return new ContentTypeCollection($this->findContentTypesByRemoteId($values));*/
             }
         }
+    }
+
+    protected function getConditionsFromKey($key)
+    {
+        if (is_int($key) || ctype_digit($key)) {
+            return array(self::MATCH_CONTENTTYPE_ID => $key);
+        }
+        return array(self::MATCH_CONTENTTYPE_IDENTIFIER => $key);
     }
 
     /**

@@ -75,10 +75,8 @@ class RoleManager extends RepositoryExecutor
         $roleService = $this->repository->getRoleService();
         $userService = $this->repository->getUserService();
 
+        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
         foreach ($roleCollection as $key => $role) {
-
-            /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-            $role = $roleService->loadRoleByIdentifier($this->dsl['name']);
 
             // Updating role name
             if (array_key_exists('new_name', $this->dsl)) {

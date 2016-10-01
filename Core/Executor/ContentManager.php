@@ -255,8 +255,9 @@ class ContentManager extends RepositoryExecutor
      * @param ContentCreateStruct|ContentUpdateStruct $createOrUpdateStruct
      * @param ContentType $contentType
      * @param array $fields
+     * @throws \Exception
      */
-    protected function setFields(&$createOrUpdateStruct, array $fields, ContentType $contentType)
+    protected function setFields($createOrUpdateStruct, array $fields, ContentType $contentType)
     {
         foreach ($fields as $field) {
             // each $field is one key value pair
@@ -264,6 +265,9 @@ class ContentManager extends RepositoryExecutor
             $fieldIdentifier = key($field);
 
             $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
+            if ($fieldType == null) {
+                throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'");
+            }
 
             if (is_array($field[$fieldIdentifier])) {
                 // Complex field might need special handling eg.: ezimage, ezbinaryfile
