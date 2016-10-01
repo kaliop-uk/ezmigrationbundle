@@ -126,6 +126,8 @@
     section: 3
     attributes:
         - ezstring: hello world 1
+    object_states:
+        - locked
     references:
         -
             identifier: kmb_test_2_1

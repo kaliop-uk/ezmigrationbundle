@@ -10,7 +10,7 @@
     groups: [x, y, z] # The user group ID or IDs (Content IDs) to put the user into
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
-    references: #Optional
+    references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference (currently supports user_id)
@@ -31,7 +31,7 @@
     groups: [x, y, z]
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
-    references: #Optional
+    references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference (currently supports user_id_
@@ -54,7 +54,7 @@
     roles: [x, y, z] # The role names or ids to assign to the group
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
-    references: #Optional
+    references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
@@ -71,7 +71,7 @@
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
-    references: #Optional
+    references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference

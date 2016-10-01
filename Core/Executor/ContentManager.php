@@ -12,6 +12,7 @@ use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 /**
@@ -27,14 +28,17 @@ class ContentManager extends RepositoryExecutor
     protected $contentMatcher;
     protected $sectionMatcher;
     protected $userMatcher;
+    protected $objectStateMatcher;
     protected $complexFieldManager;
     protected $locationManager;
 
-    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, UserMatcher $userMatcher, $complexFieldManager, $locationManager)
+    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, UserMatcher $userMatcher,
+        ObjectStateMatcher $objectStateMatcher, $complexFieldManager, $locationManager)
     {
         $this->contentMatcher = $contentMatcher;
         $this->sectionMatcher = $sectionMatcher;
         $this->userMatcher = $userMatcher;
+        $this->objectStateMatcher = $objectStateMatcher;
         $this->complexFieldManager = $complexFieldManager;
         $this->locationManager = $locationManager;
     }
@@ -119,6 +123,10 @@ class ContentManager extends RepositoryExecutor
         $draft = $contentService->createContent($contentCreateStruct, $locations);
         $content = $contentService->publishVersion($draft->versionInfo);
 
+        if (isset($this->dsl['object_states'])) {
+            $this->setObjectStates($content, $this->dsl['object_states']);
+        }
+
         $this->setReferences($content);
 
         return $content;
@@ -186,6 +194,10 @@ class ContentManager extends RepositoryExecutor
 
             if (isset($this->dsl['section'])) {
                 $this->setSection($content, $this->dsl['section']);
+            }
+
+            if (isset($this->dsl['object_states'])) {
+                $this->setObjectStates($content, $this->dsl['object_states']);
             }
 
             $contentCollection[$key] = $content;
@@ -289,15 +301,29 @@ class ContentManager extends RepositoryExecutor
         }
     }
 
-    protected function setSection(Content $content, $sectionId)
+    protected function setSection(Content $content, $sectionKey)
     {
-        if ($this->referenceResolver->isReference($sectionId)) {
-            $sectionId = $this->referenceResolver->getReferenceValue($sectionId);
+        if ($this->referenceResolver->isReference($sectionKey)) {
+            $sectionKey = $this->referenceResolver->getReferenceValue($sectionKey);
         }
-        $section = $this->sectionMatcher->matchByKey($sectionId);
+        $section = $this->sectionMatcher->matchByKey($sectionKey);
 
         $sectionService = $this->repository->getSectionService();
         $sectionService->assignSection($content->contentInfo, $section);
+    }
+
+    protected function setObjectStates(Content $content, array $stateKeys)
+    {
+        foreach($stateKeys as $stateKey) {
+            if ($this->referenceResolver->isReference($stateKey)) {
+                $stateKey = $this->referenceResolver->getReferenceValue($stateKey);
+            }
+            /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $state */
+            $state = $this->objectStateMatcher->matchByKey($stateKey);
+
+            $stateService = $this->repository->getObjectStateService();
+            $stateService->setContentState($content->contentInfo, $state->getObjectStateGroup(), $state);
+        }
     }
 
     /**

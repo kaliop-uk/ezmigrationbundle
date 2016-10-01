@@ -16,6 +16,8 @@ Version 3.0.0
 
 * New: it is now possible to set publication and modification dates when creating and updating Contents
 
+* New: it is now possible to assign object states when creating and updating Contents
+
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
 * Changes to the YML definition language:
@@ -23,7 +25,7 @@ Version 3.0.0
     * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a `match` key is allowed; previous
         ways of defining elements to match are deprecated
 
-    * new tags `modification_date`, `section` and `owner` are available for content creation and update
+    * new tags `modification_date`, `section`, `object_states` and `owner` are available for content creation and update
 
     * content creation supports the following new tags: `is_hidden`, `sort_field`, `sort_order`
 

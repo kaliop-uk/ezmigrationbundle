@@ -26,7 +26,7 @@
         # ezimage/ezbinaryfile file attribute example
         - attribute5:
             path: '/path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/
-            alt_text: xyz #optional, only used for images
+            alt_text: xyz # Optional, only used for images
         # ezxmltext, using references
         - attribute6:
             content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
@@ -42,9 +42,13 @@
         - attribute8: x # content id or string: reference:xxx
         # Adding values to an ezobjectrelationlist field
         - ezobjectrelationlist: [ x, reference:xxx ] # array of content ids or reference strings
+    # Optionally assign object states to the content
+    object_states:
+        - xxx # int|string an object state id or didentifier
+        - yyy
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
-    references: #Optional
+    references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference (supports: content_id, content_remote_id, location_id, path)
@@ -72,9 +76,12 @@
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1
         - attribute2: value2
+    # Optionally assign object states to the content
+    object_states:
+        - xxx # int|string an object state id or didentifier
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
-    references: #Optional
+    references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference (supports object_id and location_id)
