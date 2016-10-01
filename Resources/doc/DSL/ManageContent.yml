@@ -12,6 +12,7 @@
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier
     owner: xxx # user id, login or email if unique; Optional, set the content owner
+    modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     attributes:
         - attribute1: value1
         - attribute2: value2
@@ -65,6 +66,8 @@
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier
     owner: xxx # user id, login or email if unique; Optional, set the content owner
+    modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
+    publication_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     new_remote_id: xxx # string Optional set a new RemoteId
     attributes: # the list of attribute identifier value pairs
         - attribute1: value1

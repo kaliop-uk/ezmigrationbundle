@@ -75,6 +75,10 @@ class ContentManager extends RepositoryExecutor
             $contentCreateStruct->ownerId = $owner->id;
         }
 
+        if (isset($this->dsl['modification_date'])) {
+            $contentCreateStruct->modificationDate = new \DateTime($this->dsl['modification_date']);
+        }
+
         // instantiate a location create struct from the parent location
         $locationId = $this->dsl['main_location'];
         if ($this->referenceResolver->isReference($locationId)) {
@@ -155,7 +159,9 @@ class ContentManager extends RepositoryExecutor
             $contentService->updateContent($draft->versionInfo,$contentUpdateStruct);
             $content = $contentService->publishVersion($draft->versionInfo);
 
-            if (isset($this->dsl['new_remote_id']) || isset($this->dsl['new_remote_id'])) {
+            if (isset($this->dsl['new_remote_id']) || isset($this->dsl['new_remote_id']) ||
+                isset($this->dsl['modification_date']) || isset($this->dsl['publication_date'])) {
+
                 $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
 
                 if (isset($this->dsl['new_remote_id'])) {
@@ -165,6 +171,14 @@ class ContentManager extends RepositoryExecutor
                 if (isset($this->dsl['owner'])) {
                     $owner = $this->getUser($this->dsl['owner']);
                     $contentMetaDataUpdateStruct->ownerId = $owner->id;
+                }
+
+                if (isset($this->dsl['modification_date'])) {
+                    $contentMetaDataUpdateStruct->modificationDate = new \DateTime($this->dsl['modification_date']);
+                }
+
+                if (isset($this->dsl['publication_date'])) {
+                    $contentMetaDataUpdateStruct->publishedDate = new \DateTime($this->dsl['publication_date']);
                 }
 
                 $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
