@@ -25,13 +25,15 @@
         "php": ">=5.4",
         "ezsystems/ezpublish-kernel": ">=5.3|>=2014.03",
         "ext-pdo": "*",
-        "nikic/php-parser": "2.*"
+        "nikic/php-parser": "2.*",
+        "netgen/tagsbundle": "~2.0"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.2.0",
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "phpunit/phpunit": "~4.0",
-        "codeclimate/php-test-reporter": "dev-master"
+        "codeclimate/php-test-reporter": "dev-master",
+        "ezsystems/ezpublish-community": "~2014.3.2"
     },
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }

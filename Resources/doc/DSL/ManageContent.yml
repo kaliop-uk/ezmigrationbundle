@@ -4,6 +4,9 @@
     content_type: [content type identifier]
     main_location: x # The id of the parent location
     priority: 0 # Set the priority of the main location
+    is_hidden: true|false # Optional
+    sort_field: x # Optional. See ManageLocation.yml for details
+    sort_order: ASC|DESC # Optional
     other_locations: [x, y, z] # Optional, ids of extra parent locations
     remote_id: custom_remote_id # Optional, will set a custom remote id
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)

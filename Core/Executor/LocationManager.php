@@ -49,14 +49,21 @@ class LocationManager extends RepositoryExecutor
             foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
                 $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
 
-                $locationCreateStruct->hidden = isset($this->dsl['is_hidden']) ?: false;
+                if (isset($this->dsl['is_hidden'])) {
+                    $locationCreateStruct->hidden = $this->dsl['is_hidden'];
+                }
 
                 if (isset($this->dsl['priority'])) {
                     $locationCreateStruct->priority = $this->dsl['priority'];
                 }
 
-                $locationCreateStruct->sortOrder = $this->getSortOrder();
-                $locationCreateStruct->sortField = $this->getSortField();
+                if (isset($this->dsl['sort_order'])) {
+                    $locationCreateStruct->sortOrder = $this->getSortOrder($this->dsl['sort_order']);
+                }
+
+                if (isset($this->dsl['sort_field'])) {
+                    $locationCreateStruct->sortField = $this->getSortField($this->dsl['sort_field']);
+                }
 
                 $locations[] = $locationService->createLocation($contentInfo, $locationCreateStruct);
             }
@@ -114,11 +121,11 @@ class LocationManager extends RepositoryExecutor
                     }
 
                     if (isset($this->dsl['sort_field'])) {
-                        $locationUpdateStruct->sortField = $this->getSortField($location->sortField);
+                        $locationUpdateStruct->sortField = $this->getSortField($this->dsl['sort_field'], $location->sortField);
                     }
 
                     if (isset($this->dsl['sort_order'])) {
-                        $locationUpdateStruct->sortOrder = $this->getSortOrder($location->sortOrder);
+                        $locationUpdateStruct->sortOrder = $this->getSortOrder($this->dsl['sort_order'], $location->sortOrder);
                     }
 
                     if (isset($this->dsl['remote_id'])) {
@@ -262,15 +269,15 @@ class LocationManager extends RepositoryExecutor
         return $this->contentMatcher->matchContent($match);
     }
 
-    protected function getSortField($currentValue = null)
+    protected function getSortField($newValue, $currentValue = null)
     {
-        $sortField = Location::SORT_FIELD_PUBLISHED;
+        $sortField = null;
 
         if (!is_null($currentValue)) {
             $sortField = $currentValue;
         }
 
-        if (isset($this->dsl['sort_field'])) {
+        if ($newValue !== null) {
             $sortFieldId = "SORT_FIELD_" . strtoupper($this->dsl['sort_field']);
 
             $ref = new \ReflectionClass('eZ\Publish\API\Repository\Values\Content\Location');
@@ -284,21 +291,21 @@ class LocationManager extends RepositoryExecutor
     /**
      * Get the sort order based on the current value and the value in the DSL definition.
      *
-     * If no current value is set and there is no value in the DSL it will default to Location::SORT_ORDER_ASC
-     *
      * @see \eZ\Publish\API\Repository\Values\Content\Location::SORT_ORDER_*
      *
+     * @param int $newValue
      * @param int $currentValue
      * @return int
      */
-    protected function getSortOrder($currentValue = null)
+    protected function getSortOrder($newValue, $currentValue = null)
     {
-        $sortOrder = Location::SORT_ORDER_ASC;
+        $sortOrder = null;
+
         if (!is_null($currentValue)) {
             $sortOrder = $currentValue;
         }
 
-        if (isset($this->dsl['sort_order'])) {
+        if ($newValue !== null) {
             if (strtoupper($this->dsl['sort_order']) === 'ASC') {
                 $sortOrder = Location::SORT_ORDER_ASC;
             } else {

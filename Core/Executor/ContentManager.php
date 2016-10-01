@@ -26,12 +26,14 @@ class ContentManager extends RepositoryExecutor
     protected $complexFieldManager;
     protected $contentMatcher;
     protected $sectionMatcher;
+    protected $locationManager;
 
-    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, $complexFieldManager)
+    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, $complexFieldManager, $locationManager)
     {
         $this->contentMatcher = $contentMatcher;
         $this->sectionMatcher = $sectionMatcher;
         $this->complexFieldManager = $complexFieldManager;
+        $this->locationManager = $locationManager;
     }
 
     /**
@@ -56,18 +58,35 @@ class ContentManager extends RepositoryExecutor
             $contentCreateStruct->remoteId = $this->dsl['remote_id'];
         }
 
+        if (isset($this->dsl['section'])) {
+            $sectionId = $this->dsl['section'];
+            if ($this->referenceResolver->isReference($sectionId)) {
+                $sectionId = $this->referenceResolver->getReferenceValue($sectionId);
+            }
+            $contentCreateStruct->sectionId = $sectionId;
+        }
+
         // instantiate a location create struct from the parent location
         $locationId = $this->dsl['main_location'];
         if ($this->referenceResolver->isReference($locationId)) {
             $locationId = $this->referenceResolver->getReferenceValue($locationId);
         }
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
-        /*if (array_key_exists('remote_id', $this->dsl)) {
-            $locationCreateStruct->remoteId = $this->dsl['remote_id'] . '_location';
-        }*/
 
         if (array_key_exists('priority', $this->dsl)) {
             $locationCreateStruct->priority = $this->dsl['priority'];
+        }
+
+        if (isset($this->dsl['is_hidden'])) {
+            $locationCreateStruct->hidden = $this->dsl['is_hidden'];
+        }
+
+        if (isset($this->dsl['sort_order'])) {
+            $locationCreateStruct->sortOrder = $this->locationManager->getSortOrder($this->dsl['sort_order']);
+        }
+
+        if (isset($this->dsl['sort_field'])) {
+            $locationCreateStruct->sortField = $this->locationManager->getSortField($this->dsl['sort_field']);
         }
 
         $locations = array($locationCreateStruct);
@@ -86,10 +105,6 @@ class ContentManager extends RepositoryExecutor
         // create a draft using the content and location create struct and publish it
         $draft = $contentService->createContent($contentCreateStruct, $locations);
         $content = $contentService->publishVersion($draft->versionInfo);
-
-        if (isset($this->dsl['section'])) {
-            $this->setSection($content, $this->dsl['section']);
-        }
 
         $this->setReferences($content);
 
@@ -159,13 +174,6 @@ class ContentManager extends RepositoryExecutor
                 $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
                 $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
 
-                // Update main location remote ID
-                // removed in v2: this is NOT generic!
-                //$locationService = $this->repository->getLocationService();
-                //$locationUpdateStruct = $locationService->newLocationUpdateStruct();
-                //$locationUpdateStruct->remoteId = $this->dsl['new_remote_id'] . '_location';
-                //$location = $locationService->loadLocation($content->contentInfo->mainLocationId);
-                //$locationService->updateLocation($location, $locationUpdateStruct);
             }
 
             if (isset($this->dsl['section'])) {

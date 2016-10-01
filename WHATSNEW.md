@@ -7,7 +7,7 @@ Version 3.0.0
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
 
-* New: apdating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of the
+* New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of the
     elements to act upon, and comprehensive resolution of references.
 
 * New: it is now possible to assign a section when creating and updating Contents
@@ -16,10 +16,12 @@ Version 3.0.0
 
 * Changes to the YML definition language:
 
-    * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a 'match' key is allowed; previous ways of
+    * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a `match` key is allowed; previous ways of
         defining elements to match are deprecated
 
     * a new tag `section` is available for content creation and update
+
+    * content creation supports the following new tags: `is_hidden`, `sort_field`, `sort_order`
 
 * BC BREAKS:
 
@@ -30,6 +32,9 @@ Version 3.0.0
         now have a different constructor signature
 
     * when creating an object and defining ist remote_id, the location remote_id is not automatically set
+
+    * when adding locations without defining sort filed and sort order, the defaults from the content type definition
+        are used, instead of publications date / asc
 
 
 Version 2.1.0
