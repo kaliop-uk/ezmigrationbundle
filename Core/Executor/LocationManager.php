@@ -269,7 +269,7 @@ class LocationManager extends RepositoryExecutor
         return $this->contentMatcher->matchContent($match);
     }
 
-    protected function getSortField($newValue, $currentValue = null)
+    public function getSortField($newValue, $currentValue = null)
     {
         $sortField = null;
 
@@ -278,7 +278,7 @@ class LocationManager extends RepositoryExecutor
         }
 
         if ($newValue !== null) {
-            $sortFieldId = "SORT_FIELD_" . strtoupper($this->dsl['sort_field']);
+            $sortFieldId = "SORT_FIELD_" . strtoupper($newValue);
 
             $ref = new \ReflectionClass('eZ\Publish\API\Repository\Values\Content\Location');
 
@@ -297,7 +297,7 @@ class LocationManager extends RepositoryExecutor
      * @param int $currentValue
      * @return int
      */
-    protected function getSortOrder($newValue, $currentValue = null)
+    public function getSortOrder($newValue, $currentValue = null)
     {
         $sortOrder = null;
 
@@ -306,7 +306,7 @@ class LocationManager extends RepositoryExecutor
         }
 
         if ($newValue !== null) {
-            if (strtoupper($this->dsl['sort_order']) === 'ASC') {
+            if (strtoupper($newValue) === 'ASC') {
                 $sortOrder = Location::SORT_ORDER_ASC;
             } else {
                 $sortOrder = Location::SORT_ORDER_DESC;

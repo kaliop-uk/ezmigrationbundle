@@ -151,6 +151,10 @@
     mode: create
     content_type: reference:kmb_test_2
     main_location: reference:kmb_test_2_1_loc
+    priority: 1999
+    is_hidden: true
+    sort_field: path
+    sort_order: DESC
     attributes:
         - ezstring: hello world 3
     references:
