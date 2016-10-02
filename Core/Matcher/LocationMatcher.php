@@ -12,6 +12,8 @@ use eZ\Publish\API\Repository\Values\Content\LocationQuery;
  */
 class LocationMatcher extends AbstractMatcher
 {
+    use FlexibleKeyMatcherTrait;
+
     const MATCH_CONTENT_ID = 'content_id';
     const MATCH_LOCATION_ID = 'location_id';
     const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
@@ -68,6 +70,19 @@ class LocationMatcher extends AbstractMatcher
                     return new LocationCollection($this->findLocationsByParentLocationRemoteIds($values));
             }
         }
+    }
+
+    /**
+     * When matching by key, we accept location Id and remote Id only
+     * @param int|string $key
+     * @return array
+     */
+    protected function getConditionsFromKey($key)
+    {
+        if (is_int($key) || ctype_digit($key)) {
+            return array(self::MATCH_LOCATION_ID => $key);
+        }
+        return array(self::MATCH_LOCATION_REMOTE_ID => $key);
     }
 
     /**

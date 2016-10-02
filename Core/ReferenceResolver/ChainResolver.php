@@ -11,7 +11,6 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
     protected $resolvers = array();
 
     /**
-     * ChainResolver constructor.
      * @param ReferenceResolverInterface[] $resolvers
      */
     public function __construct(array $resolvers)

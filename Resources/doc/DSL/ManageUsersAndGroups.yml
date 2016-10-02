@@ -34,7 +34,7 @@
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id_
+            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id)
                                  # The shorthand 'id' can be used instead of 'user_id'
 
 -
@@ -57,8 +57,8 @@
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference
-                                 # The shorthand 'id' can be used instead of 'content_id'
+            attribute: attribute # An attribute to get the value of for the reference (currently supports user_group_id)
+                                 # The shorthand 'id' can be used instead of 'user_group_id'
 
 -
     type: user_group

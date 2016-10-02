@@ -4,12 +4,11 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\User\User;
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
-use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class UserMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
-    use FlexibleKeyMatcher;
+    use FlexibleKeyMatcherTrait;
 
     const MATCH_USER_ID = 'user_id';
     const MATCH_USER_LOGIN = 'login';

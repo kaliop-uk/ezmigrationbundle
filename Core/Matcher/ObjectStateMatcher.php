@@ -4,13 +4,12 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\ObjectState\ObjectState;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
-use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 class ObjectStateMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
-    use FlexibleKeyMatcher;
+    use FlexibleKeyMatcherTrait;
 
     const MATCH_STATE_ID = 'objectstate_id';
     const MATCH_STATE_IDENTIFIER = 'objectstate_identifier';

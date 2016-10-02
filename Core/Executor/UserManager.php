@@ -38,15 +38,11 @@ class UserManager extends RepositoryExecutor
         $contentTypeService = $this->repository->getContentTypeService();
 
         $userGroups = array();
-        foreach ($this->dsl['groups'] as $group) {
-
-            $groupId = $group;
-            if ($this->referenceResolver->isReference($groupId)) {
-                $groupId = $this->referenceResolver->getReferenceValue($groupId);
-            }
-
+        foreach ($this->dsl['groups'] as $groupId) {
+            $groupId = $this->resolveReferences($groupId);
             $userGroup = $userService->loadUserGroup($groupId);
 
+            // q: in which case can we have no group? And should we throw an exception?
             if ($userGroup) {
                 $userGroups[] = $userGroup;
             }
@@ -198,14 +194,10 @@ class UserManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
+                    $match[$condition][$position] = $this->resolveReferences($value);
                 }
             } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
+                $match[$condition] = $this->resolveReferences($values);
             }
         }
 

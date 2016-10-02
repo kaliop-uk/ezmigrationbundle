@@ -71,18 +71,31 @@
             identifier: kmb_test_3_4_rid
             attribute: remote_id
 -
-    type: location
+    type: content
     mode: create
-    parent_location_id: reference:kmb_test_3_1_loc
-    match:
-        content_id: reference:kmb_test_3_3
-    references:
-        -
-            identifier: kmb_test_3_3_loc_2
-            attribute: id
+    content_type: reference:kmb_test_3
+    main_location: 2
+    location_remote_id: one_more_random_remoteid_location
+    attributes:
+        - ezstring: hello world 5
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_3
+    main_location: one_more_random_remoteid_location
+    remote_id: one_more_random_remoteid_content
+    attributes:
+        - ezstring: hello world 6
 -
     type: location
     mode: create
+    parent_location: [ reference:kmb_test_3_1_loc, one_more_random_remoteid_location ]
+    match:
+        content_id: reference:kmb_test_3_3
+-
+    type: location
+    mode: create
+    # deprecated
     parent_location_id: reference:kmb_test_3_2_loc
     priority: 1999
     is_hidden: true
@@ -100,8 +113,9 @@
 -
     type: location
     mode: update
+    # deprecated
     location_id: reference:kmb_test_3_3_loc_3
-    parent_location_id: reference:kmb_test_3_4_loc
+    parent_location: reference:kmb_test_3_4_loc
     priority: 1998
     is_hidden: false
     sort_order: ASC

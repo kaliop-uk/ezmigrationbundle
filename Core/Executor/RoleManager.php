@@ -150,14 +150,10 @@ class RoleManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
+                    $match[$condition][$position] = $this->resolveReferences($value);
                 }
             } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
+                $match[$condition] = $this->resolveReferences($values);
             }
         }
 
@@ -227,10 +223,7 @@ class RoleManager extends RepositoryExecutor
         $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
 
         foreach($limitationValue as $id => $value) {
-            if ($this->referenceResolver->isReference($value)) {
-                $value = $this->referenceResolver->getReferenceValue($value);
-                $limitationValue[$id] = $value;
-            }
+            $limitationValue[$id] = $this->resolveReferences($value);
         }
         $limitationValue = $this->roleHandler->convertLimitationToValue($limitation['identifier'], $limitationValue);
         return $limitationType->buildValue($limitationValue);
@@ -260,9 +253,8 @@ class RoleManager extends RepositoryExecutor
             switch ($assign['type']) {
                 case 'user':
                     foreach ($assign['ids'] as $userId) {
-                        if($this->referenceResolver->isReference($userId)) {
-                            $userId = $this->referenceResolver->getReferenceValue($userId);
-                        }
+                        $userId = $this->resolveReferences($userId);
+
                         $user = $userService->loadUser($userId);
 
                         if (!isset($assign['limitations'])) {
@@ -277,9 +269,8 @@ class RoleManager extends RepositoryExecutor
                     break;
                 case 'group':
                     foreach ($assign['ids'] as $groupId) {
-                        if($this->referenceResolver->isReference($groupId)) {
-                            $groupId = $this->referenceResolver->getReferenceValue($groupId);
-                        }
+                        $groupId = $this->resolveReferences($groupId);
+
                         $group = $userService->loadUserGroup($groupId);
 
                         if (!isset($assign['limitations'])) {

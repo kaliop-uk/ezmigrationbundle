@@ -53,9 +53,7 @@ class ContentManager extends RepositoryExecutor
         $contentTypeService = $this->repository->getContentTypeService();
 
         $contentTypeIdentifier = $this->dsl['content_type'];
-        if ($this->referenceResolver->isReference($contentTypeIdentifier)) {
-            $contentTypeIdentifier = $this->referenceResolver->getReferenceValue($contentTypeIdentifier);
-        }
+        $contentTypeIdentifier = $this->resolveReferences($contentTypeIdentifier);
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode());
@@ -68,9 +66,7 @@ class ContentManager extends RepositoryExecutor
 
         if (isset($this->dsl['section'])) {
             $sectionId = $this->dsl['section'];
-            if ($this->referenceResolver->isReference($sectionId)) {
-                $sectionId = $this->referenceResolver->getReferenceValue($sectionId);
-            }
+            $sectionId = $this->resolveReferences($sectionId);
             $contentCreateStruct->sectionId = $sectionId;
         }
 
@@ -83,11 +79,12 @@ class ContentManager extends RepositoryExecutor
             $contentCreateStruct->modificationDate = new \DateTime($this->dsl['modification_date']);
         }
 
-        // instantiate a location create struct from the parent location
+        // instantiate a location create struct from the parent location:
         $locationId = $this->dsl['main_location'];
-        if ($this->referenceResolver->isReference($locationId)) {
-            $locationId = $this->referenceResolver->getReferenceValue($locationId);
-        }
+        // 1st resolve references
+        $locationId = $this->resolveReferences($locationId);
+        // 2nd allow to specify the location via remote_id
+        $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
 
         if (isset($this->dsl['location_remote_id'])) {
@@ -113,11 +110,9 @@ class ContentManager extends RepositoryExecutor
         $locations = array($locationCreateStruct);
 
         if (isset($this->dsl['other_locations'])) {
-            foreach ($this->dsl['other_locations'] as $otherLocation) {
-                $locationId = $otherLocation;
-                if ($this->referenceResolver->isReference($locationId)) {
-                    $locationId = $this->referenceResolver->getReferenceValue($otherLocation);
-                }
+            foreach ($this->dsl['other_locations'] as $locationId) {
+                $locationId = $this->resolveReferences($locationId);
+                $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
                 $secondaryLocationCreateStruct = $locationService->newLocationCreateStruct($locationId);
                 array_push($locations, $secondaryLocationCreateStruct);
             }
@@ -259,14 +254,10 @@ class ContentManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
+                    $match[$condition][$position] = $this->resolveReferences($value);
                 }
             } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
+                $match[$condition] = $this->resolveReferences($values);
             }
         }
 
@@ -307,9 +298,7 @@ class ContentManager extends RepositoryExecutor
 
     protected function setSection(Content $content, $sectionKey)
     {
-        if ($this->referenceResolver->isReference($sectionKey)) {
-            $sectionKey = $this->referenceResolver->getReferenceValue($sectionKey);
-        }
+        $sectionKey = $this->resolveReferences($sectionKey);
         $section = $this->sectionMatcher->matchByKey($sectionKey);
 
         $sectionService = $this->repository->getSectionService();
@@ -319,9 +308,7 @@ class ContentManager extends RepositoryExecutor
     protected function setObjectStates(Content $content, array $stateKeys)
     {
         foreach($stateKeys as $stateKey) {
-            if ($this->referenceResolver->isReference($stateKey)) {
-                $stateKey = $this->referenceResolver->getReferenceValue($stateKey);
-            }
+            $stateKey = $this->resolveReferences($stateKey);
             /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $state */
             $state = $this->objectStateMatcher->matchByKey($stateKey);
 
@@ -344,17 +331,16 @@ class ContentManager extends RepositoryExecutor
     {
         switch ($fieldDefinition->fieldTypeIdentifier) {
             case 'ezboolean':
-                $fieldValue = new CheckboxValue(($value == 1) ? true : false);
+                $value = new CheckboxValue(($value == 1) ? true : false);
                 break;
             default:
-                $fieldValue = $value;
+                // do nothing
         }
 
-        if ($this->referenceResolver->isReference($value)) {
-            $fieldValue = $this->referenceResolver->getReferenceValue($value);
-        }
+        // q: do we really want this ?
+        $value = $this->resolveReferences($value);
 
-        return $fieldValue;
+        return $value;
     }
 
     /**
@@ -372,15 +358,13 @@ class ContentManager extends RepositoryExecutor
 
     /**
      * Load user using either login, email, id - resolving eventual references
-     * @param int|string $key
+     * @param int|string $userKey
      * @return \eZ\Publish\API\Repository\Values\User\User
      */
-    protected function getUser($key)
+    protected function getUser($userKey)
     {
-        if ($this->referenceResolver->isReference($key)) {
-            $key = $this->referenceResolver->getReferenceValue($key);
-        }
-        return $this->userMatcher->matchByKey($key);
+        $userKey = $this->resolveReferences($userKey);
+        return $this->userMatcher->matchByKey($userKey);
     }
 
     /**

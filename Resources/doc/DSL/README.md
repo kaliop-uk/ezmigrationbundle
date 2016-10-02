@@ -38,8 +38,8 @@ Below is an example snippet for ezimage:
 Images __have__ to be placed in the `MigrationVersions/images` folder.
 Binary files __have__ to be placed in the `MigrationVersions/files` folder.
 
-The paths to files/images in the definition are relative paths from the MigrationVersions/images or MigrationVersions/files
-folders.
+The paths to files/images in the definition are relative paths from the MigrationVersions/images or
+MigrationVersions/files folders.
 For example using the path from the snippet above the system would look for the image file in
 `MigrationVersions/images/path/to/the/image.jpg` in the bundle's directory.
 
@@ -53,9 +53,9 @@ instructions.
 For example, you could set a reference to a folder's location id and then use that as the parent location when creating
 articles in that folder.
 
-See the following example on using references. The first step creates a new content type in the system and sets a reference
-to its id.
-The second step adds a new policy to the editor role to allow editors to create objects of the new content
+See the following example on using references:
+the first step creates a new content type in the system and sets a reference to its id;
+the second step adds a new policy to the editor role to allow editors to create objects of the new content
 type under the location with id 2.
 
     -
@@ -106,12 +106,12 @@ type under the location with id 2.
                             type: Class
                             value: [ "reference:section_page_class" ]
 
-To set the reference we used the `references` section of the content type DSL. As you can see we set a reference named
+To set the reference we use the `references` section of the content type DSL. We set a reference named
 `section_page_class` to store the content type id.
-In the update role action we retrieved the value of the reference by using the `reference:section_page_class`.
+In the update role action we retrieve the value of the reference by using the `reference:section_page_class`.
 
 To tell the system that you want to use a previously stored reference you need to prefix the reference name with the string
-`reference:`. This tells the system to look in the stored references for attributes that support this.
+`reference:`. This instructs the system to look in the stored references for attributes that support this.
 
 > **Important**: Please note that the reference **must be a quoted string**, as `reference:<reference_name>` uses
 > YAML reserved characters.
@@ -123,12 +123,16 @@ Currently you can use references to store the following values:
 
 -   content
     -   `content_id`
-    -   `location_id`
+    -   `content_remote_id`
+    -   `location_id` (on content updates, the main location is returned)
+    -   `path` (on content updates, the main location path is returned)
 -   content type
     -   `content_type_id`
     -   `content_type_identifier`
 -   location
     -   `location_id`
+    -   `location_remote_id`
+    -   `path`
 -   role
     -   `role_id`
     -   `role_identifier`
@@ -136,6 +140,8 @@ Currently you can use references to store the following values:
     -   `user_group_id`
 -   user
     -   `user_id`
+- language
+    -   `language_id`
 
 You can use references to set the following values:
 

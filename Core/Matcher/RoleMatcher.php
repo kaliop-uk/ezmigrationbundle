@@ -4,12 +4,11 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\User\Role;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
-use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class RoleMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
-    use FlexibleKeyMatcher;
+    use FlexibleKeyMatcherTrait;
 
     const MATCH_ROLE_ID = 'role_id';
     const MATCH_ROLE_IDENTIFIER = 'role_identifier';

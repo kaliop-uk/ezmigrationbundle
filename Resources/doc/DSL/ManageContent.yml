@@ -2,13 +2,13 @@
     type: content
     mode: create
     content_type: xxx # Content type identifier
-    main_location: x # The id of the parent location
+    main_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
     priority: 0 # Set the priority of the main location
     is_hidden: true|false # Optional
     sort_field: x # Optional. See ManageLocation.yml for details
     sort_order: ASC|DESC # Optional
     location_remote_id: xxx # Optional, remote id of the new location which will be created
-    other_locations: [x, y, z] # Optional, ids of extra parent locations
+    other_locations: [x, y, z] # Optional, ids of extra parent locations. When a non numeric string is used as element, it is assumed to be a location remote id
     remote_id: custom_remote_id # Optional, will set a custom remote id
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier
@@ -45,7 +45,7 @@
         - ezobjectrelationlist: [ x, reference:xxx ] # array of content ids or reference strings
     # Optionally assign object states to the content
     object_states:
-        - xxx # int|string an object state id or didentifier
+        - xxx # int|string an object state id or identifier
         - yyy
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
@@ -57,10 +57,7 @@
 -
     type: content
     mode: update
-    object_id: x # DEPRECATED The id of the content to update.
-    remote_id: xxx # DEPRECATED The 'remote_id' of the content to update. Can be used as alternative to the object_id. NB: this does *not* mean 'set the remote-id to what I want'
-    match: # An alternative to object_id and remote_id specified directly. NB: only one of these can be used.
-           # Specify ONLY ONE of the following, to match a content or a set of contents
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to update
         content_id: x # int|int[]
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
@@ -85,15 +82,12 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports object_id and location_id)
+            attribute: attributeId # An attribute to get the value of for the reference (supports content_id, content_remote_id, location_id, path)
 
 -
     type: content
     mode: delete
-    object_id: x # DEPRECATED the content id or a list of ids
-    remote_id: x # DEPRECATED the content remote id or a list of remote ids. Used when object_id and match are not set
-    match: # An alternative to object_id and remote_id specified directly. NB: only one of these can be used.
-           # Specify ONLY ONE of the following, to match a content or a set of contents
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to remove
         content_id: x # int|int[]
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
@@ -101,24 +95,3 @@
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         content_type: yyy # string|string[] a content type identifier
-
-# Other examples for how to identify objects to delete
-
--
-    type: content
-    mode: delete
-    remote_id: x # DEPRECATED the remote id of the content to delete
-
--
-    type: content
-    mode: delete
-    object_id: [id1, id2, id3] # DEPRECATED Defining an array with []
-
--
-    type: content
-    mode: delete
-    # DEPRECATED Array with the list syntax
-    object_id:
-        - id1
-        - id2
-        - id3

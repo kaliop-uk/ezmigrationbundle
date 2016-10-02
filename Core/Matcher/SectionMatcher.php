@@ -4,12 +4,11 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\Content\Section;
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
-use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class SectionMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
-    use FlexibleKeyMatcher;
+    use FlexibleKeyMatcherTrait;
 
     const MATCH_SECTION_ID = 'section_id';
     const MATCH_SECTION_IDENTIFIER = 'section_identifier';

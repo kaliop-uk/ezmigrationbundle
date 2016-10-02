@@ -30,9 +30,7 @@ class UserGroupManager extends RepositoryExecutor
         $userService = $this->repository->getUserService();
 
         $parentGroupId = $this->dsl['parent_group_id'];
-        if ($this->referenceResolver->isReference($parentGroupId)) {
-            $parentGroupId = $this->referenceResolver->getReferenceValue($parentGroupId);
-        }
+        $parentGroupId = $this->resolveReferences($parentGroupId);
 
         $parentGroup = $userService->loadUserGroup($parentGroupId);
 
@@ -99,9 +97,7 @@ class UserGroupManager extends RepositoryExecutor
 
             if (isset($this->dsl['parent_group_id'])) {
                 $parentGroupId = $this->dsl['parent_group_id'];
-                if ($this->referenceResolver->isReference($parentGroupId)) {
-                    $parentGroupId = $this->referenceResolver->getReferenceValue($parentGroupId);
-                }
+                $parentGroupId = $this->resolveReferences($parentGroupId);
 
                 $newParentGroup = $userService->loadUserGroup($parentGroupId);
 
@@ -162,14 +158,10 @@ class UserGroupManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
+                    $match[$condition][$position] = $this->resolveReferences($value);
                 }
             } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
+                $match[$condition] = $this->resolveReferences($values);
             }
         }
 
@@ -201,6 +193,7 @@ class UserGroupManager extends RepositoryExecutor
             switch ($reference['attribute']) {
                 case 'object_id':
                 case 'content_id':
+                case 'user_group_id':
                 case 'id':
                     $value = $userGroup->id;
                     break;

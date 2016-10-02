@@ -133,6 +133,18 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
     abstract protected function setReferences($object);
 
     /**
+     * Courtesy function for subclasses
+     * @param $key
+     * @return mixed
+     */
+    protected function resolveReferences($key) {
+        if ($this->referenceResolver->isReference($key)) {
+            return $this->referenceResolver->getReferenceValue($key);
+        }
+        return $key;
+    }
+
+    /**
      * Helper method to log in a user that can make changes to the system.
      * @param int $userId
      * @return int id of the previously logged in user

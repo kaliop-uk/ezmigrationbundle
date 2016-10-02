@@ -17,6 +17,7 @@ abstract class AbstractExecutor implements ExecutorInterface
     /**
      * IT IS MANDATORY TO OVERRIDE THIS IN SUBCLASSES
      * @param MigrationStep $step
+     * @return mixed
      * @throws \Exception
      */
     public function execute(MigrationStep $step)

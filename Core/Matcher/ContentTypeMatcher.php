@@ -4,7 +4,6 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
-use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 /**
@@ -13,7 +12,7 @@ use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
  */
 class ContentTypeMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
-    use FlexibleKeyMatcher;
+    use FlexibleKeyMatcherTrait;
 
     const MATCH_CONTENTTYPE_ID = 'contenttype_id';
     const MATCH_CONTENTTYPE_IDENTIFIER = 'contenttype_identifier';

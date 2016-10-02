@@ -3,7 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 /**
- * Handle references to tags...
+ * Handles references to tags
  */
 class TagResolver extends AbstractResolver
 {

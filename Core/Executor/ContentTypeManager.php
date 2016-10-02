@@ -221,14 +221,10 @@ class ContentTypeManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
+                $match[$condition][$position] = $this->resolveReferences($value);
                 }
             } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
+                $match[$condition] = $this->resolveReferences($values);
             }
         }
 
@@ -395,62 +391,6 @@ class ContentTypeManager extends RepositoryExecutor
         return $fieldDefinitionUpdateStruct;
     }
 
-    /*private function updateFieldSettingsFromExisting($fieldDefinitionUpdateStruct, FieldDefinition $existingFieldDefinition) {
-        if (is_null($fieldDefinitionUpdateStruct->fieldSettings)) {
-            $fieldDefinitionUpdateStruct->fieldSettings = $existingFieldDefinition->getFieldSettings();
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->identifier)) {
-            $fieldDefinitionUpdateStruct->identifier = $existingFieldDefinition->identifier;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->names)) {
-            $fieldDefinitionUpdateStruct->names = $existingFieldDefinition->names;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->descriptions)) {
-            $fieldDefinitionUpdateStruct->descriptions = $existingFieldDefinition->descriptions;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->fieldGroup)) {
-            $fieldDefinitionUpdateStruct->fieldGroup = $existingFieldDefinition->fieldGroup;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->position)) {
-            $fieldDefinitionUpdateStruct->position = $existingFieldDefinition->position;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->isTranslatable)) {
-            $fieldDefinitionUpdateStruct->isTranslatable = $existingFieldDefinition->isTranslatable;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->isRequired)) {
-            $fieldDefinitionUpdateStruct->isRequired = $existingFieldDefinition->isRequired;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->isInfoCollector)) {
-            $fieldDefinitionUpdateStruct->isInfoCollector = $existingFieldDefinition->isInfoCollector;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->validatorConfiguration)) {
-            $fieldDefinitionUpdateStruct->validatorConfiguration = $existingFieldDefinition->validatorConfiguration;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->fieldSettings)) {
-            $fieldDefinitionUpdateStruct->fieldSettings = $existingFieldDefinition->getFieldSettings();
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->defaultValue)) {
-            $fieldDefinitionUpdateStruct->defaultValue = $existingFieldDefinition->defaultValue;
-        }
-
-        if (is_null($fieldDefinitionUpdateStruct->isSearchable)) {
-            $fieldDefinitionUpdateStruct->isSearchable = $existingFieldDefinition->isSearchable;
-        }
-
-        return $fieldDefinitionUpdateStruct;
-    }*/
-
     private function setFieldSettings($value)
     {
         // Updating any references in the value array
@@ -463,18 +403,11 @@ class ContentTypeManager extends RepositoryExecutor
 
                 // we do NOT check for refs in field settings which are arrays, even though we could, maybe *should*...
                 if (!is_array($val)) {
-                    if ($this->referenceResolver->isReference($val)) {
-                        $ret[$key] = $this->referenceResolver->getReferenceValue($val);
-                    }
+                    $ret[$key] = $this->resolveReferences($val);
                 }
             }
-        }
-        else {
-            $ret = $value;
-
-            if ($this->referenceResolver->isReference($value)) {
-                $ret = $this->referenceResolver->getReferenceValue($value);
-            }
+        } else {
+            $ret = $this->resolveReferences($value);
         }
 
         return $ret;

@@ -71,7 +71,7 @@
                     values: [x, y]
     assign: # Optional
         -
-            type: # Must be user or group
+            type: user|group # Must be user or group
             ids: [x, y, z] # List of user IDs to assign the new role to
             limitations: # Optional limitation on role assignment
                 -
@@ -82,7 +82,7 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
+            attribute: attributeId # An attribute to get the value of for the reference (supports role_id and role_identifier)
                                    # The shorthand 'id' can be used instead of 'role_id'
                                    # The shorthand 'identifier' can be used instead of 'role_identifier'
 
@@ -116,19 +116,9 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports role id and role identifier)
+            attribute: attributeId # An attribute to get the value of for the reference (supports role_id and role_identifier)
                                    # The shorthand 'id' can be used instead of 'role_id'
                                    # The shorthand 'identifier' can be used instead of 'role_identifier'
-
-# Not implemented
-#-
-#    mode: update
-#    type: policy
-#    id: x # The id of the policy to update
-#    limitation: # The new limitations for the policy
-#        -
-#            type: xyz
-#            value: [x, y]
 
 -
     type: role

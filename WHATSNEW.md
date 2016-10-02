@@ -1,12 +1,6 @@
 Version 3.0.0
 =============
 
-* New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
-
-    * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
-
-    * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
-
 * New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of
     the elements to act upon, and comprehensive resolution of references
 
@@ -22,12 +16,21 @@ Version 3.0.0
 
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
+* New: the `main_location` and `other_locations` tags in Content creation, as well as `parent_location` in Location
+    creation will now try to identify the desired Location by its remote id when a non integer value is used
+
+* New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
+
+    * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
+
+    * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
+
 * New: it is now possible to add resolvers for custom references using tagged services. The tag to use is: 
     `ez_migration_bundle.reference_resolver.customreference`. 
     For an example, see the test UnitTestOK010_customrefs.yml and class 
     Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
 
-* Fix: the usage of 'location_remote_id:' in the field settings for Content Type definitions is working again
+*** Fix: the usage of 'location_remote_id:' in the field settings for Content Type definitions is working again
 
 * Changed: removed unused Behat and Phpunit tests as well as one leftover Interface 
 
@@ -41,6 +44,9 @@ Version 3.0.0
     * content creation supports the following new tags: `is_hidden`, `sort_field`, `sort_order`, `location_remote_id`
 
     * content update supports the following new tags: `creation_date`
+
+    * location creation and update now support the tag `parent_location` as preferred form for `parent_location_id`.
+        The former variant is considered deprecated and will be desupported in a future version
 
 * BC BREAKS:
 

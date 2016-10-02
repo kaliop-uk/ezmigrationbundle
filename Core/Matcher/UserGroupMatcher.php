@@ -4,7 +4,6 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\User\UserGroup;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
-use Kaliop\eZMigrationBundle\API\Traits\FlexibleKeyMatcher;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 /**
@@ -12,7 +11,7 @@ use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
  */
 class UserGroupMatcher extends AbstractMatcher implements KeyMatcherInterface
 {
-    use FlexibleKeyMatcher;
+    use FlexibleKeyMatcherTrait;
 
     const MATCH_USERGROUP_ID = 'usergroup_id';
 

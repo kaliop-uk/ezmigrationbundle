@@ -10,7 +10,7 @@
         location_remote_id: # the location remote id(s) of the content we want to add a location to
         parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
         parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
-    parent_location_id: y # The Location ID of the parent where the new location should be placed
+    parent_location: y # The Location ID of the parent where the new location should be placed. When a non numeric string is used, it is assumed to be a location remote id
     priority: x # Optional
     is_hidden: true|false # Optional
     # Possible values for sort_field are:
@@ -33,24 +33,17 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference (supports: location_id, location_remote_id, path)
+
 -
     type: location
     mode: create
-    remote_id: x # DEPRECATED Please use the 'match' key as documented above instead. The remote ID of the content we want to add a location to
-    parent_location_id: y
+    match: ... # See above
+    parent_location: [x, y, z] # Multiple locations can be added in a single step using an array
     priority: x # Optional
-    is_hidden: true|false # Optional
-    sort_field: x # Optional
-    sort_order: ASC|DESC # Optional
--
-    type: location
-    mode: create
-    object_id: x # DEPRECATED Please use the 'match' key as documented above instead. The ID of the content we want to add a location to
-    parent_location_id: [x, y, z]
-    priority: x # Optional
-    is_hidden: true|false # Optional
-    sort_field: x # Optional
-    sort_order: ASC|DESC # Optional
+    is_hidden: ... # See above
+    sort_field: ... # See above
+    sort_order: ... # See above
+    references: ... # See above
 
 -
     type: location
@@ -63,9 +56,10 @@
         location_remote_id: # the location remote id(s) of the content we want to add a location to
         parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
         parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
-    location_id: x # DEPRECATED Please use the 'match' key as documented above instead. The ID of the location to update
-    swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set the same time parent_location_id is set.
-    parent_location_id: x # Optional The parent location to move the subtree to. Cannot be set the same time when swap_with_location is set.
+    swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set at the same time than parent_location
+                          # When a non numeric string is used, it is assumed to be a location remote id
+    parent_location: x # Optional The parent location to move the subtree to. Cannot be set at the same time than swap_with_location
+                       # When a non numeric string is used, it is assumed to be a location remote id
     priority: x # Optional, will be updated if set
     is_hidden: true|false # Optional, Set the visibility of the location
     sort_field: x # Optional
@@ -83,8 +77,3 @@
         location_remote_id: # the location remote id(s) of the content we want to add a location to
         parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
         parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
-    location_id: x # DEPRECATED Please use the 'match' key as documented above instead. ID of the location to delete
--
-    type: location
-    mode: delete
-    location_id: [x, y, z] # DEPRECATED Please use the 'match' key as documented above instead. ID of multiple locations to delete

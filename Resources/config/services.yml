@@ -144,7 +144,7 @@ services:
         class: '%ez_migration_bundle.executor.repository.class%'
         calls:
             - ['setRepository', ['@ezpublish.api.repository']]
-            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference.flexible']]
+            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference']]
 
     ez_migration_bundle.executor.content_manager:
         parent: ez_migration_bundle.executor.repository
@@ -325,6 +325,7 @@ services:
 
     ### reference resolvers
 
+    # A service that will resolve *any* possible reference. To be used with care
     ez_migration_bundle.reference_resolver:
         alias: ez_migration_bundle.reference_resolver.chain
 
@@ -334,8 +335,8 @@ services:
             -
                 - '@ez_migration_bundle.reference_resolver.customreference'
                 - '@ez_migration_bundle.reference_resolver.location'
-                # not enabled by default for v2, as it might break v1 migrations that don't expect it to be present
-                #- '@ez_migration_bundle.reference_resolver.content'
+               # not enabled by default for v2, as it might break v1 migrations that don't expect it to be present
+               #- '@ez_migration_bundle.reference_resolver.content'
                 - '@ez_migration_bundle.reference_resolver.tag'
 
     ez_migration_bundle.reference_resolver.content:
@@ -354,7 +355,11 @@ services:
             - '@ezpublish.translation_helper'
             - '@?ezpublish.api.service.tags'
 
+    # A service which resolves *only* custom references. As such, it is used in most places
     ez_migration_bundle.reference_resolver.customreference:
+        alias: ez_migration_bundle.reference_resolver.customreference.flexible
+
+    ez_migration_bundle.reference_resolver.customreference.base:
         class: '%ez_migration_bundle.reference_resolver.customreference.class%'
         arguments: []
 
@@ -362,7 +367,7 @@ services:
     ez_migration_bundle.reference_resolver.customreference.flexible:
         class: '%ez_migration_bundle.reference_resolver.chain.class%'
         arguments:
-            - [ '@ez_migration_bundle.reference_resolver.customreference' ]
+            - [ '@ez_migration_bundle.reference_resolver.customreference.base' ]
 
     ### misc
 

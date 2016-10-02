@@ -28,16 +28,25 @@ class LocationManager extends RepositoryExecutor
     {
         $locationService = $this->repository->getLocationService();
 
-        if (!isset($this->dsl['parent_location_id'])) {
+        if (!isset($this->dsl['parent_location']) && !isset($this->dsl['parent_location_id'])) {
             throw new \Exception('Missing parent location id. This is required to create the new location.');
         }
-        if (!is_array($this->dsl['parent_location_id'])) {
-            $this->dsl['parent_location_id'] = array($this->dsl['parent_location_id']);
+
+        // support legacy tag: parent_location_id
+        if (!isset($this->dsl['parent_location']) && isset($this->dsl['parent_location_id'])) {
+            $parentLocationIds = $this->dsl['parent_location_id'];
+        } else {
+            $parentLocationIds = $this->dsl['parent_location'];
         }
-        foreach ($this->dsl['parent_location_id'] as $id => $parentLocationId) {
-            if ($this->referenceResolver->isReference($parentLocationId)) {
-                $this->dsl['parent_location_id'][$id] = $this->referenceResolver->getReferenceValue($parentLocationId);
-            }
+
+        if (!is_array($parentLocationIds)) {
+            $parentLocationIds = array($parentLocationIds);
+        }
+
+        // resolve references and remote ids
+        foreach ($parentLocationIds as $id => $parentLocationId) {
+            $parentLocationId = $this->resolveReferences($parentLocationId);
+            $parentLocationIds[$id] = $this->matchLocationByKey($parentLocationId)->id;
         }
 
         $contentCollection = $this->matchContents('create');
@@ -46,7 +55,7 @@ class LocationManager extends RepositoryExecutor
         foreach ($contentCollection as $content) {
             $contentInfo = $content->contentInfo;
 
-            foreach ($this->dsl['parent_location_id'] as $parentLocationId) {
+            foreach ($parentLocationIds as $parentLocationId) {
                 $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
 
                 if (isset($this->dsl['is_hidden'])) {
@@ -97,17 +106,12 @@ class LocationManager extends RepositoryExecutor
             throw new \Exception("Can not execute Location update because multiple contents match, and a swap_with_location is specified in the dsl.");
         }
 
-        if (isset($this->dsl['swap_with_location']) && isset($this->dsl['parent_location_id'])) {
+        // support legacy tag: parent_location_id
+        if (isset($this->dsl['swap_with_location']) && (isset($this->dsl['parent_location']) || isset($this->dsl['parent_location_id']))) {
             throw new \Exception('Cannot move location to a new parent and swap location with another location at the same time.');
         }
 
-        /*$locationId = $this->dsl['location_id'];
-        if ($this->referenceResolver->isReference($locationId)) {
-            $locationId = $this->referenceResolver->getReferenceValue($locationId);
-        }*/
-
         foreach ($locationCollection as $key => $location) {
-            //$location = $locationService->loadLocation($locationId);
 
             if (isset($this->dsl['priority'])
                 || isset($this->dsl['sort_field'])
@@ -145,21 +149,20 @@ class LocationManager extends RepositoryExecutor
             }
 
             // Move or swap location
-            if (isset($this->dsl['parent_location_id'])) {
-                // Move the location and all it's children to a new parent
-                $parentLocationId = $this->dsl['parent_location_id'];
-                if ($this->referenceResolver->isReference($parentLocationId)) {
-                    $parentLocationId = $this->referenceResolver->getReferenceValue($parentLocationId);
-                }
+            if (isset($this->dsl['parent_location']) || isset($this->dsl['parent_location_id'])) {
+                // Move the location and all its children to a new parent
+                $parentLocationId = isset($this->dsl['parent_location']) ? $this->dsl['parent_location'] : $this->dsl['parent_location_id'];
+                $parentLocationId = $this->resolveReferences($parentLocationId);
+
                 $newParentLocation = $locationService->loadLocation($parentLocationId);
+
                 $locationService->moveSubtree($location, $newParentLocation);
             } elseif (isset($this->dsl['swap_with_location'])) {
-                //Swap locations
+                // Swap locations
                 $swapLocationId = $this->dsl['swap_with_location'];
-                if ($this->referenceResolver->isReference($swapLocationId)) {
-                    $swapLocationId = $this->referenceResolver->getReferenceValue($swapLocationId);
-                }
-                $locationToSwap = $locationService->loadLocation($swapLocationId);
+                $swapLocationId = $this->resolveReferences($swapLocationId);
+
+                $locationToSwap = $this->matchLocationByKey($swapLocationId);
 
                 $locationService->swapLocation($location, $locationToSwap);
             }
@@ -213,18 +216,23 @@ class LocationManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
+                    $match[$condition][$position] = $this->resolveReferences($value);
                 }
             } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
+                $match[$condition] = $this->resolveReferences($values);
             }
         }
 
         return $this->locationMatcher->match($match);
+    }
+
+    /**
+     * @param int|string|array $locationKey
+     * @return mixed
+     */
+    public function matchLocationByKey($locationKey)
+    {
+        return $this->locationMatcher->matchByKey($locationKey);
     }
 
     /**
@@ -255,14 +263,10 @@ class LocationManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
+                    $match[$condition][$position] = $this->resolveReferences($value);
                 }
             } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
+                $match[$condition] = $this->resolveReferences($values);
             }
         }
 
