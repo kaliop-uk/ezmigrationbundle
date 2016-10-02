@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use eZ\Publish\API\Repository\Values\User\Limitation;
-use Kaliop\eZMigrationBundle\Core\Helper\RoleHandler;
+use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -30,7 +30,7 @@ class GenerateCommand extends AbstractCommand
             ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (yml, php, sql)', 'yml')
             ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, generic, db, php)', '')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, for type=db (mysql, postgresql, ...)', 'mysql')
-            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'The role identifier you would like to update, for type=role', null)
+            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'The role identifier (or id) that you would like to update, for type=role', null)
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
@@ -220,14 +220,12 @@ EOT
         $repository = $container->get('ezpublish.api.repository');
         $repository->setCurrentUser($repository->getUserService()->loadUser(self::ADMIN_USER_ID));
 
-        /** @var \eZ\Publish\Core\SignalSlot\RoleService $roleService */
-        $roleService = $repository->getRoleService();
+        /** @var LimitationConverter $limitationConverter */
+        $limitationConverter = $container->get('ez_migration_bundle.helper.limitation_converter');
 
-        /** @var RoleHandler $roleTranslationHandler */
-        $roleTranslationHandler = $container->get('ez_migration_bundle.helper.role_handler');
-
+        $roleMatcher = $container->get('ez_migration_bundle.role_matcher');
         /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        $role = $roleService->loadRoleByIdentifier($roleName);
+        $role = $roleMatcher->matchByKey($roleName);
 
         $policies = array();
         /** @var \eZ\Publish\API\Repository\Values\User\Policy $policy */
@@ -238,7 +236,7 @@ EOT
             /** @var \eZ\Publish\API\Repository\Values\User\Limitation $limitation */
             foreach ($policy->getLimitations() as $limitation)
             {
-                $limitations[] = $roleTranslationHandler->limitationWithIdentifiers($limitation);
+                $limitations[] = $limitationConverter->getLimitationArrayWithIdentifiers($limitation);
             }
 
             $policies[] = array(

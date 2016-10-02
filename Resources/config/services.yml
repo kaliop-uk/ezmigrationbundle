@@ -68,7 +68,7 @@ parameters:
     ez_migration_bundle.reference_resolver.location.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver
     ez_migration_bundle.reference_resolver.tag.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\TagResolver
 
-    ez_migration_bundle.helper.role_handler.class: Kaliop\eZMigrationBundle\Core\Helper\RoleHandler
+    ez_migration_bundle.helper.limitation_converter.class: Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter
     ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
 
 services:
@@ -200,7 +200,7 @@ services:
         parent: ez_migration_bundle.executor.repository
         arguments:
             - '@ez_migration_bundle.role_matcher'
-            - '@ez_migration_bundle.helper.role_handler'
+            - '@ez_migration_bundle.helper.limitation_converter'
         tags:
             - { name: ez_migration_bundle.executor }
 
@@ -378,12 +378,13 @@ services:
 
     ### misc
 
-    ez_migration_bundle.helper.role_handler:
-        class: '%ez_migration_bundle.helper.role_handler.class%'
+    ez_migration_bundle.helper.limitation_converter:
+        class: '%ez_migration_bundle.helper.limitation_converter.class%'
         arguments:
-            - '@ezpublish.api.repository'
-            - '@ezpublish.translation_helper'
             - '%ezpublish.siteaccess.list%'
+            - '@ez_migration_bundle.location_matcher'
+            - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.content_type_matcher'
 
     ez_migration_bundle.helper.console_io:
         class: '%ez_migration_bundle.helper.console_io.class%'

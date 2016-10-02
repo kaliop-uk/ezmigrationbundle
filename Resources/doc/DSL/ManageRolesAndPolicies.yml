@@ -5,7 +5,7 @@
 #
 #  ContentType limitation example:
 #  identifier: Class
-#  value: [1, 2, 3] # List of content type ids
+#  value: [1, 2, 3] # List of content type ids. Can be specified using identifier as well
 #
 #  Language limitation example:
 #  identifier: Language
@@ -13,7 +13,7 @@
 #
 #  Location limitation example"
 #  identifier: Node
-#  value: [2, 345] # List of location ids
+#  value: [2, 345] # List of location ids. Can be specified using remote id as well
 #
 #  Owner limitation
 #  identifier: Owner
@@ -21,7 +21,7 @@
 #
 #  ParentContentType limitation example:
 #  identifier: ParentClass
-#  value: [1, 2, 3] # List of content type ids.
+#  value: [1, 2, 3] # List of content type ids. Can be specified using identifier as well
 #
 #  ParentDepth limitation example:
 #  identifier: ParentDepth
@@ -37,7 +37,7 @@
 #
 #  Section limitation example:
 #  identifier: Section
-#  value: [1, 2, 3] # List of section ids
+#  value: [1, 2, 3] # List of section ids. Can be specified using identifier as well
 #
 #  Siteaccess limitation example: (Not implemented yet in eZ Publish 5 API)
 #  identifier: SiteAccess
@@ -75,7 +75,7 @@
             ids: [x, y, z] # List of user IDs to assign the new role to
             limitations: # Optional limitation on role assignment
                 -
-                    identifier: xyz
+                    identifier: xyz # natively supported: Subtree and Section
                     values: [x, y]
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.

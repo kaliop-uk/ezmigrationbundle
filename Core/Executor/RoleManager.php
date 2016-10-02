@@ -7,7 +7,7 @@ use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
-use Kaliop\eZMigrationBundle\Core\Helper\RoleHandler;
+use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 
 /**
@@ -17,13 +17,13 @@ class RoleManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('role');
 
-    protected $roleHandler;
+    protected $limitationConverter;
     protected $roleMatcher;
 
-    public function __construct(RoleMatcher $roleMatcher, RoleHandler $roleHandler)
+    public function __construct(RoleMatcher $roleMatcher, LimitationConverter $limitationConverter)
     {
         $this->roleMatcher = $roleMatcher;
-        $this->roleHandler = $roleHandler;
+        $this->limitationConverter = $limitationConverter;
     }
 
     /**
@@ -225,7 +225,7 @@ class RoleManager extends RepositoryExecutor
         foreach($limitationValue as $id => $value) {
             $limitationValue[$id] = $this->resolveReferences($value);
         }
-        $limitationValue = $this->roleHandler->convertLimitationToValue($limitation['identifier'], $limitationValue);
+        $limitationValue = $this->limitationConverter->resolveLimitationValue($limitation['identifier'], $limitationValue);
         return $limitationType->buildValue($limitationValue);
     }
 

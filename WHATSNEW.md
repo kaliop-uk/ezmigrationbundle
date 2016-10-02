@@ -63,8 +63,8 @@ Version 3.0.0
         are used, instead of publication-date/asc
 
     * changes for developers who extended the bundle: the MatcherInterface has a new method; many Executor services
-        now have a different constructor signature; one Trait has been removed from the public API
-
+        now have a different constructor signature; one Trait has been removed from the public API; the service
+        ez_migration_bundle.helper.role_handler has been renamed to ez_migration_bundle.helper.limitation_converter
 
 Version 2.1.0
 =============
