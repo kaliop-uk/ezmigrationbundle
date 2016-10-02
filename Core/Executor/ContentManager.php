@@ -90,6 +90,10 @@ class ContentManager extends RepositoryExecutor
         }
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
 
+        if (isset($this->dsl['location_remote_id'])) {
+            $locationCreateStruct->remoteId = $this->dsl['location_remote_id'];
+        }
+
         if (isset($this->dsl['priority'])) {
             $locationCreateStruct->priority = $this->dsl['priority'];
         }

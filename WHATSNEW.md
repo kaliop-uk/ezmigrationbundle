@@ -18,12 +18,16 @@ Version 3.0.0
 
 * New: it is now possible to assign object states when creating and updating Contents
 
+* New: it is now possible to assign a remote id for the Location when creating Contents
+
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
 * New: it is now possible to add resolvers for custom references using tagged services. The tag to use is: 
     `ez_migration_bundle.reference_resolver.customreference`. 
     For an example, see the test UnitTestOK010_customrefs.yml and class 
     Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
+
+* Fix: the usage of 'location_remote_id:' in the field settings for Content Type definitions is working again
 
 * Changed: removed unused Behat and Phpunit tests as well as one leftover Interface 
 
@@ -34,7 +38,7 @@ Version 3.0.0
 
     * new tags `modification_date`, `section`, `object_states` and `owner` are available for content creation and update
 
-    * content creation supports the following new tags: `is_hidden`, `sort_field`, `sort_order`
+    * content creation supports the following new tags: `is_hidden`, `sort_field`, `sort_order`, `location_remote_id`
 
     * content update supports the following new tags: `creation_date`
 
@@ -43,7 +47,8 @@ Version 3.0.0
     * when deleting users, a single migration step can not be used any more to match users based at the same time on id,
         email and login. Use separate steps for that
 
-    * when creating an object and defining its remote_id, the location remote_id is not automatically set any more
+    * when creating an object and defining its remote_id, the location remote_id is not automatically set any more.
+        On the other hand, it is possible to set the location remote id explicitly using tag `location_remote_id`
 
     * when adding locations without defining sort field and sort order, the defaults from the content type definition
         are used, instead of publication-date/asc
