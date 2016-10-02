@@ -1,7 +1,7 @@
 -
     type: content_type
     mode: create
-    content_type_group: x # Id of the group we want to put the new content class into
+    content_type_group: x # Id or identifier of the group we want to put the new content class into
     identifier: xyz # Class identifier
     name: xyz # Name of new class
     name_pattern: pattern # Pattern to use for the name of the contents (ex: <title>)

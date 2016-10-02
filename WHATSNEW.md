@@ -19,6 +19,8 @@ Version 3.0.0
 * New: the `main_location` and `other_locations` tags in Content creation, as well as `parent_location` in Location
     creation will now try to identify the desired Location by its remote id when a non integer value is used
 
+* New: the content_type_group tags in ContentType creation will accept a Content Type Group identifier besides an id
+ 
 * New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
 
     * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance

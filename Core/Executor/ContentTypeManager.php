@@ -6,8 +6,8 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 
 /**
  * Methods to handle content type migrations
@@ -16,13 +16,13 @@ class ContentTypeManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('content_type');
 
-    protected $locationReferenceResolver;
     protected $contentTypeMatcher;
+    protected $contentTypeGroupMatcher;
 
-    public function __construct(ContentTypeMatcher $matcher, LocationResolver $locationReferenceResolver)
+    public function __construct(ContentTypeMatcher $matcher, ContentTypeGroupMatcher $contentTypeGroupMatcher)
     {
         $this->contentTypeMatcher = $matcher;
-        $this->locationReferenceResolver = $locationReferenceResolver;
+        $this->contentTypeGroupMatcher = $contentTypeGroupMatcher;
     }
 
     /**
@@ -37,7 +37,7 @@ class ContentTypeManager extends RepositoryExecutor
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
-        $contentTypeGroup = $contentTypeService->loadContentTypeGroup($this->dsl['content_type_group']);
+        $contentTypeGroup = $this->contentTypeGroupMatcher->matchByKey($this->dsl['content_type_group']);
 
         $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($this->dsl['identifier']);
         $contentTypeCreateStruct->mainLanguageCode = $this->getLanguageCode();
