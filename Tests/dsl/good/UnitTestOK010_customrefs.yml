@@ -1,0 +1,6 @@
+-
+    type: content
+    mode: update
+    match:
+        # this is a reference, hardcoded in the custom ref resolver. It will resolve to an existing location id
+        location_id: test_custom_reference_with_low_chances_of_collision_with_random_data

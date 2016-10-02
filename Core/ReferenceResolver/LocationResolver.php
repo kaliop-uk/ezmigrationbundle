@@ -12,7 +12,7 @@ class LocationResolver extends AbstractResolver
     /**
      * Defines the prefix for all reference identifier strings in definitions
      */
-    protected $referencePrefixes = array('location_remote_id::'/*, 'location_id::'*/);
+    protected $referencePrefixes = array('location_remote_id:'/*, 'location_id:'*/);
 
     protected $repository;
 
@@ -27,7 +27,7 @@ class LocationResolver extends AbstractResolver
     }
 
     /**
-     * @param $stringIdentifier location_remote_id::<remote_id>
+     * @param $stringIdentifier location_remote_id:<remote_id>
      * @return string Location id
      * @throws \Exception
      */
@@ -35,11 +35,8 @@ class LocationResolver extends AbstractResolver
     {
         $ref = $this->getReferenceIdentifierByPrefix($stringIdentifier);
         switch($ref['prefix']) {
-            /// @deprecated !!!
-            case 'location:':
+            case 'location_remote_id:':
                 return $this->repository->getLocationService()->loadLocationByRemoteId($ref['identifier'])->id;
-            //case 'location_remote_id:':
-            //    return $this->repository->getLocationService()->loadLocationByRemoteId($ref['identifier'])->id;
             //case 'location_id::':
             //    return $this->repository->getLocationService()->loadLocation($ref['identifier']);
         }

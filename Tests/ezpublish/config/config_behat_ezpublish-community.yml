@@ -38,3 +38,8 @@ services:
         class: Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener
         tags:
             - { name: kernel.event_listener, event: ez_migration.before_execution, method: onBeforeStepExecution }
+    ez_migration_bundle.test.custom_reference_resolver:
+        class: Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
+        tags:
+            - { name: ez_migration_bundle.reference_resolver.customreference }
+

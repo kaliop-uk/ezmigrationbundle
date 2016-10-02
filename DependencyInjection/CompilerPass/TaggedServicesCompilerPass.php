@@ -55,5 +55,16 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
                 ));
             }
         }
+
+        if ($container->has('ez_migration_bundle.reference_resolver.customreference.flexible')) {
+            $customReferenceResolver = $container->findDefinition('ez_migration_bundle.reference_resolver.customreference.flexible');
+            $extraResolvers = $container->findTaggedServiceIds('ez_migration_bundle.reference_resolver.customreference');
+
+            foreach ($extraResolvers as $id => $tags) {
+                $customReferenceResolver->addMethodCall('addResolver', array(
+                    new Reference($id)
+                ));
+            }
+        }
     }
 }

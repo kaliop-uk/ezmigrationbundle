@@ -265,10 +265,11 @@ The bundle has been designed to be easily extended in many ways, such as:
 * adding support for custom/complex field-types
 * adding support for completely new actions in the Yml definitions
 * adding support for a new file format for storing migration definitions
+* adding support for a new resolver for the custom references in the migration definitions
 * taking over the way that the migrations definitions are loaded from the filesystem or stored in the database
 * etc... 
 
-Following Symfony best practices, for the first 3 options in the list above all you need to do is to create a service
+Following Symfony best practices, for the first 4 options in the list above all you need to do is to create a service
 and give it an appropriate tag (the class implementing service should of course implement an appropriate interface). 
 
 To find out the names of the tags that you need to implement, as well as for all the other services which you can

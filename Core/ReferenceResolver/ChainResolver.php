@@ -3,8 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 
-class ChainResolver implements ReferenceResolverInterface
+class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
 {
     /** @var ReferenceResolverInterface[] $resolvers */
     protected $resolvers = array();
@@ -16,6 +17,11 @@ class ChainResolver implements ReferenceResolverInterface
     public function __construct(array $resolvers)
     {
         $this->resolvers = $resolvers;
+    }
+
+    public function addResolver(ReferenceResolverInterface $resolver)
+    {
+        $this->resolvers[] = $resolver;
     }
 
     /**
@@ -46,5 +52,25 @@ class ChainResolver implements ReferenceResolverInterface
         }
 
         throw \Exception("Could not resolve reference with identifier: '$stringIdentifier'");
+    }
+
+    /**
+     * Tries to add the reference to one of the resolvers in the chain (the first accepting it)
+     *
+     * @param string $identifier
+     * @param mixed $value
+     * @return bool
+     */
+    public function addReference($identifier, $value)
+    {
+        foreach ($this->resolvers as $resolver) {
+            if ($resolver instanceof ReferenceBagInterface) {
+                if ($resolver->addReference($identifier, $value)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

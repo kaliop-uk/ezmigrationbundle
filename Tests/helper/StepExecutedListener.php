@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Tests\helper;
 
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
+use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
 
 class StepExecutedListener
 {
@@ -16,7 +17,7 @@ class StepExecutedListener
             throw new \Exception('Received null as step execution event result');
         }
 
-        if (is_object($result) && $result instanceof \Kaliop\eZMigrationBundle\API\Collection\AbstractCollection) {
+        if (is_object($result) && $result instanceof AbstractCollection) {
             if (count($result) == 0) {
                 throw new \Exception('Step execution resulted in an empty collection. Step not applied?');
             }

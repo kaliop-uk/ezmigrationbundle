@@ -2,10 +2,12 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
+use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+
 /**
  * Handle 'any' references by letting the developer store them and retrieve them afterwards
  */
-class CustomReferenceResolver extends AbstractResolver
+class CustomReferenceResolver extends AbstractResolver implements ReferenceBagInterface
 {
     /**
      * Defines the prefix for all reference identifier strings in definitions
@@ -41,6 +43,7 @@ class CustomReferenceResolver extends AbstractResolver
      *
      * @param string $identifier The identifier of the reference
      * @param mixed $value The value of the reference
+     * @return bool true if the reference is accepted by this resolver, otherwise false
      * @throws \Exception When there is a reference with the specified $identifier already.
      */
     public function addReference($identifier, $value)
@@ -50,5 +53,7 @@ class CustomReferenceResolver extends AbstractResolver
         }
 
         $this->references[$identifier] = $value;
+
+        return true;
     }
 }

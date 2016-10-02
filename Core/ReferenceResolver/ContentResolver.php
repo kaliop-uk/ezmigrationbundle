@@ -12,7 +12,7 @@ class ContentResolver extends AbstractResolver
     /**
      * Constant defining the prefix for all reference identifier strings in definitions
      */
-    protected $referencePrefixes = array('content_remote_id::'/*, 'content_id::'*/);
+    protected $referencePrefixes = array('content_remote_id:'/*, 'content_id:'*/);
 
     protected $repository;
 
@@ -27,7 +27,7 @@ class ContentResolver extends AbstractResolver
     }
 
     /**
-     * @param $stringIdentifier format: content_remote_id::<remote_id>
+     * @param $stringIdentifier format: content_remote_id:<remote_id>
      * @return string Content id
      * @throws \Exception
      */

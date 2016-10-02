@@ -20,6 +20,11 @@ Version 3.0.0
 
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
+* New: it is now possible to add resolvers for custom references using tagged services. The tag to use is: 
+    `ez_migration_bundle.reference_resolver.customreference`. 
+    For an example, see the test UnitTestOK010_customrefs.yml and class 
+    Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
+
 * Changed: removed unused Behat and Phpunit tests as well as one leftover Interface 
 
 * Changes to the YML definition language:

@@ -144,7 +144,7 @@ services:
         class: '%ez_migration_bundle.executor.repository.class%'
         calls:
             - ['setRepository', ['@ezpublish.api.repository']]
-            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference']]
+            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference.flexible']]
 
     ez_migration_bundle.executor.content_manager:
         parent: ez_migration_bundle.executor.repository
@@ -357,6 +357,12 @@ services:
     ez_migration_bundle.reference_resolver.customreference:
         class: '%ez_migration_bundle.reference_resolver.customreference.class%'
         arguments: []
+
+    # NB: This service will see added to the chain any service tagged as 'ez_migration_bundle.reference_resolver.customreference'
+    ez_migration_bundle.reference_resolver.customreference.flexible:
+        class: '%ez_migration_bundle.reference_resolver.chain.class%'
+        arguments:
+            - [ '@ez_migration_bundle.reference_resolver.customreference' ]
 
     ### misc
 
