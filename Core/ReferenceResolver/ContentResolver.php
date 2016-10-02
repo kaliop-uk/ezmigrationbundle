@@ -6,13 +6,14 @@ use \eZ\Publish\API\Repository\Repository;
 
 /**
  * Handles references to Contents. Supports remote Ids at the moment.
+ * @deprecated
  */
 class ContentResolver extends AbstractResolver
 {
     /**
      * Constant defining the prefix for all reference identifier strings in definitions
      */
-    protected $referencePrefixes = array('content_by_remote_id:');
+    protected $referencePrefixes = array('content_remote_id:');
 
     protected $repository;
 
@@ -27,7 +28,7 @@ class ContentResolver extends AbstractResolver
     }
 
     /**
-     * @param $stringIdentifier format: content_by_remote_id:<remote_id>
+     * @param $stringIdentifier format: content_remote_id:<remote_id>
      * @return string Content id
      * @throws \Exception
      */
@@ -35,7 +36,7 @@ class ContentResolver extends AbstractResolver
     {
         $ref = $this->getReferenceIdentifierByPrefix($stringIdentifier);
         switch($ref['prefix']) {
-            case 'content_by_remote_id:':
+            case 'content_remote_id:':
                 return $this->repository->getContentService()->loadContentByRemoteId($ref['identifier'])->id;
         }
     }

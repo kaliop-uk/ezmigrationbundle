@@ -10,7 +10,7 @@ class EzRelationList extends AbstractComplexField implements ComplexFieldInterfa
     /**
      * @param array $fieldValueArray The definition of the field value, structured in the yml file
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
-     * @return PageValue
+     * @return Value
      */
     public function createValue(array $fieldValueArray, array $context = array())
     {

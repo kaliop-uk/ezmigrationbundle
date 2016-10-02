@@ -345,6 +345,7 @@ services:
                #- '@ez_migration_bundle.reference_resolver.content'
                 - '@ez_migration_bundle.reference_resolver.tag'
 
+    # @deprecated
     ez_migration_bundle.reference_resolver.content:
         class: '%ez_migration_bundle.reference_resolver.content.class%'
         arguments:

@@ -32,9 +32,10 @@ Version 3.0.0
     For an example, see the test UnitTestOK010_customrefs.yml and class 
     Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
 
-*** Fix: the usage of 'location_remote_id:' in the field settings for Content Type definitions is working again
-
 * Changed: removed unused Behat and Phpunit tests as well as one leftover Interface 
+
+* Changed: removed from the YML documentation the description of keys which had been deprecated in version 2.
+    The keys are still accepted, but support for them will be dropped in a future version
 
 * Changes to the YML definition language:
 
@@ -62,7 +63,7 @@ Version 3.0.0
         are used, instead of publication-date/asc
 
     * changes for developers who extended the bundle: the MatcherInterface has a new method; many Executor services
-        now have a different constructor signature
+        now have a different constructor signature; one Trait has been removed from the public API
 
 
 Version 2.1.0
