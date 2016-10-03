@@ -37,7 +37,7 @@ class ContentTypeManager extends RepositoryExecutor
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
-        $contentTypeGroup = $this->contentTypeGroupMatcher->matchByKey($this->dsl['content_type_group']);
+        $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($this->dsl['content_type_group']);
 
         $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($this->dsl['identifier']);
         $contentTypeCreateStruct->mainLanguageCode = $this->getLanguageCode();
@@ -221,10 +221,10 @@ class ContentTypeManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                $match[$condition][$position] = $this->resolveReferences($value);
+                $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
                 }
             } else {
-                $match[$condition] = $this->resolveReferences($values);
+                $match[$condition] = $this->referenceResolver->resolveReference($values);
             }
         }
 
@@ -403,11 +403,11 @@ class ContentTypeManager extends RepositoryExecutor
 
                 // we do NOT check for refs in field settings which are arrays, even though we could, maybe *should*...
                 if (!is_array($val)) {
-                    $ret[$key] = $this->resolveReferences($val);
+                    $ret[$key] = $this->referenceResolver->resolveReference($val);
                 }
             }
         } else {
-            $ret = $this->resolveReferences($value);
+            $ret = $this->referenceResolver->resolveReference($value);
         }
 
         return $ret;

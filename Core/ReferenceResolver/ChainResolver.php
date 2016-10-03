@@ -44,13 +44,28 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
      */
     public function getReferenceValue($stringIdentifier)
     {
+        $resolvedOnce = false;
+
         foreach ($this->resolvers as $resolver) {
             if ($resolver->isReference($stringIdentifier)) {
-                return $resolver->getReferenceValue($stringIdentifier);
+                $stringIdentifier = $resolver->getReferenceValue($stringIdentifier);
+                $resolvedOnce = true;
             }
         }
 
-        throw \Exception("Could not resolve reference with identifier: '$stringIdentifier'");
+        if (!$resolvedOnce) {
+            throw \Exception("Could not resolve reference with identifier: '$stringIdentifier'");
+        }
+
+        return $stringIdentifier;
+    }
+
+    public function resolveReference($stringIdentifier)
+    {
+        if ($this->isReference($stringIdentifier)) {
+            return $this->getReferenceValue($stringIdentifier);
+        }
+        return $stringIdentifier;
     }
 
     /**

@@ -24,4 +24,9 @@ class CustomReferenceResolver implements ReferenceResolverInterface
     {
         return 2;
     }
+
+    public function resolveReference($stringIdentifier)
+    {
+        return $this->isReference($stringIdentifier) ? $this->getReferenceValue($stringIdentifier) : $stringIdentifier;
+    }
 }

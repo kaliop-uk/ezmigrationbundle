@@ -30,7 +30,7 @@ class UserGroupManager extends RepositoryExecutor
         $userService = $this->repository->getUserService();
 
         $parentGroupId = $this->dsl['parent_group_id'];
-        $parentGroupId = $this->resolveReferences($parentGroupId);
+        $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
 
         $parentGroup = $userService->loadUserGroup($parentGroupId);
 
@@ -49,7 +49,7 @@ class UserGroupManager extends RepositoryExecutor
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
             foreach ($this->dsl['roles'] as $roleId) {
-                $role = $this->roleMatcher->matchByKey($roleId);
+                $role = $this->roleMatcher->matchOneByKey($roleId);
                 $roleService->assignRoleToUserGroup($role, $userGroup);
             }
         }
@@ -97,7 +97,7 @@ class UserGroupManager extends RepositoryExecutor
 
             if (isset($this->dsl['parent_group_id'])) {
                 $parentGroupId = $this->dsl['parent_group_id'];
-                $parentGroupId = $this->resolveReferences($parentGroupId);
+                $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
 
                 $newParentGroup = $userService->loadUserGroup($parentGroupId);
 
@@ -158,10 +158,10 @@ class UserGroupManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->resolveReferences($value);
+                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
                 }
             } else {
-                $match[$condition] = $this->resolveReferences($values);
+                $match[$condition] = $this->referenceResolver->resolveReference($values);
             }
         }
 

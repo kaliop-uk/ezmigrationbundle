@@ -4,13 +4,18 @@ namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
+/**
+ * A class which eases creating reference resolvers based on prefix strings
+ */
 abstract class AbstractResolver implements ReferenceResolverInterface
 {
+    /// To be set by subclasses at constructor time or in definition
     protected $referencePrefixes = array();
-    protected $prefixMatchRegexp;
+
+    private $prefixMatchRegexp;
 
     /**
-     * Always call this from constructor of subclasses!
+     * NB: always call this from constructor of subclasses!
      */
     public function __construct()
     {
@@ -30,6 +35,14 @@ abstract class AbstractResolver implements ReferenceResolverInterface
         return (bool)preg_match($this->prefixMatchRegexp, $stringIdentifier);
     }
 
+    public function resolveReference($stringIdentifier)
+    {
+        if ($this->isReference($stringIdentifier)) {
+            return $this->getReferenceValue($stringIdentifier);
+        }
+        return $stringIdentifier;
+    }
+
     /**
      * @param string $stringIdentifier
      * @return mixed
@@ -39,6 +52,7 @@ abstract class AbstractResolver implements ReferenceResolverInterface
     /**
      * Returns the value of the reference identifier, stripped of its prefix.
      * Useful for subclasses with a single $referencePrefixes
+     *
      * @param string $stringIdentifier
      * @return string
      */
@@ -49,6 +63,7 @@ abstract class AbstractResolver implements ReferenceResolverInterface
 
     /**
      * Useful for subclasses with many $referencePrefixes
+     *
      * @param string $stringIdentifier
      * @return array with 2 keys, 'prefix' and 'identifier'
      * @throws \Exception

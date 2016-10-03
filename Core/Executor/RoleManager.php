@@ -150,10 +150,10 @@ class RoleManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->resolveReferences($value);
+                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
                 }
             } else {
-                $match[$condition] = $this->resolveReferences($values);
+                $match[$condition] = $this->referenceResolver->resolveReference($values);
             }
         }
 
@@ -223,7 +223,7 @@ class RoleManager extends RepositoryExecutor
         $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
 
         foreach($limitationValue as $id => $value) {
-            $limitationValue[$id] = $this->resolveReferences($value);
+            $limitationValue[$id] = $this->referenceResolver->resolveReference($value);
         }
         $limitationValue = $this->limitationConverter->resolveLimitationValue($limitation['identifier'], $limitationValue);
         return $limitationType->buildValue($limitationValue);
@@ -253,7 +253,7 @@ class RoleManager extends RepositoryExecutor
             switch ($assign['type']) {
                 case 'user':
                     foreach ($assign['ids'] as $userId) {
-                        $userId = $this->resolveReferences($userId);
+                        $userId = $this->referenceResolver->resolveReference($userId);
 
                         $user = $userService->loadUser($userId);
 
@@ -269,7 +269,7 @@ class RoleManager extends RepositoryExecutor
                     break;
                 case 'group':
                     foreach ($assign['ids'] as $groupId) {
-                        $groupId = $this->resolveReferences($groupId);
+                        $groupId = $this->referenceResolver->resolveReference($groupId);
 
                         $group = $userService->loadUserGroup($groupId);
 

@@ -18,7 +18,7 @@ trait FlexibleKeyMatcherTrait
      *                              This allow us to do some funky stuff when users have to specify location ids
      * @return mixed
      */
-    public function matchByKey($key)
+    public function matchOneByKey($key)
     {
         return is_array($key) ? $this->matchOne($key) : $this->matchOne($this->getConditionsFromKey($key));
     }

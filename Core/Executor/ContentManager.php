@@ -53,7 +53,7 @@ class ContentManager extends RepositoryExecutor
         $contentTypeService = $this->repository->getContentTypeService();
 
         $contentTypeIdentifier = $this->dsl['content_type'];
-        $contentTypeIdentifier = $this->resolveReferences($contentTypeIdentifier);
+        $contentTypeIdentifier = $this->referenceResolver->resolveReference($contentTypeIdentifier);
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode());
@@ -66,7 +66,7 @@ class ContentManager extends RepositoryExecutor
 
         if (isset($this->dsl['section'])) {
             $sectionId = $this->dsl['section'];
-            $sectionId = $this->resolveReferences($sectionId);
+            $sectionId = $this->referenceResolver->resolveReference($sectionId);
             $contentCreateStruct->sectionId = $sectionId;
         }
 
@@ -82,7 +82,7 @@ class ContentManager extends RepositoryExecutor
         // instantiate a location create struct from the parent location:
         $locationId = $this->dsl['main_location'];
         // 1st resolve references
-        $locationId = $this->resolveReferences($locationId);
+        $locationId = $this->referenceResolver->resolveReference($locationId);
         // 2nd allow to specify the location via remote_id
         $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
@@ -111,7 +111,7 @@ class ContentManager extends RepositoryExecutor
 
         if (isset($this->dsl['other_locations'])) {
             foreach ($this->dsl['other_locations'] as $locationId) {
-                $locationId = $this->resolveReferences($locationId);
+                $locationId = $this->referenceResolver->resolveReference($locationId);
                 $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
                 $secondaryLocationCreateStruct = $locationService->newLocationCreateStruct($locationId);
                 array_push($locations, $secondaryLocationCreateStruct);
@@ -254,10 +254,10 @@ class ContentManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->resolveReferences($value);
+                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
                 }
             } else {
-                $match[$condition] = $this->resolveReferences($values);
+                $match[$condition] = $this->referenceResolver->resolveReference($values);
             }
         }
 
@@ -298,8 +298,8 @@ class ContentManager extends RepositoryExecutor
 
     protected function setSection(Content $content, $sectionKey)
     {
-        $sectionKey = $this->resolveReferences($sectionKey);
-        $section = $this->sectionMatcher->matchByKey($sectionKey);
+        $sectionKey = $this->referenceResolver->resolveReference($sectionKey);
+        $section = $this->sectionMatcher->matchOneByKey($sectionKey);
 
         $sectionService = $this->repository->getSectionService();
         $sectionService->assignSection($content->contentInfo, $section);
@@ -308,9 +308,9 @@ class ContentManager extends RepositoryExecutor
     protected function setObjectStates(Content $content, array $stateKeys)
     {
         foreach($stateKeys as $stateKey) {
-            $stateKey = $this->resolveReferences($stateKey);
+            $stateKey = $this->referenceResolver->resolveReference($stateKey);
             /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $state */
-            $state = $this->objectStateMatcher->matchByKey($stateKey);
+            $state = $this->objectStateMatcher->matchOneByKey($stateKey);
 
             $stateService = $this->repository->getObjectStateService();
             $stateService->setContentState($content->contentInfo, $state->getObjectStateGroup(), $state);
@@ -338,7 +338,7 @@ class ContentManager extends RepositoryExecutor
         }
 
         // q: do we really want this ?
-        $value = $this->resolveReferences($value);
+        $value = $this->referenceResolver->resolveReference($value);
 
         return $value;
     }
@@ -363,8 +363,8 @@ class ContentManager extends RepositoryExecutor
      */
     protected function getUser($userKey)
     {
-        $userKey = $this->resolveReferences($userKey);
-        return $this->userMatcher->matchByKey($userKey);
+        $userKey = $this->referenceResolver->resolveReference($userKey);
+        return $this->userMatcher->matchOneByKey($userKey);
     }
 
     /**

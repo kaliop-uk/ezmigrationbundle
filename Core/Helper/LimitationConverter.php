@@ -48,7 +48,7 @@ class LimitationConverter
             case 'Section':
             case 'NewSection':
                 foreach ($values as $value) {
-                    $section = $this->sectionMatcher->matchByKey($value);
+                    $section = $this->sectionMatcher->matchOneByKey($value);
                     $retValues[] = $section->identifier;
                 }
                 break;
@@ -64,7 +64,7 @@ class LimitationConverter
             case 'ParentClass':
             case 'Class':
                 foreach($values as $value) {
-                    $contentType = $this->contentTypeMatcher->matchByKey($value);
+                    $contentType = $this->contentTypeMatcher->matchOneByKey($value);
                     $retValues[] = $contentType->identifier;
                 }
                 break;
@@ -93,14 +93,14 @@ class LimitationConverter
             // q: is it worth doing this for nodes? does it make a translation at all?
             case 'Node':
                 foreach ($values as $value) {
-                    $location = $this->locationMatcher->matchByKey($value);
+                    $location = $this->locationMatcher->matchOneByKey($value);
                     $retValues[] = $location->id;
                 }
                 break;
             case 'Section':
             case 'NewSection':
                 foreach ($values as $value) {
-                    $section = $this->sectionMatcher->matchByKey($value);
+                    $section = $this->sectionMatcher->matchOneByKey($value);
                     $retValues[] = $section->id;
                 }
                 break;
@@ -116,7 +116,7 @@ class LimitationConverter
             case 'ParentClass':
             case 'Class':
                 foreach($values as $value) {
-                    $contentType = $this->contentTypeMatcher->matchByKey($value);
+                    $contentType = $this->contentTypeMatcher->matchOneByKey($value);
                     $retValues[] = $contentType->id;
                 }
                 break;

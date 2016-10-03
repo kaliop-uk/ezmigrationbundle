@@ -39,7 +39,7 @@ class UserManager extends RepositoryExecutor
 
         $userGroups = array();
         foreach ($this->dsl['groups'] as $groupId) {
-            $groupId = $this->resolveReferences($groupId);
+            $groupId = $this->referenceResolver->resolveReference($groupId);
             $userGroup = $userService->loadUserGroup($groupId);
 
             // q: in which case can we have no group? And should we throw an exception?
@@ -194,10 +194,10 @@ class UserManager extends RepositoryExecutor
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->resolveReferences($value);
+                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
                 }
             } else {
-                $match[$condition] = $this->resolveReferences($values);
+                $match[$condition] = $this->referenceResolver->resolveReference($values);
             }
         }
 

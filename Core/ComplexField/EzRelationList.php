@@ -36,7 +36,7 @@ class EzRelationList extends AbstractComplexField implements ComplexFieldInterfa
                 $ids[$key] = $this->referenceResolver->getReferenceValue($id);
             }
             // 2. resolve remote ids
-            $ids[$key] = $this->contentMatcher->matchByKey($ids[$key])->id;
+            $ids[$key] = $this->contentMatcher->matchOneByKey($ids[$key])->id;
         }
 
         return new Value($ids);

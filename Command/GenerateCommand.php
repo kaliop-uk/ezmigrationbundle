@@ -225,7 +225,7 @@ EOT
 
         $roleMatcher = $container->get('ez_migration_bundle.role_matcher');
         /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        $role = $roleMatcher->matchByKey($roleName);
+        $role = $roleMatcher->matchOneByKey($roleName);
 
         $policies = array();
         /** @var \eZ\Publish\API\Repository\Values\User\Policy $policy */
