@@ -3,15 +3,28 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher;
 
 class EzRichText extends AbstractComplexField implements ComplexFieldInterface
 {
+    protected $contentMatcher;
+    protected $locationMatcher;
+
+    public function __construct(ContentMatcher $contentMatcher, LocationMatcher $locationMatcher)
+    {
+        $this->contentMatcher = $contentMatcher;
+        $this->locationMatcher = $locationMatcher;
+    }
+
     /**
      * Replace any references in an xml string to be used as the input data for an ezrichtext field.
      *
      * @param array $fieldValueArray The definition of teh field value, structured in the yml file
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return string
+     *
+     * @todo replace objects and location refs in ezcontent:// and ezlocation:// links
      */
     public function createValue(array $fieldValueArray, array $context = array())
     {

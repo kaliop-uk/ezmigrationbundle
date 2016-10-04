@@ -277,7 +277,7 @@ services:
     ez_migration_bundle.complex_field:
         abstract: true
         calls:
-            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver']]
+            - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference']]
 
     ez_migration_bundle.complex_field.ezauthor:
         parent: ez_migration_bundle.complex_field
@@ -308,24 +308,34 @@ services:
     ez_migration_bundle.complex_field.ezrelation:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezrelation.class%'
+        arguments:
+            - '@ez_migration_bundle.content_matcher'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelation }
 
     ez_migration_bundle.complex_field.ezrelationlist:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezrelationlist.class%'
+        arguments:
+            - '@ez_migration_bundle.content_matcher'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelationlist }
 
     ez_migration_bundle.complex_field.ezrichtext:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezrichtext.class%'
+        arguments:
+            - '@ez_migration_bundle.content_matcher'
+            - '@ez_migration_bundle.location_matcher'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezrichtext }
 
     ez_migration_bundle.complex_field.ezxmltext:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezxmltext.class%'
+        arguments:
+            - '@ez_migration_bundle.content_matcher'
+            - '@ez_migration_bundle.location_matcher'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext }
 
