@@ -24,6 +24,9 @@ class ObjectStateGroupManager extends RepositoryExecutor
         $this->objectStateGroupMatcher = $objectStateGroupMatcher;
     }
 
+    /**
+     * Handle the create step of object state group migrations
+     */
     protected function create()
     {
         $objectStateService = $this->repository->getObjectStateService();
@@ -40,6 +43,9 @@ class ObjectStateGroupManager extends RepositoryExecutor
         $this->setReferences($objectStateGroup);
     }
 
+    /**
+     * Handle the update step of object state group migrations
+     */
     protected function update()
     {
         $objectStateService = $this->repository->getObjectStateService();
@@ -58,6 +64,9 @@ class ObjectStateGroupManager extends RepositoryExecutor
         $this->setReferences($objectStateGroup);
     }
 
+    /**
+     * Handle the delete step of object state group migrations
+     */
     protected function delete()
     {
         $objectStateService = $this->repository->getObjectStateService();

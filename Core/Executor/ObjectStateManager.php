@@ -33,6 +33,11 @@ class ObjectStateManager extends RepositoryExecutor
         $this->objectStateGroupMatcher = $objectStateGroupMatcher;
     }
 
+    /**
+     * Handle the create step of object state migrations.
+     *
+     * @throws \Exception
+     */
     protected function create()
     {
         foreach(array('object_state_group_id', 'names', 'identifier') as $key) {
@@ -68,6 +73,11 @@ class ObjectStateManager extends RepositoryExecutor
         $this->setReferences($objectState);
     }
 
+    /**
+     * Handle the update step of object state migrations.
+     *
+     * @throws \Exception
+     */
     protected function update()
     {
         $stateCollection = $this->matchStates('update');
@@ -92,6 +102,9 @@ class ObjectStateManager extends RepositoryExecutor
 
     }
 
+    /**
+     * Handle the deletion step of object state migrations.
+     */
     protected function delete()
     {
         $stateCollection = $this->matchStates('delete');

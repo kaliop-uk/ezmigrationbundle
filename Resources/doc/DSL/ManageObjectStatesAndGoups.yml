@@ -1,0 +1,65 @@
+-
+    mode: create
+    type: object_state_group
+    identifier: x # String identifier of the object state group
+    names:
+        - languageCode: name
+        - languageCode: name
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # The shorthand 'id' can be used instead of 'object_id'
+
+-
+    mode: create
+    type: object_state
+    object_state_group_id: x # The Id of the object state group the new state will be created under.
+    identifier: xyz # The string identifier of the new object state.
+    names: # Array of names keyed by language code.
+        - languageCode: name
+        - languageCode: name
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id)
+                                 # The shorthand 'id' can be used instead of 'user_id'
+
+-
+    mode: update
+    type: object_state
+    id: x # The ID of the object state to update.
+    identifier: x # The string identifier of the object state to update
+    names:
+        - languageCode: name
+        - languageCode: name
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id_
+                                 # The shorthand 'id' can be used instead of 'user_id'
+
+-
+    mode: update
+    type: object_state_group
+    id: x # The ID of the object state group to update.
+    names:
+        - languageCode: name
+        - languageCode: name
+    references: #Optional
+         -
+            identifier: referenceID # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # The shorthand 'id' can be used instead of 'object_id'
+
+-
+    mode: delete
+    type: object_state
+    id: x # Id of the state to be deleted.
+    identifier: x # The string identifier of the object state to delete
+
+-
+    # The users which are not assigned to other groups will be deleted.
+    mode: delete
+    type: object_state_group
+    id: x # Id of the group to be deleted.
