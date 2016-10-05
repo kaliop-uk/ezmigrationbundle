@@ -39,7 +39,8 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
                 foreach ($tags as $attributes) {
                     $migrationService->addMethodCall('addComplexField', array(
                         new Reference($id),
-                        $attributes['fieldtype']
+                        $attributes['fieldtype'],
+                        isset($attributes['contenttype']) ? $attributes['contenttype'] : null
                     ));
                 }
             }

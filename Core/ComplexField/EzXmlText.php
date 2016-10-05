@@ -26,7 +26,7 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
      *
      * @todo replace objects and location refs in eznode and ezobject links
      */
-    public function createValue(array $fieldValueArray, array $context = array())
+    public function createValue($fieldValueArray, array $context = array())
     {
         $xmlText = $fieldValueArray['content'];
 

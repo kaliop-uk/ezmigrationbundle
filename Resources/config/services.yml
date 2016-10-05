@@ -271,13 +271,14 @@ services:
         class: '%ez_migration_bundle.complex_field_manager.class%'
         arguments:
              - '@ezpublish.api.service.field_type'
-        #    - '@ezpublish.api.repository'
-        #    - '@service_container'
 
     ez_migration_bundle.complex_field:
         abstract: true
         calls:
             - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference']]
+
+    # NB: you can register handlers for either a field type, using the  'fieldtype' attribute, or for the
+    #     field type of a specific content type by using both 'fieldtype' and 'contenttype' in the tag definition
 
     ez_migration_bundle.complex_field.ezauthor:
         parent: ez_migration_bundle.complex_field

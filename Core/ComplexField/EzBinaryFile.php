@@ -12,7 +12,7 @@ class EzBinaryFile extends AbstractComplexField implements ComplexFieldInterface
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return BinaryFileValue
      */
-    public function createValue(array $fieldValueArray, array $context = array())
+    public function createValue($fieldValueArray, array $context = array())
     {
         $filePath = dirname($context['path']) .  '/files/' . $fieldValueArray['path'];
 

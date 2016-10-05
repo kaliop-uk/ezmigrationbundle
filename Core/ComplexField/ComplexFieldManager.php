@@ -18,30 +18,48 @@ class ComplexFieldManager
 
     /**
      * @param ComplexFieldInterface $complexField
+     * @param string $fieldTypeIdentifier
      * @param string $contentTypeIdentifier
      */
-    public function addComplexField(ComplexFieldInterface $complexField, $contentTypeIdentifier)
+    public function addComplexField(ComplexFieldInterface $complexField, $fieldTypeIdentifier, $contentTypeIdentifier=null)
     {
-        $this->fieldTypeMap[$contentTypeIdentifier] = $complexField;
+        if ($contentTypeIdentifier == null) {
+            $contentTypeIdentifier = '*';
+        }
+        $this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier] = $complexField;
+    }
+
+    /**
+     * @param $fieldTypeIdentifier
+     * @param string $contentTypeIdentifier
+     * @return bool
+     */
+    public function managesField($fieldTypeIdentifier, $contentTypeIdentifier)
+    {
+        return (isset($this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier]) ||
+            isset($this->fieldTypeMap['*'][$fieldTypeIdentifier]));
     }
 
     /**
      * @param string $fieldTypeIdentifier
-     * @param array $fieldValueArray
+     * @param string $contentTypeIdentifier
+     * @param mixed $fieldValue
      * @param array $context
-     * @return ComplexFieldInterface
+     * @return mixed
      */
-    public function getComplexFieldValue($fieldTypeIdentifier, array $fieldValueArray, array $context = array())
+    public function getComplexFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $fieldValue, array $context = array())
     {
-        if (array_key_exists($fieldTypeIdentifier, $this->fieldTypeMap))
+        if (isset($this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier]) || isset($this->fieldTypeMap['*'][$fieldTypeIdentifier]))
         {
-            $fieldService = $this->fieldTypeMap[$fieldTypeIdentifier];
-            return $fieldService->createValue($fieldValueArray, $context);
+            $fieldService = isset($this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier]) ?
+                $this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier] :
+                $this->fieldTypeMap['*'][$fieldTypeIdentifier];
+            return $fieldService->createValue($fieldValue, $context);
         }
         else
         {
             $fieldType = $this->fieldTypeService->getFieldType($fieldTypeIdentifier);
-            return $fieldType->fromHash($fieldValueArray);
+            return $fieldType->fromHash($fieldValue);
             // was: error
             //throw new \InvalidArgumentException("Field of type '$fieldTypeIdentifier' can not be handled as it does not have a complex field class defined");
         }

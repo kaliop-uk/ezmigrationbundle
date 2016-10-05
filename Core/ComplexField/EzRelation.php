@@ -22,14 +22,18 @@ class EzRelation extends AbstractComplexField implements ComplexFieldInterface
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return Value
      */
-    public function createValue(array $fieldValueArray, array $context = array())
+    public function createValue($fieldValueArray, array $context = array())
     {
-        $id = $fieldValueArray['destinationContentId'];
+        if (count($fieldValueArray) == 1 && isset($fieldValueArray['destinationContentId'])) {
+            // fromHash format
+            $id = $fieldValueArray['destinationContentId'];
+        } else {
+            // simplified format
+            $id = $fieldValueArray;
+        }
 
         // 1. resolve relations
-        if ($this->referenceResolver->isReference($id)) {
-            $id = $this->referenceResolver->getReferenceValue($id);
-        }
+        $id = $this->referenceResolver->resolveReference($id);
         // 2. resolve remote ids
         $id = $this->contentMatcher->matchOneByKey($id)->id;
 

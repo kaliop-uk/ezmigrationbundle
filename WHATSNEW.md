@@ -34,10 +34,17 @@ Version 3.0.0
     For an example, see the test UnitTestOK010_customrefs.yml and class 
     Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
 
+*  New: it is now possible to inject field type handlers for scalar field types, as well as for field type handlers
+     that only affect the field type of a single content type.
+     This gives greater flexibility in deciding which types of references are resolved for each field when creating 
+     or updating contents
+
 * Changed: removed unused Behat and Phpunit tests as well as one leftover Interface 
 
 * Changed: removed from the YML documentation the description of keys which had been deprecated in version 2.
     The keys are still accepted, but support for them will be dropped in a future version
+
+* Changed: the service ez_migration_bundle.reference_resolver.content is now deprecated and will be removed in a future version
 
 * Changes to the YML definition language:
 
@@ -64,9 +71,21 @@ Version 3.0.0
     * when adding locations without defining sort field and sort order, the defaults from the content type definition
         are used, instead of publication-date/asc
 
-    * changes for developers who extended the bundle: the MatcherInterface has a new method; many Executor services
-        now have a different constructor signature; one Trait has been removed from the public API; the service
-        ez_migration_bundle.helper.role_handler has been renamed to ez_migration_bundle.helper.limitation_converter
+    * references to 'tag:' and 'location:' will not be resolved any more in fields of type Object Relation and 
+        Object Relation List. On the other hand non-integer strings will be resolved as remote-content-ids
+
+    * custom references are not resolved any more in the values for scalar fields when creating/updating content.
+        The old behaviour was inconsistent, as references were resolved by default for scalar values but not for
+        array values.
+        If you need to have reference resolution in your content field values, you will have to register a custom field
+        type handler using a tagged service (see services.yml for how the current handlers do it) and do it yourself 
+
+    * changes for developers who extended the bundle: the MatcherInterface and ReferenceResolverInterface have a new
+        method each; many Executor services now have a different constructor signature; one Trait has been removed from
+        the public API; the service ez_migration_bundle.helper.role_handler has been renamed
+        to ez_migration_bundle.helper.limitation_converter; the chainResolver will now apply reference transformation
+        from all matching sub-resolvers, not only from the 1st one
+
 
 Version 2.1.0
 =============

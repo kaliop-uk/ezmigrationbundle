@@ -20,7 +20,7 @@ class EzRelationList extends AbstractComplexField implements ComplexFieldInterfa
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return Value
      */
-    public function createValue(array $fieldValueArray, array $context = array())
+    public function createValue($fieldValueArray, array $context = array())
     {
         if (count($fieldValueArray) == 1 && isset($fieldValueArray['destinationContentIds'])) {
             // fromHash format
@@ -32,9 +32,7 @@ class EzRelationList extends AbstractComplexField implements ComplexFieldInterfa
 
         foreach ($ids as $key => $id) {
             // 1. resolve relations
-            if ($this->referenceResolver->isReference($id)) {
-                $ids[$key] = $this->referenceResolver->getReferenceValue($id);
-            }
+            $ids[$key] = $this->referenceResolver->getReferenceValue($id);
             // 2. resolve remote ids
             $ids[$key] = $this->contentMatcher->matchOneByKey($ids[$key])->id;
         }

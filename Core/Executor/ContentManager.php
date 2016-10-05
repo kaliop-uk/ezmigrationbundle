@@ -54,6 +54,7 @@ class ContentManager extends RepositoryExecutor
 
         $contentTypeIdentifier = $this->dsl['content_type'];
         $contentTypeIdentifier = $this->referenceResolver->resolveReference($contentTypeIdentifier);
+        /// @todo use a contenttypematcher
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
         $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode());
@@ -284,13 +285,7 @@ class ContentManager extends RepositoryExecutor
                 throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'");
             }
 
-            if (is_array($field[$fieldIdentifier])) {
-                // Complex field might need special handling eg.: ezimage, ezbinaryfile
-                $fieldValue = $this->getComplexFieldValue($field[$fieldIdentifier], $fieldType, $this->context);
-            } else {
-                // Primitive field eg.: ezstring, ezxml etc.
-                $fieldValue = $this->getSingleFieldValue($field[$fieldIdentifier], $fieldType, $this->context);
-            }
+            $fieldValue = $this->getFieldValue($field[$fieldIdentifier], $fieldType, $contentType->identifier, $this->context);
 
             $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
         }
@@ -318,18 +313,40 @@ class ContentManager extends RepositoryExecutor
     }
 
     /**
+     * Create the field value for either a primitive or complex field
+     *
+     * @param mixed $value
+     * @param FieldDefinition $fieldDefinition
+     * @param string $contentTypeIdentifier
+     * @param array $context
+     * @throws \InvalidArgumentException
+     * @return mixed
+     */
+    protected function getFieldValue($value, FieldDefinition $fieldDefinition, $contentTypeIdentifier, array $context = array())
+    {
+        $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
+        if (is_array($value) || $this->complexFieldManager->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
+            return $this->complexFieldManager->getComplexFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $value, $context);
+        }
+
+        return $this->getSingleFieldValue($value, $fieldDefinition, $contentTypeIdentifier, $context);
+    }
+
+    /**
      * Create the field value for a primitive field
      * This function is needed to get past validation on Checkbox fieldtype (eZP bug)
      *
      * @param mixed $value
      * @param FieldDefinition $fieldDefinition
+     * @param string $contentTypeIdentifier
      * @param array $context
      * @throws \InvalidArgumentException
-     * @return object
+     * @return mixed
      */
-    protected function getSingleFieldValue($value, FieldDefinition $fieldDefinition, array $context = array())
+    protected function getSingleFieldValue($value, FieldDefinition $fieldDefinition, $contentTypeIdentifier, array $context = array())
     {
-        switch ($fieldDefinition->fieldTypeIdentifier) {
+        $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
+        switch ($fieldTypeIdentifier) {
             case 'ezboolean':
                 $value = new CheckboxValue(($value == 1) ? true : false);
                 break;
@@ -337,23 +354,10 @@ class ContentManager extends RepositoryExecutor
                 // do nothing
         }
 
-        // q: do we really want this ?
-        $value = $this->referenceResolver->resolveReference($value);
+        // We do not really want this to happen by default on all scalar field values. If you want this to happen, register a complex field for it
+        //$value = $this->referenceResolver->resolveReference($value);
 
         return $value;
-    }
-
-    /**
-     * Create the field value for a complex field eg.: ezimage, ezfile
-     *
-     * @param FieldDefinition $fieldDefinition
-     * @param array $fieldValueArray
-     * @param array $context
-     * @return object
-     */
-    protected function getComplexFieldValue(array $fieldValueArray, FieldDefinition $fieldDefinition, array $context = array())
-    {
-        return $this->complexFieldManager->getComplexFieldValue($fieldDefinition->fieldTypeIdentifier, $fieldValueArray, $context);
     }
 
     /**
