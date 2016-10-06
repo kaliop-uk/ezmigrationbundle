@@ -1,5 +1,5 @@
-Version 3.0.0
-=============
+Version 3.0.0-beta1
+===================
 
 * New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of
     the elements to act upon, and comprehensive resolution of references
