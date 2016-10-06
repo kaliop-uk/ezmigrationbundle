@@ -29,6 +29,9 @@ Version 3.0.0
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
 
+* Fixed: migrations will not silently swallow any more errors when creating users or assigning roles and an inexisting
+    group is specified
+
 * New: it is now possible to add resolvers for custom references using tagged services. The tag to use is: 
     `ez_migration_bundle.reference_resolver.customreference`. 
     For an example, see the test UnitTestOK010_customrefs.yml and class 
@@ -73,12 +76,6 @@ Version 3.0.0
 
     * references to 'tag:' and 'location:' will not be resolved any more in fields of type Object Relation and 
         Object Relation List. On the other hand non-integer strings will be resolved as remote-content-ids
-
-    * custom references are not resolved any more in the values for scalar fields when creating/updating content.
-        The old behaviour was inconsistent, as references were resolved by default for scalar values but not for
-        array values.
-        If you need to have reference resolution in your content field values, you will have to register a custom field
-        type handler using a tagged service (see services.yml for how the current handlers do it) and do it yourself 
 
     * changes for developers who extended the bundle: the MatcherInterface and ReferenceResolverInterface have a new
         method each; many Executor services now have a different constructor signature; one Trait has been removed from

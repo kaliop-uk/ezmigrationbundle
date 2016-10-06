@@ -274,17 +274,17 @@ class RoleManager extends RepositoryExecutor
                         $group = $userService->loadUserGroup($groupId);
 
                         if (!isset($assign['limitations'])) {
-                            try {
+                            // q: why are we swallowing exceptions here ?
+                            //try {
                                 $roleService->assignRoleToUserGroup($role, $group);
-                                // q: why are we swallowing exceptions here ?
-                            } catch (InvalidArgumentException $e) {}
+                            //} catch (InvalidArgumentException $e) {}
                         } else {
                             foreach ($assign['limitations'] as $limitation) {
                                 $limitationObject = $this->createLimitation($roleService, $limitation);
-                                try {
-                                    $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
                                 // q: why are we swallowing exceptions here ?
-                                } catch (InvalidArgumentException $e) {}
+                                //try {
+                                    $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
+                                //} catch (InvalidArgumentException $e) {}
                             }
                         }
                     }

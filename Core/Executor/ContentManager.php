@@ -313,7 +313,7 @@ class ContentManager extends RepositoryExecutor
     }
 
     /**
-     * Create the field value for either a primitive or complex field
+     * Create the field value for either a primitive (ie. scalar) or complex field
      *
      * @param mixed $value
      * @param FieldDefinition $fieldDefinition
@@ -354,8 +354,9 @@ class ContentManager extends RepositoryExecutor
                 // do nothing
         }
 
-        // We do not really want this to happen by default on all scalar field values. If you want this to happen, register a complex field for it
-        //$value = $this->referenceResolver->resolveReference($value);
+        // q: do we really want this to happen by default on all scalar field values?
+        // Note: if you want this *not* to happen, register a complex field for your scalar field...
+        $value = $this->referenceResolver->resolveReference($value);
 
         return $value;
     }

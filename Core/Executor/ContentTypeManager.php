@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 
@@ -18,11 +19,15 @@ class ContentTypeManager extends RepositoryExecutor
 
     protected $contentTypeMatcher;
     protected $contentTypeGroupMatcher;
+    // This resolver is used to resolve references in content-type settings definitions
+    protected $extendedReferenceResolver;
 
-    public function __construct(ContentTypeMatcher $matcher, ContentTypeGroupMatcher $contentTypeGroupMatcher)
+    public function __construct(ContentTypeMatcher $matcher, ContentTypeGroupMatcher $contentTypeGroupMatcher,
+        ReferenceResolverInterface $extendedReferenceResolver)
     {
         $this->contentTypeMatcher = $matcher;
         $this->contentTypeGroupMatcher = $contentTypeGroupMatcher;
+        $this->extendedReferenceResolver = $extendedReferenceResolver;
     }
 
     /**
@@ -139,7 +144,6 @@ class ContentTypeManager extends RepositoryExecutor
                     if ($existingFieldDefinition) {
                         // Edit existing attribute
                         $fieldDefinitionUpdateStruct = $this->updateFieldDefinition($contentTypeService, $attribute);
-                        //$fieldDefinitionUpdateStruct = $this->updateFieldSettingsFromExisting($fieldDefinitionUpdateStruct, $existingFieldDefinition);
                         $contentTypeService->updateFieldDefinition(
                             $contentTypeDraft,
                             $existingFieldDefinition,
@@ -319,7 +323,7 @@ class ContentTypeManager extends RepositoryExecutor
                     $fieldDefinition->defaultValue = $value;
                     break;
                 case 'field-settings':
-                    $fieldDefinition->fieldSettings = $this->setFieldSettings($value);
+                    $fieldDefinition->fieldSettings = $this->getFieldSettings($value);
                     break;
                 case 'validator-configuration':
                     $fieldDefinition->validatorConfiguration = $value;
@@ -377,7 +381,7 @@ class ContentTypeManager extends RepositoryExecutor
                     $fieldDefinitionUpdateStruct->defaultValue = $value;
                     break;
                 case 'field-settings':
-                    $fieldDefinitionUpdateStruct->fieldSettings = $this->setFieldSettings($value);
+                    $fieldDefinitionUpdateStruct->fieldSettings = $this->getFieldSettings($value);
                     break;
                 case 'position':
                     $fieldDefinitionUpdateStruct->position = $value;
@@ -391,7 +395,7 @@ class ContentTypeManager extends RepositoryExecutor
         return $fieldDefinitionUpdateStruct;
     }
 
-    private function setFieldSettings($value)
+    private function getFieldSettings($value)
     {
         // Updating any references in the value array
 
@@ -403,11 +407,11 @@ class ContentTypeManager extends RepositoryExecutor
 
                 // we do NOT check for refs in field settings which are arrays, even though we could, maybe *should*...
                 if (!is_array($val)) {
-                    $ret[$key] = $this->referenceResolver->resolveReference($val);
+                    $ret[$key] = $this->extendedReferenceResolver->resolveReference($val);
                 }
             }
         } else {
-            $ret = $this->referenceResolver->resolveReference($value);
+            $ret = $this->extendedReferenceResolver->resolveReference($value);
         }
 
         return $ret;

@@ -22,6 +22,9 @@
             category: default|meta # Optional
             default-value: # Optional
             field-settings: array # Optional, can be used for various field type specific settings
+                                  # Within the settings values, the following tag are *currently* resolved:
+                                  # reference:<ref>, tag:<tag name>, location:<location remote id>
+                                  # *Note* that this is for bacwards compatibility and may change in the future
     # The list in references tells the manager to store specific values for later use by other steps in the current
     # migration.
     references: # Optional

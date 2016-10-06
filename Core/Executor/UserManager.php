@@ -43,9 +43,9 @@ class UserManager extends RepositoryExecutor
             $userGroup = $userService->loadUserGroup($groupId);
 
             // q: in which case can we have no group? And should we throw an exception?
-            if ($userGroup) {
+            //if ($userGroup) {
                 $userGroups[] = $userGroup;
-            }
+            //}
         }
 
         // FIXME: Hard coding content type to user for now

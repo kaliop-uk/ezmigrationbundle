@@ -175,6 +175,7 @@ services:
         arguments:
             - '@ez_migration_bundle.content_type_matcher'
             - '@ez_migration_bundle.content_type_group_matcher'
+            - '@ez_migration_bundle.reference_resolver'
         tags:
             - { name: ez_migration_bundle.executor }
 
@@ -343,6 +344,8 @@ services:
     ### reference resolvers
 
     # A service that will resolve *any* possible reference. To be used with care
+    # At the moment is is only used to resolve references in definitions of FieldType settings, and even then, only
+    # for backwards compatibility
     ez_migration_bundle.reference_resolver:
         alias: ez_migration_bundle.reference_resolver.chain
 
@@ -352,7 +355,7 @@ services:
             -
                 - '@ez_migration_bundle.reference_resolver.customreference'
                 - '@ez_migration_bundle.reference_resolver.location'
-               # not enabled by default for v2, as it might break v1 migrations that don't expect it to be present
+               # not enabled by default for v3, as it might break v1 migrations that don't expect it to be present
                #- '@ez_migration_bundle.reference_resolver.content'
                 - '@ez_migration_bundle.reference_resolver.tag'
 
