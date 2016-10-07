@@ -65,7 +65,7 @@ class ObjectStateManager extends RepositoryExecutor
         }
 
         if (0 === count($objectStateCreateStruct->names)) {
-            throw new \Exception('No object state names have been defined. Need to specify atleast one to create the state.');
+            throw new \Exception('No object state names have been defined. Need to specify at least one to create the state.');
         }
 
         $objectState = $objectStateService->createObjectState($objectStateGroup, $objectStateCreateStruct);
