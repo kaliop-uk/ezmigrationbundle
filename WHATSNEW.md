@@ -1,3 +1,10 @@
+Version 2.2.0
+=============
+
+* New: the 'migrate' command learned a `--separate-process` option, to run each migration it its own separate
+    php process. This should help when running many migrations in a single pass, and there are f.e. memory leaks.
+
+
 Version 2.1.0
 =============
 
