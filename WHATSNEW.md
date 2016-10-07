@@ -1,5 +1,8 @@
-Version 3.0.0-beta1
+Version 3.0.0-beta2
 ===================
+
+* New: the 'migrate' command learned a `--separate-process` option, to run each migration it its own separate
+    php process. This should help when running many migrations in a single pass, and there are f.e. memory leaks.
 
 * New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of
     the elements to act upon, and comprehensive resolution of references
