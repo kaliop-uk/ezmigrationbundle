@@ -22,7 +22,7 @@ Version 3.0.0-beta2
 * New: the `main_location` and `other_locations` tags in Content creation, as well as `parent_location` in Location
     creation will now try to identify the desired Location by its remote id when a non integer value is used
 
-* New: when specifying ...
+* New: the 'roles' specified when creating user groups can be so via a reference
 
 * New: the content_type_group tags in ContentType creation will accept a Content Type Group identifier besides an id
  
