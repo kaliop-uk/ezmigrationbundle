@@ -10,6 +10,7 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\PhpExecutableFinder;
+use Symfony\Component\Process\Process;
 
 /**
  * Command to execute the available migration definitions.
@@ -197,9 +198,15 @@ EOT
 
                 $this->writeln('<info>Executing: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
 
-                $process->run();
+                // allow long migrations processes by default
+                $process->setTimeout(86400);
+                // and give immediate feedback to the user
+                $process->run(
+                    function ($type, $buffer) {
+                        echo $buffer;
+                    }
+                );
 
-                $output->write($process->getOutput());
                 if (!$process->isSuccessful()) {
                     $err = $process->getErrorOutput();
                     if ($input->getOption('ignore-failures')) {
