@@ -179,9 +179,18 @@ the reason why the php classes used as migrations should not use namespaces.
 
 The easiest way to re-execute a migration in 'failed' status, is to remove it from the migrations table:
 
-    php ezpublish/console kaliop:migration:migration migration_name --delete
+    php ezpublish/console kaliop:migration:migration --delete migration_name
 
 After removing the information about the migration form the migrations table, running the `migrate` command will execute it again.
+
+#### Skipping migration files
+
+It is possible to tag a single migration as 'to be skipped', in case f.e. that it does not apply to the current platform.
+In order to do that, run the migrate command passing it the path to its definition, as follows:
+
+    php ezpublish/console kaliop:migration:migration --skip src/MyNamespace/MyBundle/MigrationsVersions/20160803193400_a_migration.yml
+
+If you pass in a directory instead of a file name, all the migrations in the directory will be skipped.
 
 
 ## Usage of transactions / rolling back changes

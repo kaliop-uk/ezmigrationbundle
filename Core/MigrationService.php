@@ -114,6 +114,15 @@ class MigrationService
     }
 
     /**
+     * @param MigrationDefinition $migrationDefinition
+     * @return Migration
+     */
+    public function skipMigration(MigrationDefinition $migrationDefinition)
+    {
+        return $this->storageHandler->skipMigration($migrationDefinition);
+    }
+
+    /**
      * Parses a migration definition, return a parsed definition.
      * If there is a parsing error, the definition status will be updated accordingly
      *

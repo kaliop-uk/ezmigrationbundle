@@ -1,8 +1,17 @@
+Version 2.3
+===========
+
+* New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped 
+
+* BC BREAK: for developers extending the bundle: the interface `StorageHandlerInterface` has acquired a new method
+
+
 Version 2.2.1
 =============
 
 * Fix: when using the `--separate-process` option for the 'migrate' command allow the migration to last up to a day,
      and do not wait until it is finished to print its output
+
 
 Version 2.2.0
 =============

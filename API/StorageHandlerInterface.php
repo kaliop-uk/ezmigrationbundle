@@ -34,7 +34,7 @@ interface StorageHandlerInterface
      * Starts a migration (creates and stores it, in STARTED status)
      * @param MigrationDefinition $migrationDefinition
      * @return Migration
-     * @throws \Exception If the migration was already executing
+     * @throws \Exception If the migration was already executed, skipped or executing
      */
     public function startMigration(MigrationDefinition $migrationDefinition);
 
@@ -46,8 +46,17 @@ interface StorageHandlerInterface
     public function endMigration(Migration $migration);
 
     /**
-     * removes a migration from storage
+     * Removes a migration from storage (regardless of its status)
      * @param Migration $migration
      */
     public function deleteMigration(Migration $migration);
+
+    /**
+     * Skips a migration (upserts it, in SKIPPED status)
+     * @param MigrationDefinition $migrationDefinition
+     * @return Migration
+     * @throws \Exception If the migration was already executed, skipped or executing
+     */
+    public function skipMigration(MigrationDefinition $migrationDefinition);
+
 }
