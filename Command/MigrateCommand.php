@@ -23,6 +23,8 @@ class MigrateCommand extends AbstractCommand
     protected $output;
     protected $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
+    const COMMAND_NAME='kaliop:migration:migrate';
+
     /**
      * Set up the command.
      *
@@ -33,7 +35,7 @@ class MigrateCommand extends AbstractCommand
         parent::configure();
 
         $this
-            ->setName('kaliop:migration:migrate')
+            ->setName(self::COMMAND_NAME)
             ->setAliases(array('kaliop:migration:update'))
             ->setDescription('Execute available migration definitions.')
             ->addOption(
@@ -166,7 +168,7 @@ EOT
             // mandatory args and options
             $builderArgs = array(
                 $_SERVER['argv'][0], // sf console
-                $_SERVER['argv'][1], // name of sf command
+                self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
                 '--env=' . $this->getContainer()->get('kernel')->getEnvironment(), // sf env
                 '--child'
             );
