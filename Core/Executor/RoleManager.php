@@ -294,46 +294,6 @@ class RoleManager extends RepositoryExecutor
     }
 
     /**
-     * Unassign a role from a list of users based on their user ids.
-     *
-     * @param Role $role
-     * @param RoleService $roleService
-     * @param UserService $userService
-     * @param array $userIds
-     */
-    private function unassignRoleFromUsers(
-        Role $role,
-        RoleService $roleService,
-        UserService $userService,
-        array $userIds
-    ) {
-        foreach ($userIds as $userId) {
-            $user = $userService->loadUser($userId);
-            $roleService->unassignRoleFromUser($role, $user);
-        }
-    }
-
-    /**
-     * Unassign a role from a list of user groups based on their id.
-     *
-     * @param Role $role
-     * @param RoleService $roleService
-     * @param UserService $userService
-     * @param array $userGroupIds
-     */
-    private function unassignRoleFromGroups(
-        Role $role,
-        RoleService $roleService,
-        UserService $userService,
-        array $userGroupIds
-    ) {
-        foreach ($userGroupIds as $userGroupId) {
-            $userGroup = $userService->loadUserGroup($userGroupId);
-            $roleService->unassignRoleFromUserGroup($role, $userGroup);
-        }
-    }
-
-    /**
      * Add new policies to the $role Role.
      *
      * @param \eZ\Publish\API\Repository\Values\User\Role $role

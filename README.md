@@ -277,19 +277,14 @@ override, take a look at the [services.yml file](Resources/config/services.yml).
 
 ### Running tests
 
-The bundle uses both PHPUnit and Behat to run functional tests.
-*NB: the Behat tests are known to be broken in the current release. This will be fixed as soon as possible*
+The bundle uses PHPUnit to run functional tests.
 
-To run the PHPUnit tests:
+To run the tests:
 
     export KERNEL_DIR=ezpublish
     export SYMFONY_ENV=behat (or whatever your test env is)
 
     bin/phpunit vendor/kaliop/ezmigrationbundle
-
-To run the Behat tests:
-
-    bin/behat -c vendor/kaliop/ezmigrationbundle/behat.yml
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)
