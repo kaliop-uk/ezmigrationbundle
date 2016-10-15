@@ -41,9 +41,10 @@ interface StorageHandlerInterface
     /**
      * Ends a migration (updates it)
      * @param Migration $migration
-     * @throws \Exception If the migration was not started
+     * @param bool $force When true, the migration will be updated even if it was not in 'started' status
+     * @throws \Exception If the migration was not started (unless $force=true)
      */
-    public function endMigration(Migration $migration);
+    public function endMigration(Migration $migration, $force=false);
 
     /**
      * Removes a migration from storage (regardless of its status)

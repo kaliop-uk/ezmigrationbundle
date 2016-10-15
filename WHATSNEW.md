@@ -1,3 +1,16 @@
+Version 2.4
+===========
+
+* Fix: (issue 78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
+    commit phase
+
+* Fix: (issue 76) when using transactions on either ezplatform or ezpublish with workflows, migrations might fail
+    when creating/editing contents that the anon user can not access
+
+* BC BREAK: for developers extending the bundle: the method `endMigration` in interface `StorageHandlerInterface` has
+    acquired a new parameter
+
+
 Version 2.3
 ===========
 

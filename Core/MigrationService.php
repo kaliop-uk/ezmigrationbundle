@@ -15,6 +15,14 @@ use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 
 class MigrationService
 {
+    use RepositoryUserSetterTrait;
+
+    /**
+     * Constant defining the default Admin user ID.
+     * @todo inject via config parameter
+     */
+    const ADMIN_USER_ID = 14;
+
     /**
      * @var LoaderInterface $loader
      */
@@ -161,6 +169,7 @@ class MigrationService
     /**
      * @param MigrationDefinition $migrationDefinition
      * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
+     * @param string $defaultLanguageCode
      * @throws \Exception
      *
      * @todo add support for skipped migrations, partially executed migrations
@@ -190,6 +199,7 @@ class MigrationService
         if ($useTransaction) {
             $this->repository->beginTransaction();
         }
+
         try {
 
             $i = 1;
@@ -215,10 +225,13 @@ class MigrationService
 
             if ($useTransaction) {
                 try {
+                    // there might be workflows or other actions happening at commit time that fail if we are not admin
+                    $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
                     $this->repository->commit();
+                    $this->loginUser($previousUserId);
                 } catch(\RuntimeException $e) {
-                    // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
-                    // already, we get an exception a this point. Extremely poor design, but what can we do ?
+                    // at present time, the ez5 repo does not support nested commits. So if some migration step has
+                    // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
                     /// @todo log warning
                 }
             }
@@ -227,23 +240,29 @@ class MigrationService
 
             if ($useTransaction) {
                 try {
+                    // in theory there is no need to become admin here
                     $this->repository->rollBack();
                 } catch(\RuntimeException $e2) {
-                    // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
-                    // already, we get an exception a this point. Extremely poor design, but what can we do ?
+                    // at present time, the ez5 repo does not support nested commits. So if some migration step has
+                    // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
                     /// @todo log error
                 }
             }
 
-            /// set migration as failed
-            $this->storageHandler->endMigration(new Migration(
-                $migration->name,
-                $migration->md5,
-                $migration->path,
-                $migration->executionDate,
-                Migration::STATUS_FAILED,
-                $e->getMessage()
-            ));
+            // set migration as failed
+            // NB: we use the 'force' flag here because we might be catching an exception happened during the call to
+            // $this->repository->commit() above, in which case the Migration might be in the DB with a status 'done'
+            $this->storageHandler->endMigration(
+                new Migration(
+                    $migration->name,
+                    $migration->md5,
+                    $migration->path,
+                    $migration->executionDate,
+                    Migration::STATUS_FAILED,
+                    $e->getMessage()
+                ),
+                true
+            );
 
             throw new MigrationStepExecutionException($this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine(), $i, $e);
         }

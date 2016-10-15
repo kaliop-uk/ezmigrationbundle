@@ -140,9 +140,10 @@ class Database implements StorageHandlerInterface
      * Stops a migration by storing it in the db. Migration status can not be 'started'
      *
      * @param Migration $migration
-     * @throws \Exception
+     * @param bool $force When true, the migration will be updated even if it was not in 'started' status
+     * @throws \Exception If the migration was not started (unless $force=true)
      */
-    public function endMigration(Migration $migration)
+    public function endMigration(Migration $migration, $force=false)
     {
         if ($migration->status == Migration::STATUS_STARTED) {
             throw new \Exception("Migration '{$migration->name}' can not be ended as its status is 'started'...");
@@ -175,7 +176,7 @@ class Database implements StorageHandlerInterface
             throw new \Exception("Migration '{$migration->name}' can not be ended as it is not found");
         }
 
-        if ($existingMigrationData['status'] != Migration::STATUS_STARTED) {
+        if (($existingMigrationData['status'] != Migration::STATUS_STARTED) && !$force) {
             // commit to release the lock
             $conn->commit();
             throw new \Exception("Migration '{$migration->name}' can not be ended as it is not executing");
