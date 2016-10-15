@@ -19,6 +19,7 @@ class TagManager extends RepositoryExecutor
 
     /**
      * @return mixed
+     * @throws \Exception
      */
     protected function create()
     {

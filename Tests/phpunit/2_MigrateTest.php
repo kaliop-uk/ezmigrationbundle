@@ -52,6 +52,7 @@ class MigrateTest extends CommandTest
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
     }
+
     /**
      * @param string $filePath
      * @dataProvider invalidDSLProvider
