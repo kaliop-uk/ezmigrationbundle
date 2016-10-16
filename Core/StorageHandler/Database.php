@@ -139,6 +139,13 @@ class Database implements StorageHandlerInterface
     /**
      * Stops a migration by storing it in the db. Migration status can not be 'started'
      *
+     * NB: if this call happens within another DB transaction which has already been flagged for rollback, the result
+     * will be that a RuntimeException is thrown, as Doctrine does not allow to call commit() after rollback().
+     * One way to fix the problem would be not to use a transaction and select-for-update here, but since that is the
+     * best way to insure atomic updates, I am loath to remove it.
+     * A known workaround is to call the Doctrine Connection method setNestTransactionsWithSavepoints(true); this can
+     * be achieved as simply as setting the parameter 'use_savepoints' in the doctrine connection configuration.
+     *
      * @param Migration $migration
      * @param bool $force When true, the migration will be updated even if it was not in 'started' status
      * @throws \Exception If the migration was not started (unless $force=true)

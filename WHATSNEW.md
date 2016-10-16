@@ -9,6 +9,8 @@ Version 3.0.0-beta2
 
 * New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped 
 
+* New: it is now possible to create, update and delete Object States and Object State Groups
+
 * New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of
     the elements to act upon, and comprehensive resolution of references
 

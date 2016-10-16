@@ -42,7 +42,10 @@ class ContentTypeManager extends RepositoryExecutor
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
-        $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($this->dsl['content_type_group']);
+
+        $contentTypeGroupId = $this->dsl['content_type_group'];
+        $contentTypeGroupId = $this->referenceResolver->resolveReference($contentTypeGroupId);
+        $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
 
         $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($this->dsl['identifier']);
         $contentTypeCreateStruct->mainLanguageCode = $this->getLanguageCode();
