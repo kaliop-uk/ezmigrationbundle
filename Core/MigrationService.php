@@ -18,6 +18,14 @@ use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 
 class MigrationService
 {
+    use RepositoryUserSetterTrait;
+
+    /**
+     * Constant defining the default Admin user ID.
+     * @todo inject via config parameter
+     */
+    const ADMIN_USER_ID = 14;
+
     /**
      * @var LoaderInterface $loader
      */
@@ -120,6 +128,15 @@ class MigrationService
     }
 
     /**
+     * @param MigrationDefinition $migrationDefinition
+     * @return Migration
+     */
+    public function skipMigration(MigrationDefinition $migrationDefinition)
+    {
+        return $this->storageHandler->skipMigration($migrationDefinition);
+    }
+
+    /**
      * Parses a migration definition, return a parsed definition.
      * If there is a parsing error, the definition status will be updated accordingly
      *
@@ -188,6 +205,9 @@ class MigrationService
         if ($useTransaction) {
             $this->repository->beginTransaction();
         }
+
+        $previousUserId = null;
+
         try {
 
             $i = 1;
@@ -218,37 +238,80 @@ class MigrationService
 
             if ($useTransaction) {
                 try {
+                    // there might be workflows or other actions happening at commit time that fail if we are not admin
+                    $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
                     $this->repository->commit();
+                    $this->loginUser($previousUserId);
                 } catch(\RuntimeException $e) {
-                    // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
-                    // already, we get an exception a this point. Extremely poor design, but what can we do ?
-                    /// @todo log warning
+                    // At present time, the ez5 repo does not support nested commits. So if some migration step has
+                    // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
+
+                    if ($previousUserId) {
+                        $this->loginUser($previousUserId);
+                    }
+
+                    // we update the migration with the info about what just happened
+                    $warning = 'An exception was thrown while committing, most likely due to some migration step being committed already: ' .
+                        $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
+                    $this->storageHandler->endMigration(
+                        new Migration(
+                            $migration->name,
+                            $migration->md5,
+                            $migration->path,
+                            $migration->executionDate,
+                            $status,
+                            $warning
+                        ),
+                        true
+                    );
                 }
             }
 
         } catch(\Exception $e) {
 
+             $additionalError = '';
+
             if ($useTransaction) {
                 try {
+                    // there is no need to become admin here, at least in theory
                     $this->repository->rollBack();
+
+                    // this should not happen, really, but we try to cater to the case where a commit() call above throws
+                    // an unexpected exception
+                    if ($previousUserId) {
+                        $this->loginUser($previousUserId);
+                    }
+
                 } catch(\RuntimeException $e2) {
-                    // at present time, the ez5 repo does not support nested commits. So if some migration step has committed
-                    // already, we get an exception a this point. Extremely poor design, but what can we do ?
-                    /// @todo log error
+                    // at present time, the ez5 repo does not support nested commits. So if some migration step has
+                    // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
+                    $additionalError = '. In addition, an exception was thrown while rolling back, most likely due to some migration step being committed already: ' .
+                        $this->getFullExceptionMessage($e2) . ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
+                } catch(\Exception $e3) {
+                    $additionalError = '. In addition, an exception was thrown while rolling back: ' .
+                        $this->getFullExceptionMessage($e3) . ' in file ' . $e3->getFile() . ' line ' . $e3->getLine();
                 }
             }
 
-            /// set migration as failed
-            $this->storageHandler->endMigration(new Migration(
-                $migration->name,
-                $migration->md5,
-                $migration->path,
-                $migration->executionDate,
-                Migration::STATUS_FAILED,
-                $e->getMessage()
-            ));
+            $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine() .
+                $additionalError;
 
-            throw new MigrationStepExecutionException($this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine(), $i, $e);
+            // set migration as failed
+            // NB: we use the 'force' flag here because we might be catching an exception happened during the call to
+            // $this->repository->commit() above, in which case the Migration might be in the DB with a status 'done'
+            $this->storageHandler->endMigration(
+                new Migration(
+                    $migration->name,
+                    $migration->md5,
+                    $migration->path,
+                    $migration->executionDate,
+                    Migration::STATUS_FAILED,
+                    $errorMessage
+                ),
+                true
+            );
+
+            throw new MigrationStepExecutionException($errorMessage, $i, $e);
         }
     }
 

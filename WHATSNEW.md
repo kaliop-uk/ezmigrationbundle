@@ -7,6 +7,8 @@ Version 3.0.0-beta2
 * New: the 'migrate' command learned a `--separate-process` option, to run each migration it its own separate
     php process. This should help when running many migrations in a single pass, and there are f.e. memory leaks.
 
+* New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped 
+
 * New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of
     the elements to act upon, and comprehensive resolution of references
 
@@ -37,6 +39,16 @@ Version 3.0.0-beta2
 
 * Fixed: migrations will not silently swallow any more errors when creating users or assigning roles and an inexisting
     group is specified
+
+* Fix: (issue 78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
+    commit phase
+
+* Fix: (issue 76) when using transactions on either ezplatform or ezpublish with workflows, migrations might fail
+    when creating/editing contents that the anon user can not access
+
+* Fix: throw correct exception when trying to access unset property in API/Value objects
+
+* Fix: properly set the 'enabled' field when creating languages
 
 * New: it is now possible to add resolvers for custom references using tagged services. The tag to use is: 
     `ez_migration_bundle.reference_resolver.customreference`. 
@@ -87,7 +99,8 @@ Version 3.0.0-beta2
         method each; many Executor services now have a different constructor signature; one Trait has been removed from
         the public API; the service ez_migration_bundle.helper.role_handler has been renamed
         to ez_migration_bundle.helper.limitation_converter; the chainResolver will now apply reference transformation
-        from all matching sub-resolvers, not only from the 1st one
+        from all matching sub-resolvers, not only from the 1st one; the interface `StorageHandlerInterface` has acquired
+        a new method; the method `endMigration` in interface `StorageHandlerInterface` has acquired a new parameter
 
 
 Version 2.1.0

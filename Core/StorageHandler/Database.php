@@ -133,80 +133,17 @@ class Database implements StorageHandlerInterface
      */
     public function startMigration(MigrationDefinition $migrationDefinition)
     {
-        $this->createMigrationsTableIfNeeded();
-
-        // select for update
-
-        // annoyingly enough, neither Doctrine nor EZP provide built in support for 'FOR UPDATE' in their query builders...
-        // at least the doctrine one allows us to still use parameter binding when we add our sql pqrticle
-        $conn = $this->dbHandler->getConnection();
-
-        $qb = $conn->createQueryBuilder();
-        $qb->select('*')
-            ->from($this->migrationsTableName, 'm')
-            ->where('migration = ?');
-        $sql = $qb->getSQL() . ' FOR UPDATE';
-
-        $conn->beginTransaction();
-
-        $stmt = $conn->executeQuery($sql, array($migrationDefinition->name));
-        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-        if (is_array($existingMigrationData)) {
-            // migration exists
-
-            // fail if it was already executing or already done
-            if ($existingMigrationData['status'] == Migration::STATUS_STARTED) {
-                // commit to release the lock
-                $conn->commit();
-                throw new \Exception("Migration '{$migrationDefinition->name}' can not be started as it is already executing");
-            }
-            if ($existingMigrationData['status'] == Migration::STATUS_DONE) {
-                // commit to release the lock
-                $conn->commit();
-                throw new \Exception("Migration '{$migrationDefinition->name}' can not be started as it was already executed");
-            }
-
-            $migration = new Migration(
-                $migrationDefinition->name,
-                md5($migrationDefinition->rawDefinition),
-                $migrationDefinition->path,
-                time(),
-                Migration::STATUS_STARTED
-            );
-            $conn->update(
-                $this->migrationsTableName,
-                array(
-                    'execution_date' => $migration->executionDate,
-                    'status' => Migration::STATUS_STARTED,
-                    'execution_error' => null,
-                ),
-                array('migration' => $migrationDefinition->name)
-            );
-        } else {
-            // migration did not exist. Create it!
-
-            $migration = new Migration(
-                $migrationDefinition->name,
-                md5($migrationDefinition->rawDefinition),
-                $migrationDefinition->path,
-                time(),
-                Migration::STATUS_STARTED
-            );
-            $conn->insert($this->migrationsTableName, $this->migrationToArray($migration));
-        }
-
-        $conn->commit();
-        return $migration;
+        return $this->createMigration($migrationDefinition, Migration::STATUS_STARTED, 'started');
     }
 
     /**
      * Stops a migration by storing it in the db. Migration status can not be 'started'
      *
      * @param Migration $migration
-     * @throws \Exception
+     * @param bool $force When true, the migration will be updated even if it was not in 'started' status
+     * @throws \Exception If the migration was not started (unless $force=true)
      */
-    public function endMigration(Migration $migration)
+    public function endMigration(Migration $migration, $force=false)
     {
         if ($migration->status == Migration::STATUS_STARTED) {
             throw new \Exception("Migration '{$migration->name}' can not be ended as its status is 'started'...");
@@ -217,7 +154,7 @@ class Database implements StorageHandlerInterface
         // select for update
 
         // annoyingly enough, neither Doctrine nor EZP provide built in support for 'FOR UPDATE' in their query builders...
-        // at least the doctrine one allows us to still use parameter binding when we add our sql pqrticle
+        // at least the doctrine one allows us to still use parameter binding when we add our sql particle
         $conn = $this->dbHandler->getConnection();
 
         $qb = $conn->createQueryBuilder();
@@ -239,7 +176,7 @@ class Database implements StorageHandlerInterface
             throw new \Exception("Migration '{$migration->name}' can not be ended as it is not found");
         }
 
-        if ($existingMigrationData['status'] != Migration::STATUS_STARTED) {
+        if (($existingMigrationData['status'] != Migration::STATUS_STARTED) && !$force) {
             // commit to release the lock
             $conn->commit();
             throw new \Exception("Migration '{$migration->name}' can not be ended as it is not executing");
@@ -259,7 +196,7 @@ class Database implements StorageHandlerInterface
     }
 
     /**
-     * Removes a Migration from the table
+     * Removes a Migration from the table - regardless of its state!
      * @param Migration $migration
      */
     public function deleteMigration(Migration $migration)
@@ -267,6 +204,93 @@ class Database implements StorageHandlerInterface
         $this->createMigrationsTableIfNeeded();
         $conn = $this->dbHandler->getConnection();
         $conn->delete($this->migrationsTableName, array('migration' => $migration->name));
+    }
+
+   /**
+     * Stops a migration by storing it in the db. Migration status can not be 'started'
+     *
+     * @param MigrationDefinition $migrationDefinition
+     * @return Migration
+     * @throws \Exception If the migration was already executed or executing
+     */
+    public function skipMigration(MigrationDefinition $migrationDefinition)
+    {
+        return $this->createMigration($migrationDefinition, Migration::STATUS_SKIPPED, 'skipped');
+    }
+
+    protected function createMigration(MigrationDefinition $migrationDefinition, $status, $action)
+    {
+        $this->createMigrationsTableIfNeeded();
+
+        // select for update
+
+        // annoyingly enough, neither Doctrine nor EZP provide built in support for 'FOR UPDATE' in their query builders...
+        // at least the doctrine one allows us to still use parameter binding when we add our sql particle
+        $conn = $this->dbHandler->getConnection();
+
+        $qb = $conn->createQueryBuilder();
+        $qb->select('*')
+            ->from($this->migrationsTableName, 'm')
+            ->where('migration = ?');
+        $sql = $qb->getSQL() . ' FOR UPDATE';
+
+        $conn->beginTransaction();
+
+        $stmt = $conn->executeQuery($sql, array($migrationDefinition->name));
+        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (is_array($existingMigrationData)) {
+            // migration exists
+
+            // fail if it was already executing or already done
+            if ($existingMigrationData['status'] == Migration::STATUS_STARTED) {
+                // commit to release the lock
+                $conn->commit();
+                throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it is already executing");
+            }
+            if ($existingMigrationData['status'] == Migration::STATUS_DONE) {
+                // commit to release the lock
+                $conn->commit();
+                throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already executed");
+            }
+            if ($existingMigrationData['status'] == Migration::STATUS_SKIPPED) {
+                // commit to release the lock
+                $conn->commit();
+                throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already skipped");
+            }
+
+            // do not set migration start date if we are skipping it
+            $migration = new Migration(
+                $migrationDefinition->name,
+                md5($migrationDefinition->rawDefinition),
+                $migrationDefinition->path,
+                ($status == Migration::STATUS_SKIPPED ? null: time()),
+                $status
+            );
+            $conn->update(
+                $this->migrationsTableName,
+                array(
+                    'execution_date' => $migration->executionDate,
+                    'status' => $status,
+                    'execution_error' => null
+                ),
+                array('migration' => $migrationDefinition->name)
+            );
+        } else {
+            // migration did not exist. Create it!
+
+            $migration = new Migration(
+                $migrationDefinition->name,
+                md5($migrationDefinition->rawDefinition),
+                $migrationDefinition->path,
+                ($status == Migration::STATUS_SKIPPED ? null: time()),
+                $status
+            );
+            $conn->insert($this->migrationsTableName, $this->migrationToArray($migration));
+        }
+
+        $conn->commit();
+        return $migration;
     }
 
     /**

@@ -16,8 +16,8 @@ class Migration extends AbstractValue
     const STATUS_STARTED = 1;
     const STATUS_DONE = 2;
     const STATUS_FAILED = 3;
-    // the 2 below are not yet supported
     const STATUS_SKIPPED = 4;
+    // the ones below are not yet supported
     const STATUS_PARTIALLY_DONE = 5;
 
     protected $name;

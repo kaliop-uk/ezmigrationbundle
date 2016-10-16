@@ -25,8 +25,9 @@ class MigrationCommand extends AbstractCommand
             ->setDescription('Manually delete migrations from the database table.')
             ->addOption('delete', null, InputOption::VALUE_NONE, "Delete the specified migration.")
             ->addOption('add', null, InputOption::VALUE_NONE, "Add the specified migration definition.")
+            ->addOption('skip', null, InputOption::VALUE_NONE, "Mark the specified migration as skipped.")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question.")
-            ->addArgument('migration', InputArgument::REQUIRED, 'The version to add (filename with full path) or delete (plain migration name).', null)
+            ->addArgument('migration', InputArgument::REQUIRED, 'The version to add/skip (filename with full path) or delete (plain migration name).', null)
             ->setHelp(
                 <<<EOT
 The <info>kaliop:migration:migration</info> command allows you to manually delete migrations versions from the migration table:
@@ -49,8 +50,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (! $input->getOption('add') && ! $input->getOption('delete')) {
-            throw new \InvalidArgumentException('You must specify whether you want to --add or --delete the specified migration.');
+        if (! $input->getOption('add') && ! $input->getOption('delete') && ! $input->getOption('skip')) {
+            throw new \InvalidArgumentException('You must specify whether you want to --add, --delete or --skip the specified migration.');
         }
 
         $migrationService = $this->getMigrationService();
@@ -101,6 +102,25 @@ EOT
             }
 
             $migrationService->deleteMigration($migration);
+
+            return;
+        }
+
+        if ($input->getOption('skip')) {
+            // will throw if a file is passed and it is not found, but not if an empty dir is passed
+            $migrationDefinitionCollection = $migrationService->getMigrationsDefinitions(array($migrationNameOrPath));
+
+            if (!count($migrationDefinitionCollection))
+            {
+                throw new \InvalidArgumentException(sprintf('The path "%s" does not correspond to any migration definition.', $migrationNameOrPath));
+            }
+
+            foreach($migrationDefinitionCollection as $migrationDefinition) {
+                $migrationService->skipMigration($migrationDefinition);
+                $output->writeln('<info>Migration' . $migrationDefinition->path . ' marked as skipped</info>');
+            }
+
+            return;
         }
     }
 }

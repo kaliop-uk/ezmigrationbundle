@@ -6,7 +6,7 @@ use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-
+use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
 use \eZ\Publish\API\Repository\Repository;
 
 /**
@@ -14,6 +14,8 @@ use \eZ\Publish\API\Repository\Repository;
  */
 abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAwareInterface
 {
+    use RepositoryUserSetterTrait;
+
     /**
      * Constant defining the default language code
      */
@@ -21,7 +23,6 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
 
     /**
      * Constant defining the default Admin user ID.
-     *
      * @todo inject via config parameter
      */
     const ADMIN_USER_ID = 14;
@@ -55,13 +56,6 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
      * @var string
      */
     private $defaultLanguageCode;
-
-    /**
-     * The bundle object representing the bundle the currently processed migration is in.
-     *
-     * @var BundleInterface
-     */
-    protected $bundle;
 
     /** @var ReferenceResolverInterface $referenceResolver */
     protected $referenceResolver;
@@ -131,22 +125,6 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
      * @return boolean
      */
     abstract protected function setReferences($object);
-
-    /**
-     * Helper method to log in a user that can make changes to the system.
-     * @param int $userId
-     * @return int id of the previously logged in user
-     */
-    protected function loginUser($userId)
-    {
-        $previousUser = $this->repository->getCurrentUser();
-
-        if ($userId != $previousUser->id) {
-            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($userId));
-        }
-
-        return $previousUser->id;
-    }
 
     public function setLanguageCode($languageCode)
     {
