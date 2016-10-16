@@ -200,6 +200,8 @@ class MigrationService
             $this->repository->beginTransaction();
         }
 
+        $previousUserId = null;
+
         try {
 
             $i = 1;
@@ -230,24 +232,58 @@ class MigrationService
                     $this->repository->commit();
                     $this->loginUser($previousUserId);
                 } catch(\RuntimeException $e) {
-                    // at present time, the ez5 repo does not support nested commits. So if some migration step has
+                    // At present time, the ez5 repo does not support nested commits. So if some migration step has
                     // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
-                    /// @todo log warning
+
+                    if ($previousUserId) {
+                        $this->loginUser($previousUserId);
+                    }
+
+                    // we update the migration with the info about what just happened
+                    $warning = 'An exception was thrown while committing, most likely due to some migration step being committed already: ' .
+                        $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
+                    $this->storageHandler->endMigration(
+                        new Migration(
+                            $migration->name,
+                            $migration->md5,
+                            $migration->path,
+                            $migration->executionDate,
+                            $status,
+                            $warning
+                        ),
+                        true
+                    );
                 }
             }
 
         } catch(\Exception $e) {
 
+            $additionalError = '';
+
             if ($useTransaction) {
                 try {
-                    // in theory there is no need to become admin here
+                    // there is no need to become admin here, at least in theory
                     $this->repository->rollBack();
+
+                    // this should not happen, really, but we try to cater to the case where a commit() call above throws
+                    // an unexpected exception
+                    if ($previousUserId) {
+                        $this->loginUser($previousUserId);
+                    }
+
                 } catch(\RuntimeException $e2) {
                     // at present time, the ez5 repo does not support nested commits. So if some migration step has
                     // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
-                    /// @todo log error
+                    $additionalError = '. In addition, an exception was thrown while rolling back, most likely due to some migration step being committed already: ' .
+                        $this->getFullExceptionMessage($e2) . ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
+                } catch(\Exception $e3) {
+                    $additionalError = '. In addition, an exception was thrown while rolling back: ' .
+                        $this->getFullExceptionMessage($e3) . ' in file ' . $e3->getFile() . ' line ' . $e3->getLine();
                 }
             }
+
+            $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine() .
+                $additionalError;
 
             // set migration as failed
             // NB: we use the 'force' flag here because we might be catching an exception happened during the call to
@@ -259,12 +295,12 @@ class MigrationService
                     $migration->path,
                     $migration->executionDate,
                     Migration::STATUS_FAILED,
-                    $e->getMessage()
+                    $errorMessage
                 ),
                 true
             );
 
-            throw new MigrationStepExecutionException($this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine(), $i, $e);
+            throw new MigrationStepExecutionException($errorMessage, $i, $e);
         }
     }
 
