@@ -1,6 +1,8 @@
 Version 2.4
 ===========
 
+* New: it is now possible to create, update and delete Object States and Object State Groups
+
 * Fix: (issue 78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
     commit phase
 
