@@ -214,15 +214,13 @@ class MigrationService
                 $i++;
             }
 
-            $status = Migration::STATUS_DONE;
-
             // set migration as done
             $this->storageHandler->endMigration(new Migration(
                 $migration->name,
                 $migration->md5,
                 $migration->path,
                 $migration->executionDate,
-                $status
+                Migration::STATUS_DONE
             ));
 
             if ($useTransaction) {
@@ -234,37 +232,45 @@ class MigrationService
 
         } catch(\Exception $e) {
 
-             $additionalError = '';
+            $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
+            $finalStatus = Migration::STATUS_FAILED;
 
             if ($useTransaction) {
                 try {
-                    // there is no need to become admin here, at least in theory
-                    $this->repository->rollBack();
-
                     // cater to the case where the $this->repository->commit() call above throws an exception
                     if ($previousUserId) {
                         $this->loginUser($previousUserId);
                     }
 
+                    // there is no need to become admin here, at least in theory
+                    $this->repository->rollBack();
+
                 } catch(\Exception $e2) {
-                    $additionalError = '. In addition, an exception was thrown while rolling back: ' .
-                        $this->getFullExceptionMessage($e2) . ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
+                    // This check is not rock-solid, but at the moment is all we can do to tell apart 2 cases of
+                    // exceptions originating above: the case where the commit was successful but a commit-queue event
+                    // failed, from the case where something failed beforehand
+                    if ($previousUserId && $e2->getMessage() == 'There is no active transaction.') {
+                        // since the migration succeeded and it was committed, no use to mark it as failed...
+                        $finalStatus = Migration::STATUS_DONE;
+                        $errorMessage = 'Error post migration execution: ' . $this->getFullExceptionMessage($e2) .
+                            ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
+                    } else {
+                        $errorMessage .= '. In addition, an exception was thrown while rolling back: ' .
+                            $this->getFullExceptionMessage($e2) . ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
+                    }
                 }
             }
 
-            $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine() .
-                $additionalError;
-
             // set migration as failed
             // NB: we use the 'force' flag here because we might be catching an exception happened during the call to
-            // $this->repository->commit() above, in which case the Migration might be in the DB with a status 'done'
+            // $this->repository->commit() above, in which case the Migration might already be in the DB with a status 'done'
             $this->storageHandler->endMigration(
                 new Migration(
                     $migration->name,
                     $migration->md5,
                     $migration->path,
                     $migration->executionDate,
-                    Migration::STATUS_FAILED,
+                    $finalStatus,
                     $errorMessage
                 ),
                 true
