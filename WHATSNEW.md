@@ -7,9 +7,9 @@ Version 2.4
 * Fix: (issue 76) when using transactions on either ezplatform or ezpublish with workflows, migrations might fail
     when creating/editing contents that the anon user can not access
 
-* Fix: throw correct exception when trying to access unset property in API/CValue objects
+* Fix: throw correct exception when trying to access unset property in API/Value objects
 
-* Fix: properly set te 'enabled' field when creating languages
+* Fix: properly set the 'enabled' field when creating languages
 
 * BC BREAK: for developers extending the bundle: the method `endMigration` in interface `StorageHandlerInterface` has
     acquired a new parameter.
