@@ -41,9 +41,13 @@ parameters:
     ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
     ez_migration_bundle.executor.user_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserManager
     ez_migration_bundle.executor.language_manager.class: Kaliop\eZMigrationBundle\Core\Executor\LanguageManager
+    ez_migration_bundle.executor.object_state_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ObjectStateManager
+    ez_migration_bundle.executor.object_state_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ObjectStateGroupManager
 
     ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
     ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
+    ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
+    ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
 
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
@@ -199,6 +203,23 @@ services:
         tags:
             - { name: ez_migration_bundle.executor }
 
+    ez_migration_bundle.executor.object_state_manager:
+        class: '%ez_migration_bundle.executor.object_state_manager.class%'
+        parent: ez_migration_bundle.executor.repository
+        arguments:
+            - '@ez_migration_bundle.object_state_matcher'
+            - '@ez_migration_bundle.object_state_group_matcher'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.object_state_group_manager:
+        class: '%ez_migration_bundle.executor.object_state_group_manager.class%'
+        parent: ez_migration_bundle.executor.repository
+        arguments:
+            - '@ez_migration_bundle.object_state_group_matcher'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
     ### matchers
 
     ez_migration_bundle.content_matcher:
@@ -208,6 +229,16 @@ services:
 
     ez_migration_bundle.location_matcher:
         class: '%ez_migration_bundle.location_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.object_state_matcher:
+        class: '%ez_migration_bundle.object_state_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.object_state_group_matcher:
+        class: '%ez_migration_bundle.object_state_group_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
 
