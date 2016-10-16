@@ -23,9 +23,10 @@ parameters:
 
     ez_migration_bundle.loader.filesystem.class: Kaliop\eZMigrationBundle\Core\Loader\Filesystem
 
-    ez_migration_bundle.definition_parser.yaml.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\PHPDefinitionParser
+    ez_migration_bundle.definition_parser.yaml.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\YamlDefinitionParser
+    ez_migration_bundle.definition_parser.json.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\JsonDefinitionParser
     ez_migration_bundle.definition_parser.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\SQLDefinitionParser
-    ez_migration_bundle.definition_parser.php.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\YamlDefinitionParser
+    ez_migration_bundle.definition_parser.php.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\PHPDefinitionParser
 
     ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
 
@@ -96,6 +97,12 @@ services:
 
     ez_migration_bundle.definition_parser.yaml:
         class: '%ez_migration_bundle.definition_parser.yaml.class%'
+        arguments: []
+        tags:
+            - { name: ez_migration_bundle.definition_parser }
+
+    ez_migration_bundle.definition_parser.json:
+        class: '%ez_migration_bundle.definition_parser.json.class%'
         arguments: []
         tags:
             - { name: ez_migration_bundle.definition_parser }

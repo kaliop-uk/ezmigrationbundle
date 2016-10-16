@@ -1,0 +1,9 @@
+[
+    {
+        "type": "content",
+        "mode": "update",
+        "match": {
+            "location_id": "test_custom_reference_with_low_chances_of_collision_with_random_data"
+        }
+    }
+]

@@ -8,9 +8,9 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Handles Yaml migration definitions.
+ * Handles Json migration definitions.
  */
-class YamlDefinitionParser extends AbstractDefinitionParser implements DefinitionParserInterface
+class JsonDefinitionParser extends AbstractDefinitionParser implements DefinitionParserInterface
 {
     /**
      * Tells whether the given file can be handled by this handler, by checking e.g. the suffix
@@ -21,7 +21,7 @@ class YamlDefinitionParser extends AbstractDefinitionParser implements Definitio
     public function supports($migrationName)
     {
         $ext = pathinfo($migrationName, PATHINFO_EXTENSION);
-        return  $ext == 'yml' || $ext == 'yaml';
+        return  $ext == 'json';
     }
 
     /**
@@ -33,7 +33,7 @@ class YamlDefinitionParser extends AbstractDefinitionParser implements Definitio
     public function parseMigrationDefinition(MigrationDefinition $definition)
     {
         try {
-            $data = Yaml::parse($definition->rawDefinition);
+            $data = json_decode($definition->rawDefinition, true);
         } catch(\Exception $e) {
             return new MigrationDefinition(
                 $definition->name,
@@ -45,6 +45,6 @@ class YamlDefinitionParser extends AbstractDefinitionParser implements Definitio
             );
         }
 
-        return $this->parseMigrationDefinitionData($data, $definition);
+        return $this->parseMigrationDefinitionData($data, $definition, 'Json');
     }
 }

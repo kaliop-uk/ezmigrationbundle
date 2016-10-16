@@ -28,7 +28,7 @@ abstract class AbstractMatcher implements MatcherInterface
     protected function validateConditions(array $conditions)
     {
         if (count($conditions) == 0) {
-            throw new \Exception('Content can not be matched because the matching conditions are empty');
+            throw new \Exception($this->returns . ' can not be matched because the matching conditions are empty');
         }
 
         if (count($conditions) > $this->maxConditions) {
