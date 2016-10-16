@@ -12,8 +12,7 @@ class ObjectStateMatcher extends AbstractMatcher
     const MATCH_OBJECTSTATE_IDENTIFIER = 'objectstate_identifier';
 
     protected $allowedConditions = array(
-        self::MATCH_OBJECTSTATE_ID,
-        self::MATCH_OBJECTSTATE_IDENTIFIER,
+        self::MATCH_OBJECTSTATE_ID, self::MATCH_OBJECTSTATE_IDENTIFIER,
         // aliases
         'id', 'identifier'
     );
@@ -21,20 +20,18 @@ class ObjectStateMatcher extends AbstractMatcher
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
-     *
      * @return ObjectStateCollection
      */
     public function match(array $conditions)
     {
-        $this->matchObjectState($conditions);
+        return $this->matchObjectState($conditions);
     }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
-     *
      * @return ObjectStateCollection
      */
-    public function matchObjectState($conditions)
+    public function matchObjectState(array $conditions)
     {
         $this->validateConditions($conditions);
 
@@ -48,6 +45,7 @@ class ObjectStateMatcher extends AbstractMatcher
                 case 'id':
                 case self::MATCH_OBJECTSTATE_ID:
                     return new ObjectStateCollection($this->findObjectStatesById($values));
+
                 case 'identifier':
                 case self::MATCH_OBJECTSTATE_IDENTIFIER:
                     return new ObjectStateCollection($this->findObjectStatesByIdentifier($values));
@@ -57,7 +55,6 @@ class ObjectStateMatcher extends AbstractMatcher
 
     /**
      * @param int[] $objectStateIds
-     *
      * @return ObjectState[]
      */
     protected function findObjectStatesById(array $objectStateIds)
@@ -74,43 +71,54 @@ class ObjectStateMatcher extends AbstractMatcher
     }
 
     /**
-     * @param array $objectStateIdentifiers
-     *
+     * @param string[] $stateIdentifiers Accepts the state identifier if unique, otherwise "group-identifier/state-identifier"
      * @return ObjectState[]
+     * @throws NotFoundException
      */
-    protected function findObjectStatesByIdentifier(array $objectStateIdentifiers)
+    protected function findObjectStatesByIdentifier(array $stateIdentifiers)
     {
-        $objectStates = [];
+        // we have to build this list, as the ObjectStateService does not allow to load a State by identifier...
+        $statesList = $this->loadAvailableStates();
 
-        $stateList = $this->loadAvailableStates();
+        $states = [];
 
-        foreach ($objectStateIdentifiers as $objectStateIdentifier) {
-            if (!array_key_exists($objectStateIdentifier, $stateList)) {
-                throw new NotFoundException("ObjectState", $objectStateIdentifier);
+        foreach ($stateIdentifiers as $stateIdentifier) {
+            if (!isset($statesList[$stateIdentifier])) {
+                // a quick and dirty way of letting the user know that he/she might be using a non-unique identifier
+                throw new NotFoundException("ObjectState", $stateIdentifier . ' missing or non unique');
             }
-
-            $objectStates[$stateList[$objectStateIdentifier]->id] = $stateList[$objectStateIdentifier];
+            $states[$statesList[$stateIdentifier]->id] = $statesList[$stateIdentifier];
         }
 
-        return $objectStates;
+        return $states;
     }
 
     /**
-     * @return ObjectState[]
+     * @return ObjectState[] key: the state identifier (for unique identifiers), group_identifier/state_identifier for all
      */
-    private function loadAvailableStates()
+    protected function loadAvailableStates()
     {
-        $stateList = [];
-        $objectStateService = $this->repository->getObjectStateService();
+        $statesList = array();
+        $nonuniqueIdentifiers = array();
 
-        $groups = $objectStateService->loadObjectStateGroups();
+        $groups = $this->repository->getObjectStateService()->loadObjectStateGroups();
         foreach ($groups as $group) {
-            $states = $objectStateService->loadObjectStates($group);
-            foreach ($states as $state) {
-                $stateList[$state->id] = $state;
+            $groupStates = $this->repository->getObjectStateService()->loadObjectStates($group);
+            foreach($groupStates as $groupState) {
+                // we always add the states using 'group/state' identifiers
+                $statesList[$group->identifier.'/'.$groupState->identifier] = $groupState;
+                // we only add the state using plain identifier if it is unique
+                if (isset($statesList[$groupState->identifier])) {
+                    unset($statesList[$groupState->identifier]);
+                    $nonuniqueIdentifiers[] = $groupState->identifier;
+                } else {
+                    if (!isset($nonuniqueIdentifiers[$groupState->identifier])) {
+                        $statesList[$groupState->identifier] = $groupState;
+                    }
+                }
             }
         }
 
-        return $stateList;
+        return $statesList;
     }
 }

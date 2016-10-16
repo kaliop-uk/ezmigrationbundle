@@ -1,0 +1,63 @@
+-
+    type: object_state_group
+    mode: create
+    identifier: an_object_state_group
+    names:
+        eng-GB: An Object State Group
+    descriptions:
+        eng-GB:  Kaliop Migration Bundle Test Object State Group 1
+    roles: [1, 2] # Anon, admin
+    references:
+         -
+            identifier: kmb_test_12
+            attribute: id
+
+-
+    type: object_state_group
+    mode: update
+    match:
+        identifier: an_object_state_group
+    identifier: an_object_state_group_updated
+
+-
+    type: object_state
+    mode: create
+    identifier: an_object_state
+    object_state_group: reference:kmb_test_12
+    names:
+        eng-GB: An Object State
+    descriptions:
+        eng-GB:  Kaliop Migration Bundle Test Object State 1
+    references:
+         -
+            identifier: kmb_test_12_state
+            attribute: id
+
+-
+    type: object_state
+    mode: create
+    identifier: another_object_state
+    object_state_group: reference:kmb_test_12
+    names:
+        eng-GB: Another Object State
+    descriptions:
+        eng-GB:  Kaliop Migration Bundle Test Object State 2
+
+-
+    type: object_state
+    mode: update
+    match:
+        identifier: an_object_state
+    identifier: an_object_state_updated
+
+-
+    type: object_state
+    mode: delete
+    match:
+        id: reference:kmb_test_12_state
+
+-
+    type: object_state_group
+    mode: delete
+    match:
+        id: reference:kmb_test_12

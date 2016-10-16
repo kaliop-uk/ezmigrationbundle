@@ -16,12 +16,12 @@ class ObjectStateManager extends RepositoryExecutor
     /**
      * @var ObjectStateMatcher
      */
-    private $objectStateMatcher;
+    protected $objectStateMatcher;
 
     /**
      * @var ObjectStateGroupMatcher
      */
-    private $objectStateGroupMatcher;
+    protected $objectStateGroupMatcher;
 
     /**
      * @param ObjectStateMatcher      $objectStateMatcher
@@ -40,15 +40,19 @@ class ObjectStateManager extends RepositoryExecutor
      */
     protected function create()
     {
-        foreach(array('object_state_group_id', 'names', 'identifier') as $key) {
+        foreach(array('object_state_group', 'names', 'identifier') as $key) {
             if (!isset($this->dsl[$key])) {
                 throw new \Exception("The '$key' key is missing in a object state creation definition");
             }
         }
 
+        if (!count($this->dsl['names'])) {
+            throw new \Exception('No object state names have been defined. Need to specify at least one to create the state.');
+        }
+
         $objectStateService = $this->repository->getObjectStateService();
 
-        $objectStateGroupId = $this->dsl['object_state_group_id'];
+        $objectStateGroupId = $this->dsl['object_state_group'];
         if ($this->referenceResolver->isReference($objectStateGroupId)) {
             $objectStateGroupId = $this->referenceResolver->getReferenceValue($objectStateGroupId);
         }
@@ -58,14 +62,13 @@ class ObjectStateManager extends RepositoryExecutor
         $objectStateCreateStruct = $objectStateService->newObjectStateCreateStruct($this->dsl['identifier']);
         $objectStateCreateStruct->defaultLanguageCode = self::DEFAULT_LANGUAGE_CODE;
 
-        foreach ($this->dsl['names'] as $name) {
-            if ( array_key_exists('languageCode', $name) && array_key_exists('name', $name)) {
-                $objectStateCreateStruct->names[$name['languageCode']] = $name['name'];
-            }
+        foreach ($this->dsl['names'] as $languageCode => $name) {
+            $objectStateCreateStruct->names[$languageCode] = $name;
         }
-
-        if (0 === count($objectStateCreateStruct->names)) {
-            throw new \Exception('No object state names have been defined. Need to specify at least one to create the state.');
+        if (isset($this->dsl['descriptions'])) {
+            foreach ($this->dsl['descriptions'] as $languageCode => $description) {
+                $objectStateCreateStruct->descriptions[$languageCode] = $description;
+            }
         }
 
         $objectState = $objectStateService->createObjectState($objectStateGroup, $objectStateCreateStruct);
@@ -80,26 +83,38 @@ class ObjectStateManager extends RepositoryExecutor
      */
     protected function update()
     {
-        $stateCollection = $this->matchStates('update');
-
-        $objectStateService = $this->repository->getObjectStateService();
+        $stateCollection = $this->matchObjectStates('update');
 
         if (count($stateCollection) > 1 && array_key_exists('references', $this->dsl)) {
             throw new \Exception("Can not execute Object State update because multiple states match, and a references section is specified in the dsl. References can be set when only 1 state matches");
         }
 
+        if (count($stateCollection) > 1 && isset($this->dsl['identifier'])) {
+            throw new \Exception("Can not execute Object State update because multiple states match, and an identifier is specified in the dsl.");
+        }
+
+        $objectStateService = $this->repository->getObjectStateService();
+
         foreach ($stateCollection as $state) {
             $objectStateUpdateStruct = $objectStateService->newObjectStateUpdateStruct();
 
-            foreach ($this->dsl['names'] as $name) {
-                $objectStateUpdateStruct->names[$name['languageCode']] = $name['name'];
+            if (isset($this->dsl['identifier'])) {
+                $objectStateUpdateStruct->identifier = $this->dsl['identifier'];
             }
-
+            if (isset($this->dsl['names'])) {
+                foreach ($this->dsl['names'] as $name) {
+                    $objectStateUpdateStruct->names[$name['languageCode']] = $name['name'];
+                }
+            }
+            if (isset($this->dsl['descriptions'])) {
+                foreach ($this->dsl['descriptions'] as $languageCode => $description) {
+                    $objectStateUpdateStruct->descriptions[$languageCode] = $description;
+                }
+            }
             $state = $objectStateService->updateObjectState($state, $objectStateUpdateStruct);
 
             $this->setReferences($state);
         }
-
     }
 
     /**
@@ -107,13 +122,44 @@ class ObjectStateManager extends RepositoryExecutor
      */
     protected function delete()
     {
-        $stateCollection = $this->matchStates('delete');
+        $stateCollection = $this->matchObjectStates('delete');
 
         $objectStateService = $this->repository->getObjectStateService();
 
         foreach ($stateCollection as $state) {
             $objectStateService->deleteObjectState($state);
         }
+    }
+
+    /**
+     * @param string $action
+     * @return ObjectStateCollection
+     * @throws \Exception
+     */
+    private function matchObjectStates($action)
+    {
+        if (!isset($this->dsl['match'])) {
+            throw new \Exception("A match Condition is required to $action an object state.");
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
+                    }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
+                }
+            }
+        }
+
+        return $this->objectStateMatcher->match($match);
     }
 
     /**
@@ -139,55 +185,5 @@ class ObjectStateManager extends RepositoryExecutor
         }
 
         return true;
-    }
-
-    /**
-     * @param string $action
-     *
-     * @throws \Exception
-     *
-     * @return ObjectStateCollection
-     */
-    private function matchStates($action)
-    {
-        if (!isset($this->dsl['state_id']) && !isset($this->dsl['state_identifier']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The ID or Identifier of an object state or a Match Condition is required to $action an object state.");
-        }
-
-        if (!isset($this->dsl['match'])) {
-            if (isset($this->dsl['id'])) {
-                $this->dsl['match'] = array('objectstate_id' => $this->dsl['id']);
-            } elseif (isset($this->dsl['identifier'])) {
-                $this->dsl['match'] = array('objectstate_identifier' => $this->dsl['identifier']);
-            }
-        }
-
-        return $this->objectStateMatcher->match(
-            $this->convertMatchReferences($this->dsl['match'])
-        );
-    }
-
-    /**
-     * @param array $match
-     *
-     * @return array
-     */
-    private function convertMatchReferences($match)
-    {
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
-                }
-            } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
-            }
-        }
-
-        return $match;
     }
 }

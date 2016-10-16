@@ -8,27 +8,26 @@ use \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 class ObjectStateGroupMatcher extends AbstractMatcher
 {
     const MATCH_OBJECTSTATEGROUP_ID = 'objectstategroup_id';
+    const MATCH_OBJECTSTATEGROUP_IDENTIFIER = 'objectstategroup_identifier';
 
     protected $allowedConditions = array(
-        self::MATCH_OBJECTSTATEGROUP_ID,
+        self::MATCH_OBJECTSTATEGROUP_ID, self::MATCH_OBJECTSTATEGROUP_IDENTIFIER,
         // aliases
-        'id',
+        'id', 'identifier'
     );
     protected $returns = 'ObjectStateGroup';
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
-     *
      * @return ObjectStateGroupCollection
      */
     public function match(array $conditions)
     {
-        $this->matchObjectStateGroup($conditions);
+        return $this->matchObjectStateGroup($conditions);
     }
 
     /**
      * @param int $groupId
-     *
      * @return ObjectStateGroup
      */
     public function matchByKey($groupId)
@@ -38,7 +37,6 @@ class ObjectStateGroupMatcher extends AbstractMatcher
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
-     *
      * @return ObjectStateGroupCollection
      */
     public function matchObjectStateGroup($conditions)
@@ -56,13 +54,15 @@ class ObjectStateGroupMatcher extends AbstractMatcher
                 case self::MATCH_OBJECTSTATEGROUP_ID:
                     return new ObjectStateGroupCollection($this->findObjectStateGroupsById($values));
 
+                case 'identifier':
+                case self::MATCH_OBJECTSTATEGROUP_IDENTIFIER:
+                    return new ObjectStateGroupCollection($this->findObjectStateGroupsByIdentifier($values));
             }
         }
     }
 
     /**
      * @param int[] $objectStateGroupIds
-     *
      * @return ObjectStateGroup[]
      */
     protected function findObjectStateGroupsById(array $objectStateGroupIds)
@@ -76,5 +76,41 @@ class ObjectStateGroupMatcher extends AbstractMatcher
         }
 
         return $objectStateGroups;
+    }
+
+        /**
+         * @param int[] $objectStateGroupIdentifiers
+         * @return ObjectStateGroup[]
+         */
+    protected function findObjectStateGroupsByIdentifier(array $objectStateGroupIdentifiers)
+    {
+        $objectStateGroups = [];
+
+        $groupsByIdentifier = $this->loadAvailableStateGroups();
+
+        foreach ($objectStateGroupIdentifiers as $objectStateGroupIdentifier) {
+            if (!array_key_exists($objectStateGroupIdentifier, $groupsByIdentifier)) {
+                throw new NotFoundException("ObjectStateGroup", $objectStateGroupIdentifier);
+            }
+            // return unique contents
+            $objectStateGroups[$groupsByIdentifier[$objectStateGroupIdentifier]->id] = $groupsByIdentifier[$objectStateGroupIdentifier];
+        }
+
+        return $objectStateGroups;
+    }
+
+    /**
+     * @return ObjectState[] key: the group identifier
+     */
+    protected function loadAvailableStateGroups()
+    {
+        $stateGroupsList = [];
+        $objectStateService = $this->repository->getObjectStateService();
+
+        foreach ($objectStateService->loadObjectStateGroups() as $group) {
+            $stateGroupsList[$group->identifier] = $group;
+        }
+
+        return $stateGroupsList;
     }
 }
