@@ -9,6 +9,7 @@ interface ComplexFieldInterface
 {
     /**
      * Return a non primitive field value
+     *
      * @param array $fieldValueArray The definition of teh field value, structured in the yml file
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return mixed

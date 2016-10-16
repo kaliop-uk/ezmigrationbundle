@@ -16,7 +16,7 @@ interface ReferenceResolverInterface
     /**
      * @param string $stringIdentifier
      * @return mixed
-     * @throws \Exception if reference with given Identifier is not found
+     * @throws \Exception if the given Identifier is not a reference
      */
     public function getReferenceValue($stringIdentifier);
 }

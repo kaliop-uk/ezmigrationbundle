@@ -2,6 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\API\Value;
 
+use eZ\Publish\API\Repository\Exceptions\PropertyNotFoundException;
+
 abstract class AbstractValue
 {
     /**

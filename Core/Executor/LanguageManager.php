@@ -29,7 +29,7 @@ class LanguageManager extends RepositoryExecutor
             $languageCreateStruct->name = $this->dsl['name'];
         }
         if (isset($this->dsl['enabled'])) {
-            $languageCreateStruct->name = (bool)$this->dsl['enabled'];
+            $languageCreateStruct->enabled = (bool)$this->dsl['enabled'];
         }
         $language = $languageService->createLanguage($languageCreateStruct);
 

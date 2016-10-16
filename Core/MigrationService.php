@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
 use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
@@ -10,7 +11,6 @@ use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 
 class MigrationService
