@@ -226,59 +226,29 @@ class MigrationService
             ));
 
             if ($useTransaction) {
-                try {
-                    // there might be workflows or other actions happening at commit time that fail if we are not admin
-                    $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
-                    $this->repository->commit();
-                    $this->loginUser($previousUserId);
-                } catch(\RuntimeException $e) {
-                    // At present time, the ez5 repo does not support nested commits. So if some migration step has
-                    // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
-
-                    if ($previousUserId) {
-                        $this->loginUser($previousUserId);
-                    }
-
-                    // we update the migration with the info about what just happened
-                    $warning = 'An exception was thrown while committing, most likely due to some migration step being committed already: ' .
-                        $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
-                    $this->storageHandler->endMigration(
-                        new Migration(
-                            $migration->name,
-                            $migration->md5,
-                            $migration->path,
-                            $migration->executionDate,
-                            $status,
-                            $warning
-                        ),
-                        true
-                    );
-                }
+                // there might be workflows or other actions happening at commit time that fail if we are not admin
+                $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+                $this->repository->commit();
+                $this->loginUser($previousUserId);
             }
 
         } catch(\Exception $e) {
 
-            $additionalError = '';
+             $additionalError = '';
 
             if ($useTransaction) {
                 try {
                     // there is no need to become admin here, at least in theory
                     $this->repository->rollBack();
 
-                    // this should not happen, really, but we try to cater to the case where a commit() call above throws
-                    // an unexpected exception
+                    // cater to the case where the $this->repository->commit() call above throws an exception
                     if ($previousUserId) {
                         $this->loginUser($previousUserId);
                     }
 
-                } catch(\RuntimeException $e2) {
-                    // at present time, the ez5 repo does not support nested commits. So if some migration step has
-                    // committed already, we get an exception a this point. Extremely poor design, but what can we do ?
-                    $additionalError = '. In addition, an exception was thrown while rolling back, most likely due to some migration step being committed already: ' .
-                        $this->getFullExceptionMessage($e2) . ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
-                } catch(\Exception $e3) {
+                } catch(\Exception $e2) {
                     $additionalError = '. In addition, an exception was thrown while rolling back: ' .
-                        $this->getFullExceptionMessage($e3) . ' in file ' . $e3->getFile() . ' line ' . $e3->getLine();
+                        $this->getFullExceptionMessage($e2) . ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
                 }
             }
 
