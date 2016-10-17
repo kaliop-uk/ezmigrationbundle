@@ -86,7 +86,7 @@ class MigrationService
     }
 
     /**
-     * Return the list of all the migrations which where executed or attempted so far
+     * Returns the list of all the migrations which where executed or attempted so far
      *
      * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationCollection
      */
@@ -128,6 +128,16 @@ class MigrationService
     public function skipMigration(MigrationDefinition $migrationDefinition)
     {
         return $this->storageHandler->skipMigration($migrationDefinition);
+    }
+
+    /**
+     * Not be called by external users for normal use cases, you should use executeMigration() instead
+     *
+     * @param Migration $migration
+     */
+    public function endMigration(Migration $migration)
+    {
+        return $this->storageHandler->endMigration($migration);
     }
 
     /**

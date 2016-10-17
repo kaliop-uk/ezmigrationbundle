@@ -1,3 +1,9 @@
+Version 2.4.2
+=============
+
+* Fix: improve detection of failed migrations when using separate processes and the child process dies without traces
+
+
 Version 2.4.1
 =============
 

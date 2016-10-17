@@ -80,17 +80,17 @@ EOT
             $this->setVerbosity(self::VERBOSITY_CHILD);
         }
 
-        $migrationsService = $this->getMigrationService();
+        $migrationService = $this->getMigrationService();
 
         $paths = $input->getOption('path');
-        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($paths);
-        $migrations = $migrationsService->getMigrations();
+        $migrationDefinitions = $migrationService->getMigrationsDefinitions($paths);
+        $migrations = $migrationService->getMigrations();
 
         // filter away all migrations except 'to do' ones
         $toExecute = array();
         foreach($migrationDefinitions as $name => $migrationDefinition) {
             if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && $migration->status == Migration::STATUS_TODO)) {
-                $toExecute[$name] = $migrationsService->parseMigrationDefinition($migrationDefinition);
+                $toExecute[$name] = $migrationService->parseMigrationDefinition($migrationDefinition);
             }
         }
 
@@ -99,10 +99,10 @@ EOT
         if (empty($paths)) {
             foreach ($migrations as $migration) {
                 if ($migration->status == Migration::STATUS_TODO && !isset($toExecute[$migration->name])) {
-                    $migrationDefinitions = $migrationsService->getMigrationsDefinitions(array($migration->path));
+                    $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
                     if (count($migrationDefinitions)) {
                         $migrationDefinition = reset($migrationDefinitions);
-                        $toExecute[$migration->name] = $migrationsService->parseMigrationDefinition($migrationDefinition);
+                        $toExecute[$migration->name] = $migrationService->parseMigrationDefinition($migrationDefinition);
                     } else {
                         // q: shall we raise a warning here ?
                     }
@@ -182,6 +182,7 @@ EOT
             }
         }
 
+        /** @var MigrationDefinition $migrationDefinition */
         foreach($toExecute as $name => $migrationDefinition) {
 
             // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
@@ -209,20 +210,46 @@ EOT
                     }
                 );
 
-                if (!$process->isSuccessful()) {
-                    $err = $process->getErrorOutput();
+                try {
+
+                    if (!$process->isSuccessful()) {
+                        throw new \Exception($process->getErrorOutput());
+                    }
+
+                    // There are cases where the separate process dies halfway but does not return a non-zero code.
+                    // That's why we should double-check here if the migration is still tagged as 'started'...
+                    /** @var Migration $migration */
+                    $migration = $migrationService->getMigration($migrationDefinition->name);
+
+                    if (!$migration) {
+                        // q: shall we add the migration to the db as failed? In doubt, we let it become a ghost, disappeared without a trace...
+                        throw new \Exception("After the separate process charged to execute the migration finished, the migration can not be found in the database any more.");
+                    } else if ($migration->status == Migration::STATUS_STARTED) {
+                        $errorMsg = "The separate process charged to execute the migration left it in 'started' state. Most likely it died halfway through execution.";
+                        $migrationService->endMigration(New Migration(
+                            $migration->name,
+                            $migration->md5,
+                            $migration->path,
+                            $migration->executionDate,
+                            Migration::STATUS_FAILED,
+                            ($migration->executionError != '' ? ($errorMsg . ' ' . $migration->executionError) : $errorMsg)
+                        ));
+                        throw new \Exception($errorMsg);
+                    }
+
+                } catch(\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
-                        $output->writeln("\n<error>Migration failed! Reason: " . $err . "</error>\n");
+                        $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                         continue;
                     }
-                    $output->writeln("\n<error>Migration aborted! Reason: " . $err . "</error>");
+                    $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
                     return 1;
                 }
 
             } else {
 
                 try {
-                    $migrationsService->executeMigration(
+                    $migrationService->executeMigration(
                         $migrationDefinition,
                         !$input->getOption('no-transactions'),
                         $input->getOption('default-language')

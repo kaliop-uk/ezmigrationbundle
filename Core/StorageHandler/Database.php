@@ -204,6 +204,7 @@ class Database implements StorageHandlerInterface
 
     /**
      * Removes a Migration from the table - regardless of its state!
+     *
      * @param Migration $migration
      */
     public function deleteMigration(Migration $migration)
@@ -214,7 +215,7 @@ class Database implements StorageHandlerInterface
     }
 
     /**
-     * Stops a migration by storing it in the db. Migration status can not be 'started'
+     * Skips a migration by storing it in the db. Migration status can not be 'started'
      *
      * @param MigrationDefinition $migrationDefinition
      * @return Migration
