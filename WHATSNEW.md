@@ -1,4 +1,4 @@
-Version 3.0.0-beta2
+Version 3.0.0-beta3
 ===================
 
 * New: it is now possible to store migration definitions in json format instead of yaml.

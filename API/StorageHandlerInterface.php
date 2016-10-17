@@ -24,6 +24,7 @@ interface StorageHandlerInterface
 
     /**
      * Creates and stores a new migration (leaving it in TODO status)
+     *
      * @param MigrationDefinition $migrationDefinition
      * @return mixed
      * @throws \Exception If the migration exists already
@@ -32,6 +33,7 @@ interface StorageHandlerInterface
 
     /**
      * Starts a migration (creates and stores it, in STARTED status)
+     *
      * @param MigrationDefinition $migrationDefinition
      * @return Migration
      * @throws \Exception If the migration was already executed, skipped or executing
@@ -40,6 +42,7 @@ interface StorageHandlerInterface
 
     /**
      * Ends a migration (updates it)
+     *
      * @param Migration $migration
      * @param bool $force When true, the migration will be updated even if it was not in 'started' status
      * @throws \Exception If the migration was not started (unless $force=true)
@@ -48,12 +51,14 @@ interface StorageHandlerInterface
 
     /**
      * Removes a migration from storage (regardless of its status)
+     *
      * @param Migration $migration
      */
     public function deleteMigration(Migration $migration);
 
     /**
      * Skips a migration (upserts it, in SKIPPED status)
+     *
      * @param MigrationDefinition $migrationDefinition
      * @return Migration
      * @throws \Exception If the migration was already executed, skipped or executing
