@@ -1,12 +1,18 @@
+Version 2.4.1
+=============
+
+* Improve fix for issues #76 and #78
+
+
 Version 2.4
 ===========
 
 * New: it is now possible to create, update and delete Object States and Object State Groups
 
-* Fix: (issue 78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
+* Fix: (issue #78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
     commit phase
 
-* Fix: (issue 76) when using transactions on either ezplatform or ezpublish with workflows, migrations might fail
+* Fix: (issue #76) when using transactions on either ezplatform or ezpublish with workflows, migrations might fail
     when creating/editing contents that the anon user can not access
 
 * Fix: throw correct exception when trying to access unset property in API/Value objects
