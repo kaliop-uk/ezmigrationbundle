@@ -14,7 +14,8 @@ cat Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml >> vendor/ezsystems/${
 sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
 # And optionally the Netgen tags bundle
 if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
-    sed -i 's/new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/new Kaliop\\eZMigrationBundle\\EzMigrationBundle(), new Netgen\\TagsBundle\\NetgenTagsBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
+    # we have to load netgen tags bundle after the Kernel bundles... hopefully OneupFlysystemBundle will stay there :-)
+    sed -i 's/OneupFlysystemBundle(),/OneupFlysystemBundle(), new Netgen\\TagsBundle\\NetgenTagsBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
 fi
 # Fix the ez5 autoload configuration for the unexpected directory layout
 sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/autoload.php
