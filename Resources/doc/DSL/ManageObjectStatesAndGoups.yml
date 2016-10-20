@@ -3,13 +3,13 @@
     type: object_state_group
     identifier: x # String identifier of the object state group
     names: # Array of names keyed by language code.
-        - languageCodeA: name
-        - languageCodeB: name
+        languageCodeA: name
+        languageCodeB: name
     descriptions: # Optional: array of descriptions keyed by language code.
-        - languageCodeA: description
-        - languageCodeB: description
+        languageCodeA: description
+        languageCodeB: description
     references: #Optional
-         -
+        -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference; supported: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
@@ -22,13 +22,13 @@
         identifier: y # string|string[] The Identifier of the object state group(s) to update
     identifier: x # Optional String: new identifier of the object state group
     names: # Optional: array of names keyed by language code.
-        - languageCodeA: name
-        - languageCodeB: name
+        languageCodeA: name
+        languageCodeB: name
     descriptions: # Optional: array of descriptions keyed by language code.
-        - languageCodeA: description
-        - languageCodeB: description
+        languageCodeA: description
+        languageCodeB: description
     references: #Optional
-         -
+        -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference; supported: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
@@ -48,13 +48,13 @@
     object_state_group: x # The Id of the object state group the new state will be created under.
     identifier: xyz # The string identifier of the new object state.
     names: # Array of names keyed by language code.
-        - languageCodeA: name
-        - languageCodeB: name
+        languageCodeA: name
+        languageCodeB: name
     descriptions: # Optional: array of descriptions keyed by language code.
-        - languageCodeA: description
-        - languageCodeB: description
+        languageCodeA: description
+        languageCodeB: description
     references: #Optional
-         -
+        -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference (currently supports object_state_id)
                                  # The shorthand 'id' can be used instead of 'object_state_id'
@@ -67,13 +67,13 @@
         identifier: x # string|string[] The string identifier of the object state to update. If the identifier is not unique, use group-identifier/state-identifier
     identifier: x # Optional String: new identifier of the object state
     names: # Optional: array of names keyed by language code.
-        - languageCodeA: name
-        - languageCodeB: name
+        languageCodeA: name
+        languageCodeB: name
     descriptions: # Optional: array of descriptions keyed by language code.
-        - languageCodeA: description
-        - languageCodeB: description
+        languageCodeA: description
+        languageCodeB: description
     references: #Optional
-         -
+        -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference (currently supports object_state_id)
                                  # The shorthand 'id' can be used instead of 'object_state_id'

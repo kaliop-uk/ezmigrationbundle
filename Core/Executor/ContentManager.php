@@ -270,24 +270,37 @@ class ContentManager extends RepositoryExecutor
      *
      * @param ContentCreateStruct|ContentUpdateStruct $createOrUpdateStruct
      * @param ContentType $contentType
-     * @param array $fields
+     * @param array $fields see description of expected format in code below
      * @throws \Exception
      */
     protected function setFields($createOrUpdateStruct, array $fields, ContentType $contentType)
     {
-        foreach ($fields as $field) {
-            // each $field is one key value pair
-            // eg.: $field = array($fieldIdentifier => $fieldValue)
-            $fieldIdentifier = key($field);
+        $i = 0;
+        // the 'easy' yml: key = field name, value = value
+        // deprecated: the 'legacy' yml: key = numerical index, value = array ( field name => value )
+        foreach ($fields as $key => $field) {
+
+            if ($key === $i && is_array($field) && count($field) == 1) {
+                // each $field is one key value pair
+                // eg.: $field = array($fieldIdentifier => $fieldValue)
+                reset($field);
+                $fieldIdentifier = key($field);
+                $fieldValue = $field[$fieldIdentifier];
+            } else {
+                $fieldIdentifier = $key;
+                $fieldValue = $field;
+            }
 
             $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
             if ($fieldType == null) {
                 throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'");
             }
 
-            $fieldValue = $this->getFieldValue($field[$fieldIdentifier], $fieldType, $contentType->identifier, $this->context);
+            $fieldValue = $this->getFieldValue($fieldValue, $fieldType, $contentType->identifier, $this->context);
 
             $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
+
+            $i++;
         }
     }
 

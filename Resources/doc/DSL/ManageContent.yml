@@ -15,37 +15,37 @@
     owner: xxx # user id, login or email if unique; Optional, set the content owner
     modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     attributes:
-        - attribute1: value1
-        - attribute2: value2
-        - attribute3: |
-                      value can be
-                      on multiple lines
-                      and new lines are preserved on parsing
-        - attribute4: >
-                      value on multiple
-                      lines, but new line is not preserved on parsing
+        attribute1: value1
+        attribute2: value2
+        attribute3: |
+                    value can be
+                    on multiple lines
+                    and new lines are preserved on parsing
+        attribute4: >
+                    value on multiple
+                    lines, but new line is not preserved on parsing
         # ezimage/ezbinaryfile file attribute example
-        - attribute5:
+        attribute5:
             path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/
             alt_text: xyz # Optional, only used for images
             filename: abc # Optional, taken from the actual file if not specified
             mime_type: def # Optional. For ezbinaryfile only. If not specified, the actual file is analyzed using the php function mime_content_type()
         # ezimage/ezbinaryfile file attribute example, using simplified form
-        - attribute5b: 'path/to/image'
+        attribute5b: 'path/to/image'
         # ezxmltext, showing an example of using references
-        - attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
+        attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
-        - attribute7:
-              - 
-                name: Test Author 
-                email: test@example.com 
-              -
-                name: Another Author 
-                email: another@example.com
+        attribute7:
+            - 
+              name: Test Author 
+              email: test@example.com 
+            -
+              name: Another Author 
+              email: another@example.com
         # Adding values to an ezobjectrelation field
-        - attribute8: x # content id or string: reference:xxx
+        attribute8: x # content id or string: reference:xxx
         # Adding values to an ezobjectrelationlist field
-        - ezobjectrelationlist: [ x, reference:xxx ] # array of content ids or reference strings
+        ezobjectrelationlist: [ x, reference:xxx ] # array of content ids or reference strings
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier
@@ -75,8 +75,8 @@
     publication_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     new_remote_id: xxx # string Optional set a new RemoteId
     attributes: # the list of attribute identifier value pairs. For the format to use, see above
-        - attribute1: value1
-        - attribute2: value2
+        attribute1: value1
+        attribute2: value2
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or didentifier. For the format to use, see above

@@ -8,7 +8,7 @@
         eng-GB:  Kaliop Migration Bundle Test Object State Group 1
     roles: [1, 2] # Anon, admin
     references:
-         -
+        -
             identifier: kmb_test_12
             attribute: id
 
@@ -29,7 +29,7 @@
     descriptions:
         eng-GB:  Kaliop Migration Bundle Test Object State 1
     references:
-         -
+        -
             identifier: kmb_test_12_state
             attribute: id
 

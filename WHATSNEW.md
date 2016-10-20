@@ -74,6 +74,9 @@ Version 3.0.0-beta3
 
 * Changes to the YML definition language:
 
+    * Creation and update of content: the format use to specify the attributes has been simplified. The old format is
+        still working but is considered deprecated and will be removed in the future 
+
     * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a `match` key is allowed; previous
         ways of defining elements to match are deprecated
 
