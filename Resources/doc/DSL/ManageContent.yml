@@ -3,7 +3,7 @@
     mode: create
     content_type: xxx # Content type identifier
     main_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
-    priority: 0 # Set the priority of the main location
+    priority: 0 # Optional. Set the priority of the main location
     is_hidden: true|false # Optional
     sort_field: x # Optional. See ManageLocation.yml for details
     sort_order: ASC|DESC # Optional
@@ -26,11 +26,14 @@
                       lines, but new line is not preserved on parsing
         # ezimage/ezbinaryfile file attribute example
         - attribute5:
-            path: '/path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/
+            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/
             alt_text: xyz # Optional, only used for images
-        # ezxmltext, using references
-        - attribute6:
-            content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
+            filename: abc # Optional, taken from the actual file if not specified
+            mime_type: def # Optional. For ezbinaryfile only. If not specified, the actual file is analyzed using the php function mime_content_type()
+        # ezimage/ezbinaryfile file attribute example, using simplified form
+        - attribute5b: 'path/to/image'
+        # ezxmltext, showing an example of using references
+        - attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
         - attribute7:
               - 
@@ -45,7 +48,7 @@
         - ezobjectrelationlist: [ x, reference:xxx ] # array of content ids or reference strings
     # Optionally assign object states to the content
     object_states:
-        - xxx # int|string an object state id or identifier
+        - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier
         - yyy
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
@@ -71,12 +74,12 @@
     modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     publication_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     new_remote_id: xxx # string Optional set a new RemoteId
-    attributes: # the list of attribute identifier value pairs
+    attributes: # the list of attribute identifier value pairs. For the format to use, see above
         - attribute1: value1
         - attribute2: value2
     # Optionally assign object states to the content
     object_states:
-        - xxx # int|string an object state id or didentifier
+        - xxx # int|string an object state id or didentifier. For the format to use, see above
     # The list in references tells the manager to store specific values for later use
     # by other steps in the current migration.
     references: # Optional

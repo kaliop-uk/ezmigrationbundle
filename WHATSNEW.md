@@ -24,6 +24,9 @@ Version 3.0.0-beta3
 
 * New: it is now possible to assign a remote id for the Location when creating Contents
 
+* New: it is now possible to specify a file name and mime type when creating/updating content fields of type image and
+    binary file
+
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
 * New: the `main_location` and `other_locations` tags in Content creation, as well as `parent_location` in Location
@@ -82,6 +85,11 @@ Version 3.0.0-beta3
 
     * location creation and update now support the tag `parent_location` as preferred form for `parent_location_id`.
         The former variant is considered deprecated and will be desupported in a future version
+
+    * rich text fields in content creation/update can be specified using a string instead of an array with key 'content'.
+        References will still be resolved if found in the xml text.
+
+    * when specifying values for image and binary-file fields, the tags `filename` and `mime_type` can now be used
 
 * BC BREAKS:
 

@@ -20,15 +20,19 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
     /**
      * Replace any references in an xml string to be used as the input data for an ezxmltext field.
      *
-     * @param array $fieldValueArray The definition of teh field value, structured in the yml file
+     * @param string|array $fieldValue The definition of teh field value, structured in the yml file. Either a string, or an array with key 'content'
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return string
      *
      * @todo replace objects and location refs in eznode and ezobject links
      */
-    public function createValue($fieldValueArray, array $context = array())
+    public function createValue($fieldValue, array $context = array())
     {
-        $xmlText = $fieldValueArray['content'];
+        if (is_string($fieldValue)) {
+            $xmlText = $fieldValue;
+        } else {
+            $xmlText = $fieldValue['content'];
+        }
 
         /// @todo this regexp belongs to the resolver...
 

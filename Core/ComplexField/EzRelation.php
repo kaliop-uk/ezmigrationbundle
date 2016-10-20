@@ -18,18 +18,18 @@ class EzRelation extends AbstractComplexField implements ComplexFieldInterface
     /**
      * Creates a value object to use as the field value when setting an ez relation field type.
      *
-     * @param array $fieldValueArray The definition of the field value, structured in the yml file
+     * @param array|string|int $fieldValue The definition of the field value, structured in the yml file
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return Value
      */
-    public function createValue($fieldValueArray, array $context = array())
+    public function createValue($fieldValue, array $context = array())
     {
-        if (count($fieldValueArray) == 1 && isset($fieldValueArray['destinationContentId'])) {
+        if (count($fieldValue) == 1 && isset($fieldValue['destinationContentId'])) {
             // fromHash format
-            $id = $fieldValueArray['destinationContentId'];
+            $id = $fieldValue['destinationContentId'];
         } else {
             // simplified format
-            $id = $fieldValueArray;
+            $id = $fieldValue;
         }
 
         // 1. resolve relations

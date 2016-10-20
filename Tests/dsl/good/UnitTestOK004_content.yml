@@ -180,8 +180,11 @@
         - ezimage:
             path: blank.jpg
             alt_text: a blank 1x1 px image
+            filename: lol1
         - ezbinaryfile:
             path: emptyfile.txt
+            filename: lol2
+            mime_type: something
         - ezxmltext:
             content: '<section><paragraph>Hello there! Here is an embedded object: <embed view="embed" size="medium" object_id="[reference:kmb_test_2_1]" /></paragraph></section>'
         - ezrichtext:
@@ -206,6 +209,9 @@
     mode: update
     match:
         content_id: reference:kmb_test_2_1
+    attributes:
+        - ezimage: blank.jpg
+        - ezbinaryfile: emptyfile.txt
     section: users
     new_remote_id: is_this_a_very_unlikely_remoteid
     modification_date: "2008:07:06 18:11:31"
