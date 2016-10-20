@@ -76,6 +76,17 @@ class ContentManager extends RepositoryExecutor
             $contentCreateStruct->ownerId = $owner->id;
         }
 
+        // This is a bit tricky, as the eZPublish API does not support having a different creator and owner with only 1 version.
+        // We allow it, hoping that nothing gets broken because of it
+        if (isset($this->dsl['version_creator'])) {
+            $realContentOwnerId = $contentCreateStruct->ownerId;
+            if ($realContentOwnerId == null) {
+                $realContentOwnerId = $this->repository->getCurrentUser()->id;
+            }
+            $versionCreator = $this->getUser($this->dsl['version_creator']);
+            $contentCreateStruct->ownerId = $versionCreator->id;
+        }
+
         if (isset($this->dsl['modification_date'])) {
             $contentCreateStruct->modificationDate = new \DateTime($this->dsl['modification_date']);
         }
@@ -127,6 +138,20 @@ class ContentManager extends RepositoryExecutor
             $this->setObjectStates($content, $this->dsl['object_states']);
         }
 
+        // 2nd part of the hack: re-set the content owner to its intended value
+        if (isset($this->dsl['version_creator']) || isset($this->dsl['publication_date'])) {
+            $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
+
+            if (isset($this->dsl['version_creator'])) {
+                $contentMetaDataUpdateStruct->ownerId = $realContentOwnerId;
+            }
+            if (isset($this->dsl['publication_date'])) {
+                $contentMetaDataUpdateStruct->publishedDate = new \DateTime($this->dsl['publication_date']);
+            }
+
+            $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
+        }
+
         $this->setReferences($content);
 
         return $content;
@@ -163,8 +188,13 @@ class ContentManager extends RepositoryExecutor
                 $this->setFields($contentUpdateStruct, $this->dsl['attributes'], $contentType);
             }
 
-            $draft = $contentService->createContentDraft($contentInfo);
-            $contentService->updateContent($draft->versionInfo,$contentUpdateStruct);
+            $versionCreator = null;
+            if (isset($this->dsl['version_creator'])) {
+                $versionCreator = $this->getUser($this->dsl['version_creator']);
+            }
+
+            $draft = $contentService->createContentDraft($contentInfo, null, $versionCreator);
+            $contentService->updateContent($draft->versionInfo, $contentUpdateStruct);
             $content = $contentService->publishVersion($draft->versionInfo);
 
             if (isset($this->dsl['new_remote_id']) || isset($this->dsl['new_remote_id']) ||

@@ -16,7 +16,7 @@ Version 3.0.0-beta3
 
 * New: it is now possible to assign a section when creating and updating Contents
 
-* New: it is now possible to assign an owner when creating and updating Contents
+* New: it is now possible to assign an owner and a version creator when creating and updating Contents
 
 * New: it is now possible to set publication and modification dates when creating and updating Contents
 
