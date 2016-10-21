@@ -84,81 +84,18 @@ EOT
 
         $migrationService = $this->getMigrationService();
 
-        $paths = $input->getOption('path');
-        $migrationDefinitions = $migrationService->getMigrationsDefinitions($paths);
-        $migrations = $migrationService->getMigrations();
-
-        // filter away all migrations except 'to do' ones
-        $toExecute = array();
-        foreach($migrationDefinitions as $name => $migrationDefinition) {
-            if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && $migration->status == Migration::STATUS_TODO)) {
-                $toExecute[$name] = $migrationService->parseMigrationDefinition($migrationDefinition);
-            }
-        }
-
-        // if user wants to execute 'all' migrations: look for some which are registered in the database even if not
-        // found by the loader
-        if (empty($paths)) {
-            foreach ($migrations as $migration) {
-                if ($migration->status == Migration::STATUS_TODO && !isset($toExecute[$migration->name])) {
-                    $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
-                    if (count($migrationDefinitions)) {
-                        $migrationDefinition = reset($migrationDefinitions);
-                        $toExecute[$migration->name] = $migrationService->parseMigrationDefinition($migrationDefinition);
-                    } else {
-                        // q: shall we raise a warning here ?
-                    }
-                }
-            }
-        }
-
-        ksort($toExecute);
+        $toExecute = $this->buildMigrationsList($input->getOption('path'), $migrationService);
 
         if (!count($toExecute)) {
             $output->writeln('<info>No migrations to execute</info>');
-            return;
+            return 0;
         }
 
-        $this->writeln("\n <info>==</info> Migrations to be executed\n");
-
-        $data = array();
-        $i = 1;
-        foreach($toExecute as $name => $migrationDefinition) {
-            $notes = '';
-            if ($migrationDefinition->status != MigrationDefinition::STATUS_PARSED) {
-                $notes = '<error>' . $migrationDefinition->parsingError . '</error>';
-            }
-            $data[] = array(
-                $i++,
-                $name,
-                $notes
-            );
-        }
-
-        if (!$input->getOption('child')) {
-            $table = $this->getHelperSet()->get('table');
-            $table
-                ->setHeaders(array('#', 'Migration', 'Notes'))
-                ->setRows($data);
-            $table->render($output);
-        }
-
-        $this->writeln('');
+        $this->printMigrationsList($toExecute, $input, $output);
 
         // ask user for confirmation to make changes
-        if ($input->isInteractive() && !$input->getOption('no-interaction')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation(
-                $output,
-                '<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>',
-                false
-            )
-            ) {
-                $output->writeln('<error>Migration execution cancelled!</error>');
-                return 0;
-            }
-        } else {
-            $this->writeln("=============================================\n");
+        if (!$this->askForConfirmation($input, $output)) {
+            return 0;
         }
 
         if ($input->getOption('separate-process')) {
@@ -275,6 +212,101 @@ EOT
             $inputArray = new ArrayInput(array('command' => 'cache:clear'));
             $command->run($inputArray, $output);
         }
+    }
+
+    /**
+     * @param string $paths
+     * @param $migrationService
+     * @return MigrationDefinition[]
+     *
+     * @todo this does not scale well with many definitions or migrations
+     */
+    protected function buildMigrationsList($paths, $migrationService)
+    {
+        $migrationDefinitions = $migrationService->getMigrationsDefinitions($paths);
+        $migrations = $migrationService->getMigrations();
+
+        // filter away all migrations except 'to do' ones
+        $toExecute = array();
+        foreach($migrationDefinitions as $name => $migrationDefinition) {
+            if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && $migration->status == Migration::STATUS_TODO)) {
+                $toExecute[$name] = $migrationService->parseMigrationDefinition($migrationDefinition);
+            }
+        }
+
+        // if user wants to execute 'all' migrations: look for some which are registered in the database even if not
+        // found by the loader
+        if (empty($paths)) {
+            foreach ($migrations as $migration) {
+                if ($migration->status == Migration::STATUS_TODO && !isset($toExecute[$migration->name])) {
+                    $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
+                    if (count($migrationDefinitions)) {
+                        $migrationDefinition = reset($migrationDefinitions);
+                        $toExecute[$migration->name] = $migrationService->parseMigrationDefinition($migrationDefinition);
+                    } else {
+                        // q: shall we raise a warning here ?
+                    }
+                }
+            }
+        }
+
+        ksort($toExecute);
+
+        return $toExecute;
+    }
+
+    /**
+     * @param MigrationDefinition[] $toExecute
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @todo use a more compact output when there are *many* migrations
+     */
+    protected function printMigrationsList($toExecute , InputInterface $input, OutputInterface $output)
+    {
+        $data = array();
+        $i = 1;
+        foreach($toExecute as $name => $migrationDefinition) {
+            $notes = '';
+            if ($migrationDefinition->status != MigrationDefinition::STATUS_PARSED) {
+                $notes = '<error>' . $migrationDefinition->parsingError . '</error>';
+            }
+            $data[] = array(
+                $i++,
+                $name,
+                $notes
+            );
+        }
+
+        if (!$input->getOption('child')) {
+            $table = $this->getHelperSet()->get('table');
+            $table
+                ->setHeaders(array('#', 'Migration', 'Notes'))
+                ->setRows($data);
+            $table->render($output);
+        }
+
+        $this->writeln('');
+    }
+
+    protected function askForConfirmation(InputInterface $input, OutputInterface $output)
+    {
+        if ($input->isInteractive() && !$input->getOption('no-interaction')) {
+            $dialog = $this->getHelperSet()->get('dialog');
+            if (!$dialog->askConfirmation(
+                $output,
+                '<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>',
+                false
+            )
+            ) {
+                $output->writeln('<error>Migration execution cancelled!</error>');
+                return 0;
+            }
+        } else {
+            $this->writeln("=============================================\n");
+        }
+
+        return 1;
     }
 
     /**
