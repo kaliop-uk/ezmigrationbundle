@@ -80,6 +80,8 @@ EOT
             $this->setVerbosity(self::VERBOSITY_CHILD);
         }
 
+        $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
+
         $migrationService = $this->getMigrationService();
 
         $paths = $input->getOption('path');

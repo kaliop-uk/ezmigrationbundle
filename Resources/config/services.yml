@@ -75,6 +75,8 @@ parameters:
     ez_migration_bundle.helper.limitation_converter.class: Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter
     ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
 
+    ez_migration_bundle.step_executed_listener.tracing.class: Kaliop\eZMigrationBundle\Core\EventListener\TracingStepExecutedListener
+
 services:
 
     ez_migration_bundle.migration_service:
@@ -423,6 +425,12 @@ services:
             - [ '@ez_migration_bundle.reference_resolver.customreference.base' ]
 
     ### misc
+
+    # This service is used for the verbose mode when executing migrations on the command line
+    ez_migration_bundle.step_executed_listener.tracing:
+        class: '%ez_migration_bundle.step_executed_listener.tracing.class%'
+        tags:
+            - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
 
     ez_migration_bundle.helper.limitation_converter:
         class: '%ez_migration_bundle.helper.limitation_converter.class%'

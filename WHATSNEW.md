@@ -7,6 +7,8 @@ Version 3.0.0-beta3
 * New: the 'migrate' command learned a `--separate-process` option, to run each migration it its own separate
     php process. This should help when running many migrations in a single pass, and there are f.e. memory leaks.
 
+* New: the 'migrate' command learned to give information ion the executed steps when using the `-v` option
+
 * New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped 
 
 * New: it is now possible to create, update and delete Object States and Object State Groups
@@ -36,13 +38,14 @@ Version 3.0.0-beta3
 
 * New: the content_type_group tags in ContentType creation will accept a Content Type Group identifier besides an id
  
-* New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are executed:
+* New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are
+    executed:
 
     * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
 
-* Fixed: migrations will not silently swallow any more errors when creating users or assigning roles and an inexisting
+* Fix: migrations will not silently swallow any more errors when creating users or assigning roles and a non-existing
     group is specified
 
 * Fix: (issue 78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
