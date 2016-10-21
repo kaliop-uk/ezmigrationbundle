@@ -302,6 +302,16 @@ class Database implements StorageHandlerInterface
     }
 
     /**
+     * Removes all migration from storage (regardless of their status)
+     */
+    public function deleteMigrations()
+    {
+        if ($this->tableExist($this->migrationsTableName)) {
+            $this->dbHandler->exec('DROP TABLE ' . $this->migrationsTableName);
+        }
+    }
+
+    /**
      * Check if the version db table exists and create it if not.
      *
      * @return bool true if table has been created, false if it was already there

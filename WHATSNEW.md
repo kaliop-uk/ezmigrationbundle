@@ -111,12 +111,13 @@ Version 3.0.0-beta3
     * references to 'tag:' and 'location:' will not be resolved any more in fields of type Object Relation and 
         Object Relation List. On the other hand non-integer strings will be resolved as remote-content-ids
 
-    * changes for developers who extended the bundle: the MatcherInterface and ReferenceResolverInterface have a new
-        method each; many Executor services now have a different constructor signature; one Trait has been removed from
-        the public API; the service ez_migration_bundle.helper.role_handler has been renamed
-        to ez_migration_bundle.helper.limitation_converter; the chainResolver will now apply reference transformation
-        from all matching sub-resolvers, not only from the 1st one; the interface `StorageHandlerInterface` has acquired
-        a new method; the method `endMigration` in interface `StorageHandlerInterface` has acquired a new parameter
+    * changes for developers who extended the bundle: the MatcherInterface, ReferenceResolverInterface and 
+        StorageHandlerInterface have a new method each; many Executor services now have a different constructor
+        signature; one Trait has been removed from the public API; the service ez_migration_bundle.helper.role_handler
+        has been renamed to ez_migration_bundle.helper.limitation_converter; the chainResolver will now apply reference
+        transformation from all matching sub-resolvers, not only from the 1st one; the interface
+        `StorageHandlerInterface` has acquired a new method; the method `endMigration` in interface
+        `StorageHandlerInterface` has acquired a new parameter
 
 
 Version 2.1.0

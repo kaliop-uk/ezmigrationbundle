@@ -57,6 +57,11 @@ interface StorageHandlerInterface
     public function deleteMigration(Migration $migration);
 
     /**
+     * Removes all migration from storage (regardless of their status)
+     */
+    public function deleteMigrations();
+
+    /**
      * Skips a migration (upserts it, in SKIPPED status)
      *
      * @param MigrationDefinition $migrationDefinition
