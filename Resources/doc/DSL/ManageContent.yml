@@ -38,16 +38,21 @@
         attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
         attribute7:
-            - 
-              name: Test Author 
-              email: test@example.com 
             -
-              name: Another Author 
+              name: Test Author
+              email: test@example.com
+            -
+              name: Another Author
               email: another@example.com
         # Adding values to an ezobjectrelation field
         attribute8: x # content id or string: reference:xxx
         # Adding values to an ezobjectrelationlist field
-        ezobjectrelationlist: [ x, reference:xxx ] # array of content ids or reference strings
+        attribute9: [ x, reference:xxx ] # array of content ids or reference strings
+        # ezurl, using 2 different syntaxes
+        attribute10: http://a/great/link
+        attribute11:
+            link: http://another/link
+            text: the url text
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier
