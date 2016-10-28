@@ -53,6 +53,11 @@
         attribute11:
             link: http://another/link
             text: the url text
+        # ezgmaplocation
+        attribute12:
+            latitude: 1.0
+            longitude: 2.0
+            address: 'Angel, London'
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier
