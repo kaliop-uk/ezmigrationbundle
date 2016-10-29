@@ -46,9 +46,9 @@ class CustomReferenceResolver extends AbstractResolver implements ReferenceBagIn
      * @return bool true if the reference is accepted by this resolver, otherwise false
      * @throws \Exception When there is a reference with the specified $identifier already.
      */
-    public function addReference($identifier, $value)
+    public function addReference($identifier, $value, $overwrite = false)
     {
-        if (array_key_exists($identifier, $this->references)) {
+        if (!$overwrite && array_key_exists($identifier, $this->references)) {
             throw new \Exception("A reference with identifier '$identifier' already exists");
         }
 
