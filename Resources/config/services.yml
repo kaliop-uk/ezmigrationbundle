@@ -55,6 +55,7 @@ parameters:
     ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
     ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
     ez_migration_bundle.content_type_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher
+    ez_migration_bundle.query_type_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\QueryTypeMatcher
 
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
@@ -158,6 +159,16 @@ services:
         calls:
             - ['setRepository', ['@ezpublish.api.repository']]
             - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference']]
+
+    ez_migration_bundle.executor.query_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: Kaliop\eZMigrationBundle\Core\Executor\QueryManager
+        arguments:
+            - ['@ez_migration_bundle.query_type_matcher']
+            - '@ez_migration_bundle.migration_service'
+            - '@event_dispatcher'
+        tags:
+            - { name: ez_migration_bundle.executor }
 
     ez_migration_bundle.executor.content_manager:
         parent: ez_migration_bundle.executor.repository
@@ -299,6 +310,13 @@ services:
         class: '%ez_migration_bundle.content_type_group_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
+
+    ez_migration_bundle.query_type_matcher:
+        class: '%ez_migration_bundle.query_type_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+            - '@ezpublish.query_type.registry'
+            - '@ez_migration_bundle.expression_language'
 
     ### field handlers
 
