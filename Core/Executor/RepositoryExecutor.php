@@ -100,7 +100,7 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
 
             $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
             try {
-                $output = $this->$action();
+                $output = $this->$action($step->dsl);
             } catch (\Exception $e) {
                 $this->loginUser($previousUserId);
                 throw $e;
