@@ -54,7 +54,7 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
         }
 
         if (!$resolvedOnce) {
-            throw \Exception("Could not resolve reference with identifier: '$stringIdentifier'");
+            throw new \Exception("Could not resolve reference with identifier: '$stringIdentifier'");
         }
 
         return $stringIdentifier;
