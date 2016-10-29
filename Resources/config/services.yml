@@ -72,6 +72,7 @@ parameters:
     ez_migration_bundle.reference_resolver.content.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ContentResolver
     ez_migration_bundle.reference_resolver.location.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver
     ez_migration_bundle.reference_resolver.tag.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\TagResolver
+    ez_migration_bundle.reference_resolver.expression_language.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ExpressionLanguageResolver
 
     ez_migration_bundle.helper.limitation_converter.class: Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter
     ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
@@ -411,6 +412,14 @@ services:
                #- '@ez_migration_bundle.reference_resolver.content'
                 - '@ez_migration_bundle.reference_resolver.tag'
 
+    ez_migration_bundle.reference_resolver.expression_language:
+        class: '%ez_migration_bundle.reference_resolver.expression_language.class%'
+        arguments:
+            - '@ez_migration_bundle.reference_resolver.customreference'
+            - '@ez_migration_bundle.expression_language'
+        tags:
+            - { name: 'ez_migration_bundle.reference_resolver.customreference' }
+
     # @deprecated
     ez_migration_bundle.reference_resolver.content:
         class: '%ez_migration_bundle.reference_resolver.content.class%'
@@ -462,3 +471,14 @@ services:
         class: '%ez_migration_bundle.helper.console_io.class%'
         tags:
             - { name: kernel.event_listener, event: console.command }
+
+    ez_migration_bundle.expression_language:
+        class: Symfony\Component\ExpressionLanguage\ExpressionLanguage
+        lazy: true
+
+    ez_migration_bundle.expression_language.function_provider.collection_item:
+        class: Kaliop\eZMigrationBundle\Core\ExpressionLanguage\CollectionItemFunctionProvider
+        arguments:
+            - '@ez_migration_bundle.reference_resolver.customreference'
+        tags:
+            - { name: ez_migration_bundle.expression_language.function_provider }

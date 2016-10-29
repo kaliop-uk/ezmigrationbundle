@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle;
 
+use Kaliop\eZMigrationBundle\DependencyInjection\CompilerPass\ExpressionLanguageCompilerPass;
 use Kaliop\eZMigrationBundle\DependencyInjection\CompilerPass\QueryManagerCompilerPass;
 use Kaliop\eZMigrationBundle\DependencyInjection\CompilerPass\TaggedServicesCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,5 +16,6 @@ class EzMigrationBundle extends Bundle
 
         $container->addCompilerPass(new TaggedServicesCompilerPass());
         $container->addCompilerPass(new QueryManagerCompilerPass());
+        $container->addCompilerPass(new ExpressionLanguageCompilerPass());
     }
 }
