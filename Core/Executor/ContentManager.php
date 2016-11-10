@@ -100,7 +100,9 @@ class ContentManager extends RepositoryExecutor
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
 
         if (isset($this->dsl['location_remote_id'])) {
-            $locationCreateStruct->remoteId = $this->dsl['location_remote_id'];
+            $locationCreateStruct->remoteId = $this->referenceResolver->resolveReference(
+                $this->dsl['location_remote_id']
+            );
         }
 
         if (isset($this->dsl['priority'])) {
@@ -318,7 +320,7 @@ class ContentManager extends RepositoryExecutor
                 $fieldValue = $field[$fieldIdentifier];
             } else {
                 $fieldIdentifier = $key;
-                $fieldValue = $field;
+                $fieldValue = $this->referenceResolver->resolveReference($field);
             }
 
             $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
