@@ -73,6 +73,7 @@ parameters:
     ez_migration_bundle.reference_resolver.location.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver
     ez_migration_bundle.reference_resolver.tag.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\TagResolver
     ez_migration_bundle.reference_resolver.expression_language.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ExpressionLanguageResolver
+    ez_migration_bundle.reference_resolver.container_parameter.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ContainerParameterResolver
 
     ez_migration_bundle.helper.limitation_converter.class: Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter
     ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
@@ -417,6 +418,13 @@ services:
         arguments:
             - '@ez_migration_bundle.reference_resolver.customreference'
             - '@ez_migration_bundle.expression_language'
+        tags:
+            - { name: 'ez_migration_bundle.reference_resolver.customreference' }
+
+    ez_migration_bundle.reference_resolver.container_parameter:
+        class: '%ez_migration_bundle.reference_resolver.container_parameter.class%'
+        arguments:
+            - '@service_container'
         tags:
             - { name: 'ez_migration_bundle.reference_resolver.customreference' }
 
