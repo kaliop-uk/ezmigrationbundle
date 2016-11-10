@@ -1,0 +1,18 @@
+-
+    type: location|content|content_info
+    mode: walk
+    match:
+        query_type: my_query_type
+        # query_type_parameters hash
+        parameters:
+            param1: value
+
+    collection: my_collection_name
+    walk:
+        # Any migration DSL. Will be executed once per search result
+        -
+            type: content
+            mode: create
+            parent_location_id: "@=collection_item(my_collection_name).id"
+        -
+            # Another migration DSL
