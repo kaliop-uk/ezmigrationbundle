@@ -318,7 +318,7 @@ services:
         arguments:
             - '@ezpublish.api.repository'
             - '@ezpublish.query_type.registry'
-            - '@ez_migration_bundle.expression_language'
+            - '@ez_migration_bundle.reference_resolver'
 
     ### field handlers
 

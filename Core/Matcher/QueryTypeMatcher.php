@@ -22,15 +22,21 @@ class QueryTypeMatcher extends AbstractMatcher
     private $queryTypeRegistry;
 
     /**
-     * @var ExpressionLanguage
+     * @var ReferenceResolverInterface
      */
-    private $expressionLanguage;
+    private $referenceResolver;
 
-    public function __construct(Repository $repository, QueryTypeRegistry $queryTypeRegistry, ExpressionLanguage $expressionLanguage)
+    /**
+     * QueryTypeMatcher constructor.
+     * @param Repository $repository
+     * @param \eZ\Publish\Core\QueryType\QueryTypeRegistry $queryTypeRegistry (can't be typehinted before ezpublish-kernel 6.4)
+     * @param ExpressionLanguage $expressionLanguage
+     */
+    public function __construct(Repository $repository, $queryTypeRegistry, ReferenceResolverInterface $referenceResolver)
     {
         parent::__construct($repository);
         $this->queryTypeRegistry = $queryTypeRegistry;
-        $this->expressionLanguage = $expressionLanguage;
+        $this->referenceResolver = $referenceResolver;
     }
 
     public function match(array $conditions)
@@ -44,13 +50,17 @@ class QueryTypeMatcher extends AbstractMatcher
         $parameters = [];
         if (isset($conditions['parameters'])) {
             foreach ($conditions['parameters'] as $parameterName => $parameterValue) {
-                if (substr($parameterValue, 0, 2) === '@=') {
-                    $parameters[$parameterName] = $this->expressionLanguage->evaluate(
-                        substr($parameterValue, 2)
+                if (is_array($parameterValue)) {
+                    $parameterValue = array_map(
+                        function ($value) {
+                            return $this->referenceResolver->resolveReference($value);
+                        },
+                        $parameterValue
                     );
                 } else {
-                    $parameters[$parameterName] = $parameterValue;
+                    $parameterValue = $this->referenceResolver->resolveReference($parameterValue);
                 }
+                $parameters[$parameterName] = $parameterValue;
             }
         }
 
