@@ -1,9 +1,15 @@
-Version 3.0.0-beta4
+Version 3.0.0-beta5
 ===================
 
 * New: It is now possible to replace the executor and step definition in a BeforeStepExecutionEvent
 
 * New: it is now possible to set values to content fields of type eztags
+
+
+Version 3.0.0-beta4
+===================
+
+* Add a method for fast dropping of all migrations from the db
 
 
 Version 3.0.0-beta3
