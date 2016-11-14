@@ -6,7 +6,7 @@ use eZ\Publish\API\Repository\Values\User\Role;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-class RoleMatcher extends AbstractMatcher implements KeyMatcherInterface
+class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 

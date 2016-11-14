@@ -3,8 +3,6 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\ReferenceHandler;
-use Netgen\TagsBundle\Core\SignalSlot\TagsService;
-use Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct;
 
 class TagManager extends RepositoryExecutor
 {
@@ -12,7 +10,10 @@ class TagManager extends RepositoryExecutor
 
     protected $tagService;
 
-    public function __construct(TagsService $tagService=null)
+    /**
+     * @param \Netgen\TagsBundle\Core\SignalSlot\TagsService $tagService
+     */
+    public function __construct($tagService=null)
     {
         $this->tagService = $tagService;
     }
@@ -42,7 +43,7 @@ class TagManager extends RepositoryExecutor
             'mainLanguageCode' => $lang,
             'alwaysAvailable' => $alwaysAvail,
         );
-        $tagCreateStruct = new TagCreateStruct($tagCreateArray);
+        $tagCreateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct($tagCreateArray);
 
         foreach ($this->dsl['keywords'] as $langCode => $keyword)
         {

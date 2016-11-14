@@ -6,7 +6,7 @@ use eZ\Publish\API\Repository\Values\Content\Section;
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-class SectionMatcher extends AbstractMatcher implements KeyMatcherInterface
+class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 

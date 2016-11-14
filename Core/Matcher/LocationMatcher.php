@@ -10,7 +10,7 @@ use eZ\Publish\API\Repository\Values\Content\LocationQuery;
  * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
  * @todo extend to allow matching on multiple conditions (AND)
  */
-class LocationMatcher extends AbstractMatcher
+class LocationMatcher extends RepositoryMatcher
 {
     use FlexibleKeyMatcherTrait;
 

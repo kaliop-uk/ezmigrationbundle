@@ -2,7 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
-use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 
 abstract class AbstractMatcher implements MatcherInterface
@@ -13,17 +12,6 @@ abstract class AbstractMatcher implements MatcherInterface
     protected $returns;
     /** @var int $maxConditions the maximum number of conditions we allow to match on for a single match request */
     protected $maxConditions = 1;
-
-    protected $repository;
-
-    /**
-     * @param Repository $repository
-     * @todo inject the services needed, not the whole repository
-     */
-    public function __construct(Repository $repository)
-    {
-        $this->repository = $repository;
-    }
 
     protected function validateConditions(array $conditions)
     {

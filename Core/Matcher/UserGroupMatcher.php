@@ -9,7 +9,7 @@ use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 /**
  * @todo add matching all groups of a user, all child groups of a group
  */
-class UserGroupMatcher extends AbstractMatcher implements KeyMatcherInterface
+class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 

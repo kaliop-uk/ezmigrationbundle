@@ -58,6 +58,18 @@
             latitude: 1.0
             longitude: 2.0
             address: 'Angel, London'
+        # ezgmaplocation - NULL value
+        attribute13:
+            latitude: null
+            longitude: null
+        # eztags, setting 2-or-more tags
+        attribute14:
+            # one tag
+            - id: 12
+            #  one tag
+            - remote_id: abc
+            # zero or more tags
+            - keyword: hello
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier

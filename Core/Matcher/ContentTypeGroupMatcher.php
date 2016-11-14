@@ -6,7 +6,7 @@ use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-class ContentTypeGroupMatcher extends AbstractMatcher implements KeyMatcherInterface
+class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 

@@ -10,7 +10,7 @@ use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
  * Note: disallowing matches by remote_id allows us to implement KeyMatcherInterface without the risk of users getting
  * confused as to what they are matching...
  */
-class ContentTypeMatcher extends AbstractMatcher implements KeyMatcherInterface
+class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 

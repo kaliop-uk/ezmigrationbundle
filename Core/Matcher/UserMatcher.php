@@ -6,7 +6,7 @@ use eZ\Publish\API\Repository\Values\User\User;
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-class UserMatcher extends AbstractMatcher implements KeyMatcherInterface
+class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 

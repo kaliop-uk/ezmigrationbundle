@@ -55,6 +55,7 @@ parameters:
     ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
     ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
     ez_migration_bundle.content_type_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher
+    ez_migration_bundle.tag_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher
 
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
@@ -65,6 +66,7 @@ parameters:
     ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelationList
     ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
     ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
+    ez_migration_bundle.complex_field.eztags.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzTags
 
     ez_migration_bundle.reference_resolver.chain.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainResolver
     ez_migration_bundle.reference_resolver.customreference.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\CustomReferenceResolver
@@ -300,6 +302,12 @@ services:
         arguments:
             - '@ezpublish.api.repository'
 
+    ez_migration_bundle.tag_matcher:
+        class: '%ez_migration_bundle.tag_matcher.class%'
+        arguments:
+            - '@ezpublish.translation_helper'
+            - '@?ezpublish.api.service.tags'
+
     ### field handlers
 
     ez_migration_bundle.complex_field_manager:
@@ -374,6 +382,14 @@ services:
             - '@ez_migration_bundle.location_matcher'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext }
+
+    ez_migration_bundle.complex_field.eztags:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.eztags.class%'
+        arguments:
+            - '@ez_migration_bundle.tag_matcher'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: eztags }
 
     ### reference resolvers
 

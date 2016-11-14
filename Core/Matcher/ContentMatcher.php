@@ -10,7 +10,7 @@ use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
  * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
  * @todo extend to allow matching on multiple conditions (AND)
  */
-class ContentMatcher extends AbstractMatcher
+class ContentMatcher extends RepositoryMatcher
 {
     use FlexibleKeyMatcherTrait;
 

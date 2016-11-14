@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
-class ObjectStateMatcher extends AbstractMatcher implements KeyMatcherInterface
+class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 

@@ -4,6 +4,8 @@ namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 /**
  * Handles references to tags
+ *
+ * @todo support custom languages
  */
 class TagResolver extends AbstractResolver
 {
@@ -15,7 +17,11 @@ class TagResolver extends AbstractResolver
     protected $translationHelper;
     protected $tagService;
 
-    public function __construct($translationHelper, $tagService)
+    /**
+     * @param $translationHelper
+     * @param \Netgen\TagsBundle\API\Repository\TagsService $tagService
+     */
+    public function __construct($translationHelper, $tagService=null)
     {
         parent::__construct();
 

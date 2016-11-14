@@ -6,7 +6,7 @@ use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
-class ObjectStateGroupMatcher extends AbstractMatcher implements KeyMatcherInterface
+class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 
