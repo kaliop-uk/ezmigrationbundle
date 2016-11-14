@@ -1,3 +1,9 @@
+Version 3.0.0-beta4
+===================
+
+* New: It is now possible to replace the executor and step definition in a BeforeStepExecutionEvent
+
+
 Version 3.0.0-beta3
 ===================
 

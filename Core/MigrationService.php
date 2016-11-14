@@ -226,7 +226,11 @@ class MigrationService
                 // we validated the fact that we have a good executor at parsing time
                 $executor = $this->executors[$step->type];
 
-                $this->dispatcher->dispatch('ez_migration.before_execution', new BeforeStepExecutionEvent($step, $executor));
+                $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
+                $this->dispatcher->dispatch('ez_migration.before_execution', $beforeStepExecutionEvent);
+                // allow some sneaky trickery here: event listeners can manipulate 'live' the step definition and the executor
+                $executor = $beforeStepExecutionEvent->getExecutor();
+                $step = $beforeStepExecutionEvent->getStep();
 
                 $result = $executor->execute($step);
 

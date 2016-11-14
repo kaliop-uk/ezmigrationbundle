@@ -32,4 +32,22 @@ class BeforeStepExecutionEvent extends Event
     {
         return $this->executor;
     }
+
+    /**
+     * Here be dragons
+     * @param ExecutorInterface $executor
+     */
+    public function replaceExecutor(ExecutorInterface $executor)
+    {
+        $this->executor = $executor;
+    }
+
+    /**
+     * Lasciate ogni speranza, voi ch'entrate
+     * @param MigrationStep $step
+     */
+    public function replaceStep(MigrationStep $step)
+    {
+        $this->step = $step;
+    }
 }

@@ -321,11 +321,11 @@ class ContentManager extends RepositoryExecutor
                 $fieldValue = $field;
             }
 
-            $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
-            if ($fieldType == null) {
+            if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
                 throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'");
             }
 
+            $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
             $fieldValue = $this->getFieldValue($fieldValue, $fieldType, $contentType->identifier, $this->context);
 
             $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
