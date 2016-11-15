@@ -22,7 +22,7 @@
     type: content
     mode: create
     content_type: kmb_test_9
-    main_location: 2
+    parent_location: 2
     lang: fre-IT
     attributes:
         - ezstring: hello world

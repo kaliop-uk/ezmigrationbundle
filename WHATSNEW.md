@@ -1,3 +1,13 @@
+Version 3.0.0-beta6
+===================
+
+* Changes to the YML definition language:
+
+    * renamed the `main_Location` tag for content creation to `parent_location`
+
+    * renamed the `other_Locations` tag for content creation to `other_parent_locations`
+
+
 Version 3.0.0-beta5
 ===================
 
@@ -45,7 +55,7 @@ Version 3.0.0-beta3
 
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
-* New: the `main_location` and `other_locations` tags in Content creation, as well as `parent_location` in Location
+* New: the `parent_location` and `other_parent_locations` tags in Content creation, as well as `parent_location` in Location
     creation will now try to identify the desired Location by its remote id when a non integer value is used
 
 * New: the 'roles' specified when creating user groups can be so via a reference

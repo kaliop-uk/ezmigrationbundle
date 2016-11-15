@@ -21,7 +21,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_3
-    main_location: 2
+    parent_location: 2
     attributes:
         - ezstring: hello world 1
     references:
@@ -32,7 +32,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_3
-    main_location: 2
+    parent_location: 2
     attributes:
         - ezstring: hello world 2
     references:
@@ -43,7 +43,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_3
-    main_location: 2
+    parent_location: 2
     attributes:
         - ezstring: hello world 3
     references:
@@ -57,7 +57,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_3
-    main_location: 2
+    parent_location: 2
     attributes:
         - ezstring: hello world 4
     references:
@@ -74,7 +74,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_3
-    main_location: 2
+    parent_location: 2
     location_remote_id: one_more_random_remoteid_location
     attributes:
         - ezstring: hello world 5
@@ -82,7 +82,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_3
-    main_location: one_more_random_remoteid_location
+    parent_location: one_more_random_remoteid_location
     remote_id: one_more_random_remoteid_content
     attributes:
         - ezstring: hello world 6

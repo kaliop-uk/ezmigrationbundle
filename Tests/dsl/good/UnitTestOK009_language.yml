@@ -28,7 +28,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_9
-    main_location: 2
+    parent_location: 2
     lang: abc-DE
     attributes:
         - ezstring: hello world 1

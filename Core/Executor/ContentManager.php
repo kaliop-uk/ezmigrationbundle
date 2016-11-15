@@ -92,7 +92,10 @@ class ContentManager extends RepositoryExecutor
         }
 
         // instantiate a location create struct from the parent location:
-        $locationId = $this->dsl['main_location'];
+        // BC
+        $locationId = isset($this->dsl['parent_location']) ? $this->dsl['parent_location'] : (
+            isset($this->dsl['main_location']) ? $this->dsl['main_location'] : null
+        );
         // 1st resolve references
         $locationId = $this->referenceResolver->resolveReference($locationId);
         // 2nd allow to specify the location via remote_id
@@ -121,8 +124,12 @@ class ContentManager extends RepositoryExecutor
 
         $locations = array($locationCreateStruct);
 
-        if (isset($this->dsl['other_locations'])) {
-            foreach ($this->dsl['other_locations'] as $locationId) {
+        // BC
+        $other_locations = isset($this->dsl['other_parent_locations']) ? $this->dsl['other_parent_locations'] : (
+            isset($this->dsl['other_locations']) ? $this->dsl['other_locations'] : null
+        );
+        if (isset($other_locations)) {
+            foreach ($other_locations as $locationId) {
                 $locationId = $this->referenceResolver->resolveReference($locationId);
                 $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
                 $secondaryLocationCreateStruct = $locationService->newLocationCreateStruct($locationId);

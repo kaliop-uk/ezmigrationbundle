@@ -122,7 +122,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_2
-    main_location: 2
+    parent_location: 2
     section: 3
     owner: admin
     attributes:
@@ -156,7 +156,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_2
-    main_location: reference:kmb_test_2_1_loc
+    parent_location: reference:kmb_test_2_1_loc
     location_remote_id: kmb_test_2_3_location_remote_id
     priority: 1999
     is_hidden: true
@@ -175,7 +175,7 @@
     type: content
     mode: create
     content_type: reference:kmb_test_2
-    main_location: 2
+    parent_location: 2
     priority: 1999
     remote_id: this_is_a_test_remoteid
     attributes:

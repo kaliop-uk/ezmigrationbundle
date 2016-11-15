@@ -85,7 +85,7 @@
     type: content
     mode: create
     content_type: kmb_test_8_ct
-    main_location: 2
+    parent_location: 2
     owner: reference:kmb_test_8_user
     attributes:
         - title: hello world 8

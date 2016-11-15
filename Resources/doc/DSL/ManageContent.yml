@@ -2,13 +2,13 @@
     type: content
     mode: create
     content_type: xxx # Content type identifier
-    main_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
+    parent_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
     priority: 0 # Optional. Set the priority of the main location
     is_hidden: true|false # Optional
     sort_field: x # Optional. See ManageLocation.yml for details
     sort_order: ASC|DESC # Optional
     location_remote_id: xxx # Optional, remote id of the new location which will be created
-    other_locations: [x, y, z] # Optional, ids of extra parent locations. When a non numeric string is used as element, it is assumed to be a location remote id
+    other_parent_locations: [x, y, z] # Optional, ids of extra parent locations. When a non numeric string is used as element, it is assumed to be a location remote id
     remote_id: custom_remote_id # Optional, will set a custom remote id
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier

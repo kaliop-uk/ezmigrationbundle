@@ -49,11 +49,16 @@ Please see the `ManageContent.yml` DSL definition file in the `Resources/doc/DSL
 ## Using references in your migration files
 
 The Yaml definitions support setting references of values of certain attributes, that you can retrieve in the subsequent
-instructions.
-For example, you could set a reference to a folder's location id and then use that as the parent location when creating
-articles in that folder.
+migration steps.
 
-See the following example on using references:
+Setting a reference is the same as creating a new variable - you decide its name, and which value it will hold (the value
+is taken from the entity currently being created / updated). Once the reference is set, you can use make use of its value
+in other steps.
+
+For example, you could set a reference to a the location id of a folder that you create and then use that as the parent
+location for creating articles in that folder.
+
+Here is another example on using references:
 the first step creates a new content type in the system and sets a reference to its id;
 the second step adds a new policy to the editor role to allow editors to create objects of the new content
 type under the location with id 2.
@@ -72,18 +77,6 @@ type under the location with id 2.
                 name: Title
                 identifier: title
                 required: true
-                searchable: true
-                info-collector: false
-                disable-translation: false
-                default-value: New section page
-            -
-                type: ezxmltext
-                name: Body
-                identifier: body
-                required: false
-                searchable: true
-                info-collector: false
-                disable-translation: false
         references:
             -
                 identifier: section_page_class
@@ -111,13 +104,19 @@ To set the reference we use the `references` section of the content type DSL. We
 In the update role action we retrieve the value of the reference by using the `reference:section_page_class`.
 
 To tell the system that you want to use a previously stored reference you need to prefix the reference name with the string
-`reference:`. This instructs the system to look in the stored references for attributes that support this.
+`reference:`. This instructs the system to look in the list of stored references and replace the current tag with the value
+associated to the reference found.
 
-> **Important**: Please note that the reference **must be a quoted string**, as `reference:<reference_name>` uses
+> **Important:** Please note that the reference **must be a quoted string**, as `reference:<reference_name>` uses
 > YAML reserved characters.
 >
-> **Bad**: `some_key: reference:foo`<br>
-> **Good**: `some_key: 'reference:foo'`
+> **Bad:** `some_key: reference:foo`<br>
+> **Good:** `some_key: 'reference:foo'`
+
+*NB:* references are stored *in memory* only and will not propagate across different migrations, unless you
+execute the migrations in a single command (and without the 'separate processes' switch).
+
+*note:* the following lists are currently out of date - look in the single DSL files for the complete set.
 
 Currently you can use references to store the following values:
 

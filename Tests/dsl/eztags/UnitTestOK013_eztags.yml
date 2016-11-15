@@ -43,7 +43,7 @@
 -
     type: content
     mode: create
-    main_location: 2
+    parent_location: 2
 
     type: content
     mode: delete
