@@ -29,8 +29,8 @@
     # Optional, Group ID / list of group IDs the user has to be a member of.
     # The user will be removed from all groups that are not in the list
     groups: [x, y, z]
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
@@ -52,8 +52,8 @@
     name: xyz
     description: xyz # Optional
     roles: [x, y, z] # The role names or ids to assign to the group
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
@@ -69,8 +69,8 @@
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference

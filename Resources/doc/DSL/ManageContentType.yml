@@ -66,8 +66,8 @@
     # Remove all attributes that have their identifiers listed here
     # Can use both ways to define the list of identifiers.
     remove_attributes: [identifier1, identifier2, identifier3]
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
             -
                 identifier: referenceId # A string used to identify the reference

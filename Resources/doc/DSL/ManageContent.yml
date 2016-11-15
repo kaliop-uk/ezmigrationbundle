@@ -74,8 +74,8 @@
     object_states:
         - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier
         - yyy
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
@@ -105,8 +105,8 @@
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or didentifier. For the format to use, see above
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
