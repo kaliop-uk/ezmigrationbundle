@@ -2,12 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
-use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
-
 /**
- * A class which eases creating reference resolvers based on prefix strings
+ * A class which eases creating reference resolvers based on prefix strings.
+ * It could be renamed to 'PrefixBasedResolver', really
  */
-abstract class AbstractResolver implements ReferenceResolverInterface
+abstract class AbstractResolver implements RegexpBasedResolverInterface
 {
     /// To be set by subclasses at constructor time or in definition
     protected $referencePrefixes = array();
@@ -24,6 +23,11 @@ abstract class AbstractResolver implements ReferenceResolverInterface
             $quotedPrefixes[] = preg_quote($prefix, '/');
         }
         $this->prefixMatchRegexp = '/^(' . implode('|', $quotedPrefixes) . ')/';
+    }
+
+    public function getRegexp()
+    {
+        return $this->prefixMatchRegexp;
     }
 
     /**
