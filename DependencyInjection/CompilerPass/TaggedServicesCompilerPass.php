@@ -35,14 +35,26 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
             $migrationService = $container->findDefinition('ez_migration_bundle.complex_field_manager');
 
             $DefinitionParsers = $container->findTaggedServiceIds('ez_migration_bundle.complex_field');
+
+            // allow for prioritization of tagged services
+            $handlers = array();
+            $priorities = array();
+
             foreach ($DefinitionParsers as $id => $tags) {
                 foreach ($tags as $attributes) {
-                    $migrationService->addMethodCall('addComplexField', array(
+                    $priorities[] = isset($attributes['priority']) ? $attributes['priority'] : 0;
+                    $handlers[] = array(
                         new Reference($id),
                         $attributes['fieldtype'],
                         isset($attributes['contenttype']) ? $attributes['contenttype'] : null
-                    ));
+                    );
                 }
+            }
+
+            asort($priorities);
+
+            foreach ($priorities as $id => $priority) {
+                $migrationService->addMethodCall('addComplexField', $handlers[$id]);
             }
         }
 

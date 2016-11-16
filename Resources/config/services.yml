@@ -327,19 +327,19 @@ services:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezauthor.class%'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezauthor }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezauthor, priority: 0 }
 
     ez_migration_bundle.complex_field.ezbinaryfile:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile, priority: 0 }
 
     ez_migration_bundle.complex_field.ezimage:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezimage.class%'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezimage }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezimage, priority: 0 }
 
     ez_migration_bundle.complex_field.ezpage:
         parent: ez_migration_bundle.complex_field
@@ -347,7 +347,7 @@ services:
         arguments:
             - '@ezpublish.fieldType.ezpage.pageService'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezpage }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezpage, priority: 0 }
 
     ez_migration_bundle.complex_field.ezrelation:
         parent: ez_migration_bundle.complex_field
@@ -355,7 +355,7 @@ services:
         arguments:
             - '@ez_migration_bundle.content_matcher'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelation }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelation, priority: 0 }
 
     ez_migration_bundle.complex_field.ezrelationlist:
         parent: ez_migration_bundle.complex_field
@@ -363,7 +363,7 @@ services:
         arguments:
             - '@ez_migration_bundle.content_matcher'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelationlist }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelationlist, priority: 0 }
 
     ez_migration_bundle.complex_field.ezrichtext:
         parent: ez_migration_bundle.complex_field
@@ -372,7 +372,7 @@ services:
             - '@ez_migration_bundle.content_matcher'
             - '@ez_migration_bundle.location_matcher'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezrichtext }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezrichtext, priority: 0 }
 
     ez_migration_bundle.complex_field.ezxmltext:
         parent: ez_migration_bundle.complex_field
@@ -381,7 +381,7 @@ services:
             - '@ez_migration_bundle.content_matcher'
             - '@ez_migration_bundle.location_matcher'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext }
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext, priority: 0 }
 
     ez_migration_bundle.complex_field.eztags:
         parent: ez_migration_bundle.complex_field
@@ -389,7 +389,7 @@ services:
         arguments:
             - '@ez_migration_bundle.tag_matcher'
         tags:
-            - { name: ez_migration_bundle.complex_field, fieldtype: eztags }
+            - { name: ez_migration_bundle.complex_field, fieldtype: eztags, priority: 0 }
 
     ### reference resolvers
 

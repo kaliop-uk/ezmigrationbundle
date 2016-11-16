@@ -1,11 +1,13 @@
 Version 3.0.0-beta6
 ===================
 
+* New: it is now possible to use a priority to the services tagged to act as complex field handlers
+
 * Changes to the YML definition language:
 
-    * renamed the `main_Location` tag for content creation to `parent_location`
+    * renamed the `main_Location` tag for content creation to `parent_location`. The old syntax works but is deprecated
 
-    * renamed the `other_Locations` tag for content creation to `other_parent_locations`
+    * renamed the `other_Locations` tag for content creation to `other_parent_locations`. The old syntax works but is deprecated
 
 
 Version 3.0.0-beta5
