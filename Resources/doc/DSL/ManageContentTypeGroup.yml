@@ -1,0 +1,17 @@
+-
+    type: content_type_group
+    mode: create
+    identifier: xyz  # Identifier/name of new content type group
+    references: #Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference. Only supports content type group id
+                                   # The shorthand 'id' can be used instead of 'content_type_group_id'
+
+-
+    # Delete a content type group
+    type: content_type_group
+    mode: delete
+    # Only one of id or identifier is required. id takes preference.
+    id: 000  # The numerical id of the content type group
+    identifier: xyz # The identifier/name of the content type group

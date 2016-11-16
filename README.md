@@ -125,6 +125,7 @@ In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of UserGroups
 - creation, update and deletion of Roles
 - creation, update and deletion of ContentTypes
+- creation and deletion of ContentTypeGroups
 - creation and deletion of Languages
 - creation of Tags (from the Netgen Tags Bundle)
 
