@@ -1,3 +1,9 @@
+Version 2.5
+===========
+
+* New: add support for creating and deleting Content Type Groups
+
+
 Version 2.4.2
 =============
 
