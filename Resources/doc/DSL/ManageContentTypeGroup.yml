@@ -5,13 +5,13 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference. Only supports content type group id
+            attribute: attributeId # An attribute to get the value of for the reference. Supports content type group id and identifier
                                    # The shorthand 'id' can be used instead of 'content_type_group_id'
 
 -
-    # Delete a content type group
+    # Delete one (or more) content type group
     type: content_type_group
     mode: delete
-    # Only one of id or identifier is required. id takes preference.
-    id: 000  # The numerical id of the content type group
-    identifier: xyz # The identifier/name of the content type group
+    match: # only one of the following keys is allowed
+        id: x # int|int[] The Id of the content type group(s) to update.
+        identifier: y # string|string[] The Identifier of the content type group(s) to update
