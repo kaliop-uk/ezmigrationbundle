@@ -88,7 +88,7 @@ class ContentTypeGroupMatcher extends AbstractMatcher
 
         foreach ($contentTypeGroupIdentifiers as $contentTypeGroupIdentifier) {
             // return unique contents
-            $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroupByIdentifier($contentTypeGroupIdentifiers);
+            $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroupByIdentifier($contentTypeGroupIdentifier);
             $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
         }
 
