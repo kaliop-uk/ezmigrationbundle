@@ -1,0 +1,13 @@
+-
+    type: content_type_group
+    mode: create
+    identifier: test
+    references:
+        -
+            identifier: test_group_id
+            attribute: id
+
+-
+    type: content_type_group
+    mode: delete
+    identifier: test

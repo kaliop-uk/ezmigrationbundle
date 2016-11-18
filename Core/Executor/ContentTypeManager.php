@@ -33,7 +33,11 @@ class ContentTypeManager extends RepositoryExecutor
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
-        $contentTypeGroup = $contentTypeService->loadContentTypeGroup($this->dsl['content_type_group']);
+        $contentTypeGroupIdentifier = $this->dsl['content_type_group'];
+        if ($this->referenceResolver->isReference($contentTypeGroupIdentifier)) {
+            $contentTypeGroupIdentifier = $this->referenceResolver->getReferenceValue($contentTypeGroupIdentifier);
+        }
+        $contentTypeGroup = $contentTypeService->loadContentTypeGroup($contentTypeGroupIdentifier);
 
         $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($this->dsl['identifier']);
         $contentTypeCreateStruct->mainLanguageCode = $this->getLanguageCode();
