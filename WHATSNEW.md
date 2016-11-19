@@ -3,6 +3,8 @@ Version 3.0.0
 
 * New: better error messages on content creation/update when content fields do not validate (issue #84)
 
+* Fix: when creating/updating contents, a NULL value is now accepted as valid by all (known) field types, including object relation, image and binary file
+
 
 Version 3.0.0-beta6
 ===================
