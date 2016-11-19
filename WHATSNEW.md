@@ -1,3 +1,9 @@
+Version 3.0.0
+=============
+
+* New: better error messages on content creation/update when content fields do not validate (issue #84)
+
+
 Version 3.0.0-beta6
 ===================
 
