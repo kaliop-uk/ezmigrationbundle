@@ -36,6 +36,7 @@ parameters:
 
     ez_migration_bundle.executor.content_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentManager
     ez_migration_bundle.executor.content_type_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager
+    ez_migration_bundle.executor.content_type_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeGroupManager
     ez_migration_bundle.executor.location_manager.class: Kaliop\eZMigrationBundle\Core\Executor\LocationManager
     ez_migration_bundle.executor.role_manager.class: Kaliop\eZMigrationBundle\Core\Executor\RoleManager
     ez_migration_bundle.executor.tag_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TagManager
@@ -192,6 +193,12 @@ services:
             - '@ez_migration_bundle.reference_resolver'
         tags:
             - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.content_type_group_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.content_type_group_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.content_type_group_matcher'
 
     ez_migration_bundle.executor.user_manager:
         parent: ez_migration_bundle.executor.repository
