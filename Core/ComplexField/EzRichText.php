@@ -8,13 +8,11 @@ use Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher;
 
 class EzRichText extends AbstractComplexField implements ComplexFieldInterface
 {
-    protected $contentMatcher;
-    protected $locationMatcher;
+    protected $resolver;
 
-    public function __construct(ContentMatcher $contentMatcher, LocationMatcher $locationMatcher)
+    public function __construct(PrefixBasedResolver $resolver)
     {
-        $this->contentMatcher = $contentMatcher;
-        $this->locationMatcher = $locationMatcher;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -34,18 +32,19 @@ class EzRichText extends AbstractComplexField implements ComplexFieldInterface
             $xmlText = $fieldValue['content'];
         }
 
-        /// @todo this regexp belongs to the resolver...
+        // Check if there are any references in the xml text and replace them.
 
-        //Check if there are any references in the xml text and replace them.
-        // $result[0][] will have the matched full string eg.: [reference:example_reference]
-        // $result[1][] will have the reference id eg.: example_reference
-        $count = preg_match_all('|\[(reference:[^\]\[]*)\]|', $xmlText, $result);
+        // we need to alter the regexp we get from the resolver, as it will be used to match parts of text, not the whole string
+        $regexp = substr($this->resolver->getRegexp(), 1, -1);
+        // NB: here we assume that all regexp resolvers give us a regexp with a very specific format...
+        $regexp = '/\['.preg_replace(array('/^\(\(\^/', '/\)\|\(\^/'), array('((', ')|('), $regexp) . '[^]]+\]/';
 
-        if ($count !== false && count($result) > 1) {
-            foreach ($result[1] as $index => $referenceIdentifier) {
-                $reference = $this->referenceResolver->getReferenceValue($referenceIdentifier);
-
-                $xmlText = str_replace($result[0][$index], $reference, $xmlText);
+        $count = preg_match_all($regexp, $xmlText, $matches);
+        // $matches[0][] will have the matched full string eg.: [reference:example_reference]
+        if ($count) {
+            foreach ($matches[0] as $referenceIdentifier) {
+                $reference = $this->resolver->getReferenceValue(substr($referenceIdentifier, 1, -1));
+                $xmlText = str_replace($referenceIdentifier, $reference, $xmlText);
             }
         }
 
