@@ -16,7 +16,10 @@ class EzBinaryFile extends AbstractComplexField implements ComplexFieldInterface
     {
         $mimeType = '';
         $fileName = '';
-        if (is_string($fieldValue)) {
+
+        if ($fieldValue === null) {
+            return new BinaryFileValue();
+        } if (is_string($fieldValue)) {
             $filePath = $fieldValue;
         } else {
             $filePath = $fieldValue['path'];

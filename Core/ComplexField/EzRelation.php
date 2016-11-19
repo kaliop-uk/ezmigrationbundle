@@ -32,6 +32,10 @@ class EzRelation extends AbstractComplexField implements ComplexFieldInterface
             $id = $fieldValue;
         }
 
+        if ($id === null) {
+            return new Value();
+        }
+
         // 1. resolve relations
         $id = $this->referenceResolver->resolveReference($id);
         // 2. resolve remote ids

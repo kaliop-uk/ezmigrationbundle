@@ -207,6 +207,36 @@
             destinationContentId: 'reference:kmb_test_2_1'
         - ezobjectrelationlist:
             destinationContentIds: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_2
+    parent_location: 2
+    attributes:
+        ezstring: null
+        ezauthor: null
+        ezbinaryfile: null
+        ezboolean: null
+        ezcountry: null
+        ezdatetime: null
+        ezdate: null
+        ezemail: null
+        ezfloat: null
+        ezimage: null
+        ezinteger: null
+        ezisbn: null
+        ezkeyword: null
+        ezmedia: null
+        ezobjectrelation: null
+        ezobjectrelationlist: null
+        ezrichtext: null
+        eztext: null
+        eztime: null
+        ezurl: null
+        ezuser: null
+        ezxmltext: null
+
 -
     type: content
     mode: update

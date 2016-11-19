@@ -351,6 +351,11 @@ class MigrationService
                 }
             }
         }
+
+        while (($e = $e->getPrevious()) != null) {
+            $message .= "\n" . $e->getMessage();
+        }
+
         return $message;
     }
 }
