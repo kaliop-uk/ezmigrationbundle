@@ -7,6 +7,8 @@ Version 3.0.0
 
 * New: added support for creating and deleting Content Type Groups
 
+* New: made it easier to allow custom references types to be substituted in xmltext and richtext fields
+
 
 Version 3.0.0-beta6
 ===================

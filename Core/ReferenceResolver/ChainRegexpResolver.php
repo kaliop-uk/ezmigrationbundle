@@ -24,7 +24,9 @@ class ChainRegexpResolver extends ChainResolver implements RegexpBasedResolverIn
         $regexps = array();
         foreach($this->resolvers as $resolver) {
             $regexp = substr($resolver->getRegexp(), 1, -1);
-            $regexps[] = $regexp;
+            if ($regexp !== '') {
+                $regexps[] = $regexp;
+            }
         }
         return '/(' . implode(')|(', $regexps) . '))/';
     }

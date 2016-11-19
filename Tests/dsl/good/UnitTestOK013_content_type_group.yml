@@ -9,6 +9,7 @@
         -
             identifier: test_group_identifier
             attribute: identifier
+
 -
     type: content_type_group
     mode: delete

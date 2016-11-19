@@ -3,13 +3,13 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolver;
+use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
 class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
 {
     protected $resolver;
 
-    public function __construct(PrefixBasedResolver $resolver)
+    public function __construct(PrefixBasedResolverInterface $resolver)
     {
         $this->resolver = $resolver;
     }
@@ -36,7 +36,7 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
         // we need to alter the regexp we get from the resolver, as it will be used to match parts of text, not the whole string
         $regexp = substr($this->resolver->getRegexp(), 1, -1);
         // NB: here we assume that all regexp resolvers give us a regexp with a very specific format...
-        $regexp = '/\['.preg_replace(array('/^\(\(\^/', '/\)\|\(\^/'), array('((', ')|('), $regexp) . '[^]]+\]/';
+        $regexp = '/\['.preg_replace(array('/^\^/'), array('', ''), $regexp) . '[^]]+\]/';
 
         $count = preg_match_all($regexp, $xmlText, $matches);
         // $matches[0][] will have the matched full string eg.: [reference:example_reference]
