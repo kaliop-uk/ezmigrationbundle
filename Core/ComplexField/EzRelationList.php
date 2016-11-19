@@ -25,6 +25,8 @@ class EzRelationList extends AbstractComplexField implements ComplexFieldInterfa
         if (count($fieldValueArray) == 1 && isset($fieldValueArray['destinationContentIds'])) {
             // fromHash format
             $ids = $fieldValueArray['destinationContentIds'];
+        } else if ($fieldValueArray === null) {
+            $ids = array();
         } else {
             // simplified format
             $ids = $fieldValueArray;
