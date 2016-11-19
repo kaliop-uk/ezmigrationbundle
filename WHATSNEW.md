@@ -5,6 +5,8 @@ Version 3.0.0
 
 * Fix: when creating/updating contents, a NULL value is now accepted as valid by all (known) field types, including object relation, image and binary file
 
+* New: added support for creating and deleting Content Type Groups
+
 
 Version 3.0.0-beta6
 ===================
