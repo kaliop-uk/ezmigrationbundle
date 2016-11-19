@@ -70,6 +70,7 @@ parameters:
     ez_migration_bundle.complex_field.eztags.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzTags
 
     ez_migration_bundle.reference_resolver.chain.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainResolver
+    ez_migration_bundle.reference_resolver.chain_prefix.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainPrefixResolver
     ez_migration_bundle.reference_resolver.customreference.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\CustomReferenceResolver
     ez_migration_bundle.reference_resolver.content.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ContentResolver
     ez_migration_bundle.reference_resolver.location.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver
@@ -199,6 +200,8 @@ services:
         class: '%ez_migration_bundle.executor.content_type_group_manager.class%'
         arguments:
             - '@ez_migration_bundle.content_type_group_matcher'
+        tags:
+            - { name: ez_migration_bundle.executor }
 
     ez_migration_bundle.executor.user_manager:
         parent: ez_migration_bundle.executor.repository
@@ -385,8 +388,9 @@ services:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezxmltext.class%'
         arguments:
-            - '@ez_migration_bundle.content_matcher'
-            - '@ez_migration_bundle.location_matcher'
+            # if you want to replace custom references in rich text fields, you can replace this with a new service
+            # built f.e. using the ChainPrefixResolver class
+            - '@ez_migration_bundle.reference_resolver.customreference'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezxmltext, priority: 0 }
 
@@ -443,7 +447,7 @@ services:
 
     # NB: This service will see added to the chain any service tagged as 'ez_migration_bundle.reference_resolver.customreference'
     ez_migration_bundle.reference_resolver.customreference.flexible:
-        class: '%ez_migration_bundle.reference_resolver.chain.class%'
+        class: '%ez_migration_bundle.reference_resolver.chain_prefix.class%'
         arguments:
             - [ '@ez_migration_bundle.reference_resolver.customreference.base' ]
 
