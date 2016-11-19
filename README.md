@@ -241,12 +241,16 @@ and the corresponding php class:
     The simplest workaround is to disable usage of transactions by passing the `-u` flag to the `migrate` command.
 
 * if you get fatal errors without any error message when running a migration which involves a lot of content changes,
-    such as f.e. altering a contentType with many contents, it light be that you are running out of memory for your
+    such as f.e. altering a contentType with many contents, it might be that you are running out of memory for your
     php process.
     Known workarounds involve:
     - increase the maximum amount of memory allowed for the php script by running it with option '-d memory_limit=-1'
     - execute the migration command using a Symfony environment which has reduced logging and kernel debug disabled:
         the default configuration for the `dev` environment is known to leak memory
+
+* if you get fatal errors with he message 'You cannot create a service ("request") of an inactive scope ("request")',
+    take a look at the following issue for a possible explanation and ideas for workarounds:
+    https://jira.ez.no/browse/EZP-24691
 
 * the bundle does not at the moment support creation of user accounts using a custom contentType
 
