@@ -73,13 +73,14 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
      *
      * @param string $identifier
      * @param mixed $value
+     * @param bool $overwrite do overwrite the existing ref if it exist without raising an exception
      * @return bool
      */
-    public function addReference($identifier, $value)
+    public function addReference($identifier, $value, $overwrite = false)
     {
         foreach ($this->resolvers as $resolver) {
             if ($resolver instanceof ReferenceBagInterface) {
-                if ($resolver->addReference($identifier, $value)) {
+                if ($resolver->addReference($identifier, $value, $overwrite)) {
                     return true;
                 }
             }
