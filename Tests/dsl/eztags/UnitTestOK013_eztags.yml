@@ -41,6 +41,19 @@
                 showDropDown: false
                 hideRootTag: true
 -
+    type: content_type
+    mode: update
+    identifier: kmb_test_11
+    attributes:
+        -
+            identifier: tags
+            type: eztags
+            name: Subject
+            field-settings:
+                subTreeLimit: 'tag:Article Subject'
+                showDropDown: false
+                hideRootTag: true
+-
     type: content
     mode: create
     parent_location: 2
