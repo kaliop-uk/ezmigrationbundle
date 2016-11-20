@@ -106,6 +106,8 @@
             type: ezobjectrelationlist
             name: ezobjectrelationlist
             identifier: ezobjectrelationlist
+            field-settings:
+                selectionDefaultLocation: 2
         # @todo we should make sure that at least one layout type exists in order to create an ezpage attribute...
         #-
         #    type: ezpage

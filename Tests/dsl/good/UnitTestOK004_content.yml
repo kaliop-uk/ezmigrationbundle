@@ -133,6 +133,18 @@
             identifier: kmb_test_2_1_loc
             attribute: location_id
 -
+    type: content_type
+    mode: update
+    match:
+        identifier: kmb_test_2
+    attributes:
+        -
+            type: ezobjectrelationlist
+            name: ezobjectrelationlist
+            identifier: ezobjectrelationlist
+            field-settings:
+                selectionDefaultLocation: reference:kmb_test_2_1_loc
+-
     type: content
     mode: create
     content_type: reference:kmb_test_2
