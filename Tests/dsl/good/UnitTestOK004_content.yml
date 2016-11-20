@@ -135,8 +135,7 @@
 -
     type: content_type
     mode: update
-    match:
-        identifier: kmb_test_2
+    identifier: kmb_test_2
     attributes:
         -
             type: ezobjectrelationlist
