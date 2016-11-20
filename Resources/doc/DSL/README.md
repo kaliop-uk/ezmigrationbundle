@@ -7,6 +7,7 @@ Specific topics are covered below.
 
 *NB* For more examples of valid Yaml files describing migrations, have a look in the directory Tests/dsl/good
 
+
 ## Content language
 
 By default the bundle uses eng-GB for creating all multilingual entities (contents, contentTypes, users, etc...). 
@@ -14,34 +15,30 @@ In order to create content in a different language, either specify it in your ym
 use a command-line switch.
 
 
-## Importing binary files
+## Notes on field types
 
-To import binary files like images into attributes (ezimage, ezbinaryfile fields) the attribute needs to be defined as
-a complex type to tell the system to handle it differently.
+### Importing binary files
 
-Below is a snippet of how a simple/primitive field type is defined in a content creation Yaml definition:
-
-    attributes:
-        - title: 'Example title'
-
-To define a complex attribute we need to indicate the type of the attribute and then provide the required data fields for
-the attribute.
-
-Below is an example snippet for ezimage:
+Below is an example snippet for creation/update of a content with a field of type ezimage:
 
     attributes:
-        - image:
-            type: ezimage
+        image:
             path: /path/to/the/image.jpg
             alt_text: 'Example alt text'
 
-Images __have__ to be placed in the `MigrationVersions/images` folder.
-Binary files __have__ to be placed in the `MigrationVersions/files` folder.
+A simplified form, which does not allow for setting the 'alt' attribute, is: 
 
-The paths to files/images in the definition are relative paths from the MigrationVersions/images or
-MigrationVersions/files folders.
-For example using the path from the snippet above the system would look for the image file in
-`MigrationVersions/images/path/to/the/image.jpg` in the bundle's directory.
+    attributes:
+        image: /path/to/the/image.jpg
+
+
+The paths to files/images in the definition are either
+* absolute paths, or
+* relative paths from the MigrationVersions/images or MigrationVersions/files folders.
+
+For example using the path from the snippet above the system would look first for the image file in
+`MigrationVersions/images/path/to/the/image.jpg` in the bundle's directory, and if no file is found there, look for
+`/images/path/to/the/image.jpg`
 
 Please see the `ManageContent.yml` DSL definition file in the `Resources/doc/DSL` folder for more information.
 
@@ -58,10 +55,10 @@ in other steps.
 For example, you could set a reference to a the location id of a folder that you create and then use that as the parent
 location for creating articles in that folder.
 
-Here is another example on using references:
+Here is an example on using references:
 the first step creates a new content type in the system and sets a reference to its id;
-the second step adds a new policy to the editor role to allow editors to create objects of the new content
-type under the location with id 2.
+the second step adds a new policy to the editor role to allow editors to create objects of the new content type under
+the location with id 2.
 
     -
         mode: create
@@ -81,7 +78,6 @@ type under the location with id 2.
             -
                 identifier: section_page_class
                 attribute: content_type_id
-
     -
         mode: update
         type: role
@@ -115,6 +111,28 @@ associated to the reference found.
 
 *NB:* references are stored *in memory* only and will not propagate across different migrations, unless you
 execute the migrations in a single command (and without the 'separate processes' switch).
+
+*NB:* please do not use the character `]` in your reference names. See below for the reason. 
+
+### References in the XML for the eZXMLText Field
+
+To tell the system to look for references in the xml that is used to populate ezxmltext type fields the Yaml definition
+will need to use the definition used for defining complex attributes.
+Please see the importing binary files section above on how to define complex data type handling for an attribute.
+
+Below is an example snippet showing how to define references for ezxmltext.
+
+    attributes:
+        - description:
+            type: ezxmltext
+            content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:test_image]" /></paragraph></section>'
+
+*NB:* when using references in xml texts you must include the two extra characters `[` and `]`, which are not needed
+when using them as part of other elements in the yml file.
+This is done to minimize the chances that some random bits of text get modified by error (and because we need an
+end-of-reference identifier character).
+
+### Complete list of available reference
 
 *note:* the following lists are currently out of date - look in the single DSL files for the complete set.
 
@@ -160,21 +178,3 @@ You can use references to set the following values:
     - `user_group_id`
 
 For more information please see the DSL definitions in the `Resources/doc/DSL` folder.
-
-
-## References in the XML for the eZXMLText Field
-
-To tell the system to look for references in the xml that is used to populate ezxmltext type fields the Yaml definition
-will need to use the definition used for defining complex attributes.
-Please see the importing binary files section above on how to define complex data type handling for an attribute.
-
-Below is an example snippet showing how to define references for ezxmltext.
-
-    attributes:
-        - description:
-            type: ezxmltext
-            content: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:test_image]" /></paragraph></section>'
-
-*NB:* when using references in xml texts you must include the two extra characters `[` and `]`, which are not needed
-when using them as part of other elements in the yml file.
-This is done to minimize the chances that some random bits of text get modified by error.

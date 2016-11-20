@@ -1,56 +1,12 @@
 Version 3.0.0
 =============
 
-* New: better error messages on content creation/update when content fields do not validate (issue #84)
-
-* Fix: when creating/updating contents, a NULL value is now accepted as valid by all (known) field types, including
-    object relation, image and binary file
-
-* New: added support for creating and deleting Content Type Groups
-
-* New: made it easier to allow custom references types to be substituted in xmltext and richtext fields
-
-
-Version 3.0.0-beta6
-===================
-
-* New: it is now possible to use a priority to the services tagged to act as complex field handlers
-
-* Changes to the YML definition language:
-
-    * renamed the `main_Location` tag for content creation to `parent_location`. The old syntax works but is deprecated
-
-    * renamed the `other_Locations` tag for content creation to `other_parent_locations`. The old syntax works but is deprecated
-
-
-Version 3.0.0-beta5
-===================
-
-* New: It is now possible to replace the executor and step definition in a BeforeStepExecutionEvent
-
-* New: it is now possible to set values to content fields of type eztags
-
-
-Version 3.0.0-beta4
-===================
-
-* Add a method for fast dropping of all migrations from the db
-
-
-Version 3.0.0-beta3
-===================
-
 * New: it is now possible to store migration definitions in json format instead of yaml.
     The json format is not documented separately, as it is identical in structure to the yaml one. 
 
-* New: the 'migrate' command learned a `--separate-process` option, to run each migration it its own separate
-    php process. This should help when running many migrations in a single pass, and there are f.e. memory leaks.
-
 * New: the 'migrate' command learned to give information ion the executed steps when using the `-v` option
 
-* New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped 
-
-* New: it is now possible to create, update and delete Object States and Object State Groups
+* New: it is now possible to set values to content fields of type eztags
 
 * New: updating and deleting of Users, User Groups, Roles and Content Types now accepts more flexible definitions of
     the elements to act upon, and comprehensive resolution of references
@@ -70,12 +26,22 @@ Version 3.0.0-beta3
 
 * New: references are now resolved for user_id and group_id when assigning Roles 
 
-* New: the `parent_location` and `other_parent_locations` tags in Content creation, as well as `parent_location` in Location
-    creation will now try to identify the desired Location by its remote id when a non integer value is used
+* New: the `parent_location` and `other_parent_locations` tags in Content creation, as well as `parent_location` in
+    Location creation will now try to identify the desired Location by its remote id when a non integer value is used
 
 * New: the 'roles' specified when creating user groups can be so via a reference
 
 * New: the content_type_group tags in ContentType creation will accept a Content Type Group identifier besides an id
+
+* Fix: when creating/updating contents, a NULL value is now accepted as valid by all (known) field types, including
+    object relation, image and binary file
+
+* Fix: migrations will not silently swallow any more errors when creating users or assigning roles and a non-existing
+    group is specified
+
+* New: made it easier to allow custom references types to be substituted in xmltext and richtext fields
+
+* New: it is now possible to use a priority to the services tagged to act as complex field handlers
  
 * New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are
     executed:
@@ -83,19 +49,6 @@ Version 3.0.0-beta3
     * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
-
-* Fix: migrations will not silently swallow any more errors when creating users or assigning roles and a non-existing
-    group is specified
-
-* Fix: (issue 78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
-    commit phase
-
-* Fix: (issue 76) when using transactions on either ezplatform or ezpublish with workflows, migrations might fail
-    when creating/editing contents that the anon user can not access
-
-* Fix: throw correct exception when trying to access unset property in API/Value objects
-
-* Fix: properly set the 'enabled' field when creating languages
 
 * New: it is now possible to add resolvers for custom references using tagged services. The tag to use is: 
     `ez_migration_bundle.reference_resolver.customreference`. 
@@ -107,14 +60,19 @@ Version 3.0.0-beta3
      This gives greater flexibility in deciding which types of references are resolved for each field when creating 
      or updating contents
 
-* Changed: removed unused Behat and Phpunit tests as well as one leftover Interface 
+* Changed: removed unused Behat and Phpunit tests
 
 * Changed: removed from the YML documentation the description of keys which had been deprecated in version 2.
     The keys are still accepted, but support for them will be dropped in a future version
 
-* Changed: the service ez_migration_bundle.reference_resolver.content is now deprecated and will be removed in a future version
+* Changed: the service `ez_migration_bundle.reference_resolver.content` is now deprecated and will be removed in a future
+    version; the service `ez_migration_bundle.helper.role_handler` has been removed
 
 * Changes to the YML definition language:
+
+    * renamed the `main_Location` tag for content creation to `parent_location`. The old syntax works but is deprecated
+
+    * renamed the `other_Locations` tag for content creation to `other_parent_locations`. The old syntax works but is deprecated
 
     * Creation and update of content: the format use to specify the attributes has been simplified. The old format is
         still working but is considered deprecated and will be removed in the future 
@@ -129,10 +87,10 @@ Version 3.0.0-beta3
     * content update supports the following new tags: `creation_date`
 
     * location creation and update now support the tag `parent_location` as preferred form for `parent_location_id`.
-        The former variant is considered deprecated and will be desupported in a future version
+        The latter variant is considered deprecated and will be desupported in a future version
 
     * rich text fields in content creation/update can be specified using a string instead of an array with key 'content'.
-        References will still be resolved if found in the xml text.
+        References will still be resolved if found in the xml text
 
     * when specifying values for image and binary-file fields, the tags `filename` and `mime_type` can now be used
 
@@ -150,13 +108,76 @@ Version 3.0.0-beta3
     * references to 'tag:' and 'location:' will not be resolved any more in fields of type Object Relation and 
         Object Relation List. On the other hand non-integer strings will be resolved as remote-content-ids
 
-    * changes for developers who extended the bundle: the MatcherInterface, ReferenceResolverInterface and 
-        StorageHandlerInterface have a new method each; many Executor services now have a different constructor
-        signature; one Trait has been removed from the public API; the service ez_migration_bundle.helper.role_handler
-        has been renamed to ez_migration_bundle.helper.limitation_converter; the chainResolver will now apply reference
-        transformation from all matching sub-resolvers, not only from the 1st one; the interface
-        `StorageHandlerInterface` has acquired a new method; the method `endMigration` in interface
-        `StorageHandlerInterface` has acquired a new parameter
+    * changes for developers who extended the bundle: too many to be listed here. New interfaces where added, existing
+        interfaces modified, etc... A lot of service definitions have been modified as well.
+
+
+Version 2.5.1
+=============
+
+* Fix: bring back the support for resolving 'location:<remote_id>' tags as was done in version 1.X of the extension 
+
+* New: better error messages on content creation/update when content fields do not validate (issue #84)
+
+
+Version 2.5
+===========
+
+* New: add support for creating and deleting Content Type Groups
+
+
+Version 2.4.2
+=============
+
+* Fix: improve detection of failed migrations when using separate processes and the child process dies without traces
+
+
+Version 2.4.1
+=============
+
+* Improve fix for issues #76 and #78
+
+
+Version 2.4
+===========
+
+* New: it is now possible to create, update and delete Object States and Object State Groups
+
+* Fix: (issue #78) when using transactions, do not report 'Migration can not be ended' if there is an error during the
+    commit phase
+
+* Fix: (issue #76) when using transactions on either ezplatform or ezpublish with workflows, migrations might fail
+    when creating/editing contents that the anon user can not access
+
+* Fix: throw correct exception when trying to access unset property in API/Value objects
+
+* Fix: properly set the 'enabled' field when creating languages
+
+* BC BREAK: for developers extending the bundle: the method `endMigration` in interface `StorageHandlerInterface` has
+    acquired a new parameter.
+    Also, the unused DefinitionHandlerInterface has been removed. 
+
+
+Version 2.3
+===========
+
+* New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped 
+
+* BC BREAK: for developers extending the bundle: the interface `StorageHandlerInterface` has acquired a new method
+
+
+Version 2.2.1
+=============
+
+* Fix: when using the `--separate-process` option for the 'migrate' command allow the migration to last up to a day,
+     and do not wait until it is finished to print its output
+
+
+Version 2.2.0
+=============
+
+* New: the 'migrate' command learned a `--separate-process` option, to run each migration it its own separate
+    php process. This should help when running many migrations in a single pass, and there are f.e. memory leaks.
 
 
 Version 2.1.0

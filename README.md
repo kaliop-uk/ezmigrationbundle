@@ -19,7 +19,7 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 In either `require` or `require-dev` at the end of the bundle list in the composer.json file add:
 
-    "kaliop/ezmigrationbundle": "^2.0"
+    "kaliop/ezmigrationbundle": "^3.0"
 
 Save it and run
 
@@ -41,7 +41,7 @@ The `registerBundles` method should look similar to:
 
 ### Checking that the bundle is installed correctly
 
-If you run `php ezpublish/console` you should see 4 new commands in the list:
+If you run `php ezpublish/console` you should see the following new commands in the list:
 
     kaliop
       kaliop:migration:generate
@@ -59,9 +59,20 @@ To get the latest version, you can update the bundle to the latest available ver
 
     composer update kaliop/ezmigrationbundle
 
+### Upgrading from version 2.x to version 3
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md) 
+
+* Nothing else is required, unless you have one of the following:
+
+    - migrations definitions generated using extension versions 1.x or 2.x, yet to be applied
+    - code which extends the migration bundle code/apis
+
+    For both cases, the fix is to apply manual changes to your code/migrations.
+
 ### Upgrading from version 1.x to version 2
 
-Please read the [dedicated documentation page](doc/Upgrading/1.x_to_2.0.md)
+Please read the [dedicated documentation page](Resources/doc/Upgrading/1.x_to_2.0.md)
 
 
 ## Getting started
@@ -77,14 +88,14 @@ For example:
 
     php ezpublish/console kaliop:migration:generate --format=yml MyProjectBundle
 
-The above command will place a new yml skeleton file in the `MigrationVersion` directory of the MyProjectBundle bundle.
+The above command will place a new yml skeleton file in the `MigrationVersions` directory of the MyProjectBundle bundle.
 
 If the directory does not exists then the command will create it for you, as long as the bundle does exist and is registered.
 If the command is successful it will create a new yml file named with the following pattern: `YYYYMMDDHHMMSS_placeholder.yml`.
 You are encouraged to rename the file and change the `placeholder` part to something more meaningful, but please keep
-the timestamp part and underscore, as well as the extension
+the timestamp part and underscore, as well as the extension.
 
-(the contents of the skeleton Yaml file are stored as twig template)
+_(the contents of the skeleton Yaml file are stored as twig template)_
 
 ### Listing all migrations and their status
 
@@ -118,6 +129,16 @@ So far so good, but what kind of actions can be actually done using a migration?
 
 Each migration definition consists of a series of steps, where each step defines an action. 
 
+A simple example of a migration to create a 'folder' content is:
+
+    -
+        mode: create
+        type: content
+        content_type: folder
+        parent_location: 2
+        attributes:
+            name: hello world
+
 In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of Contents
 - creation, update and deletion of Locations
@@ -125,8 +146,11 @@ In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of UserGroups
 - creation, update and deletion of Roles
 - creation, update and deletion of ContentTypes
+- creation and deletion of ContentTypeGroups
+- creation, update and deletion of ObjectStates
+- creation, update and deletion of ObjectStateGroups
 - creation and deletion of Languages
-- creation of Tags (from the Netgen Tags Bundle)
+- creation and deletion of of Tags (from the Netgen Tags Bundle)
 
 The docs describing all supported parameters are in the [DSL Language description](Resources/doc/DSL/README.md)
 
@@ -187,9 +211,11 @@ After removing the information about the migration form the migrations table, ru
 ## Usage of transactions / rolling back changes
 
 By default the bundle runs each migration in a database transaction.
-This means that if a step fails, all of the previous steps get rolled back, and the database is left at its previous state.
-This is a safety feature built in by design; if you prefer the migration steps to be executed in separate transactions
-the easiest way is to create a separate migration file for each step.
+This means that if a step fails, all of the previous steps get rolled back, and the database is left in its original state.
+This is a safety feature built in by design;
+* if you prefer the migration steps to be executed in separate transactions the easiest way is to create a separate
+    migration file for each step
+* you can use the command-line flag `-u` to disable usage of transactions by the migrate command
 
 Note also that by default the `migrate` command stops on the 1st failed migration, but it can be executed with a flag
 to allow it to continue and execute all available migrations even in case of failures.
@@ -231,6 +257,8 @@ and the corresponding php class:
 
 
 ## Known Issues and limitations
+
+* unlike the Symfony Migrations Bundle, this bundle does not support rollback of changes. Read above for the reason.
 
 * if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
     related to how the dual-kernel works in eZPublish, and the fact that the legacy and Symfony kernels use a separate
