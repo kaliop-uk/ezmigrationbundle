@@ -2,7 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
-use \eZ\Publish\API\Repository\Repository;
+use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
 /**
  * Handles references to Contents. Supports remote Ids at the moment.
@@ -15,16 +15,16 @@ class ContentResolver extends AbstractResolver
      */
     protected $referencePrefixes = array('content_remote_id:');
 
-    protected $repository;
+    protected $contentMatcher;
 
     /**
-     * @param Repository $repository
+     * @param ContentMatcher $contentMatcher
      */
-    public function __construct(Repository $repository)
+    public function __construct(ContentMatcher $contentMatcher)
     {
         parent::__construct();
 
-        $this->repository = $repository;
+        $this->contentMatcher = $contentMatcher;
     }
 
     /**
@@ -37,7 +37,7 @@ class ContentResolver extends AbstractResolver
         $ref = $this->getReferenceIdentifierByPrefix($stringIdentifier);
         switch($ref['prefix']) {
             case 'content_remote_id:':
-                return $this->repository->getContentService()->loadContentByRemoteId($ref['identifier'])->id;
+                return $this->contentMatcher->matchOne(array(ContentMatcher::MATCH_CONTENT_REMOTE_ID => $ref['identifier']))->id;
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
+use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 /**
  * Handles references to tags
  *
@@ -14,19 +15,16 @@ class TagResolver extends AbstractResolver
      */
     protected $referencePrefixes = array('tag:');
 
-    protected $translationHelper;
-    protected $tagService;
+    protected $tagMatcher;
 
     /**
-     * @param $translationHelper
-     * @param \Netgen\TagsBundle\API\Repository\TagsService $tagService
+     * @param TagMatcher $tagMatcher
      */
-    public function __construct($translationHelper, $tagService=null)
+    public function __construct(TagMatcher $tagMatcher)
     {
         parent::__construct();
 
-        $this->translationHelper = $translationHelper;
-        $this->tagService = $tagService;
+        $this->tagMatcher = $tagMatcher;
     }
 
     /**
@@ -36,19 +34,8 @@ class TagResolver extends AbstractResolver
      */
     public function getReferenceValue($stringIdentifier)
     {
-        if ($this->tagService == null) {
-            throw new \Exception('Netgen TAG Bundle is required to use tag references');
-        }
-
         $identifier = $this->getReferenceIdentifier($stringIdentifier);
-
-        $availableLanguages = $this->translationHelper->getAvailableLanguages();
-
-        if ($this->tagService->getTagsByKeywordCount($identifier, $availableLanguages[0]) > 0) {
-            $tags = $this->tagService->loadTagsByKeyword($identifier, $availableLanguages[0], true, 0, 1);
-            return $tags[0]->id;
-        }
-
-        throw new \Exception('Supplied tag: ' . $identifier . 'Not found.');
+        $tag = $this->tagMatcher->matchOne(array(TagMatcher::MATCH_TAG_KEYWORD => $identifier));
+        return $tag->id;
     }
 }

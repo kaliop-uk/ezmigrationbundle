@@ -426,18 +426,17 @@ services:
     ez_migration_bundle.reference_resolver.content:
         class: '%ez_migration_bundle.reference_resolver.content.class%'
         arguments:
-            - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.content_matcher'
 
     ez_migration_bundle.reference_resolver.location:
         class: '%ez_migration_bundle.reference_resolver.location.class%'
         arguments:
-            - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.location_matcher'
 
     ez_migration_bundle.reference_resolver.tag:
         class: '%ez_migration_bundle.reference_resolver.tag.class%'
         arguments:
-            - '@ezpublish.translation_helper'
-            - '@?ezpublish.api.service.tags'
+            - '@ez_migration_bundle.tag_matcher'
 
     # A service which resolves *only* custom references. As such, it is used in most places
     ez_migration_bundle.reference_resolver.customreference:
