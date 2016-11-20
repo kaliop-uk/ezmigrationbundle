@@ -59,3 +59,8 @@
     mode: delete
     match:
         identifier: kmb_test_11
+-
+    type: tag
+    mode: delete
+    match:
+        id: reference:article_tag_id
