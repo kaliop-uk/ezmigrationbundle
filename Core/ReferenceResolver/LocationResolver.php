@@ -7,7 +7,7 @@ use \eZ\Publish\API\Repository\Repository;
 /**
  * Handles references to locations. At the moment: supports remote Ids.
  *
- * @todo drop support for 'location:' in favour of
+ * @todo drop support for 'location:' in favour of 'location_remote_id:'
  */
 class LocationResolver extends AbstractResolver
 {
@@ -29,7 +29,7 @@ class LocationResolver extends AbstractResolver
     }
 
     /**
-     * @param $stringIdentifier location_remote_id:<remote_id>
+     * @param $stringIdentifier location:<remote_id>
      * @return string Location id
      * @throws \Exception
      */

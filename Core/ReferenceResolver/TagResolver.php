@@ -30,7 +30,7 @@ class TagResolver extends AbstractResolver
     }
 
     /**
-     * @param $stringIdentifier format: tag::<tag_identifier>
+     * @param $stringIdentifier format: tag:<tag_identifier>
      * @return string tag id
      * @throws \Exception
      */
