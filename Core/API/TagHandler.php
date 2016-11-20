@@ -4,13 +4,6 @@ namespace Kaliop\eZMigrationBundle\Core\API;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * Class LocationRemoteIdHandler
- *
- * Handle references to location remote ID's.
- *
- * @package Kaliop\eZMigrationBundle\Core\API
- */
 class TagHandler
 {
     /**
