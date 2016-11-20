@@ -35,6 +35,10 @@ abstract class PrefixBasedResolver implements PrefixBasedResolverInterface
      */
     public function isReference($stringIdentifier)
     {
+        if (!is_string($stringIdentifier)) {
+            return false;
+        }
+
         return (bool)preg_match($this->prefixMatchRegexp, $stringIdentifier);
     }
 
