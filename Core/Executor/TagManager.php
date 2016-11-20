@@ -3,18 +3,27 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\ReferenceHandler;
+use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
+use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 
 class TagManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('tag');
+    protected $supportedActions = array('create', 'delete');
 
     protected $tagService;
+    /**
+     * @var TagMatcher
+     */
+    protected $tagMatcher;
 
     /**
+     * @param TagMatcher $tagMatcher
      * @param \Netgen\TagsBundle\Core\SignalSlot\TagsService $tagService
      */
-    public function __construct($tagService=null)
+    public function __construct(TagMatcher $tagMatcher, $tagService=null)
     {
+        $this->tagMatcher = $tagMatcher;
         $this->tagService = $tagService;
     }
 
@@ -65,15 +74,53 @@ class TagManager extends RepositoryExecutor
     protected function delete()
     {
         $this->checkTagsBundleInstall();
-        throw new \Exception('Tag delete is not implemented yet');
+
+        $tagsCollection = $this->matchTags('delete');
+
+        foreach ($tagsCollection as $tag) {
+            $this->tagService->deleteTag($tag);
+        }
+
+        return $tagsCollection;
     }
 
     protected function checkTagsBundleInstall()
     {
         if (!$this->tagService)
         {
-            throw new \Exception('To import tags you must have NetGen Tags Bundle installed');
+            throw new \Exception('To manipulate tags you must have NetGen Tags Bundle installed');
         }
+    }
+
+    /**
+     * @param string $action
+     * @return TagCollection
+     * @throws \Exception
+     */
+    protected function matchTags($action)
+    {
+        if (!isset($this->dsl['match'])) {
+            throw new \Exception("A match condition is required to $action a Tag.");
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    if ($this->referenceResolver->isReference($value)) {
+                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
+                    }
+                }
+            } else {
+                if ($this->referenceResolver->isReference($values)) {
+                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
+                }
+            }
+        }
+
+        return $this->tagMatcher->match($match);
     }
 
     /**

@@ -44,12 +44,16 @@
     type: content
     mode: create
     parent_location: 2
-
+    content_type: reference:kmb_test_11
+    attributes:
+        title: test
+        tags:
+            - { id: reference:article_tag_id }
+-
     type: content
     mode: delete
     match:
-        content_type: reference:kmb_test_2
-
+        content_type: reference:kmb_test_11
 -
     type: content_type
     mode: delete

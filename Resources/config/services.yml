@@ -239,6 +239,7 @@ services:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.tag_manager.class%'
         arguments:
+            - '@ez_migration_bundle.tag_matcher'
             - '@?ezpublish.api.service.tags'
         tags:
             - { name: ez_migration_bundle.executor }

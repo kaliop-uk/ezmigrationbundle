@@ -30,9 +30,11 @@ class EzTags extends AbstractComplexField implements ComplexFieldInterface
             if (!is_array($def) || count($def) != 1) {
                 throw new \Exception('Definition of EzTags field is incorrect: each element of the tags array must be an array with one element');
             }
+
             $identifier = reset($def);
             $type = key($def);
 
+            $identifier = $this->referenceResolver->resolveReference($identifier);
 
             foreach($this->tagMatcher->match(array($type => $identifier)) as $id => $tag) {
                 $tags[$id] = $tag;
