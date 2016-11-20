@@ -114,12 +114,16 @@ class ContentManager extends RepositoryExecutor
             $locationCreateStruct->hidden = $this->dsl['is_hidden'];
         }
 
-        if (isset($this->dsl['sort_order'])) {
-            $locationCreateStruct->sortOrder = $this->locationManager->getSortOrder($this->dsl['sort_order']);
-        }
-
         if (isset($this->dsl['sort_field'])) {
             $locationCreateStruct->sortField = $this->locationManager->getSortField($this->dsl['sort_field']);
+        } else {
+            $locationCreateStruct->sortField = $contentType->defaultSortField;
+        }
+
+        if (isset($this->dsl['sort_order'])) {
+            $locationCreateStruct->sortOrder = $this->locationManager->getSortOrder($this->dsl['sort_order']);
+        } else {
+            $locationCreateStruct->sortOrder = $contentType->defaultSortOrder;
         }
 
         $locations = array($locationCreateStruct);
