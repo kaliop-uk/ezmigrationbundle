@@ -1,3 +1,11 @@
+Version 2.5.1
+=============
+
+* Fix: bring back the support for resolving 'location:<remote_id>' tags as was done in version 1.X of the extension 
+
+* New: improve error messages pertaining to content creation/update 
+
+
 Version 2.5
 ===========
 
