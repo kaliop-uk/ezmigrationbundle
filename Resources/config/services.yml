@@ -166,8 +166,6 @@ services:
     ez_migration_bundle.executor.content_type_manager:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.content_type_manager.class%'
-        arguments:
-            - '@ez_migration_bundle.reference_resolver.location'
         tags:
             - { name: ez_migration_bundle.executor }
 

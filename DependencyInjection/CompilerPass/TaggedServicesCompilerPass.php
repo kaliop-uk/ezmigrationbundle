@@ -45,15 +45,5 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
             }
         }
 
-        if ($container->has('ez_migration_bundle.handler.location_resolver')) {
-            $locationResolverHandler = $container->findDefinition('ez_migration_bundle.handler.location_resolver');
-            $locationResolvers = $container->findTaggedServiceIds('ez_migration_bundle.location_resolver');
-
-            foreach ($locationResolvers as $id => $tags) {
-                $locationResolverHandler->addMethodCall('addResolver', array(
-                    new Reference($id)
-                ));
-            }
-        }
     }
 }

@@ -12,7 +12,7 @@ class ContentResolver extends AbstractResolver
     /**
      * Constant defining the prefix for all reference identifier strings in definitions
      */
-    protected $referencePrefixes = array('content_remote_id::'/*, 'content_id::'*/);
+    protected $referencePrefixes = array('content_remote_id:'/*, 'content_id:'*/);
 
     protected $repository;
 
@@ -37,7 +37,7 @@ class ContentResolver extends AbstractResolver
         switch($ref['prefix']) {
             case 'content_remote_id:':
                 return $this->repository->getContentService()->loadContentByRemoteId($ref['identifier'])->id;
-            //case 'content_id::':
+            //case 'content_id:':
             //    return $this->repository->getLocationService()->loadContent($ref['identifier']);
         }
     }

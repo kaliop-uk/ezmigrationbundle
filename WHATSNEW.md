@@ -118,7 +118,7 @@ The main changes are:
     table, making it possible to retry migrations which previously failed, as well as to manually add to the table
     migration definitions which are outside of the expected paths.
 
-* php migrations are now fully supported (they used to have naming problems fpr the generated php classes)
+* php migrations are now fully supported (they used to have naming problems for the generated php classes)
 
 * the validity of migration definition files is now checked before migration execution is attempted
 

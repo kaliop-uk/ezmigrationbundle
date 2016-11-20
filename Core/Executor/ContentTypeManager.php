@@ -14,13 +14,6 @@ class ContentTypeManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('content_type');
 
-    protected $locationReferenceResolver;
-
-    public function __construct(LocationResolver $locationReferenceResolver)
-    {
-        $this->locationReferenceResolver = $locationReferenceResolver;
-    }
-
     /**
      * Method to handle the create operation of the migration instructions
      */
