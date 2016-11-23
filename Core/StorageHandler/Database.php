@@ -284,8 +284,13 @@ class Database implements StorageHandlerInterface
                 ),
                 array('migration' => $migrationDefinition->name)
             );
+            $conn->commit();
+
         } else {
             // migration did not exist. Create it!
+
+            // commit immediately, to release the lock and avoid deadlocks
+            $conn->commit();
 
             $migration = new Migration(
                 $migrationDefinition->name,
@@ -297,7 +302,6 @@ class Database implements StorageHandlerInterface
             $conn->insert($this->migrationsTableName, $this->migrationToArray($migration));
         }
 
-        $conn->commit();
         return $migration;
     }
 
