@@ -1,0 +1,17 @@
+-
+    type: content_type_group
+    mode: create
+    identifier: test_content_type_group
+    references:
+        -
+            identifier: test_group_id
+            attribute: id
+        -
+            identifier: test_group_identifier
+            attribute: identifier
+
+-
+    type: content_type_group
+    mode: delete
+    match:
+        identifier: test_content_type_group

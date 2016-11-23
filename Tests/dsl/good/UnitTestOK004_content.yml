@@ -140,6 +140,18 @@
             identifier: kmb_test_2_1_path
             attribute: path
 -
+    type: content_type
+    mode: update
+    match:
+        identifier: kmb_test_2
+    attributes:
+        -
+            type: ezobjectrelationlist
+            name: ezobjectrelationlist
+            identifier: ezobjectrelationlist
+            field-settings:
+                selectionDefaultLocation: reference:kmb_test_2_1_loc
+-
     type: content
     mode: create
     content_type: reference:kmb_test_2
@@ -171,6 +183,18 @@
         -
             identifier: kmb_test_2_3
             attribute: object_id
+-
+    type: content_type
+    mode: update
+    match:
+        identifier: kmb_test_2
+    attributes:
+        -
+            type: ezobjectrelationlist
+            name: ezobjectrelationlist
+            identifier: ezobjectrelationlist
+            field-settings:
+                selectionDefaultLocation: location:kmb_test_2_3_location_remote_id
 -
     type: content
     mode: create
@@ -207,6 +231,36 @@
             destinationContentId: 'reference:kmb_test_2_1'
         - ezobjectrelationlist:
             destinationContentIds: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_2
+    parent_location: 2
+    attributes:
+        ezstring: null
+        ezauthor: null
+        ezbinaryfile: null
+        ezboolean: null
+        ezcountry: null
+        ezdatetime: null
+        ezdate: null
+        ezemail: null
+        ezfloat: null
+        ezimage: null
+        ezinteger: null
+        ezisbn: null
+        ezkeyword: null
+        ezmedia: null
+        ezobjectrelation: null
+        ezobjectrelationlist: null
+        ezrichtext: null
+        eztext: null
+        eztime: null
+        ezurl: null
+        ezuser: null
+        ezxmltext: null
+
 -
     type: content
     mode: update

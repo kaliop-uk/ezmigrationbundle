@@ -2,12 +2,12 @@
 
 namespace Kaliop\eZMigrationBundle\Tests\helper;
 
-use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
 /**
  * Does nothing for the moment, except making sure that it can be injected correctly via a tagged service
  */
-class CustomReferenceResolver implements ReferenceResolverInterface
+class CustomReferenceResolver implements PrefixBasedResolverInterface
 {
     public function isReference($stringIdentifier)
     {
@@ -28,5 +28,10 @@ class CustomReferenceResolver implements ReferenceResolverInterface
     public function resolveReference($stringIdentifier)
     {
         return $this->isReference($stringIdentifier) ? $this->getReferenceValue($stringIdentifier) : $stringIdentifier;
+    }
+
+    public function getRegexp()
+    {
+        return '';
     }
 }

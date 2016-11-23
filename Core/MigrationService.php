@@ -316,12 +316,18 @@ class MigrationService
     {
         $message = $e->getMessage();
         if (is_a($e, '\eZ\Publish\API\Repository\Exceptions\ContentTypeFieldDefinitionValidationException') ||
-            is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')
+            is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException') ||
+            is_a($e, '\eZ\Publish\Core\Base\Exceptions\ContentFieldValidationException')
         ) {
             if (is_a($e, '\eZ\Publish\API\Repository\Exceptions\LimitationValidationException')) {
                 $errorsArray = $e->getLimitationErrors();
                 if ($errorsArray == null) {
                     return $message;
+                }
+            } else if (is_a($e, '\eZ\Publish\Core\Base\Exceptions\ContentFieldValidationException')) {
+                foreach ($e->getFieldErrors() as $limitationError) {
+                    // we get the 1st language
+                    $errorsArray[] = reset($limitationError);
                 }
             } else {
                 $errorsArray = $e->getFieldErrors();
@@ -335,7 +341,7 @@ class MigrationService
                 foreach ($errors as $error) {
                     /// @todo find out what is the proper eZ way of getting a translated message for these errors
                     $translatableMessage = $error->getTranslatableMessage();
-                    if (is_a($e, 'eZ\Publish\API\Repository\Values\Translation\Plural')) {
+                    if (is_a($translatableMessage, '\eZ\Publish\API\Repository\Values\Translation\Plural')) {
                         $msgText = $translatableMessage->plural;
                     } else {
                         $msgText = $translatableMessage->message;
@@ -345,6 +351,11 @@ class MigrationService
                 }
             }
         }
+
+        while (($e = $e->getPrevious()) != null) {
+            $message .= "\n" . $e->getMessage();
+        }
+
         return $message;
     }
 }

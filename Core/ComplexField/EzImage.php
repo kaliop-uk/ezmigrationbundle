@@ -18,7 +18,10 @@ class EzImage extends AbstractComplexField implements ComplexFieldInterface
     {
         $altText = '';
         $fileName = '';
-        if (is_string($fieldValue)) {
+
+        if ($fieldValue === null) {
+            return new ImageValue();
+        } else if (is_string($fieldValue)) {
             $filePath = $fieldValue;
         } else {
             $filePath = $fieldValue['path'];

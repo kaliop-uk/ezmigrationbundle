@@ -5,7 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 /**
  * A class which eases creating reference resolvers based on prefix strings.
  */
-abstract class PrefixBasedResolver implements RegexpBasedResolverInterface
+abstract class PrefixBasedResolver implements PrefixBasedResolverInterface
 {
     /// To be set by subclasses at constructor time or in definition
     protected $referencePrefixes = array();
@@ -35,6 +35,10 @@ abstract class PrefixBasedResolver implements RegexpBasedResolverInterface
      */
     public function isReference($stringIdentifier)
     {
+        if (!is_string($stringIdentifier)) {
+            return false;
+        }
+
         return (bool)preg_match($this->prefixMatchRegexp, $stringIdentifier);
     }
 
@@ -53,7 +57,7 @@ abstract class PrefixBasedResolver implements RegexpBasedResolverInterface
     abstract public function getReferenceValue($stringIdentifier);
 
     /**
-     * Returns the value of the reference identifier, stripped of its prefix.
+     * Returns the value-identifying part of the reference identifier, stripped of its prefix.
      * Useful for subclasses with a single $referencePrefixes
      *
      * @param string $stringIdentifier

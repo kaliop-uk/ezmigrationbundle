@@ -11,6 +11,7 @@ use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 class LanguageManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('language');
+    protected $supportedActions = array('create', 'delete');
 
     /**
      * Handle the content create migration action

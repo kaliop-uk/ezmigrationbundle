@@ -91,7 +91,7 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
         foreach ($contentTypeGroupIdentifiers as $contentTypeGroupIdentifier) {
             // return unique contents
             $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroupByIdentifier($contentTypeGroupIdentifier);
-            $roles[$contentTypeGroup->id] = $contentTypeGroup;
+            $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
         }
 
         return $contentTypeGroups;
