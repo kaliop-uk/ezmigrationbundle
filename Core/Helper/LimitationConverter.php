@@ -54,7 +54,7 @@ class LimitationConverter
                 break;
             case 'SiteAccess':
                 foreach($values as $value) {
-                    $name = "No Site Access Found";
+                    $name = "No/unknown SiteAccess Found";
                     if (array_key_exists($value, $this->siteAccessList)) {
                         $name = $this->siteAccessList[$value];
                     }
@@ -105,12 +105,12 @@ class LimitationConverter
                 }
                 break;
             case 'SiteAccess':
+                $siteAccesses = array_flip($this->siteAccessList);
                 foreach($values as $value) {
-                    foreach ($this->siteAccessList as $key => $siteAccess) {
-                        if ($value == $siteAccess) {
-                            $retValues[] = (string)$key;
-                        }
+                    if (!isset($siteAccesses[$value])) {
+                        throw new \Exception("SiteAccess '$value' is not configured");
                     }
+                    $retValues[] = (string)$siteAccesses[$value];
                 }
                 break;
             case 'ParentClass':
