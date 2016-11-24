@@ -288,6 +288,10 @@ and the corresponding php class:
     contain policies with limitations for custom modules/functions. The known workaround is to take over the
     RoleService and alter its constructor to inject into it the desired limitations
 
+* when updating a Role, you have to specify in the migration *all* the policies for it. Any existing policies that are not
+    in the yml file will be removed.
+    To make it easy to create a migration for updating a role, please use the `migration:generate` command using the `--type=role` flag
+
 
 ## Extending the bundle
 
