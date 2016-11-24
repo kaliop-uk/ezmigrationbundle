@@ -103,7 +103,9 @@
     unassign: # Optional
         users: [x, z, y]
         groups: [x, z, y]
-    policies: # Optional. NB: if set, all existing policies not specified in this list will be removed
+    policies: # Optional.
+              # NB: *take care* this does not work like content type updates or content updates.
+              # If this set, all previously existing policies not specified in this list will be removed!
         -
             module: xyz
             function: xyz
