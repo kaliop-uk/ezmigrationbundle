@@ -5,51 +5,51 @@
 #
 #  ContentType limitation example:
 #  identifier: Class
-#  value: [1, 2, 3] # List of content type ids. Can be specified using identifier as well
+#  values: [1, 2, 3] # List of content type ids. Can be specified using identifier as well
 #
 #  Language limitation example:
 #  identifier: Language
-#  value: [eng-GB, eng-US] # List of valid language codes
+#  values: [eng-GB, eng-US] # List of valid language codes
 #
 #  Location limitation example"
 #  identifier: Node
-#  value: [2, 345] # List of location ids. Can be specified using remote id as well
+#  values: [2, 345] # List of location ids. Can be specified using remote id as well
 #
 #  Owner limitation
 #  identifier: Owner
-#  value: [x] # must be either 1 (owner) or 2 (session)
+#  values: [x] # must be either 1 (owner) or 2 (session)
 #
 #  ParentContentType limitation example:
 #  identifier: ParentClass
-#  value: [1, 2, 3] # List of content type ids. Can be specified using identifier as well
+#  values: [1, 2, 3] # List of content type ids. Can be specified using identifier as well
 #
 #  ParentDepth limitation example:
 #  identifier: ParentDepth
-#  value: [x]
+#  values: [x]
 #
 #  ParentOwner limitation example:
 #  identifier: ParentOwner
-#  value: [x] # either 1 (owner) or 2 (session)
+#  values: [x] # either 1 (owner) or 2 (session)
 #
 #  ParentUserGroup limitation example:
 #  identifier: ParentGroup
-#  value: [1] # must be 1 (owner)
+#  values: [1] # must be 1 (owner)
 #
 #  Section limitation example:
 #  identifier: Section
-#  value: [1, 2, 3] # List of section ids. Can be specified using identifier as well
+#  values: [1, 2, 3] # List of section ids. Can be specified using identifier as well
 #
 #  Siteaccess limitation example: (Not implemented yet in eZ Publish 5 API)
 #  identifier: SiteAccess
-#  value: [siteaccess, siteaccess] # List of siteaccess name strings
+#  values: [siteaccess, siteaccess] # List of siteaccess name strings
 #
 #  Subtree limitation example:
 #  identifier: Subtree
-#  value: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location path
+#  values: [/1/2/3/4, /1/2/3/15] # List of subtree path strings, needs to be the location path
 #
 #  UserGroup limitation example:
 #  identifier: UserGroup
-#  value: [1] # must be 1 (owner)
+#  values: [1] # must be 1 (owner)
 -
     type: role
     mode: create
@@ -90,8 +90,8 @@
     type: role
     mode: update
     match: # Only one of the following can be specified, to define which roles to update
-        - id: x # int|int[]
-        - identifier: xyz # string|string[]
+        id: x # int|int[]
+        identifier: xyz # string|string[]
     assign: # Optional
         -
             type: # Must be user or group
