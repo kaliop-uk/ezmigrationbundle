@@ -14,8 +14,8 @@
     section: x # string|int Optional section id or identifier
     owner: xxx # user id, login or email if unique; Optional, set the content owner
     version_creator: yyy # user id, login or email if unique; Optional, set the creator of the 1st version
-    modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
-    publication_date: zzz # Optional, set content publication date (for formats, see: http://php.net/manual/en/datetime.formats.php)
+    modification_date: zzz # Optional, set content modification date (if integer: timestamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
+    publication_date: zzz # Optional, set content publication date (if integer: timstamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
     attributes:
         attribute1: value1
         attribute2: value2
@@ -45,9 +45,9 @@
               name: Another Author
               email: another@example.com
         # Adding values to an ezobjectrelation field
-        attribute8: x # content id or string: reference:xxx
+        attribute8: x # content id or remote_id or string: reference:xxx
         # Adding values to an ezobjectrelationlist field
-        attribute9: [ x, reference:xxx ] # array of content ids or reference strings
+        attribute9: [ x, reference:xxx ] # array of content ids or remote ids or reference strings
         # ezurl, using 2 different syntaxes
         attribute10: http://a/great/link
         attribute11:
