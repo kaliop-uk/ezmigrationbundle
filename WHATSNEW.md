@@ -1,3 +1,10 @@
+Version 3.0.2
+=============
+
+* Improved: integer values used for content creation/modification dates are now assumed to be timestamps (the same as
+    is done for datetime fields in contents)
+
+
 Version 3.0.1
 =============
 

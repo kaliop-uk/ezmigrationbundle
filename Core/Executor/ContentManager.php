@@ -88,7 +88,7 @@ class ContentManager extends RepositoryExecutor
         }
 
         if (isset($this->dsl['modification_date'])) {
-            $contentCreateStruct->modificationDate = new \DateTime($this->dsl['modification_date']);
+            $contentCreateStruct->modificationDate = $this->toDateTime($this->dsl['modification_date']);
         }
 
         // instantiate a location create struct from the parent location:
@@ -157,7 +157,7 @@ class ContentManager extends RepositoryExecutor
                 $contentMetaDataUpdateStruct->ownerId = $realContentOwnerId;
             }
             if (isset($this->dsl['publication_date'])) {
-                $contentMetaDataUpdateStruct->publishedDate = new \DateTime($this->dsl['publication_date']);
+                $contentMetaDataUpdateStruct->publishedDate = $this->toDateTime($this->dsl['publication_date']);
             }
 
             $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
@@ -223,11 +223,11 @@ class ContentManager extends RepositoryExecutor
                 }
 
                 if (isset($this->dsl['modification_date'])) {
-                    $contentMetaDataUpdateStruct->modificationDate = new \DateTime($this->dsl['modification_date']);
+                    $contentMetaDataUpdateStruct->modificationDate = $this->toDateTime($this->dsl['modification_date']);
                 }
 
                 if (isset($this->dsl['publication_date'])) {
-                    $contentMetaDataUpdateStruct->publishedDate = new \DateTime($this->dsl['publication_date']);
+                    $contentMetaDataUpdateStruct->publishedDate = $this->toDateTime($this->dsl['publication_date']);
                 }
 
                 $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
@@ -476,5 +476,18 @@ class ContentManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    /**
+     * @param int|string $date if integer, we assume a timestamp
+     * @return \DateTime
+     */
+    protected function toDateTime($date)
+    {
+        if (is_int($date)) {
+            return new \DateTime("@".$date);
+        } else {
+            return new \DateTime($date);
+        }
     }
 }
