@@ -193,7 +193,8 @@ class Database implements StorageHandlerInterface
             $this->migrationsTableName,
             array(
                 'status' => $migration->status,
-                'execution_error' => $migration->executionError,
+                /// @todo use mb_substr (if all dbs we support count col length not in bytes but in chars...)
+                'execution_error' => substr($migration->executionError, 0, 4000),
                 'execution_date' => $migration->executionDate
             ),
             array('migration' => $migration->name)
