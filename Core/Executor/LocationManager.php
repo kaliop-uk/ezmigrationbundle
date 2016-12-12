@@ -62,6 +62,12 @@ class LocationManager extends RepositoryExecutor
                     $locationCreateStruct->hidden = $this->dsl['is_hidden'];
                 }
 
+                if (isset($this->dsl['remote_id'])) {
+                    $locationCreateStruct->remoteId = $this->referenceResolver->resolveReference(
+                        $this->dsl['remote_id']
+                    );
+                }
+
                 if (isset($this->dsl['priority'])) {
                     $locationCreateStruct->priority = $this->dsl['priority'];
                 }
@@ -133,7 +139,9 @@ class LocationManager extends RepositoryExecutor
                     }
 
                     if (isset($this->dsl['remote_id'])) {
-                        $locationUpdateStruct->remoteId = $this->dsl['remote_id'];
+                        $locationUpdateStruct->remoteId = $this->referenceResolver->resolveReference(
+                            $this->dsl['remote_id']
+                        );
                     }
 
                 $location = $locationService->updateLocation($location, $locationUpdateStruct);
