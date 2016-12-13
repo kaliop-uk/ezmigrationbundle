@@ -160,9 +160,10 @@ class LocationManager extends RepositoryExecutor
             if (isset($this->dsl['parent_location']) || isset($this->dsl['parent_location_id'])) {
                 // Move the location and all its children to a new parent
                 $parentLocationId = isset($this->dsl['parent_location']) ? $this->dsl['parent_location'] : $this->dsl['parent_location_id'];
-                $parentLocationId = $this->referenceResolver->resolveReference($parentLocationId);
-
-                $newParentLocation = $locationService->loadLocation($parentLocationId);
+                if ($this->referenceResolver->isReference($parentLocationId)) {
+                    $parentLocationId = $this->referenceResolver->getReferenceValue($parentLocationId);
+                }
+                $newParentLocation = $this->matchLocationByKey($parentLocationId);
 
                 $locationService->moveSubtree($location, $newParentLocation);
             } elseif (isset($this->dsl['swap_with_location'])) {
