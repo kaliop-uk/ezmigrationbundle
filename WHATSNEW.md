@@ -1,3 +1,9 @@
+Version 3.0.3
+=============
+
+* Fixed: handling of relation-list attributes that are not references
+
+
 Version 3.0.2
 =============
 
@@ -10,7 +16,7 @@ Version 3.0.1
 
 * Fixed: creation of roles with a SiteAccess limitation
 
-* Improved: reduce the chances of mysl deadlocks when running migrations in parallel
+* Improved: reduce the chances of mysql deadlocks when running migrations in parallel
 
 
 Version 3.0.0
