@@ -133,8 +133,6 @@ class TagManager extends RepositoryExecutor
             return false;
         }
 
-        $referenceHandler = ReferenceHandler::instance();
-
         foreach ($this->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'id':
@@ -144,7 +142,7 @@ class TagManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
     }
 }
