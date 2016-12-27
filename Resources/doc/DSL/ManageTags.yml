@@ -5,6 +5,7 @@
     mode: create
     always_available: true|false # Optional (false by default)
     parent_tag_id: 0 # Optional. Parent tag id (0 by default)
+    remote_id: custom_remote_id # Optional, will set a custom remote id
     lang: eng-GB
     keywords:
         language_code: "Keyword" # ex : eng-GB: "Test keyword"
