@@ -61,6 +61,12 @@ class ContentManager extends RepositoryExecutor
 
         $this->setFields($contentCreateStruct, $this->dsl['attributes'], $contentType);
 
+        if (isset($this->dsl['always_available'])) {
+            $contentCreateStruct->alwaysAvailable = $this->dsl['always_available'];
+        } else {
+            $contentCreateStruct->alwaysAvailable = $contentType->defaultAlwaysAvailable;
+        }
+
         if (isset($this->dsl['remote_id'])) {
             $contentCreateStruct->remoteId = $this->dsl['remote_id'];
         }
