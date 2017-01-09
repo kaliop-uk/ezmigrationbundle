@@ -64,6 +64,7 @@ class ContentManager extends RepositoryExecutor
         if (isset($this->dsl['always_available'])) {
             $contentCreateStruct->alwaysAvailable = $this->dsl['always_available'];
         } else {
+            // Can be removed when https://github.com/kaliop-uk/ezmigrationbundle/pull/88 is merged
             $contentCreateStruct->alwaysAvailable = $contentType->defaultAlwaysAvailable;
         }
 
