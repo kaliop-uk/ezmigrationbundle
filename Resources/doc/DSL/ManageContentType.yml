@@ -9,6 +9,7 @@
     url_name_pattern: pattern # Optional
     is_container: true|false # Optional, defaults to false
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    default_always_available: true|false # Optional, defaults to true
     attributes:
         -
             type: xyz # Attribute type (See list https://doc.ez.no/display/EZP/FieldTypes+reference)

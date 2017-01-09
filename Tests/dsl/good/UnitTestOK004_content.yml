@@ -8,6 +8,7 @@
     name: Kaliop Migration Bundle Test Class 2
     name_pattern: '<ezstring>'
     is_container: true
+    always_available: true
     attributes:
         -
             type: ezstring

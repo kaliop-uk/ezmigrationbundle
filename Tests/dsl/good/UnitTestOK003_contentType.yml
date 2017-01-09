@@ -8,6 +8,7 @@
     identifier: kmb_test_1
     description: Kaliop Migration Bundle Test Class 1
     name_pattern: <title>
+    default_always_available: true
     attributes:
         -
             type: ezstring

@@ -73,6 +73,10 @@ class ContentTypeManager extends RepositoryExecutor
             $contentTypeCreateStruct->isContainer = $this->dsl['is_container'];
         }
 
+        if (isset($this->dsl['default_always_available'])) {
+            $contentTypeCreateStruct->defaultAlwaysAvailable = $this->dsl['default_always_available'];
+        }
+
         // Add attributes
         foreach ($this->dsl['attributes'] as $position => $attribute) {
             $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute);
