@@ -16,6 +16,7 @@
     version_creator: yyy # user id, login or email if unique; Optional, set the creator of the 1st version
     modification_date: zzz # Optional, set content modification date (if integer: timestamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
     publication_date: zzz # Optional, set content publication date (if integer: timstamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
+    always_available: true|false # Optional, will default to content type defaultAlwaysAvailable
     attributes:
         attribute1: value1
         attribute2: value2
