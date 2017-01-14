@@ -19,5 +19,9 @@ if [ "$EZ_VERSION" = "ezplatform" ]; then mysql -u${DB_USER} ${DB_PWD} ${DB} < v
 if [ "$EZ_VERSION" = "ezplatform" ]; then mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/ezsystems/ezpublish-kernel/data/cleandata.sql; fi
 
 if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
-    mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/mysql/schema.sql
+    if [ -f vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/mysql/schema.sql ]; then
+        mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/mysql/schema.sql
+    else
+        mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/netgen/tagsbundle/Resources/sql/mysql/schema.sql
+    fi
 fi
