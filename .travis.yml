@@ -69,7 +69,7 @@ install:
   - if [ "$CODE_COVERAGE" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
 
   # Create the database from sql files present in either the legacy stack or kernel
-  - ./Tests/travis/create-db.sh ${EZ_VERSION} ${INSTALL_TAGSBUNDLE} behattestdb root
+  - ./Tests/travis/create-db.sh ${EZ_VERSION} behattestdb ${INSTALL_TAGSBUNDLE} root
 
 before_script:
   # Set up configuration files
