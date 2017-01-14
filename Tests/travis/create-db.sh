@@ -4,6 +4,7 @@ EZ_VERSION=$1
 DB=$2
 DB_USER=$3
 DB_PWD=$4
+INSTALL_TAGSBUNDLE=$5
 
 if [ "$DB_PWD" != "" ]; then
     DB_PWD="-p${DB_PWD}"
@@ -16,3 +17,7 @@ if [ "$EZ_VERSION" = "ezpublish-community" ]; then mysql -u${DB_USER} ${DB_PWD} 
 if [ "$EZ_VERSION" = "ezpublish-community" ]; then mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/ezsystems/ezpublish-legacy/kernel/sql/common/cleandata.sql; fi
 if [ "$EZ_VERSION" = "ezplatform" ]; then mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/ezsystems/ezpublish-kernel/data/mysql/schema.sql; fi
 if [ "$EZ_VERSION" = "ezplatform" ]; then mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/ezsystems/ezpublish-kernel/data/cleandata.sql; fi
+
+if [ "INSTALL_TAGSBUNDLE" = "1" ]; then
+    mysql -u${DB_USER} ${DB_PWD} ${DB} < vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/mysql/schema.sql
+fi
