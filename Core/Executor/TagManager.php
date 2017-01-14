@@ -36,7 +36,12 @@ class TagManager extends RepositoryExecutor
         $this->checkTagsBundleInstall();
 
         $alwaysAvail = isset($this->dsl['always_available']) ? $this->dsl['always_available'] : true;
-        $parentTagId = isset($this->dsl['parent_tag_id']) ? $this->dsl['parent_tag_id'] : 0;
+        $parentTagId = 0;
+        if(isset($this->dsl['parent_tag_id'])){
+            $parentTagId = $this->dsl['parent_tag_id'];
+            $parentTagId = $this->referenceResolver->resolveReference($parentTagId);
+        }
+        $remoteId = isset($this->dsl['remote_id']) ? $this->dsl['remote_id'] : null;
 
         if (isset($this->dsl['lang'])) {
             $lang = $this->dsl['lang'];
@@ -51,6 +56,7 @@ class TagManager extends RepositoryExecutor
             'parentTagId' => $parentTagId,
             'mainLanguageCode' => $lang,
             'alwaysAvailable' => $alwaysAvail,
+            'remoteId' => $remoteId
         );
         $tagCreateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct($tagCreateArray);
 
@@ -133,8 +139,6 @@ class TagManager extends RepositoryExecutor
             return false;
         }
 
-        $referenceHandler = ReferenceHandler::instance();
-
         foreach ($this->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'id':
@@ -144,7 +148,7 @@ class TagManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $referenceHandler->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value);
         }
     }
 }
