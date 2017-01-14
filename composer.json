@@ -32,7 +32,7 @@
         "mikey179/vfsStream": "~1.2.0",
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "phpunit/phpunit": "~4.0",
-        "codeclimate/php-test-reporter": "dev-master"
+        "codeclimate/php-test-reporter": "~0.4"
     },
     "conflict": {
         "netgen/tagsbundle": "1.*"
