@@ -221,11 +221,9 @@ class ContentMatcher extends RepositoryMatcher
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
-        /// @todo replace with a location query, as we are using deprecated functionality
+        // NB: we only do this in eZP versions that allow depth sorting on content queries
         if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
             $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
-        } else {
-            $query->sortClauses = array(new Query\SortClause\Location\Depth(Query::SORT_DESC));
         }
 
         $results = $this->repository->getSearchService()->findContent($query);
@@ -249,8 +247,10 @@ class ContentMatcher extends RepositoryMatcher
         $query->limit = PHP_INT_MAX;
         $query->filter = new Query\Criterion\ContentTypeId($contentTypeIds);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
-        /// @todo replace with a location query, as we are using deprecated functionality
-        $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        // NB: we only do this in eZP versions that allow depth sorting on content queries
+        if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
+            $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        }
         $results = $this->repository->getSearchService()->findContent($query);
 
         $contents = [];

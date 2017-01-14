@@ -39,7 +39,6 @@
             name: Subject
             field-settings:
                 subTreeLimit: reference:article_tag_id
-                showDropDown: false
                 hideRootTag: true
 -
     type: content_type
@@ -52,7 +51,6 @@
             name: Subject
             field-settings:
                 subTreeLimit: 'tag:Article Subject'
-                showDropDown: false
                 hideRootTag: true
 -
     type: content

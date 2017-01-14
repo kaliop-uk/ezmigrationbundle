@@ -5,6 +5,8 @@ Version 3.1.0
 
 * Add new remote_id property and reference support for parent_tag_id property in tag creation
 
+* Better compatibility with eZPlatform when matching Contents by Content Type
+
 
 Version 3.0.3
 =============
