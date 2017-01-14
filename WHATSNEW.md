@@ -1,3 +1,11 @@
+Version 3.1.0
+=============
+
+* Support 'default_always_available' in content type definitions
+
+* Add new remote_id property and reference support for parent_tag_id property in tag creation
+
+
 Version 3.0.3
 =============
 

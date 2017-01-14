@@ -37,7 +37,7 @@ class TagManager extends RepositoryExecutor
 
         $alwaysAvail = isset($this->dsl['always_available']) ? $this->dsl['always_available'] : true;
         $parentTagId = 0;
-        if(isset($this->dsl['parent_tag_id'])){
+        if (isset($this->dsl['parent_tag_id'])) {
             $parentTagId = $this->dsl['parent_tag_id'];
             $parentTagId = $this->referenceResolver->resolveReference($parentTagId);
         }

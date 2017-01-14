@@ -21,6 +21,7 @@
     #parent_tag_id: 1
     main_language_code: eng-GB
     always_available: true
+    remote_id: article_tag_remote_id
     keywords:
       eng-GB: Article Subject
     references:

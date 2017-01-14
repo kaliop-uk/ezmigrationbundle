@@ -25,9 +25,11 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4 netgen/tagsbundle:~2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
     # latest version currently available of eZPlatform aka eZPublish 6
     #- php: 5.6
-    #  env: EZ_PACKAGES='ezsystems/ezplatform:~1.5.0 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    #  env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.0 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     - php: 7.0
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.5.0 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.0 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    - php: 7.1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.0 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
   allow_failures:
     # this currently fails because of eZPublish services.yml not quoting usage of @, despite it being tested with Sf 2.8...
