@@ -222,7 +222,12 @@ class ContentMatcher extends RepositoryMatcher
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
         /// @todo replace with a location query, as we are using deprecated functionality
-        $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
+            $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        } else {
+            $query->sortClauses = array(new Query\SortClause\Location\Depth(Query::SORT_DESC));
+        }
+
         $results = $this->repository->getSearchService()->findContent($query);
 
         $contents = [];
