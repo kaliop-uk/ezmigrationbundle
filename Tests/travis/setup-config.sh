@@ -15,7 +15,7 @@ sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\EzMi
 # And optionally the Netgen tags bundle
 if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
     # we have to load netgen tags bundle after the Kernel bundles... hopefully OneupFlysystemBundle will stay there :-)
-    sed -i 's/OneupFlysystemBundle(),/OneupFlysystemBundle(), new Netgen\\TagsBundle\\NetgenTagsBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
+    sed -i 's/OneupFlysystemBundle(),\?/OneupFlysystemBundle(), new Netgen\\TagsBundle\\NetgenTagsBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
 fi
 # Fix the ez5 autoload configuration for the unexpected directory layout
 sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/autoload.php
