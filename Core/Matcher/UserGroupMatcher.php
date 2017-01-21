@@ -99,6 +99,8 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
         foreach ($remoteContentIds as $remoteContentId) {
             // return unique contents
+
+            // user service does not provide a method to load user groups via remote_id, but as user groups are content...
             $content = $this->repository->getContentService()->loadContentByRemoteId($remoteContentId);
             $userGroup = $this->repository->getUserService()->loadUserGroup($content->id);
 

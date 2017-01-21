@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
+use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 
 /**
@@ -14,9 +15,12 @@ class UserManager extends RepositoryExecutor
 
     protected $userMatcher;
 
-    public function __construct(UserMatcher $userMatcher)
+    protected $userGroupMatcher;
+
+    public function __construct(UserMatcher $userMatcher, UserGroupMatcher $userGroupMatcher)
     {
         $this->userMatcher = $userMatcher;
+        $this->userGroupMatcher = $userGroupMatcher;
     }
 
     /**
@@ -40,7 +44,7 @@ class UserManager extends RepositoryExecutor
         $userGroups = array();
         foreach ($this->dsl['groups'] as $groupId) {
             $groupId = $this->referenceResolver->resolveReference($groupId);
-            $userGroup = $userService->loadUserGroup($groupId);
+            $userGroup = $this->userGroupMatcher->matchOneByKey($groupId);
 
             // q: in which case can we have no group? And should we throw an exception?
             //if ($userGroup) {
@@ -111,25 +115,29 @@ class UserManager extends RepositoryExecutor
 
                 $assignedGroups = $userService->loadUserGroupsOfUser($user);
 
+                $targetGroupIds = [];
                 // Assigning new groups to the user
                 foreach ($this->dsl['groups'] as $groupToAssignId) {
+                    $groupId = $this->referenceResolver->resolveReference($groupToAssignId);
+                    $groupToAssign = $this->userGroupMatcher->matchOneByKey($groupId);
+                    $targetGroupIds[] = $groupToAssign->id;
+
                     $present = false;
                     foreach ($assignedGroups as $assignedGroup) {
                         // Make sure we assign the user only to groups he isn't already assigned to
-                        if ($assignedGroup->id == $groupToAssignId) {
+                        if ($assignedGroup->id == $groupToAssign->id) {
                             $present = true;
                             break;
                         }
                     }
                     if (!$present) {
-                        $groupToAssign = $userService->loadUserGroup($groupToAssignId);
                         $userService->assignUserToUserGroup($user, $groupToAssign);
                     }
                 }
 
                 // Unassigning groups that are not in the list in the migration
                 foreach ($assignedGroups as $assignedGroup) {
-                    if (!in_array($assignedGroup->id, $this->dsl['groups'])) {
+                    if (!in_array($assignedGroup->id, $targetGroupIds)) {
                         $userService->unAssignUserFromUserGroup($user, $assignedGroup);
                     }
                 }
