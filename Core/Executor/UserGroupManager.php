@@ -31,13 +31,16 @@ class UserGroupManager extends RepositoryExecutor
 
         $parentGroupId = $this->dsl['parent_group_id'];
         $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
-
-        $parentGroup = $userService->loadUserGroup($parentGroupId);
+        $parentGroup = $this->userGroupMatcher->matchOneByKey($parentGroupId);
 
         $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier("user_group");
 
         $userGroupCreateStruct = $userService->newUserGroupCreateStruct($this->getLanguageCode(), $contentType);
         $userGroupCreateStruct->setField('name', $this->dsl['name']);
+
+        if (isset($this->dsl['remote_id'])) {
+            $userGroupCreateStruct->remoteId = $this->dsl['remote_id'];
+        }
 
         if (isset($this->dsl['description'])) {
             $userGroupCreateStruct->setField('description', $this->dsl['description']);
@@ -69,7 +72,7 @@ class UserGroupManager extends RepositoryExecutor
      */
     protected function update()
     {
-        $userGroupCollection = $this->matchUserGroups('delete');
+        $userGroupCollection = $this->matchUserGroups('update');
 
         if (count($userGroupCollection) > 1 && isset($this->dsl['references'])) {
             throw new \Exception("Can not execute Group update because multiple groups match, and a references section is specified in the dsl. References can be set when only 1 group matches");
@@ -90,6 +93,10 @@ class UserGroupManager extends RepositoryExecutor
                 $contentUpdateStruct->setField('name', $this->dsl['name']);
             }
 
+            if (isset($this->dsl['remote_id'])) {
+                $contentUpdateStruct->remoteId = $this->dsl['remote_id'];
+            }
+
             if (isset($this->dsl['description'])) {
                 $contentUpdateStruct->setField('description', $this->dsl['description']);
             }
@@ -101,8 +108,7 @@ class UserGroupManager extends RepositoryExecutor
             if (isset($this->dsl['parent_group_id'])) {
                 $parentGroupId = $this->dsl['parent_group_id'];
                 $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
-
-                $newParentGroup = $userService->loadUserGroup($parentGroupId);
+                $newParentGroup = $this->userGroupMatcher->matchOneByKey($parentGroupId);
 
                 // Move group to new parent
                 $userService->moveUserGroup($userGroup, $newParentGroup);
