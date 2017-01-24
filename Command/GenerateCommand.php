@@ -2,22 +2,20 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
-use eZ\Publish\API\Repository\Values\User\Limitation;
-use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 
 class GenerateCommand extends AbstractCommand
 {
-    const ADMIN_USER_ID = 14;
     const DIR_CREATE_PERMISSIONS = 0755;
 
-    private $availableMigrationFormats = array('yml', 'php', 'sql');
-    private $availableMigrationTypes = array('generic', 'role', 'db', 'php');
+    private $availableMigrationFormats = array('yml', 'php', 'sql', 'json');
+    private $availableModes = array('create', 'update');
     private $thisBundle = 'EzMigrationBundle';
 
     /**
@@ -27,10 +25,12 @@ class GenerateCommand extends AbstractCommand
     {
         $this->setName('kaliop:migration:generate')
             ->setDescription('Generate a blank migration definition file.')
-            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (yml, php, sql)', 'yml')
-            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, generic, db, php)', '')
+            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (yml, php, sql, json)', 'yml')
+            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, content_type, generic, db, php)', '')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, for type=db (mysql, postgresql, ...)', 'mysql')
-            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'The role identifier (or id) that you would like to update, for type=role', null)
+            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Deprecated: The role identifier (or id) that you would like to update, for type=role', null)
+            ->addOption('identifier', null, InputOption::VALUE_REQUIRED, 'The identifier that you would like to update', null)
+            ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (create, update)', 'create')
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
@@ -73,15 +73,22 @@ EOT
         $fileType = $input->getOption('format');
         $migrationType = $input->getOption('type');
         $role = $input->getOption('role');
+        $identifier = $input->getOption('identifier');
+        $mode = $input->getOption('mode');
         $dbServer = $input->getOption('dbserver');
+
+        if ($role != '') {
+            $output->writeln('<error>The "role" option is deprecated since version 3.2 and will be removed in 4.0. Use "identifier" instead.</error>');
+            $migrationType = 'role';
+            $identifier = $role;
+        }
 
         if ($bundleName == $this->thisBundle) {
             throw new \InvalidArgumentException("It is not allowed to create migrations in bundle '$bundleName'");
         }
 
         $activeBundles = array();
-        foreach($this->getApplication()->getKernel()->getBundles() as $bundle)
-        {
+        foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
             $activeBundles[] = $bundle->getName();
         }
         asort($activeBundles);
@@ -98,8 +105,6 @@ EOT
                 $migrationType = 'db';
             } elseif ($fileType == 'php') {
                 $migrationType = 'php';
-            } elseif ($role != '') {
-                $migrationType = 'role';
             } else {
                 $migrationType = 'generic';
             }
@@ -109,8 +114,8 @@ EOT
             throw new \InvalidArgumentException('Unsupported migration file format ' . $fileType);
         }
 
-        if (!in_array($migrationType, $this->availableMigrationTypes)) {
-            throw new \InvalidArgumentException('Unsupported migration type ' . $fileType);
+        if (!in_array($mode, $this->availableModes)) {
+            throw new \InvalidArgumentException('Unsupported migration mode ' . $mode);
         }
 
         if (!is_dir($migrationDirectory)) {
@@ -134,7 +139,8 @@ EOT
 
         $parameters = array(
             'dbserver' => $dbServer,
-            'role' => $role,
+            'identifier' => $identifier,
+            'mode' => $mode
         );
 
         $date = date('YmdHis');
@@ -155,7 +161,7 @@ EOT
                     $className = 'Migration';
                 }
                 // Make sure that php class names are unique, not only migration definition file names
-                $existingMigrations = count(glob($migrationDirectory.'/*_' . $className .'*.php'));
+                $existingMigrations = count(glob($migrationDirectory . '/*_' . $className . '*.php'));
                 if ($existingMigrations) {
                     $className = $className . sprintf('%03d', $existingMigrations + 1);
                 }
@@ -170,7 +176,7 @@ EOT
                 if ($name == '') {
                     $name = 'placeholder';
                 }
-                $fileName = $date . '_' . $name . '.yml';
+                $fileName = $date . '_' . $name . '.' . $fileType;
         }
 
         $path = $migrationDirectory . '/' . $fileName;
@@ -192,67 +198,40 @@ EOT
      */
     protected function generateMigrationFile($path, $fileType, $migrationType, array $parameters = array())
     {
-        $template = $migrationType . 'Migration.' . $fileType . '.twig';
-        $templatePath = $this->getApplication()->getKernel()->getBundle($this->thisBundle)->getPath() . '/Resources/views/MigrationTemplate/';
-        if (!is_file($templatePath . $template) && $migrationType != 'role') {
-            throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
-        }
+        switch ($migrationType) {
+            case 'db':
+            case 'generic':
+            case 'php':
+                // Generate migration file by template
+                $template = $migrationType . 'Migration.' . $fileType . '.twig';
+                $templatePath = $this->getApplication()->getKernel()->getBundle($this->thisBundle)->getPath() . '/Resources/views/MigrationTemplate/';
+                if (!is_file($templatePath . $template)) {
+                    throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
+                }
 
-        if ($migrationType == 'role') {
-            $code = $this->generateRoleTemplate($parameters['role']);
-        } else {
-            $code = $this->getContainer()->get('twig')->render($this->thisBundle . ':MigrationTemplate:'.$template, $parameters);
+                $code = $this->getContainer()->get('twig')->render($this->thisBundle . ':MigrationTemplate:' . $template, $parameters);
+                break;
+            default:
+                // Generate migration file by executor
+                $migrationService = $this->getMigrationService();
+                $executor = $migrationService->getExecutor($migrationType);
+                if (!$executor instanceof MigrationGeneratorInterface) {
+                    throw new \Exception("The executor '$migrationType' can not generate a migration");
+                }
+                $data = $executor->generateMigration($parameters['identifier'], $parameters['mode']);
+
+                switch ($fileType) {
+                    case 'yml':
+                        $code = Yaml::dump($data, 5);
+                        break;
+                    case 'json':
+                        $code = json_encode($data, JSON_PRETTY_PRINT);
+                        break;
+                    default:
+                        throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
+                }
         }
 
         file_put_contents($path, $code);
-    }
-
-    /**
-     * @todo to be moved into the Executor/RoleManager class
-     *
-     * @param string$roleName
-     * @return string
-     */
-    protected function generateRoleTemplate($roleName)
-    {
-        /** @var $container \Symfony\Component\DependencyInjection\ContainerInterface */
-        $container = $this->getApplication()->getKernel()->getContainer();
-        $repository = $container->get('ezpublish.api.repository');
-        $repository->setCurrentUser($repository->getUserService()->loadUser(self::ADMIN_USER_ID));
-
-        /** @var LimitationConverter $limitationConverter */
-        $limitationConverter = $container->get('ez_migration_bundle.helper.limitation_converter');
-
-        $roleMatcher = $container->get('ez_migration_bundle.role_matcher');
-        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        $role = $roleMatcher->matchOneByKey($roleName);
-
-        $policies = array();
-        /** @var \eZ\Publish\API\Repository\Values\User\Policy $policy */
-        foreach ($role->getPolicies() as $policy)
-        {
-            $limitations = array();
-
-            /** @var \eZ\Publish\API\Repository\Values\User\Limitation $limitation */
-            foreach ($policy->getLimitations() as $limitation)
-            {
-                $limitations[] = $limitationConverter->getLimitationArrayWithIdentifiers($limitation);
-            }
-
-            $policies[] = array(
-                'module' => $policy->module,
-                'function' => $policy->function,
-                'limitations' => $limitations
-            );
-        }
-
-        $ymlArray = array(
-            'mode' => 'update',
-            'type' => 'role',
-            'name' => $roleName,
-            'policies' => $policies
-        );
-
-        return Yaml::dump(array($ymlArray), 5);
     }
 }

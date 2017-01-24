@@ -7,51 +7,57 @@ use Symfony\Component\Console\Input\ArrayInput;
 class GenerateTest extends CommandTest
 {
     /**
-     * @todo add tests for generating a 'role' migration
+     * @dataProvider provideGenerateParameters
      */
-    public function testGenerateDSL()
+    public function testGenerateDSL($name, $format, $type, $identifier, $mode)
     {
-        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->checkGeneratedFile($this->saveGeneratedFile($output));
+        $parameters = array(
+            'command' => 'kaliop:migration:generate',
+            'bundle' => $this->targetBundle
+        );
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, '--format' => 'sql'));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->checkGeneratedFile($this->saveGeneratedFile($output));
+        if ($name) {
+            $parameters['name'] = $name;
+        }
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, '--format' => 'php'));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->checkGeneratedFile($this->saveGeneratedFile($output));
+        if ($format) {
+            $parameters['--format'] = $format;
+        }
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated'));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->checkGeneratedFile($this->saveGeneratedFile($output));
+        if ($type) {
+            $parameters['--type'] = $type;
+        }
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated', '--format' => 'sql'));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->checkGeneratedFile($this->saveGeneratedFile($output));
+        if ($identifier) {
+            $parameters['--identifier'] = $identifier;
+        }
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated', '--format' => 'php'));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->checkGeneratedFile($this->saveGeneratedFile($output));
+        if ($mode) {
+            $parameters['--mode'] = $mode;
+        }
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:generate', 'bundle' => $this->targetBundle, 'name' => 'unit_test_generated_role', '--role' => 'Anonymous'));
+        $input = new ArrayInput($parameters);
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->checkGeneratedFile($this->saveGeneratedFile($output));
+    }
+
+    public function provideGenerateParameters()
+    {
+        return array(
+            array(null, null, null, null, null),
+            array(null, 'sql', null, null, null),
+            array(null, 'php', null, null, null),
+            array('unit_test_generated', null, null, null, null),
+            array('unit_test_generated', 'sql', null, null, null),
+            array('unit_test_generated', 'php', null, null, null),
+            array('unit_test_generated_role', null, 'role', 'Anonymous', null),
+            array('unit_test_generated_role', null, 'role', 'Anonymous', 'create'),
+            array('unit_test_generated_role', null, 'role', 'Anonymous', 'update'),
+            array('unit_test_generated_content_type', 'yml', 'content_type', 'folder', null),
+            array('unit_test_generated_content_type', 'json', 'content_type', 'folder', 'update')
+        );
     }
 
     protected function saveGeneratedFile($output)
@@ -70,6 +76,6 @@ class GenerateTest extends CommandTest
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->assertRegExp('?\| ' . basename($filePath) . ' +\| not executed +\|?', $output );
+        $this->assertRegExp('?\| ' . basename($filePath) . ' +\| not executed +\|?', $output);
     }
 }

@@ -11,6 +11,9 @@ abstract class CommandTest extends WebTestCase
     protected $leftovers = array();
 
     protected $container;
+    /**
+     * @var \eZ\Bundle\EzPublishCoreBundle\Console\Application
+     */
     protected $app;
     protected $output;
 

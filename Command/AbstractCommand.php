@@ -9,12 +9,17 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
  */
 abstract class AbstractCommand extends ContainerAwareCommand
 {
+    /**
+     * @var \Kaliop\eZMigrationBundle\Core\MigrationService
+     */
     private $migrationService;
 
+    /**
+     * @return \Kaliop\eZMigrationBundle\Core\MigrationService
+     */
     public function getMigrationService()
     {
-        if (!$this->migrationService)
-        {
+        if (!$this->migrationService) {
             $this->migrationService = $this->getContainer()->get('ez_migration_bundle.migration_service');
         }
 

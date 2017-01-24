@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
@@ -13,7 +14,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 /**
  * Methods to handle content type migrations
  */
-class ContentTypeManager extends RepositoryExecutor
+class ContentTypeManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('content_type');
 
@@ -442,5 +443,80 @@ class ContentTypeManager extends RepositoryExecutor
         }
 
         return null;
+    }
+
+    /**
+     * @param string $identifier
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration($identifier, $mode)
+    {
+        $this->loginUser(self::ADMIN_USER_ID);
+        $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($identifier);
+
+        $attributes = array();
+        foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
+            $attributes[] = array(
+                'identifier' => $fieldDefinition->identifier,
+                'type' => $fieldDefinition->fieldTypeIdentifier,
+                'name' => $fieldDefinition->getName($this->getLanguageCode()),
+                'description' => $fieldDefinition->getDescription($this->getLanguageCode()),
+                'required' => $fieldDefinition->isRequired,
+                'searchable' => $fieldDefinition->isSearchable,
+                'info-collector' => $fieldDefinition->isInfoCollector,
+                'disable-translation' => !$fieldDefinition->isTranslatable,
+                'category' => $fieldDefinition->fieldGroup,
+                'default-value' => $fieldDefinition->defaultValue,
+                'field-settings' => $fieldDefinition->fieldSettings,
+                'position' => $fieldDefinition->position
+            );
+        }
+
+        $data = array(
+            'type' => 'content_type',
+            'mode' => $mode
+        );
+
+        switch ($mode) {
+            case 'create':
+                $contentTypeGroups = $contentType->getContentTypeGroups();
+                $data = array_merge(
+                    $data,
+                    array(
+                        'content_type_group' => reset($contentTypeGroups)->identifier,
+                        'identifier' => $identifier
+                    )
+                );
+                break;
+            case 'update':
+                $data = array_merge(
+                    $data,
+                    array(
+                        'match' => array(
+                            'identifier' => $identifier
+                        )
+                    )
+                );
+                break;
+            default:
+                throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+        }
+
+        $data = array_merge(
+            $data,
+            array(
+                'name' => $contentType->getName($this->getLanguageCode()),
+                'description' => $contentType->getDescription($this->getLanguageCode()),
+                'name_pattern' => $contentType->nameSchema,
+                'url_name_pattern' => $contentType->urlAliasSchema,
+                'is_container' => $contentType->isContainer,
+                'lang' => $this->getLanguageCode(),
+                'attributes' => $attributes
+            )
+        );
+
+        return array($data);
     }
 }
