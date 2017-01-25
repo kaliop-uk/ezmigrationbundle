@@ -7,13 +7,14 @@ use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 
 /**
  * Handles the role migration definitions.
  */
-class RoleManager extends RepositoryExecutor
+class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('role');
 
@@ -312,5 +313,73 @@ class RoleManager extends RepositoryExecutor
         }
 
         $roleService->addPolicy($role, $policyCreateStruct);
+    }
+
+    /**
+     * @param string $identifier
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration($identifier, $mode)
+    {
+        $this->loginUser(self::ADMIN_USER_ID);
+
+        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
+        $role = $this->roleMatcher->matchOneByKey($identifier);
+
+        $policies = array();
+        /** @var \eZ\Publish\API\Repository\Values\User\Policy $policy */
+        foreach ($role->getPolicies() as $policy) {
+            $limitations = array();
+
+            /** @var \eZ\Publish\API\Repository\Values\User\Limitation $limitation */
+            foreach ($policy->getLimitations() as $limitation) {
+                $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+            }
+
+            $policies[] = array(
+                'module' => $policy->module,
+                'function' => $policy->function,
+                'limitations' => $limitations
+            );
+        }
+
+        $data = array(
+            'type' => 'role',
+            'mode' => $mode
+        );
+
+        switch ($mode) {
+            case 'create':
+                $data = array_merge(
+                    $data,
+                    array(
+                        'name' => $identifier
+                    )
+                );
+                break;
+            case 'update':
+                $data = array_merge(
+                    $data,
+                    array(
+                        'match' => array(
+                            'identifier' => $identifier
+                        )
+                    )
+                );
+                break;
+            default:
+                throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+        }
+
+        $data = array_merge(
+            $data,
+            array(
+                'policies' => $policies
+            )
+        );
+
+        return array($data);
     }
 }

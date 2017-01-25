@@ -66,6 +66,20 @@ class MigrationService
     }
 
     /**
+     * @param string $type
+     * @return ExecutorInterface
+     * @throws \InvalidArgumentException If executor doesn't exist
+     */
+    public function getExecutor($type)
+    {
+        if (!isset($this->executors[$type])) {
+            throw new \InvalidArgumentException("Executor with type '$type' doesn't exist");
+        }
+
+        return $this->executors[$type];
+    }
+
+    /**
      * NB: returns UNPARSED definitions
      *
      * @param string[] $paths
