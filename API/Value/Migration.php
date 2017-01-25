@@ -29,12 +29,12 @@ class Migration extends AbstractValue
 
     /**
      * @param string $name
-     * @param string md5 checksum of the migration definition file
+     * @param string $md5 checksum of the migration definition file
      * @param string $path
      * @param int $executionDate timestamp
      * @param int $status
      */
-    function __construct($name, $md5, $path, $executionDate = null, $status = 0, $executionError = null)
+    public function __construct($name, $md5, $path, $executionDate = null, $status = 0, $executionError = null)
     {
         $this->name = $name;
         $this->md5 = $md5;

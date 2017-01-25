@@ -33,7 +33,7 @@ class MigrationDefinition extends AbstractValue
      * @param MigrationStep[] $steps
      * @param string $parsingError
      */
-    function __construct($name, $path, $rawDefinition, $status = 0, array $steps=array(), $parsingError = null)
+    public function __construct($name, $path, $rawDefinition, $status = 0, array $steps = array(), $parsingError = null)
     {
         $this->name = $name;
         $this->path = $path;

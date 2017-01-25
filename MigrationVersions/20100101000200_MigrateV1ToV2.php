@@ -1,7 +1,6 @@
 <?php
 
 use Kaliop\eZMigrationBundle\API\MigrationInterface;
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
@@ -36,7 +35,7 @@ class MigrateV1ToV2 implements MigrationInterface
         $this->dbHandler = $this->container->get('ezpublish.connection');
 
         $this->activeBundles = array();
-        foreach($this->container->get('kernel')->getBundles() as $bundle)
+        foreach ($this->container->get('kernel')->getBundles() as $bundle)
         {
             $this->activeBundles[$bundle->getName()] = $bundle->getPath();
         }
@@ -57,7 +56,7 @@ class MigrateV1ToV2 implements MigrationInterface
 
         // we need to decide of a random time to stamp existing migrations. We use 'now - 1 minute'...
         $executionDate = time() - 60;
-        foreach($toMigrate as $legacyMigration) {
+        foreach ($toMigrate as $legacyMigration) {
             $name = $legacyMigration['version'];
 
             $path = $this->getLegacyMigrationDefinition($legacyMigration['version'], $legacyMigration['bundle']);
@@ -104,7 +103,7 @@ class MigrateV1ToV2 implements MigrationInterface
     {
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
         $sm = $this->dbHandler->getConnection()->getSchemaManager();
-        foreach($sm->listTables() as $table) {
+        foreach ($sm->listTables() as $table) {
             if ($table->getName() == $tableName) {
                 return true;
             }
@@ -151,7 +150,7 @@ class MigrateV1ToV2 implements MigrationInterface
             return false;
         }
 
-        foreach($versionDefinitions as $key => $versionDefinition) {
+        foreach ($versionDefinitions as $key => $versionDefinition) {
             if (!in_array(pathinfo($versionDefinition, PATHINFO_EXTENSION), array('php', 'yml', 'sql'))) {
                 unset($versionDefinitions[$key]);
             }

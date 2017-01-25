@@ -8,8 +8,8 @@ class ChainRegexpResolver extends ChainResolver implements RegexpBasedResolverIn
 {
     public function addResolver(ReferenceResolverInterface $resolver)
     {
-        if (! $resolver instanceof RegexpBasedResolverInterface) {
-            throw new \Exception("Can not add resolver of class " . get_class($resolver) .  " to a chain regexp resolver");
+        if (!$resolver instanceof RegexpBasedResolverInterface) {
+            throw new \Exception("Can not add resolver of class " . get_class($resolver) . " to a chain regexp resolver");
         }
 
         parent::addResolver($resolver);
@@ -22,7 +22,7 @@ class ChainRegexpResolver extends ChainResolver implements RegexpBasedResolverIn
     public function getRegexp()
     {
         $regexps = array();
-        foreach($this->resolvers as $resolver) {
+        foreach ($this->resolvers as $resolver) {
             $regexp = substr($resolver->getRegexp(), 1, -1);
             if ($regexp !== '') {
                 $regexps[] = $regexp;

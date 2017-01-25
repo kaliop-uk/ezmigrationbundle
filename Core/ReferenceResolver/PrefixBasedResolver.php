@@ -18,7 +18,7 @@ abstract class PrefixBasedResolver implements PrefixBasedResolverInterface
     public function __construct()
     {
         $quotedPrefixes = [];
-        foreach($this->referencePrefixes as $prefix) {
+        foreach ($this->referencePrefixes as $prefix) {
             $quotedPrefixes[] = preg_quote($prefix, '/');
         }
         $this->prefixMatchRegexp = '/^(' . implode('|', $quotedPrefixes) . ')/';
@@ -77,7 +77,7 @@ abstract class PrefixBasedResolver implements PrefixBasedResolverInterface
      */
     protected function getReferenceIdentifierByPrefix($stringIdentifier)
     {
-        foreach($this->referencePrefixes as $prefix) {
+        foreach ($this->referencePrefixes as $prefix) {
             $regexp = '/^' . preg_quote($prefix, '/') . '/';
             if (preg_match($regexp, $stringIdentifier)) {
                 return array('prefix' => $prefix, 'identifier' => preg_replace($regexp, '', $stringIdentifier));

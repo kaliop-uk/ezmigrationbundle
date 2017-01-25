@@ -187,7 +187,6 @@ class LocationManager extends RepositoryExecutor
         $locationCollection = $this->matchLocations('delete');
 
         foreach ($locationCollection as $location) {
-            //$location = $locationService->loadLocation($locationId);
             $locationService->deleteLocation($location);
         }
 
@@ -196,12 +195,12 @@ class LocationManager extends RepositoryExecutor
 
     /**
      * @param string $action
-     * @return ContentCollection
+     * @return LocationCollection
      * @throws \Exception
      */
     protected function matchLocations($action)
     {
-        if (!isset($this->dsl['location_id'])&& !isset($this->dsl['match'])) {
+        if (!isset($this->dsl['location_id']) && !isset($this->dsl['match'])) {
             throw new \Exception("The ID or a Match Condition is required to $action a location.");
         }
 
@@ -228,7 +227,7 @@ class LocationManager extends RepositoryExecutor
 
     /**
      * @param int|string|array $locationKey
-     * @return mixed
+     * @return Location
      */
     public function matchLocationByKey($locationKey)
     {

@@ -98,7 +98,7 @@ class Database implements StorageHandlerInterface
     /**
      * Creates and stores a new migration (leaving it in TODO status)
      * @param MigrationDefinition $migrationDefinition
-     * @return mixed
+     * @return Migration
      * @throws \Exception If the migration exists already (we rely on the PK for that)
      */
     public function addMigration(MigrationDefinition $migrationDefinition)
@@ -116,7 +116,7 @@ class Database implements StorageHandlerInterface
         );
         try {
             $conn->insert($this->migrationsTableName, $this->migrationToArray($migration));
-        } catch(UniqueConstraintViolationException $e) {
+        } catch (UniqueConstraintViolationException $e) {
             throw new \Exception("Migration '{$migrationDefinition->name}' already exists");
         }
 
@@ -150,7 +150,7 @@ class Database implements StorageHandlerInterface
      * @param bool $force When true, the migration will be updated even if it was not in 'started' status
      * @throws \Exception If the migration was not started (unless $force=true)
      */
-    public function endMigration(Migration $migration, $force=false)
+    public function endMigration(Migration $migration, $force = false)
     {
         if ($migration->status == Migration::STATUS_STARTED) {
             throw new \Exception("Migration '{$migration->name}' can not be ended as its status is 'started'...");
@@ -227,6 +227,13 @@ class Database implements StorageHandlerInterface
         return $this->createMigration($migrationDefinition, Migration::STATUS_SKIPPED, 'skipped');
     }
 
+    /**
+     * @param MigrationDefinition $migrationDefinition
+     * @param int $status
+     * @param string $action
+     * @return Migration
+     * @throws \Exception
+     */
     protected function createMigration(MigrationDefinition $migrationDefinition, $status, $action)
     {
         $this->createMigrationsTableIfNeeded();
@@ -273,7 +280,7 @@ class Database implements StorageHandlerInterface
                 $migrationDefinition->name,
                 md5($migrationDefinition->rawDefinition),
                 $migrationDefinition->path,
-                ($status == Migration::STATUS_SKIPPED ? null: time()),
+                ($status == Migration::STATUS_SKIPPED ? null : time()),
                 $status
             );
             $conn->update(
@@ -297,7 +304,7 @@ class Database implements StorageHandlerInterface
                 $migrationDefinition->name,
                 md5($migrationDefinition->rawDefinition),
                 $migrationDefinition->path,
-                ($status == Migration::STATUS_SKIPPED ? null: time()),
+                ($status == Migration::STATUS_SKIPPED ? null : time()),
                 $status
             );
             $conn->insert($this->migrationsTableName, $this->migrationToArray($migration));
@@ -362,7 +369,7 @@ class Database implements StorageHandlerInterface
         // and 767 bytes can be either 255 chars or 191 chars depending on charset utf8 or utf8mb4...
         //$t->addIndex(array('path'));
 
-        foreach($schema->toSql($dbPlatform) as $sql) {
+        foreach ($schema->toSql($dbPlatform) as $sql) {
             $this->dbHandler->exec($sql);
         }
     }
@@ -377,7 +384,7 @@ class Database implements StorageHandlerInterface
     {
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
         $sm = $this->dbHandler->getConnection()->getSchemaManager();
-        foreach($sm->listTables() as $table) {
+        foreach ($sm->listTables() as $table) {
             if ($table->getName() == $tableName) {
                 return true;
             }
