@@ -339,12 +339,13 @@ class ContentManager extends RepositoryExecutor
                 $fieldValue = $field;
             }
 
-            if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
-                throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'");
+            $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
+
+            if ($fieldDefinition === null) {
+                throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
             }
 
-            $fieldType = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
-            $fieldValue = $this->getFieldValue($fieldValue, $fieldType, $contentType->identifier, $this->context);
+            $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $this->context);
 
             $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
 
@@ -363,7 +364,7 @@ class ContentManager extends RepositoryExecutor
 
     protected function setObjectStates(Content $content, array $stateKeys)
     {
-        foreach($stateKeys as $stateKey) {
+        foreach ($stateKeys as $stateKey) {
             $stateKey = $this->referenceResolver->resolveReference($stateKey);
             /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $state */
             $state = $this->objectStateMatcher->matchOneByKey($stateKey);
@@ -492,7 +493,7 @@ class ContentManager extends RepositoryExecutor
     protected function toDateTime($date)
     {
         if (is_int($date)) {
-            return new \DateTime("@".$date);
+            return new \DateTime("@" . $date);
         } else {
             return new \DateTime($date);
         }

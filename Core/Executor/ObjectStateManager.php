@@ -5,7 +5,6 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
-use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class ObjectStateManager extends RepositoryExecutor
 {
@@ -41,7 +40,7 @@ class ObjectStateManager extends RepositoryExecutor
      */
     protected function create()
     {
-        foreach(array('object_state_group', 'names', 'identifier') as $key) {
+        foreach (array('object_state_group', 'names', 'identifier') as $key) {
             if (!isset($this->dsl[$key])) {
                 throw new \Exception("The '$key' key is missing in a object state creation definition");
             }
@@ -164,6 +163,7 @@ class ObjectStateManager extends RepositoryExecutor
 
     /**
      * {@inheritdoc}
+     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $objectState
      */
     protected function setReferences($objectState)
     {

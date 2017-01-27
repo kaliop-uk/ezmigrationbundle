@@ -60,7 +60,7 @@ class MigrationService
 
     public function addExecutor(ExecutorInterface $executor)
     {
-        foreach($executor->supportedTypes() as $type) {
+        foreach ($executor->supportedTypes() as $type) {
             $this->executors[$type] = $executor;
         }
     }
@@ -89,8 +89,8 @@ class MigrationService
     {
         // we try to be flexible in file types we support, and the same time avoid loading all files in a directory
         $handledDefinitions = array();
-        foreach($this->loader->listAvailableDefinitions($paths) as $migrationName => $definitionPath) {
-            foreach($this->DefinitionParsers as $definitionParser) {
+        foreach ($this->loader->listAvailableDefinitions($paths) as $migrationName => $definitionPath) {
+            foreach ($this->DefinitionParsers as $definitionParser) {
                 if ($definitionParser->supports($migrationName)) {
                     $handledDefinitions[] = $definitionPath;
                 }
@@ -170,13 +170,13 @@ class MigrationService
      */
     public function parseMigrationDefinition(MigrationDefinition $migrationDefinition)
     {
-        foreach($this->DefinitionParsers as $definitionParser) {
+        foreach ($this->DefinitionParsers as $definitionParser) {
             if ($definitionParser->supports($migrationDefinition->name)) {
                 // parse the source file
                 $migrationDefinition = $definitionParser->parseMigrationDefinition($migrationDefinition);
 
                 // and make sure we know how to handle all steps
-                foreach($migrationDefinition->steps as $step) {
+                foreach ($migrationDefinition->steps as $step) {
                     if (!isset($this->executors[$step->type])) {
                         return new MigrationDefinition(
                             $migrationDefinition->name,
@@ -236,7 +236,7 @@ class MigrationService
 
             $i = 1;
 
-            foreach($migrationDefinition->steps as $step) {
+            foreach ($migrationDefinition->steps as $step) {
                 // we validated the fact that we have a good executor at parsing time
                 $executor = $this->executors[$step->type];
 
@@ -269,7 +269,7 @@ class MigrationService
                 $this->loginUser($previousUserId);
             }
 
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
 
             $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
             $finalStatus = Migration::STATUS_FAILED;
@@ -284,7 +284,7 @@ class MigrationService
                     // there is no need to become admin here, at least in theory
                     $this->repository->rollBack();
 
-                } catch(\Exception $e2) {
+                } catch (\Exception $e2) {
                     // This check is not rock-solid, but at the moment is all we can do to tell apart 2 cases of
                     // exceptions originating above: the case where the commit was successful but a commit-queue event
                     // failed, from the case where something failed beforehand
@@ -339,6 +339,7 @@ class MigrationService
                     return $message;
                 }
             } else if (is_a($e, '\eZ\Publish\Core\Base\Exceptions\ContentFieldValidationException')) {
+                $errorsArray = array();
                 foreach ($e->getFieldErrors() as $limitationError) {
                     // we get the 1st language
                     $errorsArray[] = reset($limitationError);

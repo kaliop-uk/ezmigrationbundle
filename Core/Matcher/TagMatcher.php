@@ -30,7 +30,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
      * @param $translationHelper
      * @param \Netgen\TagsBundle\API\Repository\TagsService $tagService
      */
-    public function __construct($translationHelper, $tagService=null)
+    public function __construct($translationHelper, $tagService = null)
     {
         $this->translationHelper = $translationHelper;
         $this->tagService = $tagService;
@@ -86,7 +86,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
             return array(self::MATCH_TAG_ID => $key);
         }
 
-        throw new \Exception("Tag matcher can not uniquely identify the type of key used to match: ".key);
+        throw new \Exception("Tag matcher can not uniquely identify the type of key used to match: " . $key);
     }
 
     /**
@@ -135,7 +135,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
 
         foreach ($tagKeywords as $tagKeyword) {
             // return unique contents
-            foreach($this->tagService->loadTagsByKeyword($tagKeyword, $availableLanguages[0]) as $tag) {
+            foreach ($this->tagService->loadTagsByKeyword($tagKeyword, $availableLanguages[0]) as $tag) {
                 $tags[$tag->id] = $tag;
             }
         }

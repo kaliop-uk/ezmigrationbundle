@@ -53,7 +53,7 @@ class LimitationConverter
                 }
                 break;
             case 'SiteAccess':
-                foreach($values as $value) {
+                foreach ($values as $value) {
                     $name = "No/unknown SiteAccess Found";
                     if (array_key_exists($value, $this->siteAccessList)) {
                         $name = $this->siteAccessList[$value];
@@ -63,7 +63,7 @@ class LimitationConverter
                 break;
             case 'ParentClass':
             case 'Class':
-                foreach($values as $value) {
+                foreach ($values as $value) {
                     $contentType = $this->contentTypeMatcher->matchOneByKey($value);
                     $retValues[] = $contentType->identifier;
                 }
@@ -106,7 +106,7 @@ class LimitationConverter
                 break;
             case 'SiteAccess':
                 $siteAccesses = array_flip($this->siteAccessList);
-                foreach($values as $value) {
+                foreach ($values as $value) {
                     if (!isset($siteAccesses[$value])) {
                         throw new \Exception("SiteAccess '$value' is not configured");
                     }
@@ -115,7 +115,7 @@ class LimitationConverter
                 break;
             case 'ParentClass':
             case 'Class':
-                foreach($values as $value) {
+                foreach ($values as $value) {
                     $contentType = $this->contentTypeMatcher->matchOneByKey($value);
                     $retValues[] = $contentType->id;
                 }

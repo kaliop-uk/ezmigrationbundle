@@ -35,7 +35,7 @@ class ContentResolver extends AbstractResolver
     public function getReferenceValue($stringIdentifier)
     {
         $ref = $this->getReferenceIdentifierByPrefix($stringIdentifier);
-        switch($ref['prefix']) {
+        switch ($ref['prefix']) {
             case 'content_remote_id:':
                 return $this->contentMatcher->matchOne(array(ContentMatcher::MATCH_CONTENT_REMOTE_ID => $ref['identifier']))->id;
         }

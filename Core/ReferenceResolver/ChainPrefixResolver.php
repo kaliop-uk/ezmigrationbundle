@@ -8,8 +8,8 @@ class ChainPrefixResolver extends ChainResolver implements PrefixBasedResolverIn
 {
     public function addResolver(ReferenceResolverInterface $resolver)
     {
-        if (! $resolver instanceof PrefixBasedResolverInterface) {
-            throw new \Exception("Can not add resolver of class " . get_class($resolver) .  " to a chain prefix resolver");
+        if (!$resolver instanceof PrefixBasedResolverInterface) {
+            throw new \Exception("Can not add resolver of class " . get_class($resolver) . " to a chain prefix resolver");
         }
 
         parent::addResolver($resolver);
@@ -22,7 +22,7 @@ class ChainPrefixResolver extends ChainResolver implements PrefixBasedResolverIn
     public function getRegexp()
     {
         $regexps = array();
-        foreach($this->resolvers as $resolver) {
+        foreach ($this->resolvers as $resolver) {
             $regexp = preg_replace('/^\^/', '', substr($resolver->getRegexp(), 1, -1));
             if ($regexp !== '') {
                 $regexps[] = $regexp;

@@ -38,7 +38,7 @@ class TracingStepExecutedListener
         $dsl = $event->getStep()->dsl;
         $action = isset($dsl['mode']) ? ($dsl['mode'] . 'd') : 'acted upon';
 
-        switch($type) {
+        switch ($type) {
             case 'content':
             case 'content_type':
             case 'language':
@@ -49,7 +49,7 @@ class TracingStepExecutedListener
             case 'tag':
             case 'user':
             case 'user_group':
-                $out = $type  . ' '. $this->getObjectIdentifierAsString($obj). ' has been ' . $action;
+                $out = $type . ' ' . $this->getObjectIdentifierAsString($obj) . ' has been ' . $action;
                 break;
             case 'sql':
                 $out = 'sql has been executed';
@@ -75,31 +75,38 @@ class TracingStepExecutedListener
     {
         if ($objOrCollection instanceof AbstractCollection || is_array($objOrCollection)) {
             $out = array();
-            foreach($objOrCollection as $obj) {
+            foreach ($objOrCollection as $obj) {
                 $out[] = $this->getObjectIdentifierAsString($obj);
             }
-            return implode(", ", $out) ;
+            return implode(", ", $out);
         }
 
-        switch(gettype($objOrCollection)) {
+        switch (gettype($objOrCollection)) {
 
             case 'object':
                 if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Content ||
-                    $objOrCollection instanceof \eZ\Publish\API\Repository\Values\User\UserGroup)
-                        return "'" . $objOrCollection->contentInfo->name . "'";
+                    $objOrCollection instanceof \eZ\Publish\API\Repository\Values\User\UserGroup
+                ) {
+                    return "'" . $objOrCollection->contentInfo->name . "'";
+                }
                 if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\ContentType\ContentType ||
                     $objOrCollection instanceof \eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup ||
                     $objOrCollection instanceof \eZ\Publish\API\Repository\Values\ObjectState\ObjectState ||
                     $objOrCollection instanceof \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup ||
                     $objOrCollection instanceof \eZ\Publish\API\Repository\Values\User\Role ||
-                    $objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Section)
-                        return "'" . $objOrCollection->identifier . "'";
-                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Location)
-                        return "'" . $objOrCollection->pathString . "'";
-                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Language)
-                        return "'" . $objOrCollection->languageCode . "'";
-                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\User\User)
-                        return "'" . $objOrCollection->login . "'";
+                    $objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Section
+                ) {
+                    return "'" . $objOrCollection->identifier . "'";
+                }
+                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Location) {
+                    return "'" . $objOrCollection->pathString . "'";
+                }
+                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Language) {
+                    return "'" . $objOrCollection->languageCode . "'";
+                }
+                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\User\User) {
+                    return "'" . $objOrCollection->login . "'";
+                }
                 // unknown objects - we can't know what the desired identifier is...
                 return '';
 

@@ -41,7 +41,7 @@ EOT
     {
         $migrationsService = $this->getMigrationService();
 
-        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path')) ;
+        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path'));
         $migrations = $migrationsService->getMigrations();
 
         if (!count($migrationDefinitions) && !count($migrations)) {
@@ -51,10 +51,10 @@ EOT
 
         // create a unique ist of all migrations (coming from db) and definitions (coming from disk)
         $index = array();
-        foreach($migrationDefinitions as $migrationDefinition) {
+        foreach ($migrationDefinitions as $migrationDefinition) {
             $index[$migrationDefinition->name] = array('definition' => $migrationDefinition);
         }
-        foreach($migrations as $migration) {
+        foreach ($migrations as $migration) {
             if (isset($index[$migration->name])) {
                 $index[$migration->name]['migration'] = $migration;
             } else {
@@ -64,11 +64,10 @@ EOT
                 if ($migration->path != '' && is_file($migration->path)) {
                     try {
                         $migrationDefinitionCollection = $migrationsService->getMigrationsDefinitions(array($migration->path));
-                        if (count($migrationDefinitionCollection))
-                        {
+                        if (count($migrationDefinitionCollection)) {
                             $index[$migration->name]['definition'] = reset($migrationDefinitionCollection);
                         }
-                    } catch(\Exception $e) {
+                    } catch (\Exception $e) {
                         /// @todo one day we should be able to limit the kind of exceptions we have to catch here...
                     }
                 }
@@ -80,7 +79,7 @@ EOT
 
         $data = array();
         $i = 1;
-        foreach($index as $name => $value) {
+        foreach ($index as $name => $value) {
             if (!isset($value['migration'])) {
                 $migrationDefinition = $migrationsService->parseMigrationDefinition($value['definition']);
                 $notes = '';

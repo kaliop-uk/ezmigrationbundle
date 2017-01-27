@@ -36,7 +36,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      */
     protected function create()
     {
-        foreach(array('identifier', 'content_type_group', 'name_pattern', 'name', 'attributes') as $key) {
+        foreach (array('identifier', 'content_type_group', 'name_pattern', 'name', 'attributes') as $key) {
             if (!isset($this->dsl[$key])) {
                 throw new \Exception("The '$key' key is missing in a content type creation definition");
             }
@@ -213,7 +213,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
     /**
      * @param string $action
-     * @return RoleCollection
+     * @return ContentTypeCollection
      * @throws \Exception
      */
     protected function matchContentTypes($action)
@@ -251,7 +251,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @throws \InvalidArgumentException When trying to set
      *
      * @param \eZ\Publish\API\Repository\Values\ContentType\ContentType|ContentTypeCollection $contentType
-     * @return boolean
+     * @return false|null
      */
     protected function setReferences($contentType)
     {
@@ -430,11 +430,11 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      *
      * @param ContentType $contentType
      * @param string $fieldIdentifier
-     * @return null|FieldDefinition
+     * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinition|null
      */
     private function contentTypeHasFieldDefinition(ContentType $contentType, $fieldIdentifier)
     {
-        $existingFieldDefinitions = $contentType->fieldDefinitions;
+        $existingFieldDefinitions = $contentType->getFieldDefinitions();
 
         foreach ($existingFieldDefinitions as $existingFieldDefinition) {
             if ($fieldIdentifier == $existingFieldDefinition->identifier) {

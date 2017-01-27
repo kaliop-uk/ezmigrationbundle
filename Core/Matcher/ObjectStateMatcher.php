@@ -115,9 +115,9 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
         $groups = $this->repository->getObjectStateService()->loadObjectStateGroups();
         foreach ($groups as $group) {
             $groupStates = $this->repository->getObjectStateService()->loadObjectStates($group);
-            foreach($groupStates as $groupState) {
+            foreach ($groupStates as $groupState) {
                 // we always add the states using 'group/state' identifiers
-                $statesList[$group->identifier.'/'.$groupState->identifier] = $groupState;
+                $statesList[$group->identifier . '/' . $groupState->identifier] = $groupState;
                 // we only add the state using plain identifier if it is unique
                 if (isset($statesList[$groupState->identifier])) {
                     unset($statesList[$groupState->identifier]);
