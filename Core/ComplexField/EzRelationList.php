@@ -22,14 +22,14 @@ class EzRelationList extends AbstractComplexField implements ComplexFieldInterfa
      */
     public function createValue($fieldValueArray, array $context = array())
     {
-        if (count($fieldValueArray) == 1 && isset($fieldValueArray['destinationContentIds'])) {
+        if (array_key_exists('destinationContentIds', $fieldValueArray)) {
             // fromHash format
             $ids = $fieldValueArray['destinationContentIds'];
-        } else if ($fieldValueArray === null) {
-            $ids = array();
-        } else {
+        } elseif (is_array($fieldValueArray)) {
             // simplified format
             $ids = $fieldValueArray;
+        } else {
+            $ids = array();
         }
 
         foreach ($ids as $key => $id) {

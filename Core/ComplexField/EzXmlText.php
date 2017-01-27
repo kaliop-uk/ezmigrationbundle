@@ -25,10 +25,13 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
      */
     public function createValue($fieldValue, array $context = array())
     {
-        if (is_string($fieldValue)) {
-            $xmlText = $fieldValue;
-        } else {
+        if (array_key_exists('content', $fieldValue)) {
             $xmlText = $fieldValue['content'];
+        } elseif (array_key_exists('xml', $fieldValue)) {
+            // fromHash format
+            $xmlText = $fieldValue['xml'];
+        } else {
+            $xmlText = $fieldValue;
         }
 
         // Check if there are any references in the xml text and replace them.

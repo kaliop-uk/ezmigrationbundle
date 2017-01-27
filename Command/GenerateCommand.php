@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -29,8 +30,10 @@ class GenerateCommand extends AbstractCommand
             ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, content_type, generic, db, php)', '')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, for type=db (mysql, postgresql, ...)', 'mysql')
             ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Deprecated: The role identifier (or id) that you would like to update, for type=role', null)
-            ->addOption('identifier', null, InputOption::VALUE_REQUIRED, 'The identifier that you would like to update', null)
+            ->addOption('match_type', null, InputOption::VALUE_REQUIRED, 'The match type that you would like to update', null)
+            ->addOption('match_value', null, InputOption::VALUE_REQUIRED, 'The match value that you would like to update', null)
             ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (create, update)', 'create')
+            ->addOption('lang', null, InputOption::VALUE_REQUIRED, 'The language of the migration (eng-GB, ger-DE)', 'eng-GB')
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
@@ -73,14 +76,16 @@ EOT
         $fileType = $input->getOption('format');
         $migrationType = $input->getOption('type');
         $role = $input->getOption('role');
-        $identifier = $input->getOption('identifier');
+        $matchType = $input->getOption('match_type');
+        $matchValue = $input->getOption('match_value');
         $mode = $input->getOption('mode');
         $dbServer = $input->getOption('dbserver');
 
         if ($role != '') {
-            $output->writeln('<error>The "role" option is deprecated since version 3.2 and will be removed in 4.0. Use "identifier" instead.</error>');
+            $output->writeln('<error>The "role" option is deprecated since version 3.2 and will be removed in 4.0. Use "type=role", "match_type=identifier" and "match_value" instead.</error>');
             $migrationType = 'role';
-            $identifier = $role;
+            $matchType = 'identifier';
+            $matchValue = $role;
         }
 
         if ($bundleName == $this->thisBundle) {
@@ -139,8 +144,10 @@ EOT
 
         $parameters = array(
             'dbserver' => $dbServer,
-            'identifier' => $identifier,
-            'mode' => $mode
+            'matchType' => $matchType,
+            'matchValue' => $matchValue,
+            'mode' => $mode,
+            'lang' => $input->getOption('lang')
         );
 
         $date = date('YmdHis');
@@ -218,7 +225,10 @@ EOT
                 if (!$executor instanceof MigrationGeneratorInterface) {
                     throw new \Exception("The executor '$migrationType' can not generate a migration");
                 }
-                $data = $executor->generateMigration($parameters['identifier'], $parameters['mode']);
+                if ($executor instanceof RepositoryExecutor) {
+                    $executor->setLanguageCode($parameters['lang']);
+                }
+                $data = $executor->generateMigration($parameters['matchType'], $parameters['matchValue'], $parameters['mode']);
 
                 switch ($fileType) {
                     case 'yml':
