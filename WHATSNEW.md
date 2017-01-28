@@ -10,7 +10,7 @@ Version 3.2.0
 * When updating users, allow to specify groups using references and remote_ids (it was already possible on creation)
 
 * User group's "parent_group_id": if a string provided, it is considered referencing a user group's remote_id instead of
-    it's id
+    its id
 
 
 Version 3.1.0
