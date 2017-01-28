@@ -1,3 +1,9 @@
+Version 3.2.0
+=============
+
+* Extend the GenerateCommand to generate migrations for existing Content Types as well as Roles
+
+
 Version 3.1.0
 =============
 
