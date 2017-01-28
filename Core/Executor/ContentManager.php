@@ -340,7 +340,8 @@ class ContentManager extends RepositoryExecutor
             }
 
             if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
-                throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'")
+                throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'");
+            }
 
             $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
             $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $this->context);
