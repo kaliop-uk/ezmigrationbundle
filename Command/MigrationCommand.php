@@ -1,6 +1,7 @@
 <?php
 
 namespace Kaliop\eZMigrationBundle\Command;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -50,7 +51,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (! $input->getOption('add') && ! $input->getOption('delete') && ! $input->getOption('skip')) {
+        if (!$input->getOption('add') && !$input->getOption('delete') && !$input->getOption('skip')) {
             throw new \InvalidArgumentException('You must specify whether you want to --add, --delete or --skip the specified migration.');
         }
 
@@ -80,7 +81,7 @@ EOT
                 throw new \InvalidArgumentException(sprintf('The path "%s" does not correspond to any migration definition.', $migrationNameOrPath));
             }
 
-            foreach($migrationDefinitionCollection as $migrationDefinition) {
+            foreach ($migrationDefinitionCollection as $migrationDefinition) {
                 $migrationName = basename($migrationDefinition->path);
 
                 $migration = $migrationService->getMigration($migrationNameOrPath);
@@ -115,7 +116,7 @@ EOT
                 throw new \InvalidArgumentException(sprintf('The path "%s" does not correspond to any migration definition.', $migrationNameOrPath));
             }
 
-            foreach($migrationDefinitionCollection as $migrationDefinition) {
+            foreach ($migrationDefinitionCollection as $migrationDefinition) {
                 $migrationService->skipMigration($migrationDefinition);
                 $output->writeln('<info>Migration' . $migrationDefinition->path . ' marked as skipped</info>');
             }

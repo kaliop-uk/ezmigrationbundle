@@ -36,7 +36,7 @@ class LocationResolver extends AbstractResolver
     public function getReferenceValue($stringIdentifier)
     {
         $ref = $this->getReferenceIdentifierByPrefix($stringIdentifier);
-        switch($ref['prefix']) {
+        switch ($ref['prefix']) {
             // deprecated tag: 'location:'
             case 'location:':
                 return $this->locationMatcher->MatchOne(array(LocationMatcher::MATCH_LOCATION_REMOTE_ID => $ref['identifier']))->id;

@@ -32,7 +32,7 @@ class ObjectStateGroupManager extends RepositoryExecutor
      */
     protected function create()
     {
-        foreach(array('names', 'identifier') as $key) {
+        foreach (array('names', 'identifier') as $key) {
             if (!isset($this->dsl[$key])) {
                 throw new \Exception("The '$key' key is missing in a object state group creation definition");
             }
@@ -79,8 +79,6 @@ class ObjectStateGroupManager extends RepositoryExecutor
         }
 
         foreach ($groupsCollection as $objectStateGroup) {
-            //$objectStateGroup = $objectStateService->loadObjectStateGroup($this->dsl['id']);
-
             $objectStateGroupUpdateStruct = $objectStateService->newObjectStateGroupUpdateStruct();
 
             if (isset($this->dsl['identifier'])) {
@@ -149,6 +147,7 @@ class ObjectStateGroupManager extends RepositoryExecutor
 
     /**
      * {@inheritdoc}
+     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup $objectStateGroup
      */
     protected function setReferences($objectStateGroup)
     {

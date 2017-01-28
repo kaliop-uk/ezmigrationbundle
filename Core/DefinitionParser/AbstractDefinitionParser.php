@@ -27,7 +27,7 @@ class AbstractDefinitionParser
             $status = MigrationDefinition::STATUS_INVALID;
             $message = "$format migration file '{$definition->path}' must contain an array as top element";
         } else {
-            foreach($data as $i => $stepDef) {
+            foreach ($data as $i => $stepDef) {
                 if (!isset($stepDef['type']) || !is_string($stepDef['type'])) {
                     $status = MigrationDefinition::STATUS_INVALID;
                     $message = "$format migration file '{$definition->path}' misses or has a non-string 'type' element in step $i";
@@ -49,7 +49,7 @@ class AbstractDefinitionParser
         }
 
         $stepDefs = array();
-        foreach($data as $stepDef) {
+        foreach ($data as $stepDef) {
             $type = $stepDef['type'];
             unset($stepDef['type']);
             $stepDefs[] = new MigrationStep($type, $stepDef, array('path' => $definition->path));

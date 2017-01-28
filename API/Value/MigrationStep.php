@@ -13,7 +13,7 @@ class MigrationStep extends AbstractValue
     protected $dsl;
     protected $context;
 
-    function __construct($type, array $dsl = array(), array $context = array())
+    public function __construct($type, array $dsl = array(), array $context = array())
     {
         $this->type = $type;
         $this->dsl = $dsl;

@@ -126,12 +126,12 @@ class MigrateTest extends CommandTest
     public function goodDSLProvider()
     {
         $dslDir = $this->dslDir.'/good';
-        if(!is_dir($dslDir)) {
+        if (!is_dir($dslDir)) {
             return array();
         }
 
         $out = array();
-        foreach(scandir($dslDir) as $fileName) {
+        foreach (scandir($dslDir) as $fileName) {
             $filePath = $dslDir . '/' . $fileName;
             if (is_file($filePath)) {
                 $out[] = array($filePath);
@@ -143,12 +143,12 @@ class MigrateTest extends CommandTest
     public function invalidDSLProvider()
     {
         $dslDir = $this->dslDir.'/bad/parsing';
-        if(!is_dir($dslDir)) {
+        if (!is_dir($dslDir)) {
             return array();
         }
 
         $out = array();
-        foreach(scandir($dslDir) as $fileName) {
+        foreach (scandir($dslDir) as $fileName) {
             $filePath = $dslDir . '/' . $fileName;
             if (is_file($filePath)) {
                 $out[] = array($filePath);
@@ -160,12 +160,12 @@ class MigrateTest extends CommandTest
     public function badDSLProvider()
     {
         $dslDir = $this->dslDir.'/bad/execution';
-        if(!is_dir($dslDir)) {
+        if (!is_dir($dslDir)) {
             return array();
         }
 
         $out = array();
-        foreach(scandir($dslDir) as $fileName) {
+        foreach (scandir($dslDir) as $fileName) {
             $filePath = $dslDir . '/' . $fileName;
             if (is_file($filePath)) {
                 $out[] = array($filePath);

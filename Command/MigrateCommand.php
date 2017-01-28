@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
+use Kaliop\eZMigrationBundle\Core\MigrationService;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -10,7 +11,6 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\PhpExecutableFinder;
-use Symfony\Component\Process\Process;
 
 /**
  * Command to execute the available migration definitions.
@@ -23,7 +23,7 @@ class MigrateCommand extends AbstractCommand
     protected $output;
     protected $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
-    const COMMAND_NAME='kaliop:migration:migrate';
+    const COMMAND_NAME = 'kaliop:migration:migrate';
 
     /**
      * Set up the command.
@@ -114,15 +114,15 @@ EOT
             // 'optional' options
             // note: options 'clear-cache', 'ignore-failures' and 'no-transactions' we never propagate
             if ($input->getOption('default-language')) {
-                $builderArgs[]='--default-language='.$input->getOption('default-language');
+                $builderArgs[] = '--default-language=' . $input->getOption('default-language');
             }
             if ($input->getOption('no-transactions')) {
-                $builderArgs[]='--no-transactions';
+                $builderArgs[] = '--no-transactions';
             }
         }
 
         /** @var MigrationDefinition $migrationDefinition */
-        foreach($toExecute as $name => $migrationDefinition) {
+        foreach ($toExecute as $name => $migrationDefinition) {
 
             // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
             if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
@@ -144,7 +144,7 @@ EOT
                 $process->setTimeout(86400);
                 // and give immediate feedback to the user
                 $process->run(
-                    function ($type, $buffer) {
+                    function($type, $buffer) {
                         echo $buffer;
                     }
                 );
@@ -176,7 +176,7 @@ EOT
                         throw new \Exception($errorMsg);
                     }
 
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
                         $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                         continue;
@@ -193,7 +193,7 @@ EOT
                         !$input->getOption('no-transactions'),
                         $input->getOption('default-language')
                     );
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
                         $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                         continue;
@@ -215,20 +215,20 @@ EOT
     }
 
     /**
-     * @param string $paths
-     * @param $migrationService
+     * @param string[] $paths
+     * @param MigrationService $migrationService
      * @return MigrationDefinition[]
      *
      * @todo this does not scale well with many definitions or migrations
      */
-    protected function buildMigrationsList($paths, $migrationService)
+    protected function buildMigrationsList($paths, MigrationService $migrationService)
     {
         $migrationDefinitions = $migrationService->getMigrationsDefinitions($paths);
         $migrations = $migrationService->getMigrations();
 
         // filter away all migrations except 'to do' ones
         $toExecute = array();
-        foreach($migrationDefinitions as $name => $migrationDefinition) {
+        foreach ($migrationDefinitions as $name => $migrationDefinition) {
             if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && $migration->status == Migration::STATUS_TODO)) {
                 $toExecute[$name] = $migrationService->parseMigrationDefinition($migrationDefinition);
             }
@@ -262,11 +262,11 @@ EOT
      *
      * @todo use a more compact output when there are *many* migrations
      */
-    protected function printMigrationsList($toExecute , InputInterface $input, OutputInterface $output)
+    protected function printMigrationsList($toExecute, InputInterface $input, OutputInterface $output)
     {
         $data = array();
         $i = 1;
-        foreach($toExecute as $name => $migrationDefinition) {
+        foreach ($toExecute as $name => $migrationDefinition) {
             $notes = '';
             if ($migrationDefinition->status != MigrationDefinition::STATUS_PARSED) {
                 $notes = '<error>' . $migrationDefinition->parsingError . '</error>';
@@ -314,7 +314,7 @@ EOT
      * @param $message
      * @param int $verbosity
      */
-    protected function writeln($message, $verbosity=OutputInterface::VERBOSITY_NORMAL)
+    protected function writeln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL)
     {
         if ($this->verbosity >= $verbosity) {
             $this->output->writeln($message);

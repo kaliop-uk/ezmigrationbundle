@@ -49,7 +49,7 @@ class UserGroupManager extends RepositoryExecutor
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
             foreach ($this->dsl['roles'] as $roleId) {
-                if($this->referenceResolver->isReference($roleId)) {
+                if ($this->referenceResolver->isReference($roleId)) {
                     $roleId = $this->referenceResolver->resolveReference($roleId);
                 }
                 $role = $this->roleMatcher->matchOneByKey($roleId);
@@ -78,7 +78,7 @@ class UserGroupManager extends RepositoryExecutor
         $userService = $this->repository->getUserService();
         $contentService = $this->repository->getContentService();
 
-        foreach($userGroupCollection as $key => $userGroup) {
+        foreach ($userGroupCollection as $key => $userGroup) {
 
             /** @var $updateStruct \eZ\Publish\API\Repository\Values\User\UserGroupUpdateStruct */
             $updateStruct = $userService->newUserGroupUpdateStruct();
@@ -127,7 +127,7 @@ class UserGroupManager extends RepositoryExecutor
 
         $userService = $this->repository->getUserService();
 
-        foreach($userGroupCollection as $userGroup) {
+        foreach ($userGroupCollection as $userGroup) {
             $userService->deleteUserGroup($userGroup);
         }
 
@@ -136,7 +136,7 @@ class UserGroupManager extends RepositoryExecutor
 
     /**
      * @param string $action
-     * @return RoleCollection
+     * @return UserGroupCollection
      * @throws \Exception
      */
     protected function matchUserGroups($action)

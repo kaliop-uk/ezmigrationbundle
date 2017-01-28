@@ -58,12 +58,12 @@ class TagsTest extends CommandTest
     public function goodDSLProvider()
     {
         $dslDir = $this->dslDir.'/eztags';
-        if(!is_dir($dslDir)) {
+        if (!is_dir($dslDir)) {
             return array();
         }
 
         $out = array();
-        foreach(scandir($dslDir) as $fileName) {
+        foreach (scandir($dslDir) as $fileName) {
             $filePath = $dslDir . '/' . $fileName;
             if (is_file($filePath)) {
                 $out[] = array($filePath);

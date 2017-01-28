@@ -4,7 +4,6 @@ namespace Kaliop\eZMigrationBundle\Core\DefinitionParser;
 
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -34,7 +33,7 @@ class YamlDefinitionParser extends AbstractDefinitionParser implements Definitio
     {
         try {
             $data = Yaml::parse($definition->rawDefinition);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return new MigrationDefinition(
                 $definition->name,
                 $definition->path,

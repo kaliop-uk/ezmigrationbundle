@@ -21,7 +21,7 @@ class ComplexFieldManager
      * @param string $fieldTypeIdentifier
      * @param string $contentTypeIdentifier
      */
-    public function addComplexField(ComplexFieldInterface $complexField, $fieldTypeIdentifier, $contentTypeIdentifier=null)
+    public function addComplexField(ComplexFieldInterface $complexField, $fieldTypeIdentifier, $contentTypeIdentifier = null)
     {
         if ($contentTypeIdentifier == null) {
             $contentTypeIdentifier = '*';
@@ -30,7 +30,7 @@ class ComplexFieldManager
     }
 
     /**
-     * @param $fieldTypeIdentifier
+     * @param string $fieldTypeIdentifier
      * @param string $contentTypeIdentifier
      * @return bool
      */
@@ -49,15 +49,14 @@ class ComplexFieldManager
      */
     public function getComplexFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $fieldValue, array $context = array())
     {
-        if (isset($this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier]) || isset($this->fieldTypeMap['*'][$fieldTypeIdentifier]))
-        {
-            $fieldService = isset($this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier]) ?
-                $this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier] :
-                $this->fieldTypeMap['*'][$fieldTypeIdentifier];
-            return $fieldService->createValue($fieldValue, $context);
-        }
-        else
-        {
+        if ($this->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
+            if (isset($this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier])) {
+                $fieldType = $this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier];
+            } else {
+                $fieldType = $this->fieldTypeMap['*'][$fieldTypeIdentifier];
+            }
+            return $fieldType->createValue($fieldValue, $context);
+        } else {
             $fieldType = $this->fieldTypeService->getFieldType($fieldTypeIdentifier);
             return $fieldType->fromHash($fieldValue);
             // was: error

@@ -44,7 +44,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         }
 
         if (isset($this->dsl['policies'])) {
-            foreach($this->dsl['policies'] as $key => $ymlPolicy) {
+            foreach ($this->dsl['policies'] as $key => $ymlPolicy) {
                 $this->addPolicy($role, $roleService, $ymlPolicy);
             }
         }
@@ -92,11 +92,11 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                 // Removing all policies so we can add them back.
                 // TODO: Check and update policies instead of remove and add.
                 $policies = $role->getPolicies();
-                foreach($policies as $policy) {
+                foreach ($policies as $policy) {
                     $roleService->deletePolicy($policy);
                 }
 
-                foreach($ymlPolicies as $ymlPolicy) {
+                foreach ($ymlPolicies as $ymlPolicy) {
                     $this->addPolicy($role, $roleService, $ymlPolicy);
                 }
             }
@@ -223,7 +223,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
 
         $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
 
-        foreach($limitationValue as $id => $value) {
+        foreach ($limitationValue as $id => $value) {
             $limitationValue[$id] = $this->referenceResolver->resolveReference($value);
         }
         $limitationValue = $this->limitationConverter->resolveLimitationValue($limitation['identifier'], $limitationValue);

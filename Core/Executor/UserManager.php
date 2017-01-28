@@ -88,7 +88,7 @@ class UserManager extends RepositoryExecutor
 
         $userService = $this->repository->getUserService();
 
-        foreach($userCollection as $key => $user) {
+        foreach ($userCollection as $key => $user) {
 
             $userUpdateStruct = $userService->newUserUpdateStruct();
 
@@ -152,7 +152,7 @@ class UserManager extends RepositoryExecutor
 
         $userService = $this->repository->getUserService();
 
-        foreach($userCollection as $user) {
+        foreach ($userCollection as $user) {
             $userService->deleteUser($user);
         }
 
@@ -161,7 +161,7 @@ class UserManager extends RepositoryExecutor
 
     /**
      * @param string $action
-     * @return RoleCollection
+     * @return UserCollection
      * @throws \Exception
      */
     protected function matchUsers($action)
@@ -174,7 +174,7 @@ class UserManager extends RepositoryExecutor
         if (!isset($this->dsl['match'])) {
             $conds = array();
             if (isset($this->dsl['id'])) {
-                 $conds['id'] = $this->dsl['id'];
+                $conds['id'] = $this->dsl['id'];
             }
             if (isset($this->dsl['user_id'])) {
                 $conds['id'] = $this->dsl['user_id'];

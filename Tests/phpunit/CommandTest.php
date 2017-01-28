@@ -62,7 +62,7 @@ abstract class CommandTest extends WebTestCase
 
     protected function tearDown()
     {
-        foreach($this->leftovers as $file) {
+        foreach ($this->leftovers as $file) {
             unlink($file);
         }
 
@@ -92,7 +92,7 @@ abstract class CommandTest extends WebTestCase
         }
         try {
             static::$kernel = static::createKernel($options);
-        } catch(\RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             throw new \RuntimeException($e->getMessage() . " Did you forget to define the environment variable KERNEL_DIR?", $e->getCode(), $e->getPrevious());
         }
         static::$kernel->boot();

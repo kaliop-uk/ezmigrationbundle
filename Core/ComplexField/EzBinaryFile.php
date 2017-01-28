@@ -32,7 +32,7 @@ class EzBinaryFile extends AbstractComplexField implements ComplexFieldInterface
         }
 
         // default format: path is relative to the 'files' dir
-        $realFilePath = dirname($context['path']) .  '/files/' . $filePath;
+        $realFilePath = dirname($context['path']) . '/files/' . $filePath;
 
         // but in the past, when using a string, this worked as well as an absolute path, so we have to support it as well
         if (!is_file($realFilePath) && is_file($filePath)) {

@@ -4,8 +4,6 @@ namespace Kaliop\eZMigrationBundle\Core\DefinitionParser;
 
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Handles Json migration definitions.
@@ -34,7 +32,7 @@ class JsonDefinitionParser extends AbstractDefinitionParser implements Definitio
     {
         try {
             $data = json_decode($definition->rawDefinition, true);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return new MigrationDefinition(
                 $definition->name,
                 $definition->path,
