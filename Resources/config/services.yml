@@ -208,6 +208,7 @@ services:
         class: '%ez_migration_bundle.executor.user_manager.class%'
         arguments:
             - '@ez_migration_bundle.user_matcher'
+            - '@ez_migration_bundle.user_group_matcher'
         tags:
             - { name: ez_migration_bundle.executor }
 
