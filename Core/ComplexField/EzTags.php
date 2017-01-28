@@ -4,7 +4,6 @@ namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
-use Netgen\TagsBundle\Core\FieldType\Tags\Value as TagsValue;
 
 class EzTags extends AbstractComplexField implements ComplexFieldInterface
 {
@@ -20,7 +19,7 @@ class EzTags extends AbstractComplexField implements ComplexFieldInterface
      *
      * @param array $fieldValue
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
-     * @return TagsValue
+     * @return \Netgen\TagsBundle\Core\FieldType\Tags\Value
      * @throws \Exception
      */
     public function createValue($fieldValue, array $context = array())
@@ -42,6 +41,6 @@ class EzTags extends AbstractComplexField implements ComplexFieldInterface
             }
         }
 
-        return new TagsValue(array_values($tags));
+        return new \Netgen\TagsBundle\Core\FieldType\Tags\Value(array_values($tags));
     }
 }

@@ -251,7 +251,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @throws \InvalidArgumentException When trying to set
      *
      * @param \eZ\Publish\API\Repository\Values\ContentType\ContentType|ContentTypeCollection $contentType
-     * @return false|null
+     * @return bool
      */
     protected function setReferences($contentType)
     {
@@ -282,6 +282,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
             $this->referenceResolver->addReference($reference['identifier'], $value);
         }
+
+        return true;
     }
 
     /**
@@ -434,7 +436,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      */
     private function contentTypeHasFieldDefinition(ContentType $contentType, $fieldIdentifier)
     {
-        $existingFieldDefinitions = $contentType->getFieldDefinitions();
+        $existingFieldDefinitions = $contentType->fieldDefinitions;
 
         foreach ($existingFieldDefinitions as $existingFieldDefinition) {
             if ($fieldIdentifier == $existingFieldDefinition->identifier) {

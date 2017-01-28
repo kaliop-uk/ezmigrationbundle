@@ -9,7 +9,7 @@ interface LoaderInterface
 {
     /**
      * @param array $paths either dir names or file names
-     * @return \Kaliop\eZMigrationBundle\API\Value\MigrationDefinition[] migrations definitions. key: name, value: path
+     * @return string[] migrations definitions. key: name, value: path
      * @throws \Exception
      */
     public function listAvailableDefinitions(array $paths = array());

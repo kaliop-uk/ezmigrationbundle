@@ -221,7 +221,7 @@ EOT
      *
      * @todo this does not scale well with many definitions or migrations
      */
-    protected function buildMigrationsList($paths, MigrationService $migrationService)
+    protected function buildMigrationsList($paths, $migrationService)
     {
         $migrationDefinitions = $migrationService->getMigrationsDefinitions($paths);
         $migrations = $migrationService->getMigrations();

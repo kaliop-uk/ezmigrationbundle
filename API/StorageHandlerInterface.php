@@ -26,7 +26,7 @@ interface StorageHandlerInterface
      * Creates and stores a new migration (leaving it in TODO status)
      *
      * @param MigrationDefinition $migrationDefinition
-     * @return mixed
+     * @return Migration
      * @throws \Exception If the migration exists already
      */
     public function addMigration(MigrationDefinition $migrationDefinition);
