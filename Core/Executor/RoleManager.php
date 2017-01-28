@@ -316,70 +316,74 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     }
 
     /**
-     * @param string $identifier
+     * @param string $matchType
+     * @param string $matchValue
      * @param string $mode
      * @throws \Exception
      * @return array
      */
-    public function generateMigration($identifier, $mode)
+    public function generateMigration($matchType, $matchValue, $mode)
     {
         $this->loginUser(self::ADMIN_USER_ID);
+        $roleCollection = $this->roleMatcher->match(array($matchType => $matchValue));
+        $data = array();
 
         /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        $role = $this->roleMatcher->matchOneByKey($identifier);
+        foreach ($roleCollection as $role) {
+            $policies = array();
 
-        $policies = array();
-        /** @var \eZ\Publish\API\Repository\Values\User\Policy $policy */
-        foreach ($role->getPolicies() as $policy) {
-            $limitations = array();
+            foreach ($role->getPolicies() as $policy) {
+                $limitations = array();
 
-            /** @var \eZ\Publish\API\Repository\Values\User\Limitation $limitation */
-            foreach ($policy->getLimitations() as $limitation) {
-                $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+                foreach ($policy->getLimitations() as $limitation) {
+                    $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+                }
+
+                $policies[] = array(
+                    'module' => $policy->module,
+                    'function' => $policy->function,
+                    'limitations' => $limitations
+                );
             }
 
-            $policies[] = array(
-                'module' => $policy->module,
-                'function' => $policy->function,
-                'limitations' => $limitations
+            $roleData = array(
+                'type' => 'role',
+                'mode' => $mode
             );
-        }
 
-        $data = array(
-            'type' => 'role',
-            'mode' => $mode
-        );
-
-        switch ($mode) {
-            case 'create':
-                $data = array_merge(
-                    $data,
-                    array(
-                        'name' => $identifier
-                    )
-                );
-                break;
-            case 'update':
-                $data = array_merge(
-                    $data,
-                    array(
-                        'match' => array(
-                            'identifier' => $identifier
+            switch ($mode) {
+                case 'create':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'name' => $role->identifier
                         )
-                    )
-                );
-                break;
-            default:
-                throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+                    );
+                    break;
+                case 'update':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'match' => array(
+                                'identifier' => $role->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'role' doesn't support mode '$mode'");
+            }
+
+            $roleData = array_merge(
+                $roleData,
+                array(
+                    'policies' => $policies
+                )
+            );
+
+            $data[] = $roleData;
         }
 
-        $data = array_merge(
-            $data,
-            array(
-                'policies' => $policies
-            )
-        );
-
-        return array($data);
+        return $data;
     }
 }

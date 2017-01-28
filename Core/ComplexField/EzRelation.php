@@ -24,7 +24,7 @@ class EzRelation extends AbstractComplexField implements ComplexFieldInterface
      */
     public function createValue($fieldValue, array $context = array())
     {
-        if (count($fieldValue) == 1 && isset($fieldValue['destinationContentId'])) {
+        if (array_key_exists('destinationContentId', $fieldValue)) {
             // fromHash format
             $id = $fieldValue['destinationContentId'];
         } else {
