@@ -3,6 +3,15 @@ Version 3.2.0
 
 * Extend the GenerateCommand to generate migrations for existing Content Types as well as Roles
 
+* Allow setting a remote_id when creating/updating User Group(s)
+
+* Allow matching on "content_remote_id" for User Group update/delete
+
+* When updating users, allow to specify groups using references and remote_ids (it was already possible on creation)
+
+* User group's "parent_group_id": if a string provided, it is considered referencing a user group's remote_id instead of
+    it's id
+
 
 Version 3.1.0
 =============
