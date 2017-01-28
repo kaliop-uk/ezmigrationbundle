@@ -56,7 +56,7 @@ class ContentMatcher extends RepositoryMatcher
 
             // BC support
             if ($key == 'content_type') {
-                if (ctype_digit($key)) {
+                if (is_int($values[0]) || ctype_digit($values[0])) {
                     $key = self::MATCH_CONTENT_TYPE_ID;
                 } else {
                     $key = self::MATCH_CONTENT_TYPE_IDENTIFIER;
