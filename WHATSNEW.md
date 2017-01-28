@@ -1,7 +1,9 @@
 Version 3.2.0
 =============
 
-* Extend the GenerateCommand to generate migrations for existing Content Types as well as Roles
+* Extend the GenerateCommand to generate migrations for existing Contents and Content Types besides Roles;
+    it is also possible to generate both create, update and delete migrations, and to have a single migration generated
+    for many items
 
 * Allow setting a remote_id when creating/updating User Group(s)
 

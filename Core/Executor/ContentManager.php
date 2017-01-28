@@ -9,6 +9,8 @@ use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
@@ -21,7 +23,7 @@ use eZ\Publish\Core\Base\Exceptions\NotFoundException;
  *
  * @todo add support for updating of content metadata
  */
-class ContentManager extends RepositoryExecutor
+class ContentManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('content');
 
@@ -32,9 +34,14 @@ class ContentManager extends RepositoryExecutor
     protected $complexFieldManager;
     protected $locationManager;
 
-    public function __construct(ContentMatcher $contentMatcher, SectionMatcher $sectionMatcher, UserMatcher $userMatcher,
-        ObjectStateMatcher $objectStateMatcher, $complexFieldManager, $locationManager)
-    {
+    public function __construct(
+        ContentMatcher $contentMatcher,
+        SectionMatcher $sectionMatcher,
+        UserMatcher $userMatcher,
+        ObjectStateMatcher $objectStateMatcher,
+        ComplexFieldManager $complexFieldManager,
+        LocationManager $locationManager
+    ) {
         $this->contentMatcher = $contentMatcher;
         $this->sectionMatcher = $sectionMatcher;
         $this->userMatcher = $userMatcher;
@@ -64,7 +71,8 @@ class ContentManager extends RepositoryExecutor
         if (isset($this->dsl['always_available'])) {
             $contentCreateStruct->alwaysAvailable = $this->dsl['always_available'];
         } else {
-            // Can be removed when https://github.com/kaliop-uk/ezmigrationbundle/pull/88 is merged
+            // Could be removed when https://github.com/ezsystems/ezpublish-kernel/pull/1874 is merged,
+            // but we strive to support old eZ kernel versions as well...
             $contentCreateStruct->alwaysAvailable = $contentType->defaultAlwaysAvailable;
         }
 
@@ -215,10 +223,17 @@ class ContentManager extends RepositoryExecutor
             $contentService->updateContent($draft->versionInfo, $contentUpdateStruct);
             $content = $contentService->publishVersion($draft->versionInfo);
 
-            if (isset($this->dsl['new_remote_id']) || isset($this->dsl['new_remote_id']) ||
-                isset($this->dsl['modification_date']) || isset($this->dsl['publication_date'])) {
+            if (isset($this->dsl['always_available']) ||
+                isset($this->dsl['new_remote_id']) ||
+                isset($this->dsl['owner']) ||
+                isset($this->dsl['modification_date']) ||
+                isset($this->dsl['publication_date'])) {
 
                 $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
+
+                if (isset($this->dsl['always_available'])) {
+                    $contentMetaDataUpdateStruct->alwaysAvailable = $this->dsl['always_available'];
+                }
 
                 if (isset($this->dsl['new_remote_id'])) {
                     $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
@@ -496,5 +511,93 @@ class ContentManager extends RepositoryExecutor
         } else {
             return new \DateTime($date);
         }
+    }
+
+    /**
+     * @param string $matchType
+     * @param string|string[] $matchValue
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     *
+     * @todo add support for dumping all object languages
+     */
+    public function generateMigration($matchType, $matchValue, $mode)
+    {
+        $this->loginUser(self::ADMIN_USER_ID);
+        $contentCollection = $this->contentMatcher->match(array($matchType => $matchValue));
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\Content\Content $content */
+        foreach ($contentCollection as $content) {
+
+            $location = $this->repository->getLocationService()->loadLocation($content->contentInfo->mainLocationId);
+            $contentType = $this->repository->getContentTypeService()->loadContentType(
+                $content->contentInfo->contentTypeId
+            );
+            $fieldTypeService = $this->repository->getFieldTypeService();
+
+            $contentData = array(
+                'type' => 'content',
+                'mode' => $mode
+            );
+
+            switch ($mode) {
+                case 'create':
+                    // @todo Add sort_field and sort_order
+                    // @todo Add 2ndary locations
+                    $contentData = array_merge(
+                        $contentData,
+                        array(
+                            'content_type' => $contentType->identifier,
+                            'parent_location' => $location->parentLocationId,
+                            'priority' => $location->priority,
+                            'is_hidden' => $location->invisible,
+                            'remote_id' => $content->contentInfo->remoteId,
+                            'location_remote_id' => $location->remoteId
+                        )
+                    );
+                    break;
+                case 'update':
+                case 'delete':
+                    $contentData = array_merge(
+                        $contentData,
+                        array(
+                            'match' => array(
+                                'content_remote_id' => $content->contentInfo->remoteId
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'content' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+                $attributes = array();
+                foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $field) {
+                    $fieldDefinition = $contentType->getFieldDefinition($field->fieldDefIdentifier);
+                    $fieldType = $fieldTypeService->getFieldType($fieldDefinition->fieldTypeIdentifier);
+                    $attributes[$field->fieldDefIdentifier] = $fieldType->toHash($field->value);
+                }
+
+                $contentData = array_merge(
+                    $contentData,
+                    array(
+                        'lang' => $this->getLanguageCode(),
+                        'section' => $content->contentInfo->sectionId,
+                        'owner' => $content->contentInfo->ownerId,
+                        'modification_date' => $content->contentInfo->modificationDate,
+                        'publication_date' => $content->contentInfo->publishedDate,
+                        'always_available' => $content->contentInfo->alwaysAvailable,
+                        'attributes' => $attributes
+                    )
+                );
+            }
+
+            $data[] = $contentData;
+        }
+
+        return $data;
     }
 }

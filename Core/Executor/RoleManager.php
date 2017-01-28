@@ -316,70 +316,76 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     }
 
     /**
-     * @param string $identifier
+     * @param string $matchType
+     * @param string|string[] $matchValue
      * @param string $mode
      * @throws \Exception
      * @return array
      */
-    public function generateMigration($identifier, $mode)
+    public function generateMigration($matchType, $matchValue, $mode)
     {
         $this->loginUser(self::ADMIN_USER_ID);
+        $roleCollection = $this->roleMatcher->match(array($matchType => $matchValue));
+        $data = array();
 
         /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        $role = $this->roleMatcher->matchOneByKey($identifier);
+        foreach ($roleCollection as $role) {
+            $roleData = array(
+                'type' => 'role',
+                'mode' => $mode
+            );
 
-        $policies = array();
-        /** @var \eZ\Publish\API\Repository\Values\User\Policy $policy */
-        foreach ($role->getPolicies() as $policy) {
-            $limitations = array();
-
-            /** @var \eZ\Publish\API\Repository\Values\User\Limitation $limitation */
-            foreach ($policy->getLimitations() as $limitation) {
-                $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+            switch ($mode) {
+                case 'create':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'name' => $role->identifier
+                        )
+                    );
+                    break;
+                case 'update':
+                case 'delete':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'match' => array(
+                                'identifier' => $role->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'role' doesn't support mode '$mode'");
             }
 
-            $policies[] = array(
-                'module' => $policy->module,
-                'function' => $policy->function,
-                'limitations' => $limitations
-            );
-        }
+            if ($mode != 'delete') {
+                $policies = array();
+                foreach ($role->getPolicies() as $policy) {
+                    $limitations = array();
 
-        $data = array(
-            'type' => 'role',
-            'mode' => $mode
-        );
+                    foreach ($policy->getLimitations() as $limitation) {
+                        $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+                    }
 
-        switch ($mode) {
-            case 'create':
-                $data = array_merge(
-                    $data,
+                    $policies[] = array(
+                        'module' => $policy->module,
+                        'function' => $policy->function,
+                        'limitations' => $limitations
+                    );
+                }
+
+                $roleData = array_merge(
+                    $roleData,
                     array(
-                        'name' => $identifier
+                        'policies' => $policies
                     )
                 );
-                break;
-            case 'update':
-                $data = array_merge(
-                    $data,
-                    array(
-                        'match' => array(
-                            'identifier' => $identifier
-                        )
-                    )
-                );
-                break;
-            default:
-                throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+            }
+
+            $data[] = $roleData;
         }
 
-        $data = array_merge(
-            $data,
-            array(
-                'policies' => $policies
-            )
-        );
-
-        return array($data);
+        return $data;
     }
 }

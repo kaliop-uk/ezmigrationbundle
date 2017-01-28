@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,7 +16,7 @@ class GenerateCommand extends AbstractCommand
     const DIR_CREATE_PERMISSIONS = 0755;
 
     private $availableMigrationFormats = array('yml', 'php', 'sql', 'json');
-    private $availableModes = array('create', 'update');
+    private $availableModes = array('create', 'update', 'delete');
     private $thisBundle = 'EzMigrationBundle';
 
     /**
@@ -25,34 +26,40 @@ class GenerateCommand extends AbstractCommand
     {
         $this->setName('kaliop:migration:generate')
             ->setDescription('Generate a blank migration definition file.')
-            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (yml, php, sql, json)', 'yml')
-            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, content_type, generic, db, php)', '')
-            ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, for type=db (mysql, postgresql, ...)', 'mysql')
+            ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (' . implode(', ', $this->availableMigrationFormats) . ')', 'yml')
+            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, content_type, content, generic, db, php)', '')
+            ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (' . implode(', ', $this->availableMigrationFormats) . ')', 'create')
+            ->addOption('match-type', null, InputOption::VALUE_REQUIRED, 'The type of identifier used to find the entity to generate the migration for', null)
+            ->addOption('match-value', null, InputOption::VALUE_REQUIRED, 'The identifier value used to find the entity to generate the migration for. Can have many values separated by commas', null)
+            ->addOption('lang', null, InputOption::VALUE_REQUIRED, 'The language of the migration (eng-GB, ger-DE, ...)', 'eng-GB')
+            ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, when type=db (mysql, postgresql, ...)', 'mysql')
             ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Deprecated: The role identifier (or id) that you would like to update, for type=role', null)
-            ->addOption('identifier', null, InputOption::VALUE_REQUIRED, 'The identifier that you would like to update', null)
-            ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (create, update)', 'create')
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
 The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
 
-    <info>./ezpublish/console kaliop:migration:generate bundlename</info>
+    <info>php ezpublish/console kaliop:migration:generate bundlename</info>
 
 You can optionally specify the file type to generate with <info>--format</info>:
 
-    <info>./ezpublish/console kaliop:migration:generate --format=yml bundlename migrationname</info>
+    <info>php ezpublish/console kaliop:migration:generate --format=json bundlename migrationname</info>
 
 For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
 
-    <info>./ezpublish/console kaliop:migration:generate --format=sql bundlename migrationname</info>
+    <info>php ezpublish/console kaliop:migration:generate --format=sql bundlename migrationname</info>
+
+For role/content/content_type migrations you need to specify the entity that you want to generate the migration for:
+
+    <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14</info>
 
 For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies you wish for the role. Any not defined will be removed.
 
-    <info>./ezpublish/console kaliop:migration:generate --role=Anonymous bundlename migrationname
+    <info>php ezpublish/console kaliop:migration:generate --type=role --match-value=Anonymous bundlename migrationname
 
 For freeform php migrations, you will receive a php class definition
 
-    <info>./ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
+    <info>php ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
 
 EOT
             );
@@ -73,14 +80,19 @@ EOT
         $fileType = $input->getOption('format');
         $migrationType = $input->getOption('type');
         $role = $input->getOption('role');
-        $identifier = $input->getOption('identifier');
+        $matchType = $input->getOption('match-type');
+        $matchValue = $input->getOption('match-value');
         $mode = $input->getOption('mode');
         $dbServer = $input->getOption('dbserver');
 
         if ($role != '') {
-            $output->writeln('<error>The "role" option is deprecated since version 3.2 and will be removed in 4.0. Use "identifier" instead.</error>');
+            $output->writeln('<error>The "role" option is deprecated since version 3.2 and will be removed in 4.0. Use "type=role", "match-type=identifier" and "match-value" instead.</error>');
             $migrationType = 'role';
-            $identifier = $role;
+            $matchType = 'identifier';
+            $matchValue = $role;
+            if ($mode == '') {
+                $mode = 'update';
+            }
         }
 
         if ($bundleName == $this->thisBundle) {
@@ -137,10 +149,17 @@ EOT
             }
         }
 
+        // allow to generate migrations for many entities
+        if (strpos($matchValue, ',') !== false ) {
+            $matchValue = explode(',', $matchValue);
+        }
+
         $parameters = array(
             'dbserver' => $dbServer,
-            'identifier' => $identifier,
-            'mode' => $mode
+            'matchType' => $matchType,
+            'matchValue' => $matchValue,
+            'mode' => $mode,
+            'lang' => $input->getOption('lang')
         );
 
         $date = date('YmdHis');
@@ -213,12 +232,14 @@ EOT
                 break;
             default:
                 // Generate migration file by executor
-                $migrationService = $this->getMigrationService();
-                $executor = $migrationService->getExecutor($migrationType);
-                if (!$executor instanceof MigrationGeneratorInterface) {
-                    throw new \Exception("The executor '$migrationType' can not generate a migration");
+
+                $executors = $this->getGeneratingExecutors();
+                if (!in_array($migrationType, $executors)) {
+                    throw new \Exception("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
                 }
-                $data = $executor->generateMigration($parameters['identifier'], $parameters['mode']);
+                $executor = $this->getMigrationService()->getExecutor($migrationType);
+
+                $data = $executor->generateMigration($parameters['matchType'], $parameters['matchValue'], $parameters['mode']);
 
                 switch ($fileType) {
                     case 'yml':
@@ -233,5 +254,18 @@ EOT
         }
 
         file_put_contents($path, $code);
+    }
+
+    protected function getGeneratingExecutors()
+    {
+        $migrationService = $this->getMigrationService();
+        $executors = $migrationService->listExecutors();
+        foreach($executors as $key => $name) {
+            $executor = $migrationService->getExecutor($name);
+            if (!$executor instanceof MigrationGeneratorInterface) {
+                unset($executors[$key]);
+            }
+        }
+        return $executors;
     }
 }

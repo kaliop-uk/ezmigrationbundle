@@ -8,9 +8,22 @@ class GenerateTest extends CommandTest
 {
     /**
      * @dataProvider provideGenerateParameters
+     *
+     * @param string|null $name
+     * @param string|null $format
+     * @param string|null $type
+     * @param string|null $matchType
+     * @param string|null $matchValue
+     * @param string|null $mode
      */
-    public function testGenerateDSL($name, $format, $type, $identifier, $mode)
-    {
+    public function testGenerateDSL(
+        $name = null,
+        $format = null,
+        $type = null,
+        $matchType = null,
+        $matchValue = null,
+        $mode = null
+    ) {
         $parameters = array(
             'command' => 'kaliop:migration:generate',
             'bundle' => $this->targetBundle
@@ -28,8 +41,12 @@ class GenerateTest extends CommandTest
             $parameters['--type'] = $type;
         }
 
-        if ($identifier) {
-            $parameters['--identifier'] = $identifier;
+        if ($matchType) {
+            $parameters['--match_type'] = $matchType;
+        }
+
+        if ($matchValue) {
+            $parameters['--match_value'] = $matchValue;
         }
 
         if ($mode) {
@@ -46,17 +63,19 @@ class GenerateTest extends CommandTest
     public function provideGenerateParameters()
     {
         return array(
-            array(null, null, null, null, null),
-            array(null, 'sql', null, null, null),
-            array(null, 'php', null, null, null),
-            array('unit_test_generated', null, null, null, null),
-            array('unit_test_generated', 'sql', null, null, null),
-            array('unit_test_generated', 'php', null, null, null),
-            array('unit_test_generated_role', null, 'role', 'Anonymous', null),
-            array('unit_test_generated_role', null, 'role', 'Anonymous', 'create'),
-            array('unit_test_generated_role', null, 'role', 'Anonymous', 'update'),
-            array('unit_test_generated_content_type', 'yml', 'content_type', 'folder', null),
-            array('unit_test_generated_content_type', 'json', 'content_type', 'folder', 'update')
+            array(),
+            array(null, 'sql'),
+            array(null, 'php'),
+            array('unit_test_generated'),
+            array('unit_test_generated', 'sql'),
+            array('unit_test_generated', 'php'),
+            array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous'),
+            array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous', 'create'),
+            array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous', 'update'),
+            array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder'),
+            array('unit_test_generated_content_type', 'json', 'content_type', 'identifier', 'folder', 'update'),
+            array('unit_test_generated_content_type', 'yml', 'content', 'contenttype_identifier', 'folder'),
+            array('unit_test_generated_content_type', 'json', 'content', 'contenttype_identifier', 'folder', 'update')
         );
     }
 

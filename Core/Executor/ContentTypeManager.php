@@ -448,77 +448,88 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * @param string $identifier
+     * @param string $matchType
+     * @param string|string[] $matchValue
      * @param string $mode
      * @throws \Exception
      * @return array
      */
-    public function generateMigration($identifier, $mode)
+    public function generateMigration($matchType, $matchValue, $mode)
     {
         $this->loginUser(self::ADMIN_USER_ID);
-        $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($identifier);
+        $contentTypeCollection = $this->contentTypeMatcher->match(array($matchType => $matchValue));
+        $data = array();
 
-        $attributes = array();
-        foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
-            $attributes[] = array(
-                'identifier' => $fieldDefinition->identifier,
-                'type' => $fieldDefinition->fieldTypeIdentifier,
-                'name' => $fieldDefinition->getName($this->getLanguageCode()),
-                'description' => $fieldDefinition->getDescription($this->getLanguageCode()),
-                'required' => $fieldDefinition->isRequired,
-                'searchable' => $fieldDefinition->isSearchable,
-                'info-collector' => $fieldDefinition->isInfoCollector,
-                'disable-translation' => !$fieldDefinition->isTranslatable,
-                'category' => $fieldDefinition->fieldGroup,
-                'default-value' => $fieldDefinition->defaultValue,
-                'field-settings' => $fieldDefinition->fieldSettings,
-                'position' => $fieldDefinition->position
+        /** @var \eZ\Publish\API\Repository\Values\ContentType\ContentType $contentType */
+        foreach ($contentTypeCollection as $contentType) {
+
+            $contentTypeData = array(
+                'type' => 'content_type',
+                'mode' => $mode
             );
-        }
 
-        $data = array(
-            'type' => 'content_type',
-            'mode' => $mode
-        );
-
-        switch ($mode) {
-            case 'create':
-                $contentTypeGroups = $contentType->getContentTypeGroups();
-                $data = array_merge(
-                    $data,
-                    array(
-                        'content_type_group' => reset($contentTypeGroups)->identifier,
-                        'identifier' => $identifier
-                    )
-                );
-                break;
-            case 'update':
-                $data = array_merge(
-                    $data,
-                    array(
-                        'match' => array(
-                            'identifier' => $identifier
+            switch ($mode) {
+                case 'create':
+                    $contentTypeGroups = $contentType->getContentTypeGroups();
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        array(
+                            'content_type_group' => reset($contentTypeGroups)->identifier,
+                            'identifier' => $contentType->identifier
                         )
+                    );
+                    break;
+                case 'update':
+                case 'delete':
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        array(
+                            'match' => array(
+                                'identifier' => $contentType->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+                $attributes = array();
+                foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
+                    $attributes[] = array(
+                        'identifier' => $fieldDefinition->identifier,
+                        'type' => $fieldDefinition->fieldTypeIdentifier,
+                        'name' => $fieldDefinition->getName($this->getLanguageCode()),
+                        'description' => $fieldDefinition->getDescription($this->getLanguageCode()),
+                        'required' => $fieldDefinition->isRequired,
+                        'searchable' => $fieldDefinition->isSearchable,
+                        'info-collector' => $fieldDefinition->isInfoCollector,
+                        'disable-translation' => !$fieldDefinition->isTranslatable,
+                        'category' => $fieldDefinition->fieldGroup,
+                        'default-value' => $fieldDefinition->defaultValue,
+                        'field-settings' => $fieldDefinition->fieldSettings,
+                        'position' => $fieldDefinition->position
+                    );
+                }
+
+                $contentTypeData = array_merge(
+                    $contentTypeData,
+                    array(
+                        'name' => $contentType->getName($this->getLanguageCode()),
+                        'description' => $contentType->getDescription($this->getLanguageCode()),
+                        'name_pattern' => $contentType->nameSchema,
+                        'url_name_pattern' => $contentType->urlAliasSchema,
+                        'is_container' => $contentType->isContainer,
+                        'lang' => $this->getLanguageCode(),
+                        'attributes' => $attributes
                     )
                 );
-                break;
-            default:
-                throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+            }
+
+            $data[] = $contentTypeData;
         }
 
-        $data = array_merge(
-            $data,
-            array(
-                'name' => $contentType->getName($this->getLanguageCode()),
-                'description' => $contentType->getDescription($this->getLanguageCode()),
-                'name_pattern' => $contentType->nameSchema,
-                'url_name_pattern' => $contentType->urlAliasSchema,
-                'is_container' => $contentType->isContainer,
-                'lang' => $this->getLanguageCode(),
-                'attributes' => $attributes
-            )
-        );
-
-        return array($data);
+        return $data;
     }
 }

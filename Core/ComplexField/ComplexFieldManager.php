@@ -7,7 +7,7 @@ use eZ\Publish\API\Repository\FieldTypeService;
 
 class ComplexFieldManager
 {
-    /** @var ComplexFieldInterface[]  */
+    /** @var ComplexFieldInterface[][] */
     protected $fieldTypeMap;
     protected $fieldTypeService;
 

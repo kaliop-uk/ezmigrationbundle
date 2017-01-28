@@ -100,12 +100,13 @@
     modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     publication_date: zzz # Optional, set content publication date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     new_remote_id: xxx # string Optional set a new RemoteId
+    always_available: true|false # Optional
     attributes: # the list of attribute identifier value pairs. For the format to use, see above
         attribute1: value1
         attribute2: value2
     # Optionally assign object states to the content
     object_states:
-        - xxx # int|string an object state id or didentifier. For the format to use, see above
+        - xxx # int|string an object state id or identifier. For the format to use, see above
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
