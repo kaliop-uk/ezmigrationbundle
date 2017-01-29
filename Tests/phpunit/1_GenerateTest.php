@@ -99,5 +99,17 @@ class GenerateTest extends CommandTest
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegExp('?\| ' . basename($filePath) . ' +\| not executed +\|?', $output);
+
+        // We should really test generated migrations by executing them, but for the moment we have a few problems:
+        // 1. we should patch them after generation, eg. replacing 'folder' w. something else (to be able to create and delete the content-type)
+        // 2. generated migration for 'anon' user has a limitation with borked siteaccess
+        // 3. generated migration for 'folder' contettype has a borked field-settings definition
+        if (false) {
+            $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => null));
+            $exitCode = $this->app->run($input, $this->output);
+            $output = $this->fetchOutput();
+            $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+            $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
+        }
     }
 }
