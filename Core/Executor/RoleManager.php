@@ -324,7 +324,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      */
     public function generateMigration($matchType, $matchValue, $mode)
     {
-        $this->loginUser(self::ADMIN_USER_ID);
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $roleCollection = $this->roleMatcher->match(array($matchType => $matchValue));
         $data = array();
 
@@ -386,6 +386,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             $data[] = $roleData;
         }
 
+        $this->loginUser($previousUserId);
         return $data;
     }
 }

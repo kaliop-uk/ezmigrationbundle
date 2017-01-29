@@ -524,7 +524,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     public function generateMigration($matchType, $matchValue, $mode)
     {
-        $this->loginUser(self::ADMIN_USER_ID);
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $contentCollection = $this->contentMatcher->match(array($matchType => $matchValue));
         $data = array();
 
@@ -598,6 +598,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             $data[] = $contentData;
         }
 
+        $this->loginUser($previousUserId);
         return $data;
     }
 }

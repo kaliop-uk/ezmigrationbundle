@@ -456,7 +456,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      */
     public function generateMigration($matchType, $matchValue, $mode)
     {
-        $this->loginUser(self::ADMIN_USER_ID);
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $contentTypeCollection = $this->contentTypeMatcher->match(array($matchType => $matchValue));
         $data = array();
 
@@ -530,6 +530,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             $data[] = $contentTypeData;
         }
 
+        $this->loginUser($previousUserId);
         return $data;
     }
 }
