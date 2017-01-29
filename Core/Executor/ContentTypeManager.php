@@ -507,7 +507,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         'info-collector' => $fieldDefinition->isInfoCollector,
                         'disable-translation' => !$fieldDefinition->isTranslatable,
                         'category' => $fieldDefinition->fieldGroup,
-                        'default-value' => $fieldDefinition->defaultValue,
+                        'default-value' => (string)$fieldDefinition->defaultValue,
                         'field-settings' => $fieldDefinition->fieldSettings,
                         'position' => $fieldDefinition->position
                     );
