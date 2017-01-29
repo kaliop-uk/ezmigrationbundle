@@ -42,11 +42,11 @@ class GenerateTest extends CommandTest
         }
 
         if ($matchType) {
-            $parameters['--match_type'] = $matchType;
+            $parameters['--match-type'] = $matchType;
         }
 
         if ($matchValue) {
-            $parameters['--match_value'] = $matchValue;
+            $parameters['--match-value'] = $matchValue;
         }
 
         if ($mode) {
