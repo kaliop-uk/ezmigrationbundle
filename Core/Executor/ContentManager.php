@@ -587,9 +587,9 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                         'lang' => $this->getLanguageCode(),
                         'section' => $content->contentInfo->sectionId,
                         'owner' => $content->contentInfo->ownerId,
-                        'modification_date' => $content->contentInfo->modificationDate,
-                        'publication_date' => $content->contentInfo->publishedDate,
-                        'always_available' => $content->contentInfo->alwaysAvailable,
+                        'modification_date' => $content->contentInfo->modificationDate->getTimestamp(),
+                        'publication_date' => $content->contentInfo->publishedDate->getTimestamp(),
+                        'always_available' => (bool)$content->contentInfo->alwaysAvailable,
                         'attributes' => $attributes
                     )
                 );

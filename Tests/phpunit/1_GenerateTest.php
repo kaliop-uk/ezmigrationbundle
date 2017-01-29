@@ -57,7 +57,7 @@ class GenerateTest extends CommandTest
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->checkGeneratedFile($this->saveGeneratedFile($output));
+        $this->checkGeneratedFile($this->saveGeneratedFile($output), $mode);
     }
 
     public function provideGenerateParameters()
@@ -72,10 +72,13 @@ class GenerateTest extends CommandTest
             array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous'),
             array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous', 'create'),
             array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous', 'update'),
+            array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous', 'delete'),
             array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder'),
             array('unit_test_generated_content_type', 'json', 'content_type', 'identifier', 'folder', 'update'),
+            array('unit_test_generated_content_type', 'json', 'content_type', 'identifier', 'folder', 'delete'),
             array('unit_test_generated_content_type', 'yml', 'content', 'contenttype_identifier', 'folder'),
-            array('unit_test_generated_content_type', 'json', 'content', 'contenttype_identifier', 'folder', 'update')
+            array('unit_test_generated_content_type', 'json', 'content', 'contenttype_identifier', 'folder', 'update'),
+            array('unit_test_generated_content_type', 'json', 'content', 'contenttype_identifier', 'folder', 'delete'),
         );
     }
 
@@ -89,7 +92,7 @@ class GenerateTest extends CommandTest
         return null;
     }
 
-    protected function checkGeneratedFile($filePath)
+    protected function checkGeneratedFile($filePath, $mode)
     {
         $input = new ArrayInput(array('command' => 'kaliop:migration:status'));
         $exitCode = $this->app->run($input, $this->output);
