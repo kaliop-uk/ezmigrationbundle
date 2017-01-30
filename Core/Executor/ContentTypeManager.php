@@ -507,6 +507,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         'info-collector' => $fieldDefinition->isInfoCollector,
                         'disable-translation' => !$fieldDefinition->isTranslatable,
                         'category' => $fieldDefinition->fieldGroup,
+                        // q: does the cast to string work for ALL field types? we should check for eg int, float, bool, etc...
                         'default-value' => (string)$fieldDefinition->defaultValue,
                         'field-settings' => $fieldDefinition->fieldSettings,
                         'position' => $fieldDefinition->position

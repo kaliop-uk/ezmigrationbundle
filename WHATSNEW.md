@@ -14,6 +14,9 @@ Version 3.2.0
 * User group's "parent_group_id": if a string provided, it is considered referencing a user group's remote_id instead of
     its id
 
+* It is now possible to match 'all' items when updating/deleting Roles, Object States, Object State Groups, Content Types,
+    Content Type Groups (note: 'delete all' will most likely not work as long as you have any remaining content...)
+
 
 Version 3.1.0
 =============

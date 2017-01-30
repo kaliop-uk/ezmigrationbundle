@@ -14,6 +14,7 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
     const MATCH_CONTENTTYPEGROUP_IDENTIFIER = 'contenttypegroup_identifier';
 
     protected $allowedConditions = array(
+        self::MATCH_ALL,
         self::MATCH_CONTENTTYPEGROUP_ID, self::MATCH_CONTENTTYPEGROUP_IDENTIFIER,
         // aliases
         'id', 'identifier'
@@ -51,6 +52,9 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
                 case 'identifier':
                 case self::MATCH_CONTENTTYPEGROUP_IDENTIFIER:
                     return new ContentTypeGroupCollection($this->findContentTypeGroupsByIdentifier($values));
+
+                case self::MATCH_ALL:
+                    return new ContentTypeGroupCollection($this->findAllContentTypeGroups());
             }
         }
     }
@@ -91,6 +95,19 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
         foreach ($contentTypeGroupIdentifiers as $contentTypeGroupIdentifier) {
             // return unique contents
             $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroupByIdentifier($contentTypeGroupIdentifier);
+            $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
+        }
+
+        return $contentTypeGroups;
+    }
+
+    /**
+     * @return ContentTypeGroup[]
+     */
+    protected function findAllContentTypeGroups()
+    {
+        $contentTypeGroups = [];
+        foreach ($this->repository->getContentTypeService()->loadContentTypeGroups() as $contentTypeGroup) {
             $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
         }
 

@@ -20,6 +20,7 @@
     match: # only one of the following keys is allowed
         id: x # int|int[] The Id of the object state group(s) to update.
         identifier: y # string|string[] The Identifier of the object state group(s) to update
+        all: ~ # matches ALL object state groups
     identifier: x # Optional String: new identifier of the object state group
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -42,6 +43,7 @@
     match: # only one of the following keys is allowed
         id: x # int|int[] The Id of the object state group(s) to update.
         identifier: y # string|string[] The Identifier of the object state group(s) to update
+        all: ~ # matches ALL object state groups
 
 
 -
@@ -69,6 +71,7 @@
     match: # only one of the following keys is allowed
         id: x # int|int[] The Id of the object state to update.
         identifier: x # string|string[] The string identifier of the object state to update. If the identifier is not unique, use group-identifier/state-identifier
+        all: ~ # matches ALL object states
     identifier: x # Optional String: new identifier of the object state
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -90,3 +93,4 @@
     match: # only one of the following keys is allowed
         id: x # int|int[] The Id of the object state to update.
         identifier: x # string|string[] The string identifier of the object state to update. If the identifier is not unique, use group-identifier/state-identifier
+        all: ~ # matches ALL object states

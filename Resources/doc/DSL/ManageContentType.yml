@@ -42,6 +42,7 @@
         identifier: xyz # string|string[] The identifier of the content type
         id: x # int|int[]
         remote_id: abc # string|string[]
+        all: ~ # matches ALL content types
     new_identifier: xyz # Optional, will update the identifier if set
     name: xyz # Optional, will be updated if set
     description: xyz # Optional, will be updated if set
@@ -84,6 +85,7 @@
         identifier: xyz # string|string[] The identifier of the content type
         id: x # int|int[]
         remote_id: abc # string|string[]
+        all: ~ # matches ALL content types
 
 # Attribute examples.
 

@@ -14,6 +14,7 @@ class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
     const MATCH_SECTION_IDENTIFIER = 'section_identifier';
 
     protected $allowedConditions = array(
+        self::MATCH_ALL,
         self::MATCH_SECTION_ID, self::MATCH_SECTION_IDENTIFIER,
         // aliases
         'id', 'identifier'
@@ -51,6 +52,9 @@ class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 case 'identifier':
                 case self::MATCH_SECTION_IDENTIFIER:
                     return new SectionCollection($this->findSectionsByIdentifier($values));
+
+                case self::MATCH_ALL:
+                    return new SectionCollection($this->findAllSections());
             }
         }
     }
@@ -91,6 +95,21 @@ class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
         foreach ($sectionIdentifiers as $sectionIdentifier) {
             // return unique contents
             $section = $this->repository->getSectionService()->loadSectionByIdentifier($sectionIdentifier);
+            $sections[$section->id] = $section;
+        }
+
+        return $sections;
+    }
+
+    /**
+     * @return Section[]
+     */
+    protected function findAllSections()
+    {
+        $sections = [];
+
+        foreach ($this->repository->getSectionService()->loadSections() as $section) {
+            // return unique contents
             $sections[$section->id] = $section;
         }
 
