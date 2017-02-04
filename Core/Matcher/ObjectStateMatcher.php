@@ -15,7 +15,7 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
     const MATCH_OBJECTSTATE_IDENTIFIER = 'objectstate_identifier';
 
     protected $allowedConditions = array(
-        self::MATCH_ALL, self::MATCH_NOT,
+        self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_OBJECTSTATE_ID, self::MATCH_OBJECTSTATE_IDENTIFIER,
         // aliases
         'id', 'identifier'
@@ -56,6 +56,12 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
                 case self::MATCH_ALL:
                     return new ObjectStateCollection($this->findAllObjectStates());
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
 
                 case self::MATCH_NOT:
                     return new ObjectStateCollection(array_diff_key($this->findAllObjectStates(), $this->matchObjectState($values)->getArrayCopy()));

@@ -14,6 +14,21 @@ Version 3.2.0
 * User group's "parent_group_id": if a string provided, it is considered referencing a user group's remote_id instead of
     its id
 
+* It is now possible to match the entities to update/delete using composite conditions with `and` and `or`: 
+    
+        match:
+            or:
+                -
+                    identifier: something
+                -
+                    and:
+                        -
+                            content_type: folder
+                        -
+                            parent_location_id: 42 
+
+    NB: the match operations using composite conditions are not yet optimized for speed or memory usage!
+
 * When updating/deleting Roles, Object States, Object State Groups, Content Types and Content Type Groups, it is now
     possible to match 'all' items. 
     
@@ -25,8 +40,10 @@ Version 3.2.0
         match:
             not:
                 identifier: something
+    
+    Note: 'delete all' migrations will most likely not work as long as you have any remaining content...
 
-    (note: 'delete all' migrations will most likely not work as long as you have any remaining content...)
+    NB: it is not yet possible to match Content, Location or Tag using the `not` condition  
 
 
 Version 3.1.0

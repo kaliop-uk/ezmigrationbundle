@@ -85,9 +85,9 @@ class GenerateTest extends CommandTest
             array('unit_test_generated_content_type', 'json', 'content_type', 'identifier', 'folder', false, 'delete'),
             array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder,user', true, 'delete'),
             array('unit_test_generated_content_type', 'json', 'content_type', 'all', null, false, 'create'),
-            array('unit_test_generated_content_type', null, 'content', 'contenttype_identifier', 'folder'),
-            array('unit_test_generated_content_type', 'yml', 'content', 'contenttype_identifier', 'folder', false, 'update'),
-            array('unit_test_generated_content_type', 'json', 'content', 'contenttype_identifier', 'folder', false, 'delete'),
+            array('unit_test_generated_content', null, 'content', 'contenttype_identifier', 'user_group'),
+            array('unit_test_generated_content', 'yml', 'content', 'contenttype_identifier', 'user_group', false, 'update'),
+            array('unit_test_generated_content', 'json', 'content', 'contenttype_identifier', 'user_group', false, 'delete'),
         );
     }
 

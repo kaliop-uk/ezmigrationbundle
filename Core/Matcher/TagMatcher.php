@@ -17,6 +17,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     const MATCH_TAG_KEYWORD = 'tag_keyword';
 
     protected $allowedConditions = array(
+        self::MATCH_AND, self::MATCH_OR,
         self::MATCH_TAG_ID, self::MATCH_TAG_REMOTE_ID, self::MATCH_TAG_KEYWORD,
         // aliases
         'id', 'remote_id', 'keyword'
@@ -76,6 +77,12 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
                 case 'keyword':
                 case self::MATCH_TAG_KEYWORD:
                     return new TagCollection($this->findTagsByKeywords($values));
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
             }
         }
     }

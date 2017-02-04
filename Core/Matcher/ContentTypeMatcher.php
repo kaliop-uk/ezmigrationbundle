@@ -19,7 +19,7 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
     //const MATCH_CONTENTTYPE_REMOTE_ID = 'contenttype_remote_id';
 
     protected $allowedConditions = array(
-        self::MATCH_ALL, self::MATCH_NOT,
+        self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENTTYPE_ID, self::MATCH_CONTENTTYPE_IDENTIFIER, //self::MATCH_CONTENTTYPE_REMOTE_ID,
         // aliases
         'id', 'identifier', // 'remote_id'
@@ -64,6 +64,12 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
                 case self::MATCH_ALL:
                     return new ContentTypeCollection($this->findAllContentTypes());
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
 
                 case self::MATCH_NOT:
                     return new ContentTypeCollection(array_diff_key($this->findAllContentTypes(), $this->matchContentType($values)->getArrayCopy()));

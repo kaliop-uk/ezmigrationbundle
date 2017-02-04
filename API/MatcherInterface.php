@@ -6,9 +6,11 @@ interface MatcherInterface
 {
     const MATCH_ALL = 'all';
     const MATCH_NOT = 'not';
+    const MATCH_AND = 'and';
+    const MATCH_OR = 'or';
 
     /**
-     * Returns an array of items, or an array-like object, whith all items which satisfy the conditions $conditions
+     * Returns an array of items, or an array-like object, with all items which satisfy the conditions $conditions
      *
      * @param array $conditions
      * @return array|\ArrayObject

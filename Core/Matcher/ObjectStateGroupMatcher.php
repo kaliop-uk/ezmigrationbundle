@@ -14,7 +14,7 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
     const MATCH_OBJECTSTATEGROUP_IDENTIFIER = 'objectstategroup_identifier';
 
     protected $allowedConditions = array(
-        self:: MATCH_ALL, self::MATCH_NOT,
+        self:: MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_OBJECTSTATEGROUP_ID, self::MATCH_OBJECTSTATEGROUP_IDENTIFIER,
         // aliases
         'id', 'identifier'
@@ -63,6 +63,12 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
                 case self::MATCH_ALL:
                     return new ObjectStateGroupCollection($this->findAllObjectStateGroups());
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
 
                 case self::MATCH_NOT:
                     return new ObjectStateGroupCollection(array_diff_key($this->findAllObjectStateGroups(), $this->matchObjectStateGroup($values)->getArrayCopy()));

@@ -8,7 +8,7 @@ use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 
 /**
  * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
- * @todo extend to allow matching on multiple conditions (AND)
+ * @todo optimize the matches on multiple conditions (and, or) by compiling them in a single query
  */
 class ContentMatcher extends RepositoryMatcher
 {
@@ -24,6 +24,7 @@ class ContentMatcher extends RepositoryMatcher
     const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
 
     protected $allowedConditions = array(
+        self::MATCH_AND, self::MATCH_OR,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
         self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER,
         // aliases
@@ -89,6 +90,12 @@ class ContentMatcher extends RepositoryMatcher
                 case 'content_type_identifier':
                 case self::MATCH_CONTENT_TYPE_IDENTIFIER:
                     return new ContentCollection($this->findContentsByContentTypeIdentifiers($values));
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
             }
         }
     }

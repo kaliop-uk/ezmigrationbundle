@@ -8,7 +8,7 @@ use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 
 /**
  * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
- * @todo extend to allow matching on multiple conditions (AND)
+ * @todo optimize the matches on multiple conditions (and, or) by compiling them in a single query
  */
 class LocationMatcher extends RepositoryMatcher
 {
@@ -22,6 +22,7 @@ class LocationMatcher extends RepositoryMatcher
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
 
     protected $allowedConditions = array(
+        self::MATCH_AND, self::MATCH_OR,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
         self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID
     );
@@ -68,6 +69,12 @@ class LocationMatcher extends RepositoryMatcher
 
                 case self::MATCH_PARENT_LOCATION_REMOTE_ID:
                     return new LocationCollection($this->findLocationsByParentLocationRemoteIds($values));
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
             }
         }
     }
