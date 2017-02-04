@@ -21,6 +21,18 @@
         id: x # int|int[] The Id of the object state group(s) to update.
         identifier: y # string|string[] The Identifier of the object state group(s) to update
         all: ~ # matches ALL object state groups
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     identifier: x # Optional String: new identifier of the object state group
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -44,6 +56,18 @@
         id: x # int|int[] The Id of the object state group(s) to update.
         identifier: y # string|string[] The Identifier of the object state group(s) to update
         all: ~ # matches ALL object state groups
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
 
 
 -
@@ -72,6 +96,18 @@
         id: x # int|int[] The Id of the object state to update.
         identifier: x # string|string[] The string identifier of the object state to update. If the identifier is not unique, use group-identifier/state-identifier
         all: ~ # matches ALL object states
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     identifier: x # Optional String: new identifier of the object state
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -94,3 +130,15 @@
         id: x # int|int[] The Id of the object state to update.
         identifier: x # string|string[] The string identifier of the object state to update. If the identifier is not unique, use group-identifier/state-identifier
         all: ~ # matches ALL object states
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'

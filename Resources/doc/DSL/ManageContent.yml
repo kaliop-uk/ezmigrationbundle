@@ -93,6 +93,16 @@
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         content_type: yyy # string|string[] a content type identifier
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier
     owner: xxx # user id, login or email if unique; Optional, set the content owner (original creator)
@@ -125,3 +135,13 @@
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         content_type: yyy # string|string[] a content type identifier
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'

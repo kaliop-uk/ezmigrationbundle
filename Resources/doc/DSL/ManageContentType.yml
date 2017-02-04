@@ -43,6 +43,18 @@
         id: x # int|int[]
         remote_id: abc # string|string[]
         all: ~ # matches ALL content types
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     new_identifier: xyz # Optional, will update the identifier if set
     name: xyz # Optional, will be updated if set
     description: xyz # Optional, will be updated if set
@@ -78,7 +90,7 @@
                                        # The shorthand 'identifier' can be used instead of 'content_type_identifier'
 
 -
-    # Delete a content type
+    # Delete one or more content type(s)
     type: content_type
     mode: delete
     match: # Only one of the following can be specified, to define which content type(s) to delete
@@ -86,6 +98,18 @@
         id: x # int|int[]
         remote_id: abc # string|string[]
         all: ~ # matches ALL content types
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
 
 # Attribute examples.
 
