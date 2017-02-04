@@ -203,9 +203,13 @@ EOT
 
         $path = $migrationDirectory . '/' . $fileName;
 
-        $this->generateMigrationFile($path, $fileType, $migrationType, $parameters);
+        $warning = $this->generateMigrationFile($path, $fileType, $migrationType, $parameters);
 
         $output->writeln(sprintf("Generated new migration file: <info>%s</info>", $path));
+
+        if ($warning != '') {
+            $output->writeln("<comment>$warning</comment>");
+        }
     }
 
     /**
@@ -215,11 +219,13 @@ EOT
      * @param string $fileType The type of migration file to generate
      * @param string $migrationType The type of migration to generate
      * @param array $parameters passed on to twig
-     * @return string The path to the migration file
+     * @return string A warning message in case file generation was OK but there was something weird
      * @throws \Exception
      */
     protected function generateMigrationFile($path, $fileType, $migrationType, array $parameters = array())
     {
+        $warning = '';
+
         switch ($migrationType) {
             case 'db':
             case 'generic':
@@ -233,9 +239,9 @@ EOT
 
                 $code = $this->getContainer()->get('twig')->render($this->thisBundle . ':MigrationTemplate:' . $template, $parameters);
                 break;
+
             default:
                 // Generate migration file by executor
-
                 $executors = $this->getGeneratingExecutors();
                 if (!in_array($migrationType, $executors)) {
                     throw new \Exception("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
@@ -247,6 +253,10 @@ EOT
                     $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
                 }
                 $data = $executor->generateMigration($matchCondition, $parameters['mode']);
+
+                if (!is_array($data) || !count($data)) {
+                    $warning = 'Note: the generated migration is empty';
+                }
 
                 switch ($fileType) {
                     case 'yml':
@@ -261,6 +271,8 @@ EOT
         }
 
         file_put_contents($path, $code);
+
+        return $warning;
     }
 
     protected function getGeneratingExecutors()
