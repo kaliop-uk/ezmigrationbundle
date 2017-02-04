@@ -61,6 +61,7 @@ parameters:
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
     ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
+    ez_migration_bundle.complex_field.ezboolean.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBoolean
     ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
     ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
     ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
@@ -347,6 +348,12 @@ services:
         class: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezboolean:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezboolean.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezboolean, priority: 0 }
 
     ez_migration_bundle.complex_field.ezimage:
         parent: ez_migration_bundle.complex_field

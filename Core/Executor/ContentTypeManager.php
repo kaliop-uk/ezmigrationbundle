@@ -332,6 +332,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinition->fieldGroup = $value == 'default' ? 'content' : $value;
                     break;
                 case 'default-value':
+                    /// @todo check that this works for all field types. Maybe we should use fromHash() on the field type,
+                    ///       or, better, use the complexFieldManager?
                     $fieldDefinition->defaultValue = $value;
                     break;
                 case 'field-settings':
@@ -410,6 +412,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     private function getFieldSettings($value, $fieldTypeIdentifier, $contentTypeIdentifier)
     {
         // 1st update any references in the value array
+        // q: shall we delegate this exclusively to the hashToFieldSettings call below ?
         if (is_array($value)) {
             $ret = array();
             foreach ($value as $key => $val)
@@ -426,7 +429,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         }
 
         // then handle the conversion of the settings from Hash to Repo representation
-        if ($this->complexFieldManager->managesFieldSettings($fieldTypeIdentifier, $contentTypeIdentifier)) {
+        if ($this->complexFieldManager->managesFieldDefinition($fieldTypeIdentifier, $contentTypeIdentifier)) {
             $ret = $this->complexFieldManager->hashToFieldSettings($fieldTypeIdentifier, $contentTypeIdentifier, $value);
         }
 
@@ -516,24 +519,20 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         'info-collector' => $fieldDefinition->isInfoCollector,
                         'disable-translation' => !$fieldDefinition->isTranslatable,
                         'category' => $fieldDefinition->fieldGroup,
-                        'field-settings' => $fieldDefinition->fieldSettings,
                         'position' => $fieldDefinition->position
                     );
 
                     $fieldType = $fieldTypeService->getFieldType($fieldTypeIdentifier);
                     $nullValue = $fieldType->getEmptyValue();
                     if ($fieldDefinition->defaultValue != $nullValue) {
-                        // q: does the cast to string work for ALL field types? we should check for eg. int, float, bool, etc...
-                        $attribute['default-value'] = (string)$fieldDefinition->defaultValue;
+                        $attribute['default-value'] = $this->complexFieldManager->fieldValueToHash(
+                            $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->defaultValue
+                        );
                     }
 
-                    if ($this->complexFieldManager->managesFieldSettings($fieldTypeIdentifier, $contentType->identifier)) {
-                        $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
-                            $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
-                        );
-                    } else {
-                        $attribute['field-settings'] = $fieldDefinition->fieldSettings;
-                    }
+                    $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
+                        $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
+                    );
 
                     $attributes[] = $attribute;
                 }

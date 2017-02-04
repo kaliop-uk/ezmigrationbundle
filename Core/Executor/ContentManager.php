@@ -402,7 +402,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
         if (is_array($value) || $this->complexFieldManager->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
-            return $this->complexFieldManager->getComplexFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $value, $context);
+            return $this->complexFieldManager->hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $value, $context);
         }
 
         return $this->getSingleFieldValue($value, $fieldDefinition, $contentTypeIdentifier, $context);
@@ -421,14 +421,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     protected function getSingleFieldValue($value, FieldDefinition $fieldDefinition, $contentTypeIdentifier, array $context = array())
     {
-        $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
-        switch ($fieldTypeIdentifier) {
-            case 'ezboolean':
-                $value = new CheckboxValue(($value == 1) ? true : false);
-                break;
-            default:
-                // do nothing
-        }
+        // booleans were handled here. They are now handled as complextypes
 
         // q: do we really want this to happen by default on all scalar field values?
         // Note: if you want this *not* to happen, register a complex field for your scalar field...

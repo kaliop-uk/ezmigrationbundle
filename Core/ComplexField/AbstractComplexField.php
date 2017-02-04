@@ -3,9 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\API\FieldSettingsHandlerInterface;
+use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 
-abstract class AbstractComplexField implements FieldSettingsHandlerInterface
+abstract class AbstractComplexField implements FieldDefinitionConverterInterface
 {
     /** @var ReferenceResolverInterface $referenceResolver */
     protected $referenceResolver;

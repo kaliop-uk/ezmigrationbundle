@@ -52,6 +52,7 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
 
     public function fieldSettingsToHash($settingsValue, array $context = array())
     {
+        // work around https://jira.ez.no/browse/EZP-26916
         if (is_array($settingsValue) && isset($settingsValue['tagPreset'])) {
             $settingsValue['tagPreset'] = (integer)$settingsValue['tagPreset'];
         }
