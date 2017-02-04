@@ -14,6 +14,7 @@ class GenerateTest extends CommandTest
      * @param string|null $type
      * @param string|null $matchType
      * @param string|null $matchValue
+     * @param bool $matchExcept
      * @param string|null $mode
      */
     public function testGenerateDSL(
@@ -22,6 +23,7 @@ class GenerateTest extends CommandTest
         $type = null,
         $matchType = null,
         $matchValue = null,
+        $matchExcept = false,
         $mode = null
     ) {
         $parameters = array(
@@ -49,6 +51,10 @@ class GenerateTest extends CommandTest
             $parameters['--match-value'] = $matchValue;
         }
 
+        if ($matchExcept) {
+            $parameters['--match-except'] = null;
+        }
+
         if ($mode) {
             $parameters['--mode'] = $mode;
         }
@@ -70,16 +76,18 @@ class GenerateTest extends CommandTest
             array('unit_test_generated', 'sql'),
             array('unit_test_generated', 'php'),
             array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous'),
-            array('unit_test_generated_role', 'yml', 'role', 'identifier', 'Anonymous', 'update'),
-            array('unit_test_generated_role', 'json', 'role', 'identifier', 'Anonymous', 'delete'),
-            array('unit_test_generated_role', 'json', 'role', 'all', null, 'create'),
+            array('unit_test_generated_role', 'yml', 'role', 'identifier', 'Anonymous', false, 'update'),
+            array('unit_test_generated_role', 'json', 'role', 'identifier', 'Anonymous', false, 'delete'),
+            array('unit_test_generated_role', 'yml', 'role', 'identifier', 'Anonymous,Administrator', true, 'delete'),
+            array('unit_test_generated_role', 'json', 'role', 'all', null, false, 'create'),
             array('unit_test_generated_content_type', null, 'content_type', 'identifier', 'folder'),
-            array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder', 'update'),
-            array('unit_test_generated_content_type', 'json', 'content_type', 'identifier', 'folder', 'delete'),
-            array('unit_test_generated_content_type', 'json', 'content_type', 'all', null, 'create'),
+            array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder', false, 'update'),
+            array('unit_test_generated_content_type', 'json', 'content_type', 'identifier', 'folder', false, 'delete'),
+            array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder,user', true, 'delete'),
+            array('unit_test_generated_content_type', 'json', 'content_type', 'all', null, false, 'create'),
             array('unit_test_generated_content_type', null, 'content', 'contenttype_identifier', 'folder'),
-            array('unit_test_generated_content_type', 'yml', 'content', 'contenttype_identifier', 'folder', 'update'),
-            array('unit_test_generated_content_type', 'json', 'content', 'contenttype_identifier', 'folder', 'delete'),
+            array('unit_test_generated_content_type', 'yml', 'content', 'contenttype_identifier', 'folder', false, 'update'),
+            array('unit_test_generated_content_type', 'json', 'content', 'contenttype_identifier', 'folder', false, 'delete'),
         );
     }
 

@@ -20,7 +20,7 @@ abstract class AbstractMatcher implements MatcherInterface
         }
 
         if (count($conditions) > $this->maxConditions) {
-            throw new \Exception($this->returns . " can not be matched because multiple matching conditions are specified. Only {this->maxConditions} condition(s) are supported");
+            throw new \Exception($this->returns . " can not be matched because multiple matching conditions are specified. Only {$this->maxConditions} condition(s) are supported");
         }
 
         foreach ($conditions as $key => $value) {

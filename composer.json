@@ -26,7 +26,10 @@
         "ezsystems/ezpublish-kernel": ">=5.3|>=2014.03",
         "ext-pdo": "*",
         "nikic/php-parser": "2.*",
-        "symfony/process": "*"
+        "symfony/process": "*",
+        "ezsystems/ezpublish-community": "~2014.11.0",
+        "ezsystems/behatbundle": "~5.4",
+        "netgen/tagsbundle": "~2.0"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.2.0",

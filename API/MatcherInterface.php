@@ -4,6 +4,9 @@ namespace Kaliop\eZMigrationBundle\API;
 
 interface MatcherInterface
 {
+    const MATCH_ALL = 'all';
+    const MATCH_NOT = 'not';
+
     /**
      * Returns an array of items, or an array-like object, whith all items which satisfy the conditions $conditions
      *

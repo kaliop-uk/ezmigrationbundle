@@ -2,8 +2,8 @@ Version 3.2.0
 =============
 
 * Extend the GenerateCommand to generate migrations for existing Contents and Content Types besides Roles;
-    it is also possible to generate both create, update and delete migrations, and to have a single migration generated
-    for many items
+    it is also possible to generate both _create_, _update_ and _delete_ migrations, and to have a single migration
+    generated for many items
 
 * Allow setting a remote_id when creating/updating User Group(s)
 
@@ -14,8 +14,19 @@ Version 3.2.0
 * User group's "parent_group_id": if a string provided, it is considered referencing a user group's remote_id instead of
     its id
 
-* It is now possible to match 'all' items when updating/deleting Roles, Object States, Object State Groups, Content Types,
-    Content Type Groups (note: 'delete all' will most likely not work as long as you have any remaining content...)
+* When updating/deleting Roles, Object States, Object State Groups, Content Types and Content Type Groups, it is now
+    possible to match 'all' items. 
+    
+        match:
+            all: ~
+
+    It is also possible to match using negative predicates by using the following syntax:
+
+        match:
+            not:
+                identifier: something
+
+    (note: 'delete all' migrations will most likely not work as long as you have any remaining content...)
 
 
 Version 3.1.0

@@ -8,8 +8,6 @@ abstract class RepositoryMatcher extends AbstractMatcher
 {
     protected $repository;
 
-    const MATCH_ALL = 'all';
-
     /**
      * @param Repository $repository
      * @todo inject the services needed, not the whole repository

@@ -514,18 +514,17 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * @param string $matchType
-     * @param string|string[] $matchValue
+     * @param array $matchCondition
      * @param string $mode
      * @throws \Exception
      * @return array
      *
      * @todo add support for dumping all object languages
      */
-    public function generateMigration($matchType, $matchValue, $mode)
+    public function generateMigration(array $matchCondition, $mode)
     {
         $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
-        $contentCollection = $this->contentMatcher->match(array($matchType => $matchValue));
+        $contentCollection = $this->contentMatcher->match($matchCondition);
         $data = array();
 
         /** @var \eZ\Publish\API\Repository\Values\Content\Content $content */

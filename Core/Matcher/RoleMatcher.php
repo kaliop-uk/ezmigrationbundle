@@ -14,7 +14,7 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
     const MATCH_ROLE_IDENTIFIER = 'role_identifier';
 
     protected $allowedConditions = array(
-        self::MATCH_ALL,
+        self::MATCH_ALL, self::MATCH_NOT,
         self::MATCH_ROLE_ID, self::MATCH_ROLE_IDENTIFIER,
         // aliases
         'id', 'identifier'
@@ -55,6 +55,9 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
                 case self::MATCH_ALL:
                     return new RoleCollection($this->findAllRoles());
+
+                case self::MATCH_NOT:
+                    return new RoleCollection(array_diff_key($this->findAllRoles(), $this->matchRole($values)->getArrayCopy()));
             }
         }
     }

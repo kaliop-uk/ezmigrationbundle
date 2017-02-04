@@ -2,14 +2,14 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
-use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
-use Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\MatcherInterface;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -31,6 +31,7 @@ class GenerateCommand extends AbstractCommand
             ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (' . implode(', ', $this->availableMigrationFormats) . ')', 'create')
             ->addOption('match-type', null, InputOption::VALUE_REQUIRED, 'The type of identifier used to find the entity to generate the migration for', null)
             ->addOption('match-value', null, InputOption::VALUE_REQUIRED, 'The identifier value used to find the entity to generate the migration for. Can have many values separated by commas', null)
+            ->addOption('match-except', null, InputOption::VALUE_NONE, 'Used to match all entities except the ones satisfying the match-value condition', null)
             ->addOption('lang', null, InputOption::VALUE_REQUIRED, 'The language of the migration (eng-GB, ger-DE, ...)', 'eng-GB')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, when type=db (mysql, postgresql, ...)', 'mysql')
             ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Deprecated: The role identifier (or id) that you would like to update, for type=role', null)
@@ -82,6 +83,7 @@ EOT
         $role = $input->getOption('role');
         $matchType = $input->getOption('match-type');
         $matchValue = $input->getOption('match-value');
+        $matchExcept = $input->getOption('match-except');
         $mode = $input->getOption('mode');
         $dbServer = $input->getOption('dbserver');
 
@@ -158,6 +160,7 @@ EOT
             'dbserver' => $dbServer,
             'matchType' => $matchType,
             'matchValue' => $matchValue,
+            'matchExcept' => $matchExcept,
             'mode' => $mode,
             'lang' => $input->getOption('lang')
         );
@@ -239,7 +242,11 @@ EOT
                 }
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
-                $data = $executor->generateMigration($parameters['matchType'], $parameters['matchValue'], $parameters['mode']);
+                $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
+                if ($parameters['matchExcept']) {
+                    $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
+                }
+                $data = $executor->generateMigration($matchCondition, $parameters['mode']);
 
                 switch ($fileType) {
                     case 'yml':
