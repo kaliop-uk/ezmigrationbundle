@@ -49,4 +49,12 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
 
         return $xmlText;
     }
+
+    public function fieldSettingsToHash($settingsValue, array $context = array())
+    {
+        if (is_array($settingsValue) && isset($settingsValue['tagPreset'])) {
+            $settingsValue['tagPreset'] = (integer)$settingsValue['tagPreset'];
+        }
+        return $settingsValue;
+    }
 }

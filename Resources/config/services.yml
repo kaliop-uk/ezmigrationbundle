@@ -192,6 +192,7 @@ services:
             - '@ez_migration_bundle.content_type_matcher'
             - '@ez_migration_bundle.content_type_group_matcher'
             - '@ez_migration_bundle.reference_resolver'
+            - '@ez_migration_bundle.complex_field_manager'
         tags:
             - { name: ez_migration_bundle.executor }
 
