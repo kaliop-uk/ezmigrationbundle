@@ -287,7 +287,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * Helper function to create field definitions based to be added to a new/existing content type.
+     * Helper function to create field definitions to be added to a new/existing content type.
      *
      * @todo Add translation support if needed
      * @param ContentTypeService $contentTypeService
@@ -494,23 +494,33 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             }
 
             if ($mode != 'delete') {
+
+                $fieldTypeService = $this->repository->getFieldTypeService();
+
                 $attributes = array();
                 foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
-                    $attributes[] = array(
+                    $attribute = array(
                         'identifier' => $fieldDefinition->identifier,
                         'type' => $fieldDefinition->fieldTypeIdentifier,
                         'name' => $fieldDefinition->getName($this->getLanguageCode()),
-                        'description' => $fieldDefinition->getDescription($this->getLanguageCode()),
+                        'description' => (string)$fieldDefinition->getDescription($this->getLanguageCode()),
                         'required' => $fieldDefinition->isRequired,
                         'searchable' => $fieldDefinition->isSearchable,
                         'info-collector' => $fieldDefinition->isInfoCollector,
                         'disable-translation' => !$fieldDefinition->isTranslatable,
                         'category' => $fieldDefinition->fieldGroup,
-                        // q: does the cast to string work for ALL field types? we should check for eg int, float, bool, etc...
-                        'default-value' => (string)$fieldDefinition->defaultValue,
                         'field-settings' => $fieldDefinition->fieldSettings,
                         'position' => $fieldDefinition->position
                     );
+
+                    $fieldType = $fieldTypeService->getFieldType($fieldDefinition->fieldTypeIdentifier);
+                    $nullValue = $fieldType->getEmptyValue();
+                    if ($fieldDefinition->defaultValue != $nullValue) {
+                        // q: does the cast to string work for ALL field types? we should check for eg. int, float, bool, etc...
+                        $attribute['default-value'] = (string)$fieldDefinition->defaultValue;
+                    }
+
+                    $attributes[] = $attribute;
                 }
 
                 $contentTypeData = array_merge(
