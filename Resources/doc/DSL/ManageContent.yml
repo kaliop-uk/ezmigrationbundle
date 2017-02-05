@@ -29,12 +29,12 @@
                     lines, but new line is not preserved on parsing
         # ezimage/ezbinaryfile file attribute example
         attribute5:
-            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/
+            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/, or absolute path
             alt_text: xyz # Optional, only used for images
             filename: abc # Optional, taken from the actual file if not specified
             mime_type: def # Optional. For ezbinaryfile only. If not specified, the actual file is analyzed using the php function mime_content_type()
         # ezimage/ezbinaryfile file attribute example, using simplified form
-        attribute5b: 'path/to/image'
+        attribute5b: '/path/to/image'
         # ezxmltext, showing an example of using references
         attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field

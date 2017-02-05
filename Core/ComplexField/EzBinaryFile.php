@@ -3,10 +3,17 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
-use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 
-class EzBinaryFile extends AbstractComplexField implements FieldValueImporterInterface
+class EzBinaryFile extends AbstractComplexField implements FieldValueConverterInterface
 {
+    protected $legacyRootDir;
+
+    public function __construct($legacyRootDir)
+    {
+        $this->legacyRootDir = $legacyRootDir;
+    }
+
     /**
      * @param array|string $fieldValue The path to the file or an array with 'path' key
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
@@ -46,6 +53,22 @@ class EzBinaryFile extends AbstractComplexField implements FieldValueImporterInt
                 'fileName' => $fileName != '' ? $fileName : basename($realFilePath),
                 'mimeType' => $mimeType != '' ? $mimeType : mime_content_type($realFilePath)
             )
+        );
+    }
+
+    /**
+     * @param \eZ\Publish\Core\FieldType\BinaryFile\Value $fieldValue
+     * @param array $context
+     * @return array
+     *
+     * @todo check out if this works in ezplatform
+     */
+    public function fieldValueToHash($fieldValue, array $context = array())
+    {
+        return array(
+            'path' => realpath($this->legacyRootDir) . $fieldValue->uri,
+            'filename'=> $fieldValue->fileName,
+            'mimeType' => $fieldValue->mimeType
         );
     }
 }

@@ -567,10 +567,11 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
             if ($mode != 'delete') {
                 $attributes = array();
-                foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $field) {
-                    $fieldDefinition = $contentType->getFieldDefinition($field->fieldDefIdentifier);
-                    $fieldType = $fieldTypeService->getFieldType($fieldDefinition->fieldTypeIdentifier);
-                    $attributes[$field->fieldDefIdentifier] = $fieldType->toHash($field->value);
+                foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $fieldIdentifier => $field) {
+                    $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
+                    $attributes[$field->fieldDefIdentifier] = $this->complexFieldManager->fieldValueToHash(
+                        $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
+                    );
                 }
 
                 $contentData = array_merge(

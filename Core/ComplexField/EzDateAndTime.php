@@ -39,7 +39,12 @@ class EzDateAndTime extends AbstractComplexField implements FieldValueConverterI
     public function hashToFieldSettings($settingsHash, array $context = array())
     {
         if (is_array($settingsHash) && isset($settingsHash['dateInterval']) && is_string($settingsHash['dateInterval'])) {
-            $settingsHash['dateInterval'] = \DateInterval::createFromDateString($settingsHash['dateInterval']);
+            // ISO-8601 format, loose matching because I am lazy
+            if (preg_match('/^P[0-9YMDWTHS]+$/', $settingsHash['dateInterval'])) {
+                $settingsHash['dateInterval'] = new \DateInterval($settingsHash['dateInterval']);
+            } else {
+                $settingsHash['dateInterval'] = \DateInterval::createFromDateString($settingsHash['dateInterval']);
+            }
         }
         return $settingsHash;
     }

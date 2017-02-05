@@ -348,6 +348,8 @@ services:
     ez_migration_bundle.complex_field.ezbinaryfile:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
+        arguments:
+            - "%ezpublish_legacy.root_dir%"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile, priority: 0 }
 
@@ -372,6 +374,8 @@ services:
     ez_migration_bundle.complex_field.ezimage:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezimage.class%'
+        arguments:
+            - "%ezpublish_legacy.root_dir%"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezimage, priority: 0 }
 

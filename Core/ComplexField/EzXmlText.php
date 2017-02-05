@@ -28,6 +28,9 @@ class EzXmlText extends AbstractComplexField implements FieldValueImporterInterf
     {
         if (is_string($fieldValue)) {
             $xmlText = $fieldValue;
+        } else if (is_array($fieldValue) && isset($fieldValue['xml'])) {
+            // native export format from eZ
+            $xmlText = $fieldValue['xml'];
         } else {
             $xmlText = $fieldValue['content'];
         }
@@ -55,6 +58,11 @@ class EzXmlText extends AbstractComplexField implements FieldValueImporterInterf
     {
         // work around https://jira.ez.no/browse/EZP-26916
         if (is_array($settingsValue) && isset($settingsValue['tagPreset'])) {
+            /// @todo this conversion should be based on the value of TagPresets ini legacy setting in ezxml.ini,
+            ///       keeping in mind that at migration execution time only values 0 and 1 are supported anyway...
+            if ($settingsValue['tagPreset'] == 'mini') {
+                $settingsValue['tagPreset'] = 1;
+            }
             $settingsValue['tagPreset'] = (integer)$settingsValue['tagPreset'];
         }
         return $settingsValue;

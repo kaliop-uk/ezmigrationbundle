@@ -3,10 +3,17 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
-use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 
-class EzImage extends AbstractComplexField implements FieldValueImporterInterface
+class EzImage extends AbstractComplexField implements FieldValueConverterInterface
 {
+    protected $legacyRootDir;
+
+    public function __construct($legacyRootDir)
+    {
+        $this->legacyRootDir = $legacyRootDir;
+    }
+
     /**
      * Creates a value object to use as the field value when setting an image field type.
      *
@@ -48,6 +55,22 @@ class EzImage extends AbstractComplexField implements FieldValueImporterInterfac
                 'fileName' => $fileName != '' ? $fileName : basename($realFilePath),
                 'alternativeText' => $altText
             )
+        );
+    }
+
+    /**
+     * @param \eZ\Publish\Core\FieldType\Image\Value $fieldValue
+     * @param array $context
+     * @return array
+     *
+     * @todo check out if this works in ezplatform
+     */
+    public function fieldValueToHash($fieldValue, array $context = array())
+    {
+        return array(
+            'path' => realpath($this->legacyRootDir) . $fieldValue->uri,
+            'filename'=> $fieldValue->fileName,
+            'alternativeText' => $fieldValue->alternativeText
         );
     }
 }
