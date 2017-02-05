@@ -4,14 +4,17 @@ namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
+use eZ\Publish\Core\IO\UrlDecorator;
 
 class EzImage extends AbstractComplexField implements FieldValueConverterInterface
 {
-    protected $legacyRootDir;
+    protected $ioRootDir;
+    protected $ioDecorator;
 
-    public function __construct($legacyRootDir)
+    public function __construct(UrlDecorator $ioDecorator, $ioRootDir)
     {
-        $this->legacyRootDir = $legacyRootDir;
+        $this->ioRootDir = $ioRootDir;
+        $this->ioDecorator = $ioDecorator;
     }
 
     /**
@@ -68,7 +71,7 @@ class EzImage extends AbstractComplexField implements FieldValueConverterInterfa
     public function fieldValueToHash($fieldValue, array $context = array())
     {
         return array(
-            'path' => realpath($this->legacyRootDir) . $fieldValue->uri,
+            'path' => realpath($this->ioRootDir) . '/' . $this->ioDecorator->undecorate($fieldValue->uri),
             'filename'=> $fieldValue->fileName,
             'alternativeText' => $fieldValue->alternativeText
         );

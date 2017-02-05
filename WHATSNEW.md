@@ -1,10 +1,6 @@
 Version 3.2.0
 =============
 
-* Extend the GenerateCommand to generate migrations for existing Contents and Content Types besides Roles;
-    it is also possible to generate both _create_, _update_ and _delete_ migrations, and to have a single migration
-    generated for many items
-
 * Allow setting a remote_id when creating/updating User Group(s)
 
 * Allow matching on "content_remote_id" for User Group update/delete
@@ -44,6 +40,26 @@ Version 3.2.0
     Note: 'delete all' migrations will most likely not work as long as you have any remaining content...
 
     NB: it is not yet possible to match Content, Location or Tag using the `not` condition  
+
+* Extend the `generate` Command to generate migrations for existing Contents and ContentTypes besides Roles;
+    it is also possible to generate both _create_, _update_ and _delete_ migrations, and to have a single migration
+    generated for many items.
+
+    *NB* this feature is to be considered _experimental_, as there are some quirks in the generated migration files.
+    In other words: not all migration files generated with the Generate command will work as is; some manual editing
+    might be required before they are accepted as valid for execution.
+
+    Known problems include, but are not limited to:
+    - the field-settings generated for some field types when creating a ContentType migration might be invalid. Fe. in
+        some eZPublish versions a field-setting `defaultLayout` for an ezpage field with a value of empty string will
+        be generated but not be executable
+    - when creating a ContentType migration, having a field of type ezuser set to 'searchable' will also cause the
+         generated migration not to be executable
+    - the export + reimport of content fields of type ezuser seems to be problematic
+    - the export + reimport of content fields of type image and binaryfile has not been tested on eZPlatform
+
+    Some of these problems originate within the eZPublish kernel, and are hard to work around in the bundle.
+    For more details see: https://jira.ez.no/browse/EZP-26916
 
 
 Version 3.1.0

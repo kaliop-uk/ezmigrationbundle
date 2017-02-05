@@ -4,14 +4,17 @@ namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
+use eZ\Publish\Core\IO\UrlDecorator;
 
 class EzBinaryFile extends AbstractComplexField implements FieldValueConverterInterface
 {
-    protected $legacyRootDir;
+    protected $ioRootDir;
+    protected $ioDecorator;
 
-    public function __construct($legacyRootDir)
+    public function __construct(UrlDecorator $ioDecorator, $ioRootDir)
     {
-        $this->legacyRootDir = $legacyRootDir;
+        $this->ioRootDir = $ioRootDir;
+        $this->ioDecorator = $ioDecorator;
     }
 
     /**
@@ -66,7 +69,7 @@ class EzBinaryFile extends AbstractComplexField implements FieldValueConverterIn
     public function fieldValueToHash($fieldValue, array $context = array())
     {
         return array(
-            'path' => realpath($this->legacyRootDir) . $fieldValue->uri,
+            'path' => realpath($this->ioRootDir) . '/' . $this->ioDecorator->undecorate($fieldValue->uri),
             'filename'=> $fieldValue->fileName,
             'mimeType' => $fieldValue->mimeType
         );
