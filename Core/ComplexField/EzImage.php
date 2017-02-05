@@ -3,9 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 
-class EzImage extends AbstractComplexField implements ComplexFieldInterface
+class EzImage extends AbstractComplexField implements FieldValueImporterInterface
 {
     /**
      * Creates a value object to use as the field value when setting an image field type.
@@ -14,7 +14,7 @@ class EzImage extends AbstractComplexField implements ComplexFieldInterface
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return ImageValue
      */
-    public function createValue($fieldValue, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         $altText = '';
         $fileName = '';

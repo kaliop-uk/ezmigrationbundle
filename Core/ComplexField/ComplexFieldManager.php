@@ -3,12 +3,14 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
-use eZ\Publish\API\Repository\FieldTypeService;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
+use eZ\Publish\API\Repository\FieldTypeService;
 
 class ComplexFieldManager
 {
-    /** @var ComplexFieldInterface[][] */
+    /** @var FieldValueImporterInterface[][] */
     protected $fieldTypeMap;
     protected $fieldTypeService;
 
@@ -18,12 +20,18 @@ class ComplexFieldManager
     }
 
     /**
-     * @param ComplexFieldInterface $complexField
+     * @param FieldValueImporterInterface|ComplexFieldInterface $complexField
      * @param string $fieldTypeIdentifier
      * @param string $contentTypeIdentifier
+     * @throws \Exception
      */
-    public function addComplexField(ComplexFieldInterface $complexField, $fieldTypeIdentifier, $contentTypeIdentifier = null)
+    public function addComplexField($complexField, $fieldTypeIdentifier, $contentTypeIdentifier = null)
     {
+        // This is purely BC; at some point we will typehint to FieldValueImporterInterface
+        if ((!$complexField instanceof ComplexFieldInterface) && (!$complexField instanceof FieldValueImporterInterface)) {
+            throw new \Exception("Can not register object of class '" . get_class($complexField) . "' as complex field handler because it does not support the desired interface");
+        }
+
         if ($contentTypeIdentifier == null) {
             $contentTypeIdentifier = '*';
         }
@@ -44,20 +52,6 @@ class ComplexFieldManager
     /**
      * @param string $fieldTypeIdentifier
      * @param string $contentTypeIdentifier
-     * @param mixed $fieldValue as gotten from a migration definition
-     * @param array $context
-     * @return mixed as usable in a Content create/update struct
-     *
-     * @deprecated
-     */
-    public function getComplexFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $fieldValue, array $context = array())
-    {
-        return $this->hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $fieldValue, $context);
-    }
-
-    /**
-     * @param string $fieldTypeIdentifier
-     * @param string $contentTypeIdentifier
      * @param mixed $hashValue
      * @param array $context
      * @return mixed
@@ -65,13 +59,16 @@ class ComplexFieldManager
     public function hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $hashValue, array $context = array())
     {
         if ($this->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
-            return $this->getFieldHandler($fieldTypeIdentifier, $contentTypeIdentifier)->createValue($hashValue, $context);
+            $fieldHandler = $this->getFieldHandler($fieldTypeIdentifier, $contentTypeIdentifier);
+            // BC
+            if (!$fieldHandler instanceof FieldValueImporterInterface) {
+                $fieldHandler->createValue($hashValue, $context);
+            }
+            return $fieldHandler->hashToFieldValue($hashValue, $context);
         }
 
         $fieldType = $this->fieldTypeService->getFieldType($fieldTypeIdentifier);
         return $fieldType->fromHash($hashValue);
-        // was: error
-        //throw new \InvalidArgumentException("Field of  can not be handled as it does not have a complex field class defined");
     }
 
     /**
@@ -85,9 +82,8 @@ class ComplexFieldManager
     {
         if ($this->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
             $fieldHandler = $this->getFieldHandler($fieldTypeIdentifier, $contentTypeIdentifier);
-            /// @todo introduce an interface
-            if (method_exists($fieldHandler, 'fieldValueToHash')) {
-                return $this->getFieldHandler($fieldTypeIdentifier, $contentTypeIdentifier)->fieldValueToHash($value, $context);
+            if ($fieldHandler instanceof FieldValueConverterInterface) {
+                return $fieldHandler->fieldValueToHash($value, $context);
             }
         }
 
@@ -142,6 +138,12 @@ class ComplexFieldManager
         return $fieldSettings;
     }
 
+    /**
+     * @param string $fieldTypeIdentifier
+     * @param string $contentTypeIdentifier
+     * @return FieldValueImporterInterface|ComplexFieldInterface
+     * @throws \Exception
+     */
     protected function getFieldHandler($fieldTypeIdentifier, $contentTypeIdentifier) {
         if (isset($this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier])) {
             return $this->fieldTypeMap[$contentTypeIdentifier][$fieldTypeIdentifier];
@@ -150,5 +152,19 @@ class ComplexFieldManager
         }
 
         throw new \Exception("No complex field handler registered for field '$fieldTypeIdentifier' in content type '$contentTypeIdentifier'");
+    }
+
+    /**
+     * @param string $fieldTypeIdentifier
+     * @param string $contentTypeIdentifier
+     * @param mixed $fieldValue as gotten from a migration definition
+     * @param array $context
+     * @return mixed as usable in a Content create/update struct
+     *
+     * @deprecated BC
+     */
+    public function getComplexFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $fieldValue, array $context = array())
+    {
+        return $this->hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $fieldValue, $context);
     }
 }

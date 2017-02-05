@@ -7,9 +7,9 @@ use eZ\Publish\Core\FieldType\Page\Value as PageValue;
 use eZ\Publish\Core\FieldType\Page\Type as PageType;
 use eZ\Publish\Core\FieldType\Page\HashConverter;
 use eZ\Publish\Core\FieldType\Page\Parts\Page;
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 
-class EzPage extends AbstractComplexField implements ComplexFieldInterface
+class EzPage extends AbstractComplexField implements FieldValueImporterInterface
 {
     /** @var PageService $pageService */
     protected $pageService;
@@ -26,7 +26,7 @@ class EzPage extends AbstractComplexField implements ComplexFieldInterface
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return PageValue
      */
-    public function createValue($fieldValueArray, array $context = array())
+    public function hashToFieldValue($fieldValueArray, array $context = array())
     {
         $layout = $fieldValueArray['layout'];
 

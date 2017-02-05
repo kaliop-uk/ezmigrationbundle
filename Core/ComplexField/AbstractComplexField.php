@@ -3,9 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
+use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
 
-abstract class AbstractComplexField implements FieldDefinitionConverterInterface
+abstract class AbstractComplexField implements ComplexFieldInterface
 {
     /** @var ReferenceResolverInterface $referenceResolver */
     protected $referenceResolver;
@@ -15,19 +15,9 @@ abstract class AbstractComplexField implements FieldDefinitionConverterInterface
         $this->referenceResolver = $referenceResolver;
     }
 
-    /**
-     * Does no translation by default. Override in subclasses
-     */
-    public function fieldSettingsToHash($settingsValue, array $context = array())
+    /// BC
+    public function createValue($fieldValue, array $context = array())
     {
-        return $settingsValue;
-    }
-
-    /**
-     * Does no translation by default. Override in subclasses
-     */
-    public function hashToFieldSettings($settingsHash, array $context = array())
-    {
-        return $settingsHash;
+        return $this->hashToFieldValue($fieldValue, $context);
     }
 }

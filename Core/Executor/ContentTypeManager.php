@@ -153,7 +153,9 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
                     if ($existingFieldDefinition) {
                         // Edit existing attribute
-                        $fieldDefinitionUpdateStruct = $this->updateFieldDefinition($contentTypeService, $attribute);
+                        $fieldDefinitionUpdateStruct = $this->updateFieldDefinition(
+                            $contentTypeService, $attribute, $attribute['identifier'], $contentType->identifier
+                        );
                         $contentTypeService->updateFieldDefinition(
                             $contentTypeDraft,
                             $existingFieldDefinition,
@@ -354,10 +356,12 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @todo Add translation support if needed
      * @param ContentTypeService $contentTypeService
      * @param array $attribute
+     * @param string $fieldTypeIdentifier
+     * @param string $contentTypeIdentifier
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinitionUpdateStruct
      * @throws \Exception
      */
-    private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute)
+    private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $fieldTypeIdentifier, $contentTypeIdentifier)
     {
         if (!isset($attribute['identifier'])) {
             throw new \Exception("The 'identifier' of an attribute is missing in the content type update definition.");
@@ -395,7 +399,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinitionUpdateStruct->defaultValue = $value;
                     break;
                 case 'field-settings':
-                    $fieldDefinitionUpdateStruct->fieldSettings = $this->getFieldSettings($value);
+                    $fieldDefinitionUpdateStruct->fieldSettings = $this->getFieldSettings($value, $fieldTypeIdentifier, $contentTypeIdentifier);
                     break;
                 case 'position':
                     $fieldDefinitionUpdateStruct->position = $value;
@@ -533,6 +537,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
                         $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
                     );
+
+                    $attribute['validator-configuration'] = $fieldDefinition->validatorConfiguration;
 
                     $attributes[] = $attribute;
                 }

@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
+use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
-class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
+class EzXmlText extends AbstractComplexField implements FieldValueImporterInterface, FieldDefinitionConverterInterface
 {
     protected $resolver;
 
@@ -23,7 +24,7 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
      *
      * @todo replace objects and location refs in eznode and ezobject links
      */
-    public function createValue($fieldValue, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         if (is_string($fieldValue)) {
             $xmlText = $fieldValue;
@@ -57,5 +58,10 @@ class EzXmlText extends AbstractComplexField implements ComplexFieldInterface
             $settingsValue['tagPreset'] = (integer)$settingsValue['tagPreset'];
         }
         return $settingsValue;
+    }
+
+    public function hashToFieldSettings($settingsHash, array $context = array())
+    {
+        return $settingsHash;
     }
 }

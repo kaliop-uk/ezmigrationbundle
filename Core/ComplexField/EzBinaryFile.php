@@ -3,16 +3,16 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 
-class EzBinaryFile extends AbstractComplexField implements ComplexFieldInterface
+class EzBinaryFile extends AbstractComplexField implements FieldValueImporterInterface
 {
     /**
      * @param array|string $fieldValue The path to the file or an array with 'path' key
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return BinaryFileValue
      */
-    public function createValue($fieldValue, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         $mimeType = '';
         $fileName = '';

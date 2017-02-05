@@ -3,10 +3,11 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Relation\Value;
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
+use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
-class EzRelation extends AbstractComplexField implements ComplexFieldInterface
+class EzRelation extends AbstractComplexField implements FieldValueImporterInterface, FieldDefinitionConverterInterface
 {
     protected $contentMatcher;
 
@@ -22,7 +23,7 @@ class EzRelation extends AbstractComplexField implements ComplexFieldInterface
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return Value
      */
-    public function createValue($fieldValue, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         if (count($fieldValue) == 1 && isset($fieldValue['destinationContentId'])) {
             // fromHash format
@@ -42,5 +43,19 @@ class EzRelation extends AbstractComplexField implements ComplexFieldInterface
         $id = $this->contentMatcher->matchOneByKey($id)->id;
 
         return new Value($id);
+    }
+
+    public function fieldSettingsToHash($settingsValue, array $context = array())
+    {
+        // work around https://jira.ez.no/browse/EZP-26916
+        if (is_array($settingsValue) && isset($settingsValue['selectionRoot']) && $settingsValue['selectionRoot'] === '') {
+            $settingsValue['selectionRoot'] = null;
+        }
+        return $settingsValue;
+    }
+
+    public function hashToFieldSettings($settingsHash, array $context = array())
+    {
+        return $settingsHash;
     }
 }
