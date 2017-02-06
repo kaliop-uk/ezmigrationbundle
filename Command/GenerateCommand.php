@@ -28,7 +28,7 @@ class GenerateCommand extends AbstractCommand
             ->setDescription('Generate a blank migration definition file.')
             ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (' . implode(', ', $this->availableMigrationFormats) . ')', 'yml')
             ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, content_type, content, generic, db, php)', '')
-            ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (' . implode(', ', $this->availableMigrationFormats) . ')', 'create')
+            ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (' . implode(', ', $this->availableModes) . ')', 'create')
             ->addOption('match-type', null, InputOption::VALUE_REQUIRED, 'The type of identifier used to find the entity to generate the migration for', null)
             ->addOption('match-value', null, InputOption::VALUE_REQUIRED, 'The identifier value used to find the entity to generate the migration for. Can have many values separated by commas', null)
             ->addOption('match-except', null, InputOption::VALUE_NONE, 'Used to match all entities except the ones satisfying the match-value condition', null)

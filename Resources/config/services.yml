@@ -349,7 +349,7 @@ services:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
         arguments:
-            - "@ezpublish.core.io.prefix_url_decorator"
+            - "@?ezpublish.core.io.prefix_url_decorator"
             - "$io.root_dir$"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile, priority: 0 }
@@ -376,7 +376,7 @@ services:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezimage.class%'
         arguments:
-            - "@ezpublish.core.io.prefix_url_decorator"
+            - "@?ezpublish.core.io.prefix_url_decorator"
             - "$io.root_dir$"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezimage, priority: 0 }

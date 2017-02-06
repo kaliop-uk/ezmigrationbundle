@@ -1,3 +1,79 @@
+# Possible settings and validator configurations for the different field types
+#
+# ezbinaryfile
+#    validator-configuration:
+#        FileSizeValidator: { maxFileSize: false } # in MB
+#
+# ezcountry
+#    field-settings:
+#        isMultiple: false
+#
+# ezdatetime
+#    field-settings:
+#        defaultType: 0 # 1=default to current datetime
+#        useSeconds: false
+#        dateInterval: null
+#
+# ezdate
+#    field-settings:
+#        defaultType: 0 # 1=default to current date
+#
+# ezemail
+#    validator-configuration:
+#        EmailAddressValidator: {  }
+#
+# ezfloat
+#    validator-configuration:
+#        FloatValueValidator: { minFloatValue: false, maxFloatValue: false }
+#
+# ezimage
+#    validator-configuration:
+#        FileSizeValidator: { maxFileSize: false } # in MB
+#
+# ezinteger
+#    validator-configuration:
+#        IntegerValueValidator: { minIntegerValue: false, maxIntegerValue: false }
+#
+# ezmedia
+#    field-settings:
+#        mediaType: html5_video
+#    validator-configuration:
+#        FileSizeValidator: { maxFileSize: false } # in MB
+#
+# ezobjectrelation
+#    field-settings:
+#        selectionMethod: 0 # 1=drop-down list
+#        selectionRoot: null # location id
+#
+# ezobjectrelationlist
+#    field-settings:
+#        selectionMethod: 0 # 1=drop-down list
+#        selectionDefaultLocation: 2
+#        selectionContentTypes: [ ] # array of ContentType identifiers
+#
+# ezselection
+#    field-settings:
+#        isMultiple: false
+#        options: [  ] # array of option names
+#
+# ezstring
+#    validator-configuration:
+#          StringLengthValidator: { maxStringLength: false, minStringLength: false }
+#
+# eztext
+#    field-settings:
+#        textRows: 10
+#
+# eztime
+#    field-settings:
+#        defaultType: 0 # 1=default to current time
+#        useSeconds: false
+#
+# ezxmltext
+#    field-settings:
+#        numRows: 10
+#        tagPreset: 0
+
 -
     type: content_type
     mode: create
