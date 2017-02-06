@@ -1,3 +1,11 @@
+Version 3.2.1
+=============
+
+* Fixed: the 'lang' parameterwas not taken into account by the `generate` command
+
+* Improve docs: describe the settings available for contentType creation
+
+
 Version 3.2.0
 =============
 
