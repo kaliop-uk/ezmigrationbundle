@@ -248,6 +248,8 @@ EOT
                 }
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
+                $executor->setLanguageCode($parameters['lang']);
+
                 $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
                 if ($parameters['matchExcept']) {
                     $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
