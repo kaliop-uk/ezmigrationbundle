@@ -11,7 +11,7 @@ class EzImage extends AbstractComplexField implements FieldValueConverterInterfa
     protected $ioRootDir;
     protected $ioDecorator;
 
-    public function __construct(UrlDecorator $ioDecorator, $ioRootDir)
+    public function __construct($ioRootDir, UrlDecorator $ioDecorator=null)
     {
         $this->ioRootDir = $ioRootDir;
         $this->ioDecorator = $ioDecorator;
@@ -71,7 +71,7 @@ class EzImage extends AbstractComplexField implements FieldValueConverterInterfa
     public function fieldValueToHash($fieldValue, array $context = array())
     {
         return array(
-            'path' => realpath($this->ioRootDir) . '/' . $this->ioDecorator->undecorate($fieldValue->uri),
+            'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
             'filename'=> $fieldValue->fileName,
             'alternativeText' => $fieldValue->alternativeText
         );

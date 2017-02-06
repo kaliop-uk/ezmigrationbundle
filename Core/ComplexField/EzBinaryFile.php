@@ -11,7 +11,7 @@ class EzBinaryFile extends AbstractComplexField implements FieldValueConverterIn
     protected $ioRootDir;
     protected $ioDecorator;
 
-    public function __construct(UrlDecorator $ioDecorator, $ioRootDir)
+    public function __construct($ioRootDir, UrlDecorator $ioDecorator = null)
     {
         $this->ioRootDir = $ioRootDir;
         $this->ioDecorator = $ioDecorator;
@@ -69,7 +69,7 @@ class EzBinaryFile extends AbstractComplexField implements FieldValueConverterIn
     public function fieldValueToHash($fieldValue, array $context = array())
     {
         return array(
-            'path' => realpath($this->ioRootDir) . '/' . $this->ioDecorator->undecorate($fieldValue->uri),
+            'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
             'filename'=> $fieldValue->fileName,
             'mimeType' => $fieldValue->mimeType
         );
