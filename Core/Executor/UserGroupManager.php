@@ -28,6 +28,7 @@ class UserGroupManager extends RepositoryExecutor
     protected function create()
     {
         $userService = $this->repository->getUserService();
+        $sectionService = $this->repository->getSectionService();
 
         $parentGroupId = $this->dsl['parent_group_id'];
         $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
@@ -44,6 +45,18 @@ class UserGroupManager extends RepositoryExecutor
 
         if (isset($this->dsl['description'])) {
             $userGroupCreateStruct->setField('description', $this->dsl['description']);
+        }
+
+        if (isset($this->dsl['section'])) {
+            $sectionId = $this->dsl['section'];
+            try {
+                $section = $sectionService->loadSectionByIdentifier($sectionId);
+                $sectionId = $section->id;
+            }
+            catch (\eZ\Publish\API\Repository\Exceptions\NotFoundException $notFoundException) {
+                $sectionId = $this->referenceResolver->resolveReference($sectionId);
+            }
+            $userGroupCreateStruct->sectionId = $sectionId;
         }
 
         $userGroup = $userService->createUserGroup($userGroupCreateStruct, $parentGroup);
