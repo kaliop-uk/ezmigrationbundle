@@ -75,6 +75,10 @@ EOT
         }
         ksort($index);
 
+        if (count($index) > 50000) {
+            $output->writeln("WARNING: printing the status table might take a while as it contains many rows. Please wait...");
+        }
+
         $output->writeln("\n <info>==</info> All Migrations\n");
 
         $data = array();
