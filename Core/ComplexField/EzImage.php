@@ -3,10 +3,20 @@
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
+use eZ\Publish\Core\IO\UrlDecorator;
 
-class EzImage extends AbstractComplexField implements ComplexFieldInterface
+class EzImage extends AbstractComplexField implements FieldValueConverterInterface
 {
+    protected $ioRootDir;
+    protected $ioDecorator;
+
+    public function __construct($ioRootDir, UrlDecorator $ioDecorator=null)
+    {
+        $this->ioRootDir = $ioRootDir;
+        $this->ioDecorator = $ioDecorator;
+    }
+
     /**
      * Creates a value object to use as the field value when setting an image field type.
      *
@@ -14,7 +24,7 @@ class EzImage extends AbstractComplexField implements ComplexFieldInterface
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return ImageValue
      */
-    public function createValue($fieldValue, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         $altText = '';
         $fileName = '';
@@ -48,6 +58,22 @@ class EzImage extends AbstractComplexField implements ComplexFieldInterface
                 'fileName' => $fileName != '' ? $fileName : basename($realFilePath),
                 'alternativeText' => $altText
             )
+        );
+    }
+
+    /**
+     * @param \eZ\Publish\Core\FieldType\Image\Value $fieldValue
+     * @param array $context
+     * @return array
+     *
+     * @todo check out if this works in ezplatform
+     */
+    public function fieldValueToHash($fieldValue, array $context = array())
+    {
+        return array(
+            'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
+            'filename'=> $fieldValue->fileName,
+            'alternativeText' => $fieldValue->alternativeText
         );
     }
 }

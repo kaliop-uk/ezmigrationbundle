@@ -92,6 +92,19 @@
     match: # Only one of the following can be specified, to define which roles to update
         id: x # int|int[]
         identifier: xyz # string|string[]
+        all: ~ # matches ALL roles
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     assign: # Optional
         -
             type: # Must be user or group
@@ -126,5 +139,18 @@
     type: role
     mode: delete
     match: # Only one of the following can be specified, to define which roles to remove
-        - id: x # int|int[]
-        - identifier: xyz # string|string[]
+        id: x # int|int[]
+        identifier: xyz # string|string[]
+        all: ~ # matches ALL roles
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'

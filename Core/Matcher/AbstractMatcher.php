@@ -20,7 +20,7 @@ abstract class AbstractMatcher implements MatcherInterface
         }
 
         if (count($conditions) > $this->maxConditions) {
-            throw new \Exception($this->returns . " can not be matched because multiple matching conditions are specified. Only {this->maxConditions} condition(s) are supported");
+            throw new \Exception($this->returns . " can not be matched because multiple matching conditions are specified. Only {$this->maxConditions} condition(s) are supported");
         }
 
         foreach ($conditions as $key => $value) {
@@ -29,6 +29,57 @@ abstract class AbstractMatcher implements MatcherInterface
                     implode(', ', $this->allowedConditions));
             }
         }
+    }
+
+    protected function matchAnd($conditionsArray)
+    {
+        if (!is_array($conditionsArray) || !count($conditionsArray)) {
+            throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'and' clause.");
+        }
+
+        $class = null;
+        foreach ($conditionsArray as $conditions) {
+            $out = $this->match($conditions);
+            if ($out instanceof \ArrayObject) {
+                $class = get_class($out);
+                $out = $out->getArrayCopy();
+            }
+            if (!isset($results)) {
+                $results = $out;
+            } else {
+                $results = array_intersect_key($results, $out);
+            }
+        }
+
+        if ($class) {
+            $results = new $class($results);
+        }
+
+        return $results;
+    }
+
+    protected function matchOr(array $conditionsArray)
+    {
+        if (!is_array($conditionsArray) || !count($conditionsArray)) {
+            throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'or' clause.");
+        }
+
+        $class = null;
+        $results = array();
+        foreach ($conditionsArray as $conditions) {
+            $out = $this->match($conditions);
+            if ($out instanceof \ArrayObject) {
+                $class = get_class($out);
+                $out = $out->getArrayCopy();
+            }
+            $results = array_replace($results, $out);
+        }
+
+        if ($class) {
+            $results = new $class($results);
+        }
+
+        return $results;
     }
 
     public function matchOne(array $conditions)

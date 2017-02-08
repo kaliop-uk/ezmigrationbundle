@@ -2,10 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
-class EzRichText extends AbstractComplexField implements ComplexFieldInterface
+class EzRichText extends AbstractComplexField implements FieldValueImporterInterface
 {
     protected $resolver;
 
@@ -23,7 +23,7 @@ class EzRichText extends AbstractComplexField implements ComplexFieldInterface
      *
      * @todo replace objects and location refs in ezcontent:// and ezlocation:// links
      */
-    public function createValue($fieldValue, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         if (is_string($fieldValue)) {
             $xmlText = $fieldValue;

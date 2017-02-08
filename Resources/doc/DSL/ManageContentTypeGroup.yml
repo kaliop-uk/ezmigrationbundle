@@ -15,3 +15,16 @@
     match: # only one of the following keys is allowed
         id: x # int|int[] The Id of the content type group(s) to update.
         identifier: y # string|string[] The Identifier of the content type group(s) to update
+        all: ~ # matches ALL content type groups
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'

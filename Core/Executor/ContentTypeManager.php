@@ -3,13 +3,13 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\ContentTypeService;
-use eZ\Publish\Core\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
+use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
 
 /**
  * Methods to handle content type migrations
@@ -22,13 +22,15 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     protected $contentTypeGroupMatcher;
     // This resolver is used to resolve references in content-type settings definitions
     protected $extendedReferenceResolver;
+    protected $complexFieldManager;
 
     public function __construct(ContentTypeMatcher $matcher, ContentTypeGroupMatcher $contentTypeGroupMatcher,
-        ReferenceResolverInterface $extendedReferenceResolver)
+        ReferenceResolverInterface $extendedReferenceResolver, ComplexFieldManager $complexFieldManager)
     {
         $this->contentTypeMatcher = $matcher;
         $this->contentTypeGroupMatcher = $contentTypeGroupMatcher;
         $this->extendedReferenceResolver = $extendedReferenceResolver;
+        $this->complexFieldManager = $complexFieldManager;
     }
 
     /**
@@ -80,7 +82,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
         // Add attributes
         foreach ($this->dsl['attributes'] as $position => $attribute) {
-            $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute);
+            $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $this->dsl['identifier']);
             $fieldDefinition->position = ++$position;
             $contentTypeCreateStruct->addFieldDefinition($fieldDefinition);
         }
@@ -151,7 +153,9 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
                     if ($existingFieldDefinition) {
                         // Edit existing attribute
-                        $fieldDefinitionUpdateStruct = $this->updateFieldDefinition($contentTypeService, $attribute);
+                        $fieldDefinitionUpdateStruct = $this->updateFieldDefinition(
+                            $contentTypeService, $attribute, $attribute['identifier'], $contentType->identifier
+                        );
                         $contentTypeService->updateFieldDefinition(
                             $contentTypeDraft,
                             $existingFieldDefinition,
@@ -159,8 +163,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         );
                     } else {
                         // Add new attribute
-                        $newFieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute);
-                        // New attributes are positioned at the end of the list
+                        $newFieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $contentType->identifier);
                         $newFieldDefinition->position = count($contentType->fieldDefinitions);
                         $contentTypeService->addFieldDefinition($contentTypeDraft, $newFieldDefinition);
                     }
@@ -287,15 +290,16 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * Helper function to create field definitions based to be added to a new/existing content type.
+     * Helper function to create field definitions to be added to a new/existing content type.
      *
      * @todo Add translation support if needed
      * @param ContentTypeService $contentTypeService
      * @param array $attribute
+     * @param string $contentTypeIdentifier
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinitionCreateStruct
      * @throws \Exception
      */
-    private function createFieldDefinition(ContentTypeService $contentTypeService, array $attribute)
+    private function createFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $contentTypeIdentifier)
     {
         if (!isset($attribute['identifier']) || !isset($attribute['type'])) {
             throw new \Exception("Keys 'type' and 'identifier' are mandatory to define a new field in a field type");
@@ -330,10 +334,12 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinition->fieldGroup = $value == 'default' ? 'content' : $value;
                     break;
                 case 'default-value':
+                    /// @todo check that this works for all field types. Maybe we should use fromHash() on the field type,
+                    ///       or, better, use the complexFieldManager?
                     $fieldDefinition->defaultValue = $value;
                     break;
                 case 'field-settings':
-                    $fieldDefinition->fieldSettings = $this->getFieldSettings($value);
+                    $fieldDefinition->fieldSettings = $this->getFieldSettings($value, $attribute['type'], $contentTypeIdentifier);
                     break;
                 case 'validator-configuration':
                     $fieldDefinition->validatorConfiguration = $value;
@@ -350,10 +356,12 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @todo Add translation support if needed
      * @param ContentTypeService $contentTypeService
      * @param array $attribute
+     * @param string $fieldTypeIdentifier
+     * @param string $contentTypeIdentifier
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinitionUpdateStruct
      * @throws \Exception
      */
-    private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute)
+    private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $fieldTypeIdentifier, $contentTypeIdentifier)
     {
         if (!isset($attribute['identifier'])) {
             throw new \Exception("The 'identifier' of an attribute is missing in the content type update definition.");
@@ -391,7 +399,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinitionUpdateStruct->defaultValue = $value;
                     break;
                 case 'field-settings':
-                    $fieldDefinitionUpdateStruct->fieldSettings = $this->getFieldSettings($value);
+                    $fieldDefinitionUpdateStruct->fieldSettings = $this->getFieldSettings($value, $fieldTypeIdentifier, $contentTypeIdentifier);
                     break;
                 case 'position':
                     $fieldDefinitionUpdateStruct->position = $value;
@@ -405,10 +413,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         return $fieldDefinitionUpdateStruct;
     }
 
-    private function getFieldSettings($value)
+    private function getFieldSettings($value, $fieldTypeIdentifier, $contentTypeIdentifier)
     {
-        // Updating any references in the value array
-
+        // 1st update any references in the value array
+        // q: shall we delegate this exclusively to the hashToFieldSettings call below ?
         if (is_array($value)) {
             $ret = array();
             foreach ($value as $key => $val)
@@ -422,6 +430,11 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             }
         } else {
             $ret = $this->extendedReferenceResolver->resolveReference($value);
+        }
+
+        // then handle the conversion of the settings from Hash to Repo representation
+        if ($this->complexFieldManager->managesFieldDefinition($fieldTypeIdentifier, $contentTypeIdentifier)) {
+            $ret = $this->complexFieldManager->hashToFieldSettings($fieldTypeIdentifier, $contentTypeIdentifier, $value);
         }
 
         return $ret;
@@ -448,77 +461,106 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * @param string $identifier
+     * @param array $matchCondition
      * @param string $mode
      * @throws \Exception
      * @return array
      */
-    public function generateMigration($identifier, $mode)
+    public function generateMigration(array $matchCondition, $mode)
     {
-        $this->loginUser(self::ADMIN_USER_ID);
-        $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($identifier);
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $contentTypeCollection = $this->contentTypeMatcher->match($matchCondition);
+        $data = array();
 
-        $attributes = array();
-        foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
-            $attributes[] = array(
-                'identifier' => $fieldDefinition->identifier,
-                'type' => $fieldDefinition->fieldTypeIdentifier,
-                'name' => $fieldDefinition->getName($this->getLanguageCode()),
-                'description' => $fieldDefinition->getDescription($this->getLanguageCode()),
-                'required' => $fieldDefinition->isRequired,
-                'searchable' => $fieldDefinition->isSearchable,
-                'info-collector' => $fieldDefinition->isInfoCollector,
-                'disable-translation' => !$fieldDefinition->isTranslatable,
-                'category' => $fieldDefinition->fieldGroup,
-                'default-value' => $fieldDefinition->defaultValue,
-                'field-settings' => $fieldDefinition->fieldSettings,
-                'position' => $fieldDefinition->position
+        /** @var \eZ\Publish\API\Repository\Values\ContentType\ContentType $contentType */
+        foreach ($contentTypeCollection as $contentType) {
+
+            $contentTypeData = array(
+                'type' => 'content_type',
+                'mode' => $mode
             );
-        }
 
-        $data = array(
-            'type' => 'content_type',
-            'mode' => $mode
-        );
-
-        switch ($mode) {
-            case 'create':
-                $contentTypeGroups = $contentType->getContentTypeGroups();
-                $data = array_merge(
-                    $data,
-                    array(
-                        'content_type_group' => reset($contentTypeGroups)->identifier,
-                        'identifier' => $identifier
-                    )
-                );
-                break;
-            case 'update':
-                $data = array_merge(
-                    $data,
-                    array(
-                        'match' => array(
-                            'identifier' => $identifier
+            switch ($mode) {
+                case 'create':
+                    $contentTypeGroups = $contentType->getContentTypeGroups();
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        array(
+                            'content_type_group' => reset($contentTypeGroups)->identifier,
+                            'identifier' => $contentType->identifier
                         )
+                    );
+                    break;
+                case 'update':
+                case 'delete':
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        array(
+                            'match' => array(
+                                'identifier' => $contentType->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+
+                $fieldTypeService = $this->repository->getFieldTypeService();
+
+                $attributes = array();
+                foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
+                    $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
+                    $attribute = array(
+                        'identifier' => $fieldDefinition->identifier,
+                        'type' => $fieldTypeIdentifier,
+                        'name' => $fieldDefinition->getName($this->getLanguageCode()),
+                        'description' => (string)$fieldDefinition->getDescription($this->getLanguageCode()),
+                        'required' => $fieldDefinition->isRequired,
+                        'searchable' => $fieldDefinition->isSearchable,
+                        'info-collector' => $fieldDefinition->isInfoCollector,
+                        'disable-translation' => !$fieldDefinition->isTranslatable,
+                        'category' => $fieldDefinition->fieldGroup,
+                        'position' => $fieldDefinition->position
+                    );
+
+                    $fieldType = $fieldTypeService->getFieldType($fieldTypeIdentifier);
+                    $nullValue = $fieldType->getEmptyValue();
+                    if ($fieldDefinition->defaultValue != $nullValue) {
+                        $attribute['default-value'] = $this->complexFieldManager->fieldValueToHash(
+                            $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->defaultValue
+                        );
+                    }
+
+                    $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
+                        $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
+                    );
+
+                    $attribute['validator-configuration'] = $fieldDefinition->validatorConfiguration;
+
+                    $attributes[] = $attribute;
+                }
+
+                $contentTypeData = array_merge(
+                    $contentTypeData,
+                    array(
+                        'name' => $contentType->getName($this->getLanguageCode()),
+                        'description' => $contentType->getDescription($this->getLanguageCode()),
+                        'name_pattern' => $contentType->nameSchema,
+                        'url_name_pattern' => $contentType->urlAliasSchema,
+                        'is_container' => $contentType->isContainer,
+                        'lang' => $this->getLanguageCode(),
+                        'attributes' => $attributes
                     )
                 );
-                break;
-            default:
-                throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+            }
+
+            $data[] = $contentTypeData;
         }
 
-        $data = array_merge(
-            $data,
-            array(
-                'name' => $contentType->getName($this->getLanguageCode()),
-                'description' => $contentType->getDescription($this->getLanguageCode()),
-                'name_pattern' => $contentType->nameSchema,
-                'url_name_pattern' => $contentType->urlAliasSchema,
-                'is_container' => $contentType->isContainer,
-                'lang' => $this->getLanguageCode(),
-                'attributes' => $attributes
-            )
-        );
-
-        return array($data);
+        $this->loginUser($previousUserId);
+        return $data;
     }
 }

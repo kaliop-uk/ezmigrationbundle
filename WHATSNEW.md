@@ -1,7 +1,13 @@
-Version 3.2.0
+Version 3.2.1
 =============
 
-* Extend the GenerateCommand to generate migrations for existing Content Types as well as Roles
+* Fixed: the 'lang' parameterwas not taken into account by the `generate` command
+
+* Improve docs: describe the settings available for contentType creation
+
+
+Version 3.2.0
+=============
 
 * Allow setting a remote_id when creating/updating User Group(s)
 
@@ -11,6 +17,57 @@ Version 3.2.0
 
 * User group's "parent_group_id": if a string provided, it is considered referencing a user group's remote_id instead of
     its id
+
+* It is now possible to match the entities to update/delete using composite conditions with `and` and `or`: 
+    
+        match:
+            or:
+                -
+                    identifier: something
+                -
+                    and:
+                        -
+                            content_type: folder
+                        -
+                            parent_location_id: 42 
+
+    NB: the match operations using composite conditions are not yet optimized for speed or memory usage!
+
+* When updating/deleting Roles, Object States, Object State Groups, Content Types and Content Type Groups, it is now
+    possible to match 'all' items. 
+    
+        match:
+            all: ~
+
+    It is also possible to match using negative predicates by using the following syntax:
+
+        match:
+            not:
+                identifier: something
+    
+    Note: 'delete all' migrations will most likely not work as long as you have any remaining content...
+
+    NB: it is not yet possible to match Content, Location or Tag using the `not` condition  
+
+* Extend the `generate` Command to generate migrations for existing Contents and ContentTypes besides Roles;
+    it is also possible to generate both _create_, _update_ and _delete_ migrations, and to have a single migration
+    generated for many items.
+
+    *NB* this feature is to be considered _experimental_, as there are some quirks in the generated migration files.
+    In other words: not all migration files generated with the Generate command will work as is; some manual editing
+    might be required before they are accepted as valid for execution.
+
+    Known problems include, but are not limited to:
+    - the field-settings generated for some field types when creating a ContentType migration might be invalid. Fe. in
+        some eZPublish versions a field-setting `defaultLayout` for an ezpage field with a value of empty string will
+        be generated but not be executable
+    - when creating a ContentType migration, having a field of type ezuser set to 'searchable' will also cause the
+         generated migration not to be executable
+    - the export + reimport of content fields of type ezuser seems to be problematic
+    - the export + reimport of content fields of type image and binaryfile has not been tested on eZPlatform
+
+    Some of these problems originate within the eZPublish kernel, and are hard to work around in the bundle.
+    For more details see: https://jira.ez.no/browse/EZP-26916
 
 
 Version 3.1.0

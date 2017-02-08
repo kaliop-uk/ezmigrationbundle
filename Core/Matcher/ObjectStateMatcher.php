@@ -15,6 +15,7 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
     const MATCH_OBJECTSTATE_IDENTIFIER = 'objectstate_identifier';
 
     protected $allowedConditions = array(
+        self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_OBJECTSTATE_ID, self::MATCH_OBJECTSTATE_IDENTIFIER,
         // aliases
         'id', 'identifier'
@@ -52,6 +53,18 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                 case 'identifier':
                 case self::MATCH_OBJECTSTATE_IDENTIFIER:
                     return new ObjectStateCollection($this->findObjectStatesByIdentifier($values));
+
+                case self::MATCH_ALL:
+                    return new ObjectStateCollection($this->findAllObjectStates());
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
+
+                case self::MATCH_NOT:
+                    return new ObjectStateCollection(array_diff_key($this->findAllObjectStates(), $this->matchObjectState($values)->getArrayCopy()));
             }
         }
     }
@@ -105,12 +118,28 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
     }
 
     /**
+     * @return ObjectState[] key: id
+     */
+    protected function findAllObjectStates()
+    {
+        $states = array();
+
+        foreach ($this->loadAvailableStates() as $key => $state) {
+            if (strpos('/', $key) !== false) {
+                $states[$state->id] = $state;
+            }
+        }
+
+        return $states;
+    }
+
+    /**
      * @return ObjectState[] key: the state identifier (for unique identifiers), group_identifier/state_identifier for all
      */
     protected function loadAvailableStates()
     {
         $statesList = array();
-        $nonuniqueIdentifiers = array();
+        $nonUniqueIdentifiers = array();
 
         $groups = $this->repository->getObjectStateService()->loadObjectStateGroups();
         foreach ($groups as $group) {
@@ -121,9 +150,9 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                 // we only add the state using plain identifier if it is unique
                 if (isset($statesList[$groupState->identifier])) {
                     unset($statesList[$groupState->identifier]);
-                    $nonuniqueIdentifiers[] = $groupState->identifier;
+                    $nonUniqueIdentifiers[] = $groupState->identifier;
                 } else {
-                    if (!isset($nonuniqueIdentifiers[$groupState->identifier])) {
+                    if (!isset($nonUniqueIdentifiers[$groupState->identifier])) {
                         $statesList[$groupState->identifier] = $groupState;
                     }
                 }

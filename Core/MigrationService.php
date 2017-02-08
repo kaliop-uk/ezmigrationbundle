@@ -80,6 +80,14 @@ class MigrationService
     }
 
     /**
+     * @return string[]
+     */
+    public function listExecutors()
+    {
+        return array_keys($this->executors);
+    }
+
+    /**
      * NB: returns UNPARSED definitions
      *
      * @param string[] $paths

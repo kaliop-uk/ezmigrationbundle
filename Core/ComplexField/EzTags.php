@@ -2,10 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 
-class EzTags extends AbstractComplexField implements ComplexFieldInterface
+class EzTags extends AbstractComplexField implements FieldValueImporterInterface
 {
     protected $tagMatcher;
 
@@ -22,7 +22,7 @@ class EzTags extends AbstractComplexField implements ComplexFieldInterface
      * @return \Netgen\TagsBundle\Core\FieldType\Tags\Value
      * @throws \Exception
      */
-    public function createValue($fieldValue, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         $tags = array();
         foreach ($fieldValue as $def)

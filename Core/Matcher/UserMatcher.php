@@ -15,6 +15,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
     const MATCH_USER_EMAIL = 'email';
 
     protected $allowedConditions = array(
+        self::MATCH_AND, self::MATCH_OR,
         self::MATCH_USER_ID, self::MATCH_USER_LOGIN, self::MATCH_USER_EMAIL,
         // aliases
         'id'
@@ -54,6 +55,12 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
                 case self::MATCH_USER_EMAIL:
                     return new UserCollection($this->findUsersByEmail($values));
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
             }
         }
     }

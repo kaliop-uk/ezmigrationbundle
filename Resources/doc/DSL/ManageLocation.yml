@@ -57,6 +57,16 @@
         location_remote_id: # the location remote id(s) of the content we want to add a location to
         parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
         parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set at the same time than parent_location
                           # When a non numeric string is used, it is assumed to be a location remote id
     parent_location: x # Optional The parent location to move the subtree to. Cannot be set at the same time than swap_with_location
@@ -84,3 +94,13 @@
         location_remote_id: # the location remote id(s) of the content we want to add a location to
         parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
         parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'

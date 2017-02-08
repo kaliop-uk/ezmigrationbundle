@@ -4,32 +4,32 @@ namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Author\Value as AuthorValue;
 use eZ\Publish\Core\FieldType\Author\Author;
-use Kaliop\eZMigrationBundle\API\ComplexFieldInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 
 /**
  * @todo is this needed at all ?
  */
-class EzAuthor extends AbstractComplexField implements ComplexFieldInterface
+class EzAuthor extends AbstractComplexField implements FieldValueImporterInterface
 {
     /**
      * Creates a value object to use as the field value when setting an author field type.
      *
-     * @param array $fieldValueArray The definition of teh field value, structured in the yml file
+     * @param array $fieldValue The definition of the field value, structured in the yml file
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return AuthorValue
      */
-    public function createValue($fieldValueArray, array $context = array())
+    public function hashToFieldValue($fieldValue, array $context = array())
     {
         $authors = array();
 
         /// @deprecated
-        if (isset($fieldValueArray['authors'])) {
-            foreach ($fieldValueArray['authors'] as $author) {
+        if (isset($fieldValue['authors'])) {
+            foreach ($fieldValue['authors'] as $author) {
                 $authors[] = new Author($author);
             }
-        } else if (is_array($fieldValueArray)) {
+        } else if (is_array($fieldValue)) {
             /// same as what fromHash() does, really
-            foreach ($fieldValueArray as $author) {
+            foreach ($fieldValue as $author) {
                 $authors[] = new Author($author);
             }
         }

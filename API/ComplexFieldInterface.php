@@ -3,7 +3,8 @@
 namespace Kaliop\eZMigrationBundle\API;
 
 /**
- * Interface for all complex field creation classes.
+ * Interface for all classes dealing with the creation/update of fields of 'complex' type
+ * @deprecated
  */
 interface ComplexFieldInterface
 {

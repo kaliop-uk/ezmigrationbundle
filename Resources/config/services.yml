@@ -61,6 +61,9 @@ parameters:
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
     ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
+    ez_migration_bundle.complex_field.ezboolean.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBoolean
+    ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDate
+    ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDateAndTime
     ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
     ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
     ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
@@ -192,6 +195,7 @@ services:
             - '@ez_migration_bundle.content_type_matcher'
             - '@ez_migration_bundle.content_type_group_matcher'
             - '@ez_migration_bundle.reference_resolver'
+            - '@ez_migration_bundle.complex_field_manager'
         tags:
             - { name: ez_migration_bundle.executor }
 
@@ -344,12 +348,36 @@ services:
     ez_migration_bundle.complex_field.ezbinaryfile:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezbinaryfile.class%'
+        arguments:
+            - "$io.root_dir$"
+            - "@?ezpublish.core.io.prefix_url_decorator"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezboolean:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezboolean.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezboolean, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezdate:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezdate.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezdate, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezdatetime:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezdatetime.class%'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezdatetime, priority: 0 }
 
     ez_migration_bundle.complex_field.ezimage:
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezimage.class%'
+        arguments:
+            - "$io.root_dir$"
+            - "@?ezpublish.core.io.prefix_url_decorator"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezimage, priority: 0 }
 

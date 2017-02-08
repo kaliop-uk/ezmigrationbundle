@@ -29,12 +29,12 @@
                     lines, but new line is not preserved on parsing
         # ezimage/ezbinaryfile file attribute example
         attribute5:
-            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/
+            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/, or absolute path
             alt_text: xyz # Optional, only used for images
             filename: abc # Optional, taken from the actual file if not specified
             mime_type: def # Optional. For ezbinaryfile only. If not specified, the actual file is analyzed using the php function mime_content_type()
         # ezimage/ezbinaryfile file attribute example, using simplified form
-        attribute5b: 'path/to/image'
+        attribute5b: '/path/to/image'
         # ezxmltext, showing an example of using references
         attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
@@ -93,6 +93,16 @@
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         content_type: yyy # string|string[] a content type identifier
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier
     owner: xxx # user id, login or email if unique; Optional, set the content owner (original creator)
@@ -100,12 +110,13 @@
     modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     publication_date: zzz # Optional, set content publication date (for formats, see: http://php.net/manual/en/datetime.formats.php)
     new_remote_id: xxx # string Optional set a new RemoteId
+    always_available: true|false # Optional
     attributes: # the list of attribute identifier value pairs. For the format to use, see above
         attribute1: value1
         attribute2: value2
     # Optionally assign object states to the content
     object_states:
-        - xxx # int|string an object state id or didentifier. For the format to use, see above
+        - xxx # int|string an object state id or identifier. For the format to use, see above
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
@@ -124,3 +135,13 @@
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         content_type: yyy # string|string[] a content type identifier
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'

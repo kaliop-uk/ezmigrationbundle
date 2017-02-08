@@ -10,10 +10,10 @@ interface MigrationGeneratorInterface
     /**
      * Generate a migration
      *
-     * @param string $identifier
+     * @param array $matchCondition
      * @param string $mode
      * @return array Migration data
      * @throws \Exception
      */
-    public function generateMigration($identifier, $mode);
+    public function generateMigration(array $matchCondition, $mode);
 }

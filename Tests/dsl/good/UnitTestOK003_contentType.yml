@@ -115,6 +115,10 @@
         #    type: ezpage
         #    name: ezpage
         #    identifier: ezpage
+        -
+            type: ezselection
+            name: ezselection
+            identifier: ezselection
         # nb: ezsrrating fieldType seems to be enabled by default, but the db table might *not* be present...
         #-
         #    type: ezsrrating

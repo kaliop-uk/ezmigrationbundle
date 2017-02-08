@@ -14,6 +14,7 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
     const MATCH_CONTENTTYPEGROUP_IDENTIFIER = 'contenttypegroup_identifier';
 
     protected $allowedConditions = array(
+        self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENTTYPEGROUP_ID, self::MATCH_CONTENTTYPEGROUP_IDENTIFIER,
         // aliases
         'id', 'identifier'
@@ -51,6 +52,19 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
                 case 'identifier':
                 case self::MATCH_CONTENTTYPEGROUP_IDENTIFIER:
                     return new ContentTypeGroupCollection($this->findContentTypeGroupsByIdentifier($values));
+
+                case self::MATCH_ALL:
+                    return new ContentTypeGroupCollection($this->findAllContentTypeGroups());
+
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
+
+                case self::MATCH_NOT:
+                    return new ContentTypeGroupCollection(array_diff_key($this->findAllContentTypeGroups(), $this->matchContentTypeGroup($values)->getArrayCopy()));
+
             }
         }
     }
@@ -91,6 +105,19 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
         foreach ($contentTypeGroupIdentifiers as $contentTypeGroupIdentifier) {
             // return unique contents
             $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroupByIdentifier($contentTypeGroupIdentifier);
+            $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
+        }
+
+        return $contentTypeGroups;
+    }
+
+    /**
+     * @return ContentTypeGroup[]
+     */
+    protected function findAllContentTypeGroups()
+    {
+        $contentTypeGroups = [];
+        foreach ($this->repository->getContentTypeService()->loadContentTypeGroups() as $contentTypeGroup) {
             $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
         }
 

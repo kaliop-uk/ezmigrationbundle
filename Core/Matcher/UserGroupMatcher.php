@@ -17,6 +17,7 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
     const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
 
     protected $allowedConditions = array(
+        self::MATCH_AND, self::MATCH_OR,
         self::MATCH_USERGROUP_ID,
         self::MATCH_CONTENT_REMOTE_ID,
         // aliases
@@ -51,9 +52,15 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 case 'id':
                 case self::MATCH_USERGROUP_ID:
                     return new UserGroupCollection($this->findUserGroupsById($values));
+
                 case self::MATCH_CONTENT_REMOTE_ID:
                     return new UserGroupCollection($this->findUserGroupsByContentRemoteIds($values));
 
+                case self::MATCH_AND:
+                    return $this->matchAnd($values);
+
+                case self::MATCH_OR:
+                    return $this->matchOr($values);
             }
         }
     }

@@ -20,9 +20,19 @@
     type: user
     mode: update
     match: # Only one of the following can be specified, to define which users to update
-        - id: x # int|int[]
-        - email: xyz # string|string[]
-        - login: # string|string[]
+        id: x # int|int[]
+        email: xyz # string|string[]
+        login: # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     email: xyz # Optional. NB: can only be set if the match definition latches a single user
     password: xyz # Optional
     enabled: true|false # Optional
@@ -41,9 +51,19 @@
     type: user
     mode: delete
     match: # Only one of the following can be specified, to define which users to delete
-        - id: x # int|int[]
-        - email: xyz # string|string[]
-        - login: # string|string[]
+        id: x # int|int[]
+        email: xyz # string|string[]
+        login: # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
 
 -
     type: user_group
@@ -65,8 +85,18 @@
     type: user_group
     mode: update
     match: # Define which groups to update. Only one match condition at a time supported
-        - id: x # int|int[]
-        - content_remote_id: y # string|string[]
+        id: x # int|int[]
+        content_remote_id: yyy # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     name: xyz # Optional. Can only be used when the group to be updated is single
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID or group's remote_id
@@ -85,5 +115,15 @@
     type: user_group
     mode: delete
     match: # Only one of the following can be specified, to define which groups to delete
-        - id: x # int|int[]
-        - content_remote_id: y # int|int[]
+        id: x # int|int[]
+        content_remote_id: yyy # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
