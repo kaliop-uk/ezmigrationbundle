@@ -1,3 +1,9 @@
+Version 3.2.2
+=============
+
+* Fixed: do not throw an exception when running the migration:migration --delete command and the migrations table is missing 
+
+
 Version 3.2.1
 =============
 

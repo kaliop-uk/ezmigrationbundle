@@ -79,6 +79,8 @@ class Database implements StorageHandlerInterface
      */
     public function loadMigration($migrationName)
     {
+        $this->createMigrationsTableIfNeeded();
+
         /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
         $q = $this->dbHandler->createSelectQuery();
         $q->select('migration, md5, path, execution_date, status, execution_error')
