@@ -58,6 +58,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $contentService = $this->repository->getContentService();
         $locationService = $this->repository->getLocationService();
         $contentTypeService = $this->repository->getContentTypeService();
+        $sectionService = $this->repository->getSectionService();
 
         $contentTypeIdentifier = $this->dsl['content_type'];
         $contentTypeIdentifier = $this->referenceResolver->resolveReference($contentTypeIdentifier);
@@ -82,7 +83,13 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         if (isset($this->dsl['section'])) {
             $sectionId = $this->dsl['section'];
-            $sectionId = $this->referenceResolver->resolveReference($sectionId);
+            try {
+                $section = $sectionService->loadSectionByIdentifier($sectionId);
+                $sectionId = $section->id;
+            }
+            catch (\eZ\Publish\API\Repository\Exceptions\NotFoundException $notFoundException) {
+                $sectionId = $this->referenceResolver->resolveReference($sectionId);
+            }
             $contentCreateStruct->sectionId = $sectionId;
         }
 
