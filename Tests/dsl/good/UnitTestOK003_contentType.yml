@@ -40,10 +40,6 @@
             default-value: hello world
             field-settings: []
         -
-            type: ezstring
-            name: ezstring
-            identifier: ezstring
-        -
             type: ezauthor
             name: ezauthor
             identifier: ezauthor
@@ -51,6 +47,8 @@
             type: ezbinaryfile
             name: ezbinaryfile
             identifier: ezbinaryfile
+            validator-configuration:
+                FileSizeValidator: { maxFileSize: 123 }
         -
             type: ezboolean
             name: ezboolean
@@ -59,14 +57,22 @@
             type: ezcountry
             name: ezcountry
             identifier: ezcountry
+            field-settings:
+                isMultiple: true
         -
             type: ezdatetime
             name: ezdatetime
             identifier: ezdatetime
+            field-settings:
+                defaultType: 1
+                useSeconds: true
+                dateInterval: null
         -
             type: ezdate
             name: ezdate
             identifier: ezdate
+            field-settings:
+                defaultType: 1
         -
             type: ezemail
             name: ezemail
@@ -75,6 +81,8 @@
             type: ezfloat
             name: ezfloat
             identifier: ezfloat
+            validator-configuration:
+                FloatValueValidator: { minFloatValue: false, maxFloatValue: false }
         # @todo ezgmaplocation fieldType seems to be enabled by default, but the db table might *not* be present...
         #-
         #    type: ezgmaplocation
@@ -84,10 +92,14 @@
             type: ezimage
             name: ezimage
             identifier: ezimage
+            validator-configuration:
+                FileSizeValidator: { maxFileSize: 234 }
         -
             type: ezinteger
             name: ezinteger
             identifier: ezinteger
+            validator-configuration:
+                IntegerValueValidator: { minIntegerValue: -100, maxIntegerValue: 100 }
         -
             type: ezisbn
             name: ezisbn
@@ -100,16 +112,25 @@
             type: ezmedia
             name: ezmedia
             identifier: ezmedia
+            field-settings:
+                mediaType: html5_video
+            validator-configuration:
+                FileSizeValidator: { maxFileSize: 345 }
         -
             type: ezobjectrelation
             name: ezobjectrelation
             identifier: ezobjectrelation
+            field-settings:
+                selectionMethod: 1
+                selectionRoot: 2
         -
             type: ezobjectrelationlist
             name: ezobjectrelationlist
             identifier: ezobjectrelationlist
             field-settings:
+                selectionMethod: 1
                 selectionDefaultLocation: 2
+                selectionContentTypes: [ folder ]
         # @todo we should make sure that at least one layout type exists in order to create an ezpage attribute...
         #-
         #    type: ezpage
@@ -119,19 +140,33 @@
             type: ezselection
             name: ezselection
             identifier: ezselection
+            field-settings:
+                isMultiple: true
+                options: [ one, two ]
         # nb: ezsrrating fieldType seems to be enabled by default, but the db table might *not* be present...
         #-
         #    type: ezsrrating
         #    name: ezsrrating
         #    identifier: ezsrrating
         -
+            type: ezstring
+            name: ezstring
+            identifier: ezstring
+            validator-configuration:
+                  StringLengthValidator: { maxStringLength: 255, minStringLength: 1 }
+        -
             type: eztext
             name: eztext
             identifier: eztext
+            field-settings:
+                textRows: 25
         -
             type: eztime
             name: eztime
             identifier: eztime
+            field-settings:
+                defaultType: 1
+                useSeconds: true
         -
             type: ezurl
             name: ezurl
