@@ -6,6 +6,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
+use eZ\Publish\API\Repository\Values\Content\Content;
 
 /**
  * Handles user-group migrations.
@@ -123,6 +124,10 @@ class UserGroupManager extends RepositoryExecutor
                 $userService->moveUserGroup($userGroup, $newParentGroup);
             }
 
+            if (isset($this->dsl['section'])) {
+                $this->setSection($userGroup, $this->dsl['section']);
+            }
+
             $userGroupCollection[$key] = $userGroup;
         }
 
@@ -223,5 +228,14 @@ class UserGroupManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    protected function setSection(Content $content, $sectionKey)
+    {
+        $sectionKey = $this->referenceResolver->resolveReference($sectionKey);
+        $section = $this->sectionMatcher->matchOneByKey($sectionKey);
+
+        $sectionService = $this->repository->getSectionService();
+        $sectionService->assignSection($content->contentInfo, $section);
     }
 }
