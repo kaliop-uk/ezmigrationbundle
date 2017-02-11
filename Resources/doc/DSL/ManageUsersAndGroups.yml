@@ -73,6 +73,7 @@
     description: xyz # Optional
     roles: [x, y, z] # The role names or ids to assign to the group
     remote_id: custom_remote_id # Optional, will set a custom remote id
+    section: x # string|int Optional section id or identifier
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

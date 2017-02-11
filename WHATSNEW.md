@@ -3,6 +3,8 @@ Version 3.3
 
 * Fixed: on content creation, assigning a section by identifier instead of id 
 
+* New: allow setting section upon UserGroup creation
+
 
 Version 3.2.2
 =============

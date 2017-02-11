@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 
 /**
  * Handles user-group migrations.
@@ -15,11 +16,13 @@ class UserGroupManager extends RepositoryExecutor
 
     protected $userGroupMatcher;
     protected $roleMatcher;
+    protected $sectionMatcher;
 
-    public function __construct(UserGroupMatcher $userGroupMatcher, RoleMatcher $roleMatcher)
+    public function __construct(UserGroupMatcher $userGroupMatcher, RoleMatcher $roleMatcher, SectionMatcher $sectionMatcher)
     {
         $this->userGroupMatcher = $userGroupMatcher;
         $this->roleMatcher = $roleMatcher;
+        $this->sectionMatcher = $sectionMatcher;
     }
 
     /**
@@ -28,7 +31,6 @@ class UserGroupManager extends RepositoryExecutor
     protected function create()
     {
         $userService = $this->repository->getUserService();
-        $sectionService = $this->repository->getSectionService();
 
         $parentGroupId = $this->dsl['parent_group_id'];
         $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
@@ -48,15 +50,9 @@ class UserGroupManager extends RepositoryExecutor
         }
 
         if (isset($this->dsl['section'])) {
-            $sectionId = $this->dsl['section'];
-            try {
-                $section = $sectionService->loadSectionByIdentifier($sectionId);
-                $sectionId = $section->id;
-            }
-            catch (\eZ\Publish\API\Repository\Exceptions\NotFoundException $notFoundException) {
-                $sectionId = $this->referenceResolver->resolveReference($sectionId);
-            }
-            $userGroupCreateStruct->sectionId = $sectionId;
+            $sectionKey = $this->referenceResolver->resolveReference($this->dsl['section']);
+            $section = $this->sectionMatcher->matchOneByKey($sectionKey);
+            $userGroupCreateStruct->sectionId = $section->id;
         }
 
         $userGroup = $userService->createUserGroup($userGroupCreateStruct, $parentGroup);

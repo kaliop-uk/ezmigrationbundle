@@ -222,6 +222,7 @@ services:
         arguments:
             - '@ez_migration_bundle.user_group_matcher'
             - '@ez_migration_bundle.role_matcher'
+            - '@ez_migration_bundle.section_matcher'
         tags:
             - { name: ez_migration_bundle.executor }
 
