@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
