@@ -6,6 +6,7 @@ use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
+/// @todo unify $this->resolver and $this->referenceResolver
 class EzXmlText extends AbstractComplexField implements FieldValueImporterInterface, FieldDefinitionConverterInterface
 {
     protected $resolver;

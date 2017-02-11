@@ -5,6 +5,9 @@ Version 3.3
 
 * New: allow setting section upon UserGroup creation and update
 
+* New: when setting a value for a 'selection' content field, it is now possible to use the selection string value instead
+    of its numerical index; it is also possible to use a single index/name instead of an array
+
 
 Version 3.2.2
 =============

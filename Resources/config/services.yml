@@ -69,6 +69,7 @@ parameters:
     ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
     ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelationList
     ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
+    ez_migration_bundle.complex_field.ezselection.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzSelection
     ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
     ez_migration_bundle.complex_field.eztags.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzTags
 
@@ -415,6 +416,14 @@ services:
             - '@ez_migration_bundle.reference_resolver.customreference'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezrichtext, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezselection:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezselection.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezselection, priority: 0 }
 
     ez_migration_bundle.complex_field.ezxmltext:
         parent: ez_migration_bundle.complex_field

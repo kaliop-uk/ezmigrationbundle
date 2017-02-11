@@ -71,6 +71,10 @@
             - remote_id: abc
             # zero or more tags
             - keyword: hello
+        # ezselection, multiple values
+        attribute15: [ 1, "option 2" ] # array of selection options ids or textual values
+        # ezselection, single value
+        attribute16: "option 3" # integer index or string
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier

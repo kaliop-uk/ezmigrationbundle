@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
+/// @todo unify $this->resolver and $this->referenceResolver
 class EzRichText extends AbstractComplexField implements FieldValueImporterInterface
 {
     protected $resolver;

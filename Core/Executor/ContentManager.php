@@ -388,7 +388,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Create the field value for either a primitive (ie. scalar) or complex field
+     * Create the field value from the migration definition hash
      *
      * @param mixed $value
      * @param FieldDefinition $fieldDefinition
@@ -401,6 +401,9 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
         if (is_array($value) || $this->complexFieldManager->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
+            // inject info about the current content type and field into the context
+            $context['contentTypeIdentifier'] = $contentTypeIdentifier;
+            $context['fieldIdentifier'] = $fieldDefinition->identifier;
             return $this->complexFieldManager->hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $value, $context);
         }
 
@@ -408,8 +411,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Create the field value for a primitive field
-     * This function is needed to get past validation on Checkbox fieldtype (eZP bug)
+     * Create the field value for a primitive field from the migration definition hash
      *
      * @param mixed $value
      * @param FieldDefinition $fieldDefinition
