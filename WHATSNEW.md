@@ -1,3 +1,9 @@
+Version 3.3
+=============
+
+* Fixed: on content creation, assigning a section by identifier instead of id 
+
+
 Version 3.2.2
 =============
 
@@ -7,7 +13,7 @@ Version 3.2.2
 Version 3.2.1
 =============
 
-* Fixed: the 'lang' parameterwas not taken into account by the `generate` command
+* Fixed: the 'lang' parameter was not taken into account by the `generate` command
 
 * Improve docs: describe the settings available for contentType creation
 

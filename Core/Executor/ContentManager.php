@@ -7,7 +7,6 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
-use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
@@ -81,9 +80,9 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         }
 
         if (isset($this->dsl['section'])) {
-            $sectionId = $this->dsl['section'];
-            $sectionId = $this->referenceResolver->resolveReference($sectionId);
-            $contentCreateStruct->sectionId = $sectionId;
+            $sectionKey = $this->referenceResolver->resolveReference($this->dsl['section']);
+            $section = $this->sectionMatcher->matchOneByKey($sectionKey);
+            $contentCreateStruct->sectionId = $section->id;
         }
 
         if (isset($this->dsl['owner'])) {
@@ -527,7 +526,6 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             $contentType = $this->repository->getContentTypeService()->loadContentType(
                 $content->contentInfo->contentTypeId
             );
-            $fieldTypeService = $this->repository->getFieldTypeService();
 
             $contentData = array(
                 'type' => 'content',
