@@ -85,7 +85,7 @@
             name: ezfloat
             identifier: ezfloat
             validator-configuration:
-                FloatValueValidator: { minFloatValue: false, maxFloatValue: false }
+                FloatValueValidator: { minFloatValue: 42, maxFloatValue: 43 }
             default-value: 42.42
         # @todo ezgmaplocation fieldType seems to be enabled by default, but the db table might *not* be present...
         #-
