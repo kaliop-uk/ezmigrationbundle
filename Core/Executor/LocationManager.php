@@ -7,6 +7,7 @@ use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher;
+use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 
 class LocationManager extends RepositoryExecutor
 {
@@ -14,11 +15,14 @@ class LocationManager extends RepositoryExecutor
 
     protected $contentMatcher;
     protected $locationMatcher;
+    protected $sortConverter;
 
-    public function __construct(ContentMatcher $contentMatcher, LocationMatcher $locationMatcher)
+
+    public function __construct(ContentMatcher $contentMatcher, LocationMatcher $locationMatcher, SortConverter $sortConverter)
     {
         $this->contentMatcher = $contentMatcher;
         $this->locationMatcher = $locationMatcher;
+        $this->sortConverter = $sortConverter;
     }
 
     /**
@@ -272,20 +276,19 @@ class LocationManager extends RepositoryExecutor
         return $this->contentMatcher->matchContent($match);
     }
 
+    /**
+     * @param $newValue
+     * @param null $currentValue
+     * @return int|null
+     *
+     * * @todo make protected
+     */
     public function getSortField($newValue, $currentValue = null)
     {
-        $sortField = null;
-
-        if (!is_null($currentValue)) {
-            $sortField = $currentValue;
-        }
+        $sortField = $currentValue;
 
         if ($newValue !== null) {
-            $sortFieldId = "SORT_FIELD_" . strtoupper($newValue);
-
-            $ref = new \ReflectionClass('eZ\Publish\API\Repository\Values\Content\Location');
-
-            $sortField = $ref->getConstant($sortFieldId);
+            $sortField = $this->sortConverter->hash2SortField($newValue);
         }
 
         return $sortField;
@@ -298,22 +301,16 @@ class LocationManager extends RepositoryExecutor
      *
      * @param int $newValue
      * @param int $currentValue
-     * @return int
+     * @return int|null
+     *
+     * @todo make protected
      */
     public function getSortOrder($newValue, $currentValue = null)
     {
-        $sortOrder = null;
-
-        if (!is_null($currentValue)) {
-            $sortOrder = $currentValue;
-        }
+        $sortOrder = $currentValue;
 
         if ($newValue !== null) {
-            if (strtoupper($newValue) === 'ASC') {
-                $sortOrder = Location::SORT_ORDER_ASC;
-            } else {
-                $sortOrder = Location::SORT_ORDER_DESC;
-            }
+            $sortOrder = $this->sortConverter->hash2SortOrder($newValue);
         }
 
         return $sortOrder;

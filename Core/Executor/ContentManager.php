@@ -14,6 +14,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
+use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 /**
@@ -32,6 +33,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected $objectStateMatcher;
     protected $complexFieldManager;
     protected $locationManager;
+    protected $sortConverter;
 
     public function __construct(
         ContentMatcher $contentMatcher,
@@ -39,7 +41,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         UserMatcher $userMatcher,
         ObjectStateMatcher $objectStateMatcher,
         ComplexFieldManager $complexFieldManager,
-        LocationManager $locationManager
+        LocationManager $locationManager,
+        SortConverter $sortConverter
     ) {
         $this->contentMatcher = $contentMatcher;
         $this->sectionMatcher = $sectionMatcher;
@@ -47,6 +50,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $this->objectStateMatcher = $objectStateMatcher;
         $this->complexFieldManager = $complexFieldManager;
         $this->locationManager = $locationManager;
+        $this->sortConverter = $sortConverter;
     }
 
     /**
@@ -129,13 +133,13 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         }
 
         if (isset($this->dsl['sort_field'])) {
-            $locationCreateStruct->sortField = $this->locationManager->getSortField($this->dsl['sort_field']);
+            $locationCreateStruct->sortField = $this->sortConverter->hash2SortField($this->dsl['sort_field']);
         } else {
             $locationCreateStruct->sortField = $contentType->defaultSortField;
         }
 
         if (isset($this->dsl['sort_order'])) {
-            $locationCreateStruct->sortOrder = $this->locationManager->getSortOrder($this->dsl['sort_order']);
+            $locationCreateStruct->sortOrder = $this->sortConverter->hash2SortOrder($this->dsl['sort_order']);
         } else {
             $locationCreateStruct->sortOrder = $contentType->defaultSortOrder;
         }
@@ -450,7 +454,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      *
-     * @todo add support for other attributes: remote ids, contentTypeId, contentTypeIdentifier, section, etc...
+     * @todo add support for other attributes: contentTypeId, contentTypeIdentifier, section, etc... ?
      */
     protected function setReferences($content)
     {
@@ -514,6 +518,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @return array
      *
      * @todo add support for dumping all object languages
+     * @todo add 2ndary locations when in 'update' mode
+     * @todo add dumping of sort_field and sort_order for 2ndary locations
      */
     public function generateMigration(array $matchCondition, $mode)
     {
@@ -536,8 +542,6 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
             switch ($mode) {
                 case 'create':
-                    // @todo Add sort_field and sort_order
-                    // @todo Add 2ndary locations
                     $contentData = array_merge(
                         $contentData,
                         array(
@@ -545,10 +549,23 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             'parent_location' => $location->parentLocationId,
                             'priority' => $location->priority,
                             'is_hidden' => $location->invisible,
+                            'sort_field' => $this->sortConverter->sortField2Hash($location->sortField),
+                            'sort_order' => $this->sortConverter->sortOrder2Hash($location->sortOrder),
                             'remote_id' => $content->contentInfo->remoteId,
                             'location_remote_id' => $location->remoteId
                         )
                     );
+                    $locationService = $this->repository->getLocationService();
+                    $locations = $locationService->loadLocations($content->contentInfo);
+                    if (count($locations) > 1) {
+                        $otherParentLocations = array();
+                        foreach($locations as $otherLocation) {
+                            if ($otherLocation->id != $location->id) {
+                                $otherParentLocations[] = $otherLocation->parentLocationId;
+                            }
+                        }
+                        $contentData['other_parent_locations'] = $otherParentLocations;
+                    }
                     break;
                 case 'update':
                 case 'delete':
@@ -566,6 +583,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
 
             if ($mode != 'delete') {
+
+
                 $attributes = array();
                 foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $fieldIdentifier => $field) {
                     $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);

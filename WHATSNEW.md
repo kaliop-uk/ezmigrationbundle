@@ -8,6 +8,9 @@ Version 3.3
 * New: when setting a value for a 'selection' content field, it is now possible to use the selection string value instead
     of its numerical index; it is also possible to use a single index/name instead of an array
 
+* New: when using the `generate` command for content creation migrations, 2ndary locations are exported. Also, the sort
+    field and sort order of the main location are exported
+
 
 Version 3.2.2
 =============
