@@ -39,6 +39,7 @@
             category: meta
             default-value: hello world
             field-settings: []
+            default-value: 'hello world'
         -
             type: ezauthor
             name: ezauthor
@@ -53,12 +54,14 @@
             type: ezboolean
             name: ezboolean
             identifier: ezboolean
+            default-value: true
         -
             type: ezcountry
             name: ezcountry
             identifier: ezcountry
             field-settings:
                 isMultiple: true
+            default-value: [ AF ]
         -
             type: ezdatetime
             name: ezdatetime
@@ -83,6 +86,7 @@
             identifier: ezfloat
             validator-configuration:
                 FloatValueValidator: { minFloatValue: false, maxFloatValue: false }
+            default-value: 42.42
         # @todo ezgmaplocation fieldType seems to be enabled by default, but the db table might *not* be present...
         #-
         #    type: ezgmaplocation
@@ -100,6 +104,7 @@
             identifier: ezinteger
             validator-configuration:
                 IntegerValueValidator: { minIntegerValue: -100, maxIntegerValue: 100 }
+            default-value: 42
         -
             type: ezisbn
             name: ezisbn
