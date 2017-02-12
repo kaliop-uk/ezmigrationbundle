@@ -11,6 +11,9 @@ Version 3.3
 * New: when using the `generate` command for content creation migrations, 2ndary locations are exported. Also, the sort
     field and sort order of the main location are exported
 
+* New: it is now possible to use a specific type of exception during execution of a Migration Step (or a listener) to
+    abort a migration without having it flagged as failed - it can be flagged as either done or skipped
+
 
 Version 3.2.2
 =============

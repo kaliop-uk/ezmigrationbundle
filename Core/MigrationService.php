@@ -13,6 +13,7 @@ use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 
@@ -243,22 +244,32 @@ class MigrationService
         try {
 
             $i = 1;
+            $finalStatus = Migration::STATUS_DONE;
+            $finalMessage = null;
 
-            foreach ($migrationDefinition->steps as $step) {
-                // we validated the fact that we have a good executor at parsing time
-                $executor = $this->executors[$step->type];
+            try {
 
-                $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
-                $this->dispatcher->dispatch('ez_migration.before_execution', $beforeStepExecutionEvent);
-                // allow some sneaky trickery here: event listeners can manipulate 'live' the step definition and the executor
-                $executor = $beforeStepExecutionEvent->getExecutor();
-                $step = $beforeStepExecutionEvent->getStep();
+                foreach ($migrationDefinition->steps as $step) {
+                    // we validated the fact that we have a good executor at parsing time
+                    $executor = $this->executors[$step->type];
 
-                $result = $executor->execute($step);
+                    $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
+                    $this->dispatcher->dispatch('ez_migration.before_execution', $beforeStepExecutionEvent);
+                    // allow some sneaky trickery here: event listeners can manipulate 'live' the step definition and the executor
+                    $executor = $beforeStepExecutionEvent->getExecutor();
+                    $step = $beforeStepExecutionEvent->getStep();
 
-                $this->dispatcher->dispatch('ez_migration.step_executed', new StepExecutedEvent($step, $result));
+                    $result = $executor->execute($step);
 
-                $i++;
+                    $this->dispatcher->dispatch('ez_migration.step_executed', new StepExecutedEvent($step, $result));
+
+                    $i++;
+                }
+
+            } catch (MigrationAbortedException $e) {
+                // allow a migration step (or events) to abort the migration via a specific exception
+                $finalStatus = $e->getCode();
+                $finalMessage = "Abort in execution of step $i: " . $e->getMessage();
             }
 
             // set migration as done
@@ -267,7 +278,8 @@ class MigrationService
                 $migration->md5,
                 $migration->path,
                 $migration->executionDate,
-                Migration::STATUS_DONE
+                $finalStatus,
+                $finalMessage
             ));
 
             if ($useTransaction) {
