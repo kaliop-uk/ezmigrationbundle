@@ -448,7 +448,6 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
     /**
      * Sets references to certain content attributes.
-     * The Content Manager currently supports setting references to object_id and location_id
      *
      * @param \eZ\Publish\API\Repository\Values\Content\Content|ContentCollection $content
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute

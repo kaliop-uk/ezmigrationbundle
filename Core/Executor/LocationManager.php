@@ -103,11 +103,11 @@ class LocationManager extends RepositoryExecutor
         $locationCollection = $this->matchLocations('update');
 
         if (count($locationCollection) > 1 && isset($this->dsl['references'])) {
-            throw new \Exception("Can not execute Location update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
+            throw new \Exception("Can not execute Location update because multiple locations match, and a references section is specified in the dsl. References can be set when only 1 location matches");
         }
 
         if (count($locationCollection) > 1 && isset($this->dsl['swap_with_location'])) {
-            throw new \Exception("Can not execute Location update because multiple contents match, and a swap_with_location is specified in the dsl.");
+            throw new \Exception("Can not execute Location update because multiple locations match, and a swap_with_location is specified in the dsl.");
         }
 
         // support legacy tag: parent_location_id

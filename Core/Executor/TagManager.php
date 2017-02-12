@@ -144,7 +144,7 @@ class TagManager extends RepositoryExecutor
                     $value = $object->id;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new \InvalidArgumentException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $this->referenceResolver->addReference($reference['identifier'], $value);

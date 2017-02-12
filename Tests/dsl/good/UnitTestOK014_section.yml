@@ -1,0 +1,23 @@
+-
+    type: section
+    mode: create
+    name: Kaliop Migration Bundle Test Section 1
+    identifier: kmb_test_tection_1
+    references:
+        -
+            identifier: kmb_test_14_1
+            attribute: id
+
+-
+    type: section
+    mode: update
+    name: Kaliop Migration Bundle Test Section 1 updated
+    identifier: kmb_test_tection_1_updated
+    match:
+        id: reference:kmb_test_14_1
+
+-
+    type: section
+    mode: delete
+    match:
+        identifier: kmb_test_tection_1_updated

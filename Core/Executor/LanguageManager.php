@@ -14,7 +14,7 @@ class LanguageManager extends RepositoryExecutor
     protected $supportedActions = array('create', 'delete');
 
     /**
-     * Handle the content create migration action
+     * Handle the language create migration action
      */
     protected function create()
     {
@@ -75,8 +75,7 @@ class LanguageManager extends RepositoryExecutor
     }
 
     /**
-     * Sets references to certain content attributes.
-     * The Content Manager currently supports setting references to object_id and location_id
+     * Sets references to certain language attributes.
      *
      * @param \eZ\Publish\API\Repository\Values\Content\Language|LanguageCollection $language
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
@@ -90,7 +89,7 @@ class LanguageManager extends RepositoryExecutor
 
         if ($language instanceof LanguageCollection) {
             if (count($language) > 1) {
-                throw new \InvalidArgumentException('Content Manager does not support setting references for creating/updating of multiple languages');
+                throw new \InvalidArgumentException('Language Manager does not support setting references for creating/updating of multiple languages');
             }
             $language = reset($language);
         }
@@ -103,7 +102,7 @@ class LanguageManager extends RepositoryExecutor
                     $value = $language->id;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new \InvalidArgumentException('Language Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $this->referenceResolver->addReference($reference['identifier'], $value);

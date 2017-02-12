@@ -14,6 +14,10 @@ Version 3.3
 * New: it is now possible to use a specific type of exception during execution of a Migration Step (or a listener) to
     abort a migration without having it flagged as failed - it can be flagged as either done or skipped
 
+* New: it is now possible to create/update/delete sections via migrations
+
+* Improved many error messages
+
 
 Version 3.2.2
 =============

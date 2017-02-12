@@ -264,7 +264,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
         if ($contentType instanceof ContentTypeCollection) {
             if (count($contentType) > 1) {
-                throw new \InvalidArgumentException('ContentType Manager does not support setting references for creating/updating of multiple content types');
+                throw new \InvalidArgumentException('Content Type Manager does not support setting references for creating/updating of multiple content types');
             }
             $contentType = reset($contentType);
         }

@@ -116,7 +116,7 @@ class ContentTypeGroupManager extends RepositoryExecutor
                     $value = $object->identifier;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new \InvalidArgumentException('Content Type Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $this->referenceResolver->addReference($reference['identifier'], $value);
