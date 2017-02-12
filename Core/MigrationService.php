@@ -202,7 +202,7 @@ class MigrationService
             }
         }
 
-        throw new \Exception("No parser available to parse migration definition '$migrationDefinition'");
+        throw new \Exception("No parser available to parse migration definition '{$migrationDefinition->name}'");
     }
 
     /**

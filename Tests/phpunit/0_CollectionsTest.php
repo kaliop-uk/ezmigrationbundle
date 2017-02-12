@@ -6,7 +6,7 @@ use Kaliop\eZMigrationBundle\API\Collection\MigrationStepsCollection;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 /**
- * Tests the 'filtering' features of the colections. Plain usage as array is already tested by th rest of the suite
+ * Tests the 'filtering' features of the collections. Plain usage as array is already tested by the rest of the suite
  */
 class CollectionsTest extends CommandTest
 {
@@ -47,5 +47,15 @@ class CollectionsTest extends CommandTest
 
         $this->setExpectedException('InvalidArgumentException');
         $collection['test'] = true;
+    }
+
+    public function testExchangeArray()
+    {
+        $collection = new MigrationStepsCollection(array(new MigrationStep('test1')));
+        $collection->exchangeArray(array(new MigrationStep('test2')));
+        $this->assertEquals('test2', $collection[0]->type);
+
+        $this->setExpectedException('InvalidArgumentException');
+        $collection->exchangeArray(array('hello'));
     }
 }

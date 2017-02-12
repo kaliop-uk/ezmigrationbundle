@@ -10,11 +10,11 @@ abstract class CommandTest extends WebTestCase
     protected $targetBundle = 'EzPublishCoreBundle'; // it is always present :-)
     protected $leftovers = array();
 
+    /** @var \Symfony\Component\DependencyInjection\ContainerInterface $container */
     protected $container;
-    /**
-     * @var \eZ\Bundle\EzPublishCoreBundle\Console\Application
-     */
+    /** @var \eZ\Bundle\EzPublishCoreBundle\Console\Application $app */
     protected $app;
+    /** @var StreamOutput $output */
     protected $output;
 
     // tell to phpunit not to mess with ezpublish legacy global vars...
