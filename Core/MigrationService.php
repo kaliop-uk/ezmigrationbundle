@@ -16,6 +16,7 @@ use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
+use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
 
 class MigrationService
 {
@@ -268,6 +269,9 @@ class MigrationService
 
             } catch (MigrationAbortedException $e) {
                 // allow a migration step (or events) to abort the migration via a specific exception
+
+                $this->dispatcher->dispatch('ez_migration.step_executed', new MigrationAbortedEvent($step, $e));
+
                 $finalStatus = $e->getCode();
                 $finalMessage = "Abort in execution of step $i: " . $e->getMessage();
             }
