@@ -116,6 +116,9 @@ EOT
                     case Migration::STATUS_PARTIALLY_DONE:
                         $status = '<comment>partially executed</comment>';
                         break;
+                    case Migration::STATUS_SUSPENDED:
+                        $status = '<comment>suspended</comment>';
+                        break;
                     case Migration::STATUS_FAILED:
                         $status = '<error>failed</error>';
                         break;
