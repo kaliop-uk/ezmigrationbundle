@@ -46,6 +46,7 @@ class TracingStepExecutedListener
             case 'object_state':
             case 'object_state_group':
             case 'role':
+            case 'section':
             case 'tag':
             case 'user':
             case 'user_group':

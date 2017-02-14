@@ -270,7 +270,7 @@ class MigrationService
             } catch (MigrationAbortedException $e) {
                 // allow a migration step (or events) to abort the migration via a specific exception
 
-                $this->dispatcher->dispatch('ez_migration.step_executed', new MigrationAbortedEvent($step, $e));
+                $this->dispatcher->dispatch('ez_migration.migration_aborted', new MigrationAbortedEvent($step, $e));
 
                 $finalStatus = $e->getCode();
                 $finalMessage = "Abort in execution of step $i: " . $e->getMessage();

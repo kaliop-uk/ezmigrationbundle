@@ -149,6 +149,7 @@ In a Yaml migration, you can define the following types of actions:
 - creation and deletion of ContentTypeGroups
 - creation, update and deletion of ObjectStates
 - creation, update and deletion of ObjectStateGroups
+- creation, update and deletion of Sections
 - creation and deletion of Languages
 - creation and deletion of of Tags (from the Netgen Tags Bundle)
 
@@ -228,13 +229,17 @@ case you need to roll back your changes. Another approach consists in writing a 
 
 ## Customizing the migration logic via Event Listeners
 
-An easy way to hook up custom logic to the execution of migration steps - without having to implement your own
-customized action executors - is to use Event Listeners.
+An easy way to hook up custom logic to the execution of migrations - without having to implement your own customized
+action executors - is to use Event Listeners.
 
 Two events are fired *for each step* during execution of migrations:
 
     * ez_migration.before_execution => listeners receive a BeforeStepExecutionEvent event instance
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
+
+An event is fired only in case a migration fails because a step throws a specific migration abort exception:
+
+    * ez_migration.migration_aborted => listeners receive a MigrationAbortedEvent event instance
 
 In order to act on those events, you will need to declare tagged services, such as for ex:
 
