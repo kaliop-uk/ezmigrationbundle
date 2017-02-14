@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\EventListener;
 
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
+use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
 use \Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
 
 use Symfony\Component\Console\Output\OutputInterface;
@@ -46,6 +47,7 @@ class TracingStepExecutedListener
             case 'object_state':
             case 'object_state_group':
             case 'role':
+            case 'section':
             case 'tag':
             case 'user':
             case 'user_group':
@@ -61,6 +63,25 @@ class TracingStepExecutedListener
                 // custom migration step types...
                 $out = "migration step '$type' has been executed";
         }
+
+        if ($this->output) {
+            if ($this->output->getVerbosity() >= $this->minVerbosityLevel) {
+                $this->output->writeln($out);
+            }
+        } else {
+            echo $out . "\n";
+        }
+    }
+
+    public function onMigrationAborted(MigrationAbortedEvent $event)
+    {
+        $type = $event->getStep()->type;
+        $dsl = $event->getStep()->dsl;
+        if (isset($dsl['mode'])) {
+            $type .= '/' . $dsl['mode'];
+        }
+
+        $out = "migration aborted with status " . $event->getException()->getCode() . " during execution of step '$type'. Message: " . $event->getException()->getMessage();
 
         if ($this->output) {
             if ($this->output->getVerbosity() >= $this->minVerbosityLevel) {

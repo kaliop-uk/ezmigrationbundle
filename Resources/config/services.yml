@@ -510,6 +510,7 @@ services:
         class: '%ez_migration_bundle.step_executed_listener.tracing.class%'
         tags:
             - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
+            - { name: kernel.event_listener, event: ez_migration.migration_aborted, method: onMigrationAborted }
 
     ez_migration_bundle.helper.limitation_converter:
         class: '%ez_migration_bundle.helper.limitation_converter.class%'
