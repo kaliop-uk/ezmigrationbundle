@@ -1,10 +1,12 @@
-Version 3.4 (unreleased)
-========================
+Version 3.4
+===========
 
 * Migration step executors can now throw a `MigrationAbortedException` exception to halt the execution of a migration
     and have it recorded as either 'done' or 'skipped' instead of 'failed'
 
 * Added a corresponding new event: `ez_migration.migration_aborted` that can be listened to by user code
+
+* Fix BC with custom Complex Fieldtype handlers created by extending the bundle (bug introduced in 3.2) 
 
 
 Version 3.3
