@@ -3,14 +3,14 @@ Version 3.5 (unreleased)
 
 * Allow the `generate` command to easily create a migration definition in a custom directory instead of a bundle
 
+* Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
+
 
 Version 3.4
 ===========
 
-* Migration step executors can now throw a `MigrationAbortedException` exception to halt the execution of a migration
-    and have it recorded as either 'done' or 'skipped' instead of 'failed'
-
-* Added a corresponding new event: `ez_migration.migration_aborted` that can be listened to by user code
+* Added a new event: `ez_migration.migration_aborted` that can be listened to by user code, triggered when a
+    `MigrationAbortedException` is thrown by a migration executor
 
 * Fix BC with custom Complex Fieldtype handlers created by extending the bundle (bug introduced in 3.2) 
 
@@ -29,7 +29,8 @@ Version 3.3
     field and sort order of the main location are exported
 
 * New: it is now possible to use a specific type of exception during execution of a Migration Step (or a listener) to
-    abort a migration without having it flagged as failed - it can be flagged as either done or skipped
+    abort a migration without having it flagged as failed - it can be flagged as either done or skipped by throwing a
+    `MigrationAbortedException`
 
 * New: it is now possible to create/update/delete sections via migrations
 
