@@ -1,3 +1,9 @@
+Version 3.5 (unreleased)
+========================
+
+* Allow the `generate` command to easily create a migration definition in a custom directory instead of a bundle
+
+
 Version 3.4
 ===========
 

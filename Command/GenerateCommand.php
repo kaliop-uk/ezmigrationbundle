@@ -42,26 +42,29 @@ The <info>kaliop:migration:generate</info> command generates a skeleton migratio
 
     <info>php ezpublish/console kaliop:migration:generate bundlename</info>
 
-You can optionally specify the file type to generate with <info>--format</info>:
+You can optionally specify the file type to generate with <info>--format</info>, as well a name for the migration:
 
     <info>php ezpublish/console kaliop:migration:generate --format=json bundlename migrationname</info>
 
 For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
 
-    <info>php ezpublish/console kaliop:migration:generate --format=sql bundlename migrationname</info>
+    <info>php ezpublish/console kaliop:migration:generate --format=sql bundlename</info>
 
 For role/content/content_type migrations you need to specify the entity that you want to generate the migration for:
 
-    <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14</info>
+    <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14 bundlename</info>
 
-For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies you wish for the role. Any not defined will be removed.
+For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies
+you wish for the role. Any not defined will be removed.
 
-    <info>php ezpublish/console kaliop:migration:generate --type=role --match-value=Anonymous bundlename migrationname
+    <info>php ezpublish/console kaliop:migration:generate --type=role --match-value=Anonymous bundlename</info>
 
 For freeform php migrations, you will receive a php class definition
 
     <info>php ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
 
+Note that you can pass in a custom directory path instead of a bundle name, but, if you do, you will have to use the <info>--path</info>
+option when you run the <info>migrate</info> command.
 EOT
             );
     }
@@ -101,18 +104,6 @@ EOT
             throw new \InvalidArgumentException("It is not allowed to create migrations in bundle '$bundleName'");
         }
 
-        $activeBundles = array();
-        foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
-            $activeBundles[] = $bundle->getName();
-        }
-        asort($activeBundles);
-        if (!in_array($bundleName, $activeBundles)) {
-            throw new \InvalidArgumentException("Bundle '$bundleName' does not exist or it is not enabled. Try with one of:\n" . implode(', ', $activeBundles));
-        }
-
-        $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);
-        $migrationDirectory = $bundle->getPath() . '/' . $this->getContainer()->getParameter('kaliop_bundle_migration.version_directory');
-
         // be kind to lazy users
         if ($migrationType == '') {
             if ($fileType == 'sql') {
@@ -131,6 +122,8 @@ EOT
         if (!in_array($mode, $this->availableModes)) {
             throw new \InvalidArgumentException('Unsupported migration mode ' . $mode);
         }
+
+        $migrationDirectory = $this->getMigrationDirectory($bundleName);
 
         if (!is_dir($migrationDirectory)) {
             $output->writeln(sprintf(
@@ -188,7 +181,6 @@ EOT
                     $className = $className . sprintf('%03d', $existingMigrations + 1);
                 }
                 $parameters = array_merge($parameters, array(
-                    'namespace' => $bundle->getNamespace(),
                     'class_name' => $className
                 ));
                 $fileName = $date . '_' . $className . '.php';
@@ -275,6 +267,32 @@ EOT
         file_put_contents($path, $code);
 
         return $warning;
+    }
+
+    /**
+     * @param string $bundleName a bundle name or filesystem path to a directory
+     * @return string
+     */
+    protected function getMigrationDirectory($bundleName)
+    {
+        // Allow direct usage of a directory path instead of a bundle name
+        if (strpos($bundleName, '/') !== false && is_dir($bundleName)) {
+            return rtrim($bundleName, '/');
+        }
+
+        $activeBundles = array();
+        foreach ($this->getApplication()->getKernel()->getBundles() as $bundle) {
+            $activeBundles[] = $bundle->getName();
+        }
+        asort($activeBundles);
+        if (!in_array($bundleName, $activeBundles)) {
+            throw new \InvalidArgumentException("Bundle '$bundleName' does not exist or it is not enabled. Try with one of:\n" . implode(', ', $activeBundles));
+        }
+
+        $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);
+        $migrationDirectory = $bundle->getPath() . '/' . $this->getContainer()->getParameter('kaliop_bundle_migration.version_directory');
+
+        return $migrationDirectory;
     }
 
     protected function getGeneratingExecutors()
