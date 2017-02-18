@@ -66,6 +66,7 @@ parameters:
     ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDate
     ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDateAndTime
     ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
+    ez_migration_bundle.complex_field.ezmedia.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzMedia
     ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
     ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
     ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelationList
@@ -394,6 +395,15 @@ services:
             - "@?ezpublish.core.io.prefix_url_decorator"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezimage, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezmedia:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezmedia.class%'
+        arguments:
+            - "$io.root_dir$"
+            - "@?ezpublish.core.io.prefix_url_decorator"
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezmedia, priority: 0 }
 
     ez_migration_bundle.complex_field.ezpage:
         parent: ez_migration_bundle.complex_field

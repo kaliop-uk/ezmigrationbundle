@@ -13,6 +13,13 @@ Version 3.5 (unreleased)
     - the eZ4 Admin Interface does *not* display the actual field position, and shows 10,20,30 instead... In order to
          see the _real_ position that fields currently have it is recommended to generate a ContentType `create` migration
 
+* New: better support for content fields of type `ezmedia`:
+    - it is now possible to put the binary files next to the migration file, in a subfolder named 'media', similar to 
+        what was already possible for ezimage and ezbinaryfile
+    - the attributes to be used in the migration yml to define an ezmedia field are more consistent with the others
+    - the path to the media binary file in generated migrations has become an absolute path
+
+
 Version 3.4
 ===========
 

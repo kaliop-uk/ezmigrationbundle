@@ -4,19 +4,9 @@ namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
-use eZ\Publish\Core\IO\UrlDecorator;
 
-class EzBinaryFile extends AbstractComplexField implements FieldValueConverterInterface
+class EzBinaryFile extends FileField implements FieldValueConverterInterface
 {
-    protected $ioRootDir;
-    protected $ioDecorator;
-
-    public function __construct($ioRootDir, UrlDecorator $ioDecorator = null)
-    {
-        $this->ioRootDir = $ioRootDir;
-        $this->ioDecorator = $ioDecorator;
-    }
-
     /**
      * @param array|string $fieldValue The path to the file or an array with 'path' key
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration

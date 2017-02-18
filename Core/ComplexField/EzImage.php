@@ -4,19 +4,9 @@ namespace Kaliop\eZMigrationBundle\Core\ComplexField;
 
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
-use eZ\Publish\Core\IO\UrlDecorator;
 
-class EzImage extends AbstractComplexField implements FieldValueConverterInterface
+class EzImage extends FileField implements FieldValueConverterInterface
 {
-    protected $ioRootDir;
-    protected $ioDecorator;
-
-    public function __construct($ioRootDir, UrlDecorator $ioDecorator=null)
-    {
-        $this->ioRootDir = $ioRootDir;
-        $this->ioDecorator = $ioDecorator;
-    }
-
     /**
      * Creates a value object to use as the field value when setting an image field type.
      *
