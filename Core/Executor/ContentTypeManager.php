@@ -81,9 +81,19 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         }
 
         // Add attributes
+        // NB: seems like eZ gets mixed up if we pass some attributes with a position and some without...
+        // We go out of our way to avoid collisions and preserve an order: fields without position go *last*
+        $maxFieldDefinitionPos = 0;
+        $fieldDefinitions = array();
         foreach ($this->dsl['attributes'] as $position => $attribute) {
             $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $this->dsl['identifier']);
-            $fieldDefinition->position = ++$position;
+            $maxFieldDefinitionPos = $fieldDefinition->position > $maxFieldDefinitionPos ? $fieldDefinition->position : $maxFieldDefinitionPos;
+            $fieldDefinitions[] = $fieldDefinition;
+        }
+        foreach ($fieldDefinitions as $fieldDefinition) {
+            if ($fieldDefinition->position == 0) {
+                $fieldDefinition->position = ++$maxFieldDefinitionPos;
+            }
             $contentTypeCreateStruct->addFieldDefinition($fieldDefinition);
         }
 
@@ -149,8 +159,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
             // Add/edit attributes
             if (isset($this->dsl['attributes'])) {
+                // NB: seems like eZ gets mixed up if we pass some attributes with a position and some without...
+                // We go out of our way to avoid collisions and preserve order
+                $maxFieldDefinitionPos = count($contentType->fieldDefinitions);
+                $newFieldDefinitions = array();
                 foreach ($this->dsl['attributes'] as $attribute) {
+
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
+
                     if ($existingFieldDefinition) {
                         // Edit existing attribute
                         $fieldDefinitionUpdateStruct = $this->updateFieldDefinition(
@@ -161,12 +177,26 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                             $existingFieldDefinition,
                             $fieldDefinitionUpdateStruct
                         );
+                        if ($fieldDefinitionUpdateStruct->position > 0) {
+                            $maxFieldDefinitionPos = $fieldDefinitionUpdateStruct->position > $maxFieldDefinitionPos ? $fieldDefinitionUpdateStruct->position : $maxFieldDefinitionPos;
+                        } else {
+                            $maxFieldDefinitionPos = $existingFieldDefinition->position > $maxFieldDefinitionPos ? $existingFieldDefinition->position : $maxFieldDefinitionPos;
+                        }
+
                     } else {
-                        // Add new attribute
+                        // Create new attributes, keep them in temp array
                         $newFieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $contentType->identifier);
-                        $newFieldDefinition->position = count($contentType->fieldDefinitions);
-                        $contentTypeService->addFieldDefinition($contentTypeDraft, $newFieldDefinition);
+                        $maxFieldDefinitionPos = $newFieldDefinition->position > $maxFieldDefinitionPos ? $newFieldDefinition->position : $maxFieldDefinitionPos;
+                        $newFieldDefinitions[] = $newFieldDefinition;
                     }
+                }
+
+                // Add new attributes
+                foreach($newFieldDefinitions as $newFieldDefinition) {
+                    if ($newFieldDefinition->position == 0) {
+                        $newFieldDefinition->position = ++$maxFieldDefinitionPos;
+                    }
+                    $contentTypeService->addFieldDefinition($contentTypeDraft, $newFieldDefinition);
                 }
             }
 
@@ -236,7 +266,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         foreach ($match as $condition => $values) {
             if (is_array($values)) {
                 foreach ($values as $position => $value) {
-                $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
+                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
                 }
             } else {
                 $match[$condition] = $this->referenceResolver->resolveReference($values);
@@ -341,6 +371,9 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 case 'field-settings':
                     $fieldDefinition->fieldSettings = $this->getFieldSettings($value, $attribute['type'], $contentTypeIdentifier);
                     break;
+                case 'position':
+                    $fieldDefinition->position = (int)$value;
+                    break;
                 case 'validator-configuration':
                     $fieldDefinition->validatorConfiguration = $value;
                     break;
@@ -402,7 +435,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinitionUpdateStruct->fieldSettings = $this->getFieldSettings($value, $fieldTypeIdentifier, $contentTypeIdentifier);
                     break;
                 case 'position':
-                    $fieldDefinitionUpdateStruct->position = $value;
+                    $fieldDefinitionUpdateStruct->position = (int)$value;
                     break;
                 case 'validator-configuration':
                     $fieldDefinitionUpdateStruct->validatorConfiguration = $value;
@@ -511,7 +544,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $fieldTypeService = $this->repository->getFieldTypeService();
 
                 $attributes = array();
-                foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
+                foreach ($contentType->getFieldDefinitions() as $i => $fieldDefinition) {
                     $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
                     $attribute = array(
                         'identifier' => $fieldDefinition->identifier,
@@ -523,6 +556,9 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         'info-collector' => $fieldDefinition->isInfoCollector,
                         'disable-translation' => !$fieldDefinition->isTranslatable,
                         'category' => $fieldDefinition->fieldGroup,
+                        // Should we cheat and do like the eZ4 Admin Interface and used sequential numbering 1,2,3... ?
+                        // But what if the end user then edits the 'update' migration and only leaves in it a single
+                        // field position update? He/she might be surprised when executing it...
                         'position' => $fieldDefinition->position
                     );
 

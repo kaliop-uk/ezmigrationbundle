@@ -5,6 +5,13 @@ Version 3.5 (unreleased)
 
 * Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
 
+* New: allow the `position` field for attributes in ContentType `create` migrations.
+    *NB* the algorithm used for the sorting of ContentType fields has changed compared to previous versions, for both
+    creation and update:
+    - mixing fields with a specified position and without it results in the fields without position to always go last
+    - for consistent results, it is recommended to always either specify the position for all fields or to none 
+    - the eZ4 Admin Interface does *not* display the actual field position, and shows 10,20,30 instead... In order to
+         see the _real_ position that fields currently have it is recommended to generate a ContentType `create` migration
 
 Version 3.4
 ===========
