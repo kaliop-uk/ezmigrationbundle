@@ -1,9 +1,7 @@
 Version 3.5 (unreleased)
 ========================
 
-* Allow the `generate` command to easily create a migration definition in a custom directory instead of a bundle
-
-* Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
+* New: allow the `generate` command to easily create a migration definition in a custom directory instead of a bundle
 
 * New: allow the `position` field for attributes in ContentType `create` migrations.
     *NB* the algorithm used for the sorting of ContentType fields has changed compared to previous versions, for both
@@ -19,6 +17,16 @@ Version 3.5 (unreleased)
     - the attributes to be used in the migration yml to define an ezmedia field are more consistent with the others
     - the path to the media binary file in generated migrations has become an absolute path
 
+* New: it is now possible to update Content Type Groups
+
+* New: when creating a Content Type Group, it is possible to set a custom creation date
+
+* New: it is now possible to generate migrations for Sections and Content Type Groups
+
+* Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
+
+* Fix: section updates would fail at setting the name
+
 
 Version 3.4
 ===========
@@ -26,7 +34,7 @@ Version 3.4
 * Added a new event: `ez_migration.migration_aborted` that can be listened to by user code, triggered when a
     `MigrationAbortedException` is thrown by a migration executor
 
-* Fix BC with custom Complex Fieldtype handlers created by extending the bundle (bug introduced in 3.2) 
+* Fix BC with custom Complex FieldType handlers created by extending the bundle (bug introduced in 3.2) 
 
 
 Version 3.3

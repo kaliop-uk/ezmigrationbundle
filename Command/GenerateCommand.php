@@ -17,6 +17,7 @@ class GenerateCommand extends AbstractCommand
 
     private $availableMigrationFormats = array('yml', 'php', 'sql', 'json');
     private $availableModes = array('create', 'update', 'delete');
+    private $availableTypes = array('role', 'content', 'content_type', 'content_type_group', 'section', 'generic', 'db', 'php');
     private $thisBundle = 'EzMigrationBundle';
 
     /**
@@ -27,7 +28,7 @@ class GenerateCommand extends AbstractCommand
         $this->setName('kaliop:migration:generate')
             ->setDescription('Generate a blank migration definition file.')
             ->addOption('format', null, InputOption::VALUE_REQUIRED, 'The format of migration file to generate (' . implode(', ', $this->availableMigrationFormats) . ')', 'yml')
-            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (role, content_type, content, generic, db, php)', '')
+            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'The type of migration to generate (' . implode(', ', $this->availableTypes) . ')', '')
             ->addOption('mode', null, InputOption::VALUE_REQUIRED, 'The mode of the migration (' . implode(', ', $this->availableModes) . ')', 'create')
             ->addOption('match-type', null, InputOption::VALUE_REQUIRED, 'The type of identifier used to find the entity to generate the migration for', null)
             ->addOption('match-value', null, InputOption::VALUE_REQUIRED, 'The identifier value used to find the entity to generate the migration for. Can have many values separated by commas', null)

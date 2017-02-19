@@ -3,13 +3,14 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 
 /**
  * Implements the actions for managing (create/update/delete) section in the system through
  * migrations and abstracts away the eZ Publish Public API.
  */
-class SectionManager extends RepositoryExecutor
+class SectionManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('section');
 
@@ -61,7 +62,7 @@ class SectionManager extends RepositoryExecutor
             if (isset($this->dsl['identifier'])) {
                 $sectionUpdateStruct->identifier = $this->dsl['identifier'];
             }
-            if (isset($this->dsl['identifier'])) {
+            if (isset($this->dsl['name'])) {
                 $sectionUpdateStruct->name = $this->dsl['name'];
             }
 
@@ -161,5 +162,65 @@ class SectionManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $sectionCollection = $this->sectionMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\Content\Section $section */
+        foreach ($sectionCollection as $section) {
+
+            $sectionData = array(
+                'type' => 'section',
+                'mode' => $mode,
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $sectionData = array_merge(
+                        $sectionData,
+                        array(
+                            'identifier' => $section->identifier,
+                            'name' => $section->name,
+                        )
+                    );
+                    break;
+                case 'update':
+                    $sectionData = array_merge(
+                        $sectionData,
+                        array(
+                            'identifier' => $section->identifier,
+                            'name' => $section->name,
+                        )
+                    );
+                    // fall through voluntarily
+                case 'delete':
+                    $sectionData = array_merge(
+                        $sectionData,
+                        array(
+                            'match' => array(
+                                'id' => $section->id
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'section' doesn't support mode '$mode'");
+            }
+
+            $data[] = $sectionData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 }

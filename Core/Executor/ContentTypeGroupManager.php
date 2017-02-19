@@ -2,14 +2,15 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
 use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
+use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 
-class ContentTypeGroupManager extends RepositoryExecutor
+class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('content_type_group');
-    protected $supportedActions = array('create', 'delete');
+    protected $supportedActions = array('create', 'update', 'delete');
 
     /**
      * @var ContentTypeGroupMatcher
@@ -27,7 +28,7 @@ class ContentTypeGroupManager extends RepositoryExecutor
     /**
      * @return \eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup
      * @throws \Exception
-     * @todo add support for setting creator id and creation date
+     * @todo add support for setting creator id
      */
     protected function create()
     {
@@ -38,6 +39,11 @@ class ContentTypeGroupManager extends RepositoryExecutor
         $contentTypeService = $this->repository->getContentTypeService();
 
         $createStruct = $contentTypeService->newContentTypeGroupCreateStruct($this->dsl['identifier']);
+
+        if (isset($this->dsl['creation_date'])) {
+            $createStruct->creationDate = $this->toDateTime($this->dsl['creation_date']);
+        }
+
         $group = $contentTypeService->createContentTypeGroup($createStruct);
 
         $this->setReferences($group);
@@ -47,17 +53,43 @@ class ContentTypeGroupManager extends RepositoryExecutor
 
     protected function update()
     {
-        throw new \Exception('Content type group update is not implemented yet');
+        $groupsCollection = $this->matchContentTypeGroups('update');
+
+        if (count($groupsCollection) > 1 && array_key_exists('references', $this->dsl)) {
+            throw new \Exception("Can not execute Content Type Group update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 matches");
+        }
+
+        $contentTypeService = $this->repository->getContentTypeService();
+
+        foreach ($groupsCollection as $key => $contentTypeGroup) {
+            $updateStruct = $contentTypeService->newContentTypeGroupUpdateStruct();
+
+            if (isset($this->dsl['identifier'])) {
+                $updateStruct->identifier = $this->dsl['identifier'];
+            }
+            if (isset($this->dsl['modification_date'])) {
+                $updateStruct->modificationDate = $this->toDateTime($this->dsl['modification_date']);
+            }
+
+            $contentTypeService->updateContentTypeGroup($contentTypeGroup, $updateStruct);
+            // reload the group
+            $group = $contentTypeService->loadContentTypeGroup($contentTypeGroup->id);
+            $groupsCollection[$key] = $group;
+        }
+
+        $this->setReferences($groupsCollection);
+
+        return $groupsCollection;
     }
 
     protected function delete()
     {
         $groupsCollection = $this->matchContentTypeGroups('delete');
 
-        $objectStateService = $this->repository->getContentTypeService();
+        $contentTypeService = $this->repository->getContentTypeService();
 
         foreach ($groupsCollection as $contentTypeGroup) {
-            $objectStateService->deleteContentTypeGroup($contentTypeGroup);
+            $contentTypeService->deleteContentTypeGroup($contentTypeGroup);
         }
 
         return $groupsCollection;
@@ -95,13 +127,20 @@ class ContentTypeGroupManager extends RepositoryExecutor
     }
 
     /**
-     * @param ContentTypeGroup $object
+     * @param ContentTypeGroup|ContentTypeGroupCollection $object
      * @return bool
      */
     protected function setReferences($object)
     {
         if (!array_key_exists('references', $this->dsl)) {
             return false;
+        }
+
+        if ($object instanceof ContentTypeGroupCollection) {
+            if (count($object) > 1) {
+                throw new \InvalidArgumentException('Content Type Group Manager does not support setting references for creating/updating of multiple Content Type Groups');
+            }
+            $object = reset($object);
         }
 
         foreach ($this->dsl['references'] as $reference) {
@@ -123,5 +162,78 @@ class ContentTypeGroupManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $contentTypeGroupCollection = $this->contentTypeGroupMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup $contentTypeGroup */
+        foreach ($contentTypeGroupCollection as $contentTypeGroup) {
+
+            $contentTypeGroupData = array(
+                'type' => 'content_type_group',
+                'mode' => $mode,
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $contentTypeGroupData = array_merge(
+                        $contentTypeGroupData,
+                        array(
+                            'identifier' => $contentTypeGroup->identifier,
+                            'creation_date' => $contentTypeGroup->creationDate->getTimestamp()
+                        )
+                    );
+                    break;
+                case 'update':
+                    $contentTypeGroupData = array_merge(
+                        $contentTypeGroupData,
+                        array(
+                            'identifier' => $contentTypeGroup->identifier,
+                            'modification_date' => $contentTypeGroup->modificationDate->getTimestamp()
+                        )
+                    );
+                    // break thru voluntarily
+                case 'delete':
+                    $contentTypeGroupData = array_merge(
+                        $contentTypeGroupData,
+                            array(
+                                'match' => array(
+                                    'id' => $contentTypeGroup->id
+                                )
+                            )
+                        );
+                    break;
+                default:
+                    throw new \Exception("Executor 'content_type_group' doesn't support mode '$mode'");
+            }
+
+            $data[] = $contentTypeGroupData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
+    }
+
+    /**
+     * @param int|string $date if integer, we assume a timestamp
+     * @return \DateTime
+     */
+    protected function toDateTime($date)
+    {
+        if (is_int($date)) {
+            return new \DateTime("@" . $date);
+        } else {
+            return new \DateTime($date);
+        }
     }
 }

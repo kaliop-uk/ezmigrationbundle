@@ -2,12 +2,39 @@
     type: content_type_group
     mode: create
     identifier: xyz  # Identifier/name of new content type group
+    creation_date: 123 # Optional, custom creation date for the content type group (timestamp)
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference. Supports content type group id and identifier
                                    # The shorthand 'id' can be used instead of 'content_type_group_id'
 
+-
+    type: content_type_group
+    mode: update
+    match: # only one of the following keys is allowed
+        id: x # int|int[] The Id of the content type group(s) to update.
+        identifier: y # string|string[] The Identifier of the content type group(s) to update
+        all: ~ # matches ALL content type groups
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+    identifier: xyz  # Identifier/name of new content type group
+    modification_date: 123 # Optional, custom modification date for the content type group (timestamp)
+    references: #Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference. Supports content type group id and identifier
+                                   # The shorthand 'id' can be used instead of 'content_type_group_id'
 -
     # Delete one (or more) content type group
     type: content_type_group
