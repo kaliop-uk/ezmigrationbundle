@@ -509,7 +509,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         foreach ($contentTypeCollection as $contentType) {
 
             $contentTypeData = array(
-                'type' => 'content_type',
+                'type' => reset($this->supportedStepTypes),
                 'mode' => $mode
             );
 
@@ -525,12 +525,23 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     );
                     break;
                 case 'update':
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        // q: are we allowed to change the group in updates ?
+                        array(
+                            'match' => array(
+                                ContentTypeMatcher::MATCH_CONTENTTYPE_IDENTIFIER => $contentType->identifier
+                            ),
+                            'new_identifier' => $contentType->identifier,
+                        )
+                    );
+                    break;
                 case 'delete':
                     $contentTypeData = array_merge(
                         $contentTypeData,
                         array(
                             'match' => array(
-                                'identifier' => $contentType->identifier
+                                ContentTypeMatcher::MATCH_CONTENTTYPE_IDENTIFIER => $contentType->identifier
                             )
                         )
                     );

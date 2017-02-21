@@ -32,15 +32,21 @@ A simplified form, which does not allow for setting the 'alt' attribute, is:
         image: /path/to/the/image.jpg
 
 
-The paths to files/images in the definition are either
+The paths to files/images/media in the definition are either
 * absolute paths, or
-* relative paths from the MigrationVersions/images or MigrationVersions/files folders.
+* relative paths from the MigrationVersions/images, MigrationVersions/files or MigrationVersions/media folders.
 
 For example using the path from the snippet above the system would look first for the image file in
 `MigrationVersions/images/path/to/the/image.jpg` in the bundle's directory, and if no file is found there, look for
-`/images/path/to/the/image.jpg`
+`/path/to/the/image.jpg`
 
 Please see the `ManageContent.yml` DSL definition file in the `Resources/doc/DSL` folder for more information.
+
+### Importing ezflow zones and blocks
+
+At the moment, the creation of blocks via the eZPublish 5 content API is not supported, and the migration bundle does
+have code to work around that.
+You will be able to create content with a field of type eZPage, but not add or edits its blocks.
 
 
 ## Using references in your migration files
@@ -132,7 +138,7 @@ when using them as part of other elements in the yml file.
 This is done to minimize the chances that some random bits of text get modified by error (and because we need an
 end-of-reference identifier character).
 
-### Complete list of available reference
+### Complete list of available references
 
 *note:* the following lists are currently out of date - look in the single DSL files for the complete set.
 

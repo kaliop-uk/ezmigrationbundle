@@ -535,7 +535,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             );
 
             $contentData = array(
-                'type' => 'content',
+                'type' => reset($this->supportedStepTypes),
                 'mode' => $mode
             );
 
@@ -567,12 +567,22 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     }
                     break;
                 case 'update':
+                    $contentData = array_merge(
+                        $contentData,
+                        array(
+                            'match' => array(
+                                ContentMatcher::MATCH_CONTENT_REMOTE_ID => $content->contentInfo->remoteId
+                            ),
+                            'new_remote_id' => $content->contentInfo->remoteId,
+                        )
+                    );
+                    break;
                 case 'delete':
                     $contentData = array_merge(
                         $contentData,
                         array(
                             'match' => array(
-                                'content_remote_id' => $content->contentInfo->remoteId
+                                ContentMatcher::MATCH_CONTENT_REMOTE_ID => $content->contentInfo->remoteId
                             )
                         )
                     );
@@ -582,7 +592,6 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
 
             if ($mode != 'delete') {
-
 
                 $attributes = array();
                 foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $fieldIdentifier => $field) {

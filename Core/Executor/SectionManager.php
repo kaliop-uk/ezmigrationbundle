@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 
 /**
- * Implements the actions for managing (create/update/delete) section in the system through
+ * Implements the actions for managing (create/update/delete) sections in the system through
  * migrations and abstracts away the eZ Publish Public API.
  */
 class SectionManager extends RepositoryExecutor implements MigrationGeneratorInterface
@@ -180,7 +180,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
         foreach ($sectionCollection as $section) {
 
             $sectionData = array(
-                'type' => 'section',
+                'type' => reset($this->supportedStepTypes),
                 'mode' => $mode,
             );
 
@@ -198,17 +198,20 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
                     $sectionData = array_merge(
                         $sectionData,
                         array(
+                            'match' => array(
+                                SectionMatcher::MATCH_SECTION_ID => $section->id
+                            ),
                             'identifier' => $section->identifier,
                             'name' => $section->name,
                         )
                     );
-                    // fall through voluntarily
+                    break;
                 case 'delete':
                     $sectionData = array_merge(
                         $sectionData,
                         array(
                             'match' => array(
-                                'id' => $section->id
+                                SectionMatcher::MATCH_SECTION_ID => $section->id
                             )
                         )
                     );

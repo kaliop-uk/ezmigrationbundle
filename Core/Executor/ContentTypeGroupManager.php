@@ -10,7 +10,6 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('content_type_group');
-    protected $supportedActions = array('create', 'update', 'delete');
 
     /**
      * @var ContentTypeGroupMatcher
@@ -180,7 +179,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
         foreach ($contentTypeGroupCollection as $contentTypeGroup) {
 
             $contentTypeGroupData = array(
-                'type' => 'content_type_group',
+                'type' => reset($this->supportedStepTypes),
                 'mode' => $mode,
             );
 
@@ -198,17 +197,20 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
                     $contentTypeGroupData = array_merge(
                         $contentTypeGroupData,
                         array(
+                            'match' => array(
+                                ContentTypeGroupMatcher::MATCH_CONTENTTYPEGROUP_IDENTIFIER => $contentTypeGroup->identifier
+                            ),
                             'identifier' => $contentTypeGroup->identifier,
                             'modification_date' => $contentTypeGroup->modificationDate->getTimestamp()
                         )
                     );
-                    // break thru voluntarily
+                    break;
                 case 'delete':
                     $contentTypeGroupData = array_merge(
                         $contentTypeGroupData,
                             array(
                                 'match' => array(
-                                    'id' => $contentTypeGroup->id
+                                    ContentTypeGroupMatcher::MATCH_CONTENTTYPEGROUP_IDENTIFIER => $contentTypeGroup->identifier
                                 )
                             )
                         );
