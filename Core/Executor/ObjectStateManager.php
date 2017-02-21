@@ -5,8 +5,9 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 
-class ObjectStateManager extends RepositoryExecutor
+class ObjectStateManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     /**
      * @var array
@@ -185,5 +186,87 @@ class ObjectStateManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $objectStateCollection = $this->objectStateMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $objectState */
+        foreach ($objectStateCollection as $objectState) {
+
+            $groupData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode,
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'object_state_group' => $objectState->getObjectStateGroup()->identifier,
+                            'identifier' => $objectState->identifier,
+                        )
+                    );
+                    break;
+                case 'update':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'match' => array(
+                                ObjectStateMatcher::MATCH_OBJECTSTATE_IDENTIFIER =>
+                                    $objectState->getObjectStateGroup()->identifier . '/' . $objectState->identifier
+                            ),
+                            'identifier' => $objectState->identifier,
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'match' => array(
+                                ObjectStateMatcher::MATCH_OBJECTSTATE_IDENTIFIER =>
+                                    $objectState->getObjectStateGroup()->identifier . '/' . $objectState->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'object_state_group' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+                $names = array();
+                $descriptions = array();
+                foreach($objectState->languageCodes as $languageCode) {
+                    $names[$languageCode] =  $objectState->getName($languageCode);
+                }
+                foreach($objectState->languageCodes as $languageCode) {
+                    $descriptions[$languageCode] =  $objectState->getDescription($languageCode);
+                }
+                $groupData = array_merge(
+                    $groupData,
+                    array(
+                        'names' => $names,
+                        'descriptions' => $descriptions,
+                    )
+                );
+            }
+
+            $data[] = $groupData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 }

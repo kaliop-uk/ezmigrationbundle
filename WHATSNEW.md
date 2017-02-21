@@ -21,11 +21,13 @@ Version 3.5 (unreleased)
 
 * New: when creating a Content Type Group, it is possible to set a custom creation date
 
-* New: it is now possible to generate migrations for Sections, Object State Groups and Content Type Groups
+* New: it is now possible to generate migrations for Sections, Object States, Object State Groups and Content Type Groups
 
 * Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
 
 * Fix: section updates would fail at setting the name
+
+* Fix: 'match all' would fail for Object States
 
 
 Version 3.4
