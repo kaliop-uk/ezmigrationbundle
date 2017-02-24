@@ -47,6 +47,8 @@ class MigrationService
 
     protected $dispatcher;
 
+    protected $eventPrefix = 'ez_migration.';
+
     public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository, EventDispatcherInterface $eventDispatcher)
     {
         $this->loader = $loader;
@@ -255,14 +257,14 @@ class MigrationService
                     $executor = $this->executors[$step->type];
 
                     $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
-                    $this->dispatcher->dispatch('ez_migration.before_execution', $beforeStepExecutionEvent);
+                    $this->dispatcher->dispatch($this->eventPrefix . 'before_execution', $beforeStepExecutionEvent);
                     // allow some sneaky trickery here: event listeners can manipulate 'live' the step definition and the executor
                     $executor = $beforeStepExecutionEvent->getExecutor();
                     $step = $beforeStepExecutionEvent->getStep();
 
                     $result = $executor->execute($step);
 
-                    $this->dispatcher->dispatch('ez_migration.step_executed', new StepExecutedEvent($step, $result));
+                    $this->dispatcher->dispatch($this->eventPrefix . 'step_executed', new StepExecutedEvent($step, $result));
 
                     $i++;
                 }
@@ -270,7 +272,7 @@ class MigrationService
             } catch (MigrationAbortedException $e) {
                 // allow a migration step (or events) to abort the migration via a specific exception
 
-                $this->dispatcher->dispatch('ez_migration.migration_aborted', new MigrationAbortedEvent($step, $e));
+                $this->dispatcher->dispatch($this->eventPrefix . 'migration_aborted', new MigrationAbortedEvent($step, $e));
 
                 $finalStatus = $e->getCode();
                 $finalMessage = "Abort in execution of step $i: " . $e->getMessage();

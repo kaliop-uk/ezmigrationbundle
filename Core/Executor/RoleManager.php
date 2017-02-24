@@ -330,7 +330,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
         foreach ($roleCollection as $role) {
             $roleData = array(
-                'type' => 'role',
+                'type' => reset($this->supportedStepTypes),
                 'mode' => $mode
             );
 
@@ -349,7 +349,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                         $roleData,
                         array(
                             'match' => array(
-                                'identifier' => $role->identifier
+                                RoleMatcher::MATCH_ROLE_IDENTIFIER => $role->identifier
                             )
                         )
                     );
