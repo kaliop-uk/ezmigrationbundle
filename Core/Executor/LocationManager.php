@@ -12,11 +12,11 @@ use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 class LocationManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('location');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     protected $contentMatcher;
     protected $locationMatcher;
     protected $sortConverter;
-
 
     public function __construct(ContentMatcher $contentMatcher, LocationMatcher $locationMatcher, SortConverter $sortConverter)
     {
@@ -89,8 +89,21 @@ class LocationManager extends RepositoryExecutor
         return $locationCollection;
     }
 
+    protected function load()
+    {
+        $locationCollection = $this->matchLocations('load');
+
+        if (count($locationCollection) > 1 && isset($this->dsl['references'])) {
+            throw new \Exception("Can not execute Location load because multiple locations match, and a references section is specified in the dsl. References can be set when only 1 location matches");
+        }
+
+        $this->setReferences($locationCollection);
+
+        return $locationCollection;
+    }
+
     /**
-     * Updates basic information for a location like priority, sort field and sort order.
+     * Updates information for a location like priority, sort field and sort order.
      * Updates the visibility of the location when needed.
      * Can move a location and its children to a new parent location or swap two locations.
      *
@@ -180,7 +193,7 @@ class LocationManager extends RepositoryExecutor
     }
 
     /**
-     * Delete locations identified by their ids.
+     * Delete locations
      *
      * @todo add support for flexible matchers
      */
@@ -348,8 +361,67 @@ class LocationManager extends RepositoryExecutor
                 case 'location_remote_id':
                     $value = $location->remoteId;
                     break;
+                case 'always_available':
+                    $value = $location->contentInfo->alwaysAvailable;
+                    break;
+                case 'content_id':
+                    $value = $location->contentId;
+                    break;
+                case 'content_type_id':
+                    $value = $location->contentInfo->contentTypeId;
+                    break;
+                case 'content_type_identifier':
+                    $contentTypeService = $this->repository->getContentTypeService();
+                    $value = $contentTypeService->loadContentType($location->contentInfo->contentTypeId)->identifier;
+                    break;
+                case 'current_version':
+                case 'current_version_no':
+                    $value = $location->contentInfo->currentVersionNo;
+                    break;
+                case 'depth':
+                    $value = $location->depth;
+                    break;
+                case 'is_hidden':
+                    $value = $location->hidden;
+                    break;
+                case 'main_location_id':
+                    $value = $location->contentInfo->mainLocationId;
+                    break;
+                case 'main_language_code':
+                    $value = $location->contentInfo->mainLanguageCode;
+                    break;
+                case 'modification_date':
+                    $value = $location->contentInfo->modificationDate->getTimestamp();
+                    break;
+                case 'name':
+                    $value = $location->contentInfo->name;
+                    break;
+                case 'owner_id':
+                    $value = $location->contentInfo->ownerId;
+                    break;
+                case 'parent_location_id':
+                    $value = $location->parentLocationId;
+                    break;
                 case 'path':
                     $value = $location->pathString;
+                    break;
+                case 'position':
+                    $value = $location->position;
+                    break;
+                case 'priority':
+                    $value = $location->priority;
+                    break;
+                case 'publication_date':
+                    $value = $location->contentInfo->publishedDate->getTimestamp();
+                    break;
+                case 'section_id':
+                    $value = $location->contentInfo->sectionId;
+                    break;
+                case 'sort_field':
+                    $value = $this->sortConverter->sortField2Hash($location->sortField);
+                    break;
+                case 'sort_order':
+                    $value = $this->sortConverter->sortOrder2Hash($location->sortOrder);
                     break;
                 default:
                     throw new \InvalidArgumentException('Location Manager does not support setting references for attribute ' . $reference['attribute']);

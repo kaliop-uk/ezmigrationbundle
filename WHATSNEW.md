@@ -23,6 +23,35 @@ Version 3.5 (unreleased)
 
 * New: it is now possible to generate migrations for Sections, Object States, Object State Groups and Content Type Groups
 
+* New: it is now possible to set references to many more attributes when creating/updating Contents:
+    content_id, content_remote_id, always_available, content_type_id, content_type_identifier, current_version_no,
+    location_id, main_language_code, modification_date, name, owner_id, path, publication_date, section_id
+
+* New: it is now possible to set references to many more attributes when creating/updating Locations:
+    location_id, location_remote_id, always_available, content_id, content_type_id, content_type_identifier,
+    current_version_no, depth, is_hidden, main_language_code, main_location_id, main_language_code, modification_date, 
+    name, owner_id, parent_location_id, path, position, priority, publication_date, section_id, sort_field, sort_order
+
+* New: two new migration steps are available: `content/load` and `location/load`.
+   Their purpose is to allow to set references to the attributes of the loaded objects. This way it is f.e. possible
+   to copy the section from one content to another
+
+        -
+            type: content
+            mode: load
+            match:
+                remote_id: firstcontent
+            references:
+                -
+                    identifier: section_ref
+                    attribute: section_id
+        -
+            type: content
+            mode: update
+            match:
+                remote_id: secondcontent
+            section: "reference:section_ref"
+
 * Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
 
 * Fix: section updates would fail at setting the name

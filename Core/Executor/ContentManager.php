@@ -26,6 +26,7 @@ use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 class ContentManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('content');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     protected $contentMatcher;
     protected $sectionMatcher;
@@ -184,6 +185,19 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $this->setReferences($content);
 
         return $content;
+    }
+
+    protected function load()
+    {
+        $contentCollection = $this->matchContents('load');
+
+        if (count($contentCollection) > 1 && isset($this->dsl['references'])) {
+            throw new \Exception("Can not execute Content load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
+        }
+
+        $this->setReferences($contentCollection);
+
+        return $contentCollection;
     }
 
     /**
@@ -480,12 +494,45 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 case 'content_remote_id':
                     $value = $content->contentInfo->remoteId;
                     break;
+                case 'always_available':
+                    $value = $content->contentInfo->alwaysAvailable;
+                    break;
+                case 'content_type_id':
+                    $value = $content->contentInfo->contentTypeId;
+                    break;
+                case 'content_type_identifier':
+                    $contentTypeService = $this->repository->getContentTypeService();
+                    $value = $contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
+                    break;
+                case 'current_version':
+                case 'current_version_no':
+                    $value = $content->contentInfo->currentVersionNo;
+                    break;
                 case 'location_id':
+                case 'main_location_id':
                     $value = $content->contentInfo->mainLocationId;
+                    break;
+                case 'main_language_code':
+                    $value = $content->contentInfo->mainLanguageCode;
+                    break;
+                case 'modification_date':
+                    $value = $content->contentInfo->modificationDate->getTimestamp();
+                    break;
+                case 'name':
+                    $value = $content->contentInfo->name;
+                    break;
+                case 'owner_id':
+                    $value = $content->contentInfo->ownerId;
                     break;
                 case 'path':
                     $locationService = $this->repository->getLocationService();
                     $value = $locationService->loadLocation($content->contentInfo->mainLocationId)->pathString;
+                    break;
+                case 'publication_date':
+                    $value = $content->contentInfo->publishedDate->getTimestamp();
+                    break;
+                case 'section_id':
+                    $value = $content->contentInfo->sectionId;
                     break;
                 default:
                     throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);

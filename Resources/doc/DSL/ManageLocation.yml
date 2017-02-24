@@ -13,27 +13,30 @@
     parent_location: y # The Location ID of the parent where the new location should be placed. When a non numeric string is used, it is assumed to be a location remote id
     priority: x # Optional
     is_hidden: true|false # Optional
-    # Possible values for sort_field are:
-    # - published
-    # - priority
-    # - path
-    # - modified
-    # - section
-    # - depth
-    # - class_identifier
-    # - class_name
-    # - name
-    # - node_id
-    # - contentobject_id
-    # - modified_subnode
-    sort_field: x # Optional
+    sort_field: x # Optional. Possible values for sort_field are:
+                  # - published
+                  # - priority
+                  # - path
+                  # - modified
+                  # - section
+                  # - depth
+                  # - class_identifier
+                  # - class_name
+                  # - name
+                  # - node_id
+                  # - contentobject_id
+                  # - modified_subnode
     sort_order: ASC|DESC # Optional
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports: location_id, location_remote_id, path)
+            attribute: attributeId # An attribute to get the value of for the reference (supports: location_id, location_remote_id,
+                                   # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
+                                   # depth, is_hidden, main_language_code, main_location_id, main_language_code,
+                                   # modification_date, name, owner_id, parent_location_id, path, position, priority,
+                                   # publication_date, section_id, sort_field, sort_order)
 
 -
     type: location
@@ -81,7 +84,11 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports: location_id, location_remote_id, path)
+            attribute: attributeId # The attribute to get the value of for the reference (supports: location_id, location_remote_id,
+                                   # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
+                                   # depth, is_hidden, main_language_code, main_location_id, main_language_code,
+                                   # modification_date, name, owner_id, parent_location_id, path, position, priority,
+                                   # publication_date, section_id, sort_field, sort_order)
 
 -
     type: location
@@ -104,3 +111,35 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+
+-
+    type: location
+    mode: load
+    match: # The locations to load
+        # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
+        content_id: # the content id(s) of the content we want to add a location to
+        content_remote_id: # the remote content id(s) of the content we want to add a location to
+        location_id: # the location id(s) of the content we want to add a location to
+        location_remote_id: # the location remote id(s) of the content we want to add a location to
+        parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
+        parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # The attribute to get the value of for the reference (supports: location_id, location_remote_id,
+                                   # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
+                                   # depth, is_hidden, main_language_code, main_location_id, main_language_code,
+                                   # modification_date, name, owner_id, parent_location_id, path, position, priority,
+                                   # publication_date, section_id, sort_field, sort_order)
