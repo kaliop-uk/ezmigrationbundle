@@ -147,12 +147,13 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
 
     /**
      * Courtesy code to avoid reimplementing it in every subclass
+     * @deprecated will be moved into the reference resolver classes
      */
     protected function resolveReferencesRecursively($match)
     {
         if (is_array($match)) {
             foreach ($match as $condition => $values) {
-                $match['condition'] = $this->resolveReferencesRecursively($values);
+                $match[$condition] = $this->resolveReferencesRecursively($values);
             }
             return $match;
         } else {

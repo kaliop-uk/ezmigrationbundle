@@ -8,9 +8,9 @@ use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 class EzMedia extends FileField implements FieldValueConverterInterface
 {
     /**
-     * Creates a value object to use as the field value when setting an image field type.
+     * Creates a value object to use as the field value when setting a media field type.
      *
-     * @param array|string $fieldValue The path to the file or an array with 'path' and 'alt_text' keys
+     * @param array|string $fieldValue The path to the file or an array with 'path' and many other keys
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return MediaValue
      */
