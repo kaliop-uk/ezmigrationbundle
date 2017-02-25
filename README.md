@@ -341,12 +341,31 @@ override, take a look at the [services.yml file](Resources/config/services.yml).
 
 The bundle uses PHPUnit to run functional tests.
 
+#### Running tests in a working eZPublish installation
+
 To run the tests:
 
-    export KERNEL_DIR=ezpublish
-    export SYMFONY_ENV=behat (or whatever your test env is)
+    export KERNEL_DIR=ezpublish (or 'app' for ezplatform setups)
+    export SYMFONY_ENV=behat (or whatever your environment is)
 
-    bin/phpunit vendor/kaliop/ezmigrationbundle
+    bin/phpunit -c vendor/kaliop/ezmigrationbundle/phpunit.xml
+
+*NB* the tests do *not* mock interaction with the database, but create/modify/delete many types of data in it.
+As such, there are good chances that running tests will leave stale/broken data.
+It is recommended to run the tests suite using a dedicated eZPublish installation or at least dedicated database.
+
+#### Setting up a dedicated test environment for the bundle
+
+A safer choice to run the tests of the bundle is to set up a dedicated environment, as done when the testsuite is run on
+Travis.
+The advantages are multiple: one one hand you can start with any version of eZPublish you want; on the other you will
+be more confident that the tests wll still pass on Travis.
+The disadvantages are that you will need to spend some time setting up the test environment, and that the environment
+you will use will look quite unlike a standard eZPublish setup!
+
+Steps to set up a dedicated test environment:
+
+(to be documented...)
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)

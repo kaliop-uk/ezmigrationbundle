@@ -6,3 +6,5 @@ if (!file_exists($file = __DIR__.'/../vendor/autoload.php') && !file_exists($fil
 }
 
 $loader = require $file;
+
+Kaliop\eZMigrationBundle\DependencyInjection\EzMigrationExtension::$loadTestConfig = true;

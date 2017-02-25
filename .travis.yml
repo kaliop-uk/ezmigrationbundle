@@ -75,6 +75,8 @@ before_script:
   # Set up configuration files
   - ./Tests/travis/setup-config.sh ${EZ_VERSION} ${EZ_APP_DIR} ${EZ_KERNEL} ${INSTALL_TAGSBUNDLE}
 
+  - ./Tests/travis/setup-env.sh ${EZ_VERSION}
+
   # TODO are these needed at all?
   #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat assetic:dump
   #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat cache:clear --no-debug
