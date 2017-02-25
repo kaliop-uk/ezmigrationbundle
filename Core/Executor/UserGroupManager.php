@@ -62,9 +62,7 @@ class UserGroupManager extends RepositoryExecutor
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
             foreach ($this->dsl['roles'] as $roleId) {
-                if ($this->referenceResolver->isReference($roleId)) {
-                    $roleId = $this->referenceResolver->resolveReference($roleId);
-                }
+                $roleId = $this->referenceResolver->resolveReference($roleId);
                 $role = $this->roleMatcher->matchOneByKey($roleId);
                 $roleService->assignRoleToUserGroup($role, $userGroup);
             }
