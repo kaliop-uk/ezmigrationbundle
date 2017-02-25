@@ -52,6 +52,10 @@ Version 3.5 (unreleased)
                 remote_id: secondcontent
             section: "reference:section_ref"
 
+* New: it is now possible to manually create references, including both bulk loading and getting the value from
+    configuration parameters (useful f.e. to manipulate different contents based on environment).
+    Details in the dedicated [documentation](Resources/doc/DSL/ManageReference.yml)
+
 * Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
 
 * Fix: section updates would fail at setting the name

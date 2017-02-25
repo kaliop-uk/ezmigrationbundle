@@ -58,7 +58,7 @@ Setting a reference is the same as creating a new variable - you decide its name
 is taken from the entity currently being created / updated). Once the reference is set, you can use make use of its value
 in other steps.
 
-For example, you could set a reference to a the location id of a folder that you create and then use that as the parent
+For example, you could set a reference to the location id of a folder that you create and then use that as the parent
 location for creating articles in that folder.
 
 Here is an example on using references:
@@ -140,47 +140,16 @@ end-of-reference identifier character).
 
 ### Complete list of available references
 
-*note:* the following lists are currently out of date - look in the single DSL files for the complete set.
+Look in the single DSL files for the complete set of attributes which can be used to set reference values, as well as
+the places where references will be substituted if found.
 
-Currently you can use references to store the following values:
+### Setting references manually
 
--   content
-    -   `content_id`
-    -   `content_remote_id`
-    -   `location_id` (on content updates, the main location is returned)
-    -   `path` (on content updates, the main location path is returned)
--   content type
-    -   `content_type_id`
-    -   `content_type_identifier`
--   location
-    -   `location_id`
-    -   `location_remote_id`
-    -   `path`
--   role
-    -   `role_id`
-    -   `role_identifier`
--   user group
-    -   `user_group_id`
--   user
-    -   `user_id`
-- language
-    -   `language_id`
+It is possible since version 3.5 to create references manually using a dedicated migration step, and even bulk-load them
+from a file.
+Symfony configuration parameters can be used as values for these manually-created references.
 
-You can use references to set the following values:
 
--   content
-    -   `content_type_identifier`
-    -   `parent_location_id`
--   location
-    -   `object_id` (The id of the content whose locations you want to manage)
-    -   `remote_id` (The remote id of the content whose locations you want to manage)
-    -   `parent_location_id` (The list of parent locations where the new locations need to be created)
-    -   `location_id_to_swap` the current location with (Only on update actions)
--   role
-    -   `limitation_values`
--   user group
-    - `parent_user_group_id`
--   user
-    - `user_group_id`
+## Other
 
 For more information please see the DSL definitions in the `Resources/doc/DSL` folder.

@@ -32,6 +32,7 @@ parameters:
 
     ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
     ez_migration_bundle.executor.sql.class: Kaliop\eZMigrationBundle\Core\Executor\SQLExecutor
+    ez_migration_bundle.executor.reference.class: Kaliop\eZMigrationBundle\Core\Executor\ReferenceExecutor
     ez_migration_bundle.executor.repository.class: Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor
 
     ez_migration_bundle.executor.content_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentManager
@@ -160,6 +161,14 @@ services:
         class: '%ez_migration_bundle.executor.sql.class%'
         arguments:
             - '@ezpublish.connection'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.reference:
+        class: '%ez_migration_bundle.executor.reference.class%'
+        arguments:
+            - '@service_container'
+            - '@ez_migration_bundle.reference_resolver.customreference'
         tags:
             - { name: ez_migration_bundle.executor }
 
