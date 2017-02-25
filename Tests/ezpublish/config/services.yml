@@ -1,0 +1,16 @@
+
+# These services have to be loaded for the test suite to work. They should not be loaded for normal bundle operation
+
+services:
+    ez_migration_bundle.test.step_executed_listener:
+        class: Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener
+        tags:
+            - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
+    ez_migration_bundle.test.before_step_execution_listener:
+        class: Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener
+        tags:
+            - { name: kernel.event_listener, event: ez_migration.before_execution, method: onBeforeStepExecution }
+    ez_migration_bundle.test.custom_reference_resolver:
+        class: Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
+        tags:
+            - { name: ez_migration_bundle.reference_resolver.customreference }
