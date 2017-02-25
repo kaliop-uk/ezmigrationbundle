@@ -15,7 +15,11 @@
     mode: update
     identifier: test_content_type_group_modified
     match:
-        id: reference:test_group_id
+        or:
+            -
+                id: reference:test_group_id
+            -
+                identifier: reference:test_group_identifier
 
 -
     type: content_type_group
