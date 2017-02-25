@@ -25,8 +25,8 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         $ms->executeMigration($md);
 
         $m = $ms->getMigration('exception_test.json');
-        $this->assertEquals(Migration::STATUS_DONE, $m->status);
-        $this->assertContains('Oh yeah', $m->executionError);
+        $this->assertEquals(Migration::STATUS_DONE, $m->status, 'Migration supposed to be aborted but in unexpected state');
+        $this->assertContains('Oh yeah', $m->executionError, 'Migration aborted but its exception message lost');
     }
 
     public function supportedTypes()
