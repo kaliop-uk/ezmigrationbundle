@@ -298,6 +298,27 @@ and the corresponding php class:
     To make it easy to create a migration for updating a role, please use the `migration:generate` command using the `--type=role` flag
 
 
+## Frequently asked questions
+
+### How can I update a specific content which has a different Id on dev, test and prod environments?
+
+A: use the 'reference/set' migration step to define a reference for the desired content Id, and use a Symfony parameter 
+to store a different value for each Symfony environment. For example:
+
+    -
+        type: reference
+        mode: set
+        identifier: content_id_ref
+        value: '%a.parameter.name%'
+
+    -
+        type: content
+        mode: update
+        match:
+            content_id: "reference:content_id_ref"
+        etc: ...
+
+
 ## Extending the bundle
 
 ### Supporting custom migrations
