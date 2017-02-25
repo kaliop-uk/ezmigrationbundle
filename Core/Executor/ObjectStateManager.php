@@ -140,24 +140,14 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      * @return ObjectStateCollection
      * @throws \Exception
      */
-    private function matchObjectStates($action)
+    protected function matchObjectStates($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match Condition is required to $action an object state.");
+            throw new \Exception("A match condition is required to $action an object state");
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->objectStateMatcher->match($match);
     }

@@ -252,7 +252,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     protected function matchContentTypes($action)
     {
         if (!isset($this->dsl['identifier']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The identifier of a contenttype or a match condition is required to $action it.");
+            throw new \Exception("The identifier of a content type or a match condition is required to $action it");
         }
 
         // Backwards compat
@@ -260,18 +260,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             $this->dsl['match'] = array('identifier' => $this->dsl['identifier']);
         }
 
-        $match = $this->dsl['match'];
-
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->contentTypeMatcher->match($match);
     }

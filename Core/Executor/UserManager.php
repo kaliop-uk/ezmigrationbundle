@@ -175,7 +175,7 @@ class UserManager extends RepositoryExecutor
     protected function matchUsers($action)
     {
         if (!isset($this->dsl['id']) && !isset($this->dsl['user_id']) && !isset($this->dsl['email']) && !isset($this->dsl['username']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The id, email or username of a user or a match condition is required to $action it.");
+            throw new \Exception("The id, email or username of a user or a match condition is required to $action it");
         }
 
         // Backwards compat
@@ -196,18 +196,8 @@ class UserManager extends RepositoryExecutor
             $this->dsl['match'] = $conds;
         }
 
-        $match = $this->dsl['match'];
-
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->userMatcher->match($match);
     }

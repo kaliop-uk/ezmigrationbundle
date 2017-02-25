@@ -102,21 +102,11 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     protected function matchContentTypeGroups($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action an ObjectStateGroup.");
+            throw new \Exception("A match condition is required to $action an object state group");
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->contentTypeGroupMatcher->match($match);
     }

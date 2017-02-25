@@ -100,21 +100,13 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function matchSections($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action a section.");
+            throw new \Exception("A match condition is required to $action a section");
         }
 
         $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->sectionMatcher->match($match);
     }

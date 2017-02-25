@@ -218,7 +218,7 @@ class LocationManager extends RepositoryExecutor
     protected function matchLocations($action)
     {
         if (!isset($this->dsl['location_id']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The ID or a Match Condition is required to $action a location.");
+            throw new \Exception("The id or a match condition is required to $action a location");
         }
 
         // Backwards compat
@@ -226,18 +226,8 @@ class LocationManager extends RepositoryExecutor
             $this->dsl['match'] = array('location_id' => $this->dsl['location_id']);
         }
 
-        $match = $this->dsl['match'];
-
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->locationMatcher->match($match);
     }

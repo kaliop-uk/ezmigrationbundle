@@ -105,21 +105,11 @@ class TagManager extends RepositoryExecutor
     protected function matchTags($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action a Tag.");
+            throw new \Exception("A match condition is required to $action a Tag");
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->tagMatcher->match($match);
     }

@@ -144,4 +144,19 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
     {
         return $this->defaultLanguageCode ?: self::DEFAULT_LANGUAGE_CODE;
     }
+
+    /**
+     * Courtesy code to avoid reimplementing it in every subclass
+     */
+    protected function resolveReferencesRecursively($match)
+    {
+        if (is_array($match)) {
+            foreach ($match as $condition => $values) {
+                $match['condition'] = $this->resolveReferencesRecursively($values);
+            }
+            return $match;
+        } else {
+            return $this->referenceResolver->resolveReference($match);
+        }
+    }
 }

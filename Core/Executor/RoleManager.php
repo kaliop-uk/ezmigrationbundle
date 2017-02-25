@@ -137,7 +137,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     protected function matchRoles($action)
     {
         if (!isset($this->dsl['name']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The name of a role or a match condition is required to $action it.");
+            throw new \Exception("The name of a role or a match condition is required to $action it");
         }
 
         // Backwards compat
@@ -145,18 +145,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             $this->dsl['match'] = array('identifier' => $this->dsl['name']);
         }
 
-        $match = $this->dsl['match'];
-
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->roleMatcher->match($match);
     }

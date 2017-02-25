@@ -160,7 +160,7 @@ class UserGroupManager extends RepositoryExecutor
     protected function matchUserGroups($action)
     {
         if (!isset($this->dsl['id']) && !isset($this->dsl['group']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The id  of a group or a match condition is required to $action it.");
+            throw new \Exception("The id of a user group or a match condition is required to $action it");
         }
 
         // Backwards compat
@@ -169,22 +169,12 @@ class UserGroupManager extends RepositoryExecutor
                 $this->dsl['match']['id'] = $this->dsl['id'];
             }
             if (isset($this->dsl['group'])) {
-                $this->dsl['match']['email'] = $this->dsl['group'];
+                $this->dsl['match']['id'] = $this->dsl['group'];
             }
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->userGroupMatcher->match($match);
     }

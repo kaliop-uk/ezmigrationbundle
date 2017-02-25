@@ -64,6 +64,8 @@ Version 3.5 (unreleased)
 
 * Fix: 'match all' would fail for Object States
 
+* Fix: properly resolve references in match conditions when these are specified using nested conditions with AND and ORs
+
 
 Version 3.4
 ===========
