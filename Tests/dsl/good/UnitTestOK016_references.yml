@@ -14,4 +14,14 @@
 -
     type: reference
     mode: dump
-    identifier: kmb_test_ref
+    identifier: reference:kmb_test_ref
+
+-
+    type: reference
+    mode: load
+    file: test_refs.yml
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:hello

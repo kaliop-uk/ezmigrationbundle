@@ -10,12 +10,13 @@
     # Load a whole set of references from a json or yaml file
     type: reference
     mode: load
-    file: xxx # path to the file to load. It must be named .yml or .json, and respect that syntax.
-              # NB: the token '{ENV}' will be replaced with the current Symfony environment, eg:
+    file: xxx # path to the file to load. It must have an extension of .yml or .json, and respect that syntax.
+              # It can be an absolute path, or relative to $DIR_OF_MIGRATION_DEFINITION/references/ folder.
+              # NB: if found, the token '{ENV}' will be replaced with the current Symfony environment, eg:
               # ezpublish/config/migrations_{ENV}.yml will become ezpublish/config/migrations_dev.yml
               #
-              # The format foe the contents of this file is: an array of reference-key => reference-value
-              # If the reference-value can be a Symfony configuration parameter by using the syntax '%name%'
+              # The format for the contents of this file is: an array of reference-key => reference-value
+              # The reference-value can be a Symfony configuration parameter by using the syntax '%name%'
     overwrite: true|false # Optional, default false. If not set, and any reference already exists, an exception is thrown
 
 -

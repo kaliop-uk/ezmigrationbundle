@@ -43,10 +43,10 @@ class ReferenceExecutor extends AbstractExecutor
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
-        $this->$action($step->dsl);
+        $this->$action($step->dsl, $step->context);
     }
 
-    protected function set($dsl) {
+    protected function set($dsl, $context) {
         if (!isset($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: miss 'identifier' for setting reference");
         }
@@ -59,9 +59,11 @@ class ReferenceExecutor extends AbstractExecutor
         }
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
         $this->referenceResolver->addReference($dsl['identifier'], $value, $overwrite);
+
+        return true;
     }
 
-    protected function load($dsl)
+    protected function load($dsl, $context)
     {
         if (!isset($dsl['file'])) {
             throw new \Exception("Invalid step definition: miss 'file' for loading references");
@@ -71,6 +73,11 @@ class ReferenceExecutor extends AbstractExecutor
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
 
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
+
+        if (!is_file($fileName) && is_file($context['path'] . '/references/' . $fileName)) {
+            $fileName = $context['path'] . '/references/' . $fileName;
+        }
+
         if (!is_file($fileName)) {
             throw new \Exception("Invalid step definition: invalid 'file' for loading references");
         }
@@ -99,9 +106,11 @@ class ReferenceExecutor extends AbstractExecutor
             }
             $this->referenceResolver->addReference($refName, $value, $overwrite);
         }
+
+        return $data;
     }
 
-    protected function dump($dsl) {
+    protected function dump($dsl, $context) {
         if (!isset($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: miss 'identifier' for dumping reference");
         }
@@ -109,6 +118,9 @@ class ReferenceExecutor extends AbstractExecutor
             throw new \Exception("Invalid step definition: identifier '' is not a reference");
         }
         VarDumper::dump($dsl['identifier']);
-        VarDumper::dump($this->referenceResolver->resolveReference($dsl['identifier']));
+        $value = $this->referenceResolver->resolveReference($dsl['identifier']);
+        VarDumper::dump($value);
+
+        return $value;
     }
 }
