@@ -54,7 +54,12 @@ Version 3.5 (unreleased)
 
 * New: it is now possible to manually create references, including both bulk loading from file and getting the value from
     configuration parameters (useful f.e. to manipulate different contents based on environment).
+    It is alos possible to dump the resolved reference values for debugging puproses.
     Details in the dedicated [documentation](Resources/doc/DSL/ManageReference.yml)
+
+* New: the `generate` command can be used to generate SQL migrations in YML file format
+
+* New: SQL migration sin YML file format can set references to the number of affected rows
 
 * Improved: make it easier to run the test suite outside of Travis and revamp test instructions
 

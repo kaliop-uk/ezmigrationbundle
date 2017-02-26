@@ -161,6 +161,7 @@ services:
         class: '%ez_migration_bundle.executor.sql.class%'
         arguments:
             - '@ezpublish.connection'
+            - '@ez_migration_bundle.reference_resolver.customreference'
         tags:
             - { name: ez_migration_bundle.executor }
 

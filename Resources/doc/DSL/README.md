@@ -149,6 +149,10 @@ It is possible since version 3.5 to create references manually using a dedicated
 from a file.
 Symfony configuration parameters can be used as values for these manually-created references.
 
+### Debugging references
+
+It is possible since version 3.5 to dump references to screen for debug purposes. See [ManagerReference.yml](ManagerReference.yml)
+
 
 ## Other
 

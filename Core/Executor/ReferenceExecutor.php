@@ -7,14 +7,15 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\VarDumper\VarDumper;
 
 class ReferenceExecutor extends AbstractExecutor
 {
     protected $supportedStepTypes = array('reference');
-    protected $supportedActions = array('set', 'load');
+    protected $supportedActions = array('set', 'load', 'dump');
 
     protected $container;
-    /** @var ReferenceResolverInterface $referenceResolver */
+    /** @var ReferenceBagInterface $referenceResolver */
     protected $referenceResolver;
 
     public function __construct(ContainerInterface $container, ReferenceBagInterface $referenceResolver)
@@ -100,4 +101,14 @@ class ReferenceExecutor extends AbstractExecutor
         }
     }
 
+    protected function dump($dsl) {
+        if (!isset($dsl['identifier'])) {
+            throw new \Exception("Invalid step definition: miss 'identifier' for dumping reference");
+        }
+        if (!$this->referenceResolver->isReference($dsl['identifier'])) {
+            throw new \Exception("Invalid step definition: identifier '' is not a reference");
+        }
+        VarDumper::dump($dsl['identifier']);
+        VarDumper::dump($this->referenceResolver->resolveReference($dsl['identifier']));
+    }
 }

@@ -17,3 +17,9 @@
               # The format foe the contents of this file is: an array of reference-key => reference-value
               # If the reference-value can be a Symfony configuration parameter by using the syntax '%name%'
     overwrite: true|false # Optional, default false. If not set, and any reference already exists, an exception is thrown
+
+-
+    # Dumps a reference to STDOUT. For debugging purposes
+    type: reference
+    mode: dump
+    identifier: xxx # Name of the reference to dump. must include the 'reference:' prefix
