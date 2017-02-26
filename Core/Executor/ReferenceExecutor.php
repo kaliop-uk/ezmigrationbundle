@@ -26,8 +26,8 @@ class ReferenceExecutor extends AbstractExecutor
 
     /**
      * @param MigrationStep $step
-     * @return void
-     * @throws \Exception if migration step is not for this type of db
+     * @return mixed
+     * @throws \Exception
      */
     public function execute(MigrationStep $step)
     {
@@ -43,7 +43,7 @@ class ReferenceExecutor extends AbstractExecutor
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
-        $this->$action($step->dsl, $step->context);
+        return $this->$action($step->dsl, $step->context);
     }
 
     protected function set($dsl, $context) {
@@ -60,7 +60,7 @@ class ReferenceExecutor extends AbstractExecutor
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
         $this->referenceResolver->addReference($dsl['identifier'], $value, $overwrite);
 
-        return true;
+        return $value;
     }
 
     protected function load($dsl, $context)
