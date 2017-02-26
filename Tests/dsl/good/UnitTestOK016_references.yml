@@ -1,0 +1,17 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: abc
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: '%test.param.for.custom.refs%'
+    overwrite: true
+
+-
+    type: reference
+    mode: dump
+    identifier: kmb_test_ref

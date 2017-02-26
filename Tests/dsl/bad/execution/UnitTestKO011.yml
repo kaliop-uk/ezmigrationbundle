@@ -1,0 +1,13 @@
+# should fail as it is not allowed to set the same ref twice by default
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: abc
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: def
+    overwrite: false
