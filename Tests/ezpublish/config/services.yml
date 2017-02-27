@@ -5,6 +5,12 @@ parameters:
     test.param.for.custom.refs: def
 
 services:
+    ez_migration_bundle.test.executor.assert:
+        class: Kaliop\eZMigrationBundle\Tests\helper\AssertExecutor
+        arguments:
+            - '@ez_migration_bundle.reference_resolver.customreference'
+        tags:
+            - { name: ez_migration_bundle.executor }
     ez_migration_bundle.test.step_executed_listener:
         class: Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener
         tags:

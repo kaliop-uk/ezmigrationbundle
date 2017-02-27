@@ -13,7 +13,7 @@ class StepExecutedListener
     {
         $result = $event->getResult();
 
-        if ($event->getResult() === null) {
+        if ($event->getResult() === null && $event->getStep()->type !== 'assert') {
             throw new \Exception('Received null as step execution event result');
         }
 
