@@ -115,7 +115,7 @@ class ReferenceExecutor extends AbstractExecutor
             throw new \Exception("Invalid step definition: miss 'identifier' for dumping reference");
         }
         if (!$this->referenceResolver->isReference($dsl['identifier'])) {
-            throw new \Exception("Invalid step definition: identifier '' is not a reference");
+            throw new \Exception("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");
         }
         VarDumper::dump($dsl['identifier']);
         $value = $this->referenceResolver->resolveReference($dsl['identifier']);
