@@ -74,12 +74,12 @@ class ReferenceExecutor extends AbstractExecutor
 
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
-        if (!is_file($fileName) && is_file($context['path'] . '/references/' . $fileName)) {
-            $fileName = $context['path'] . '/references/' . $fileName;
+        if (!is_file($fileName) && is_file(dirname($context['path']) . '/references/' . $fileName)) {
+            $fileName = dirname($context['path']) . '/references/' . $fileName;
         }
 
         if (!is_file($fileName)) {
-            throw new \Exception("Invalid step definition: invalid 'file' for loading references");
+            throw new \Exception("Invalid step definition: invalid file '$fileName' for loading references");
         }
         $data = file_get_contents($fileName);
 
