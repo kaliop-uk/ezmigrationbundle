@@ -59,7 +59,11 @@ Version 3.5 (unreleased)
 
 * New: the `generate` command can be used to generate SQL migrations in YML file format
 
-* New: SQL migration sin YML file format can set references to the number of affected rows
+* New: SQL migrations in YML file format can set references to the number of affected rows
+
+* New: the `migrate` command now accepts short-version for all options
+
+*  New: an `assert` step is available to validate migrations used by the test suite
 
 * Improved: make it easier to run the test suite outside of Travis and revamp test instructions
 
