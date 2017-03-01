@@ -55,7 +55,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the content create migration action type
+     * Handles the content create migration action type
      */
     protected function create()
     {
@@ -201,7 +201,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the content update migration action type
+     * Handles the content update migration action type
      *
      * @todo handle updating of more metadata fields
      */
@@ -289,7 +289,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the content delete migration action type
+     * Handles the content delete migration action type
      */
     protected function delete()
     {

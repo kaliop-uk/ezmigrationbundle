@@ -35,7 +35,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * Handle the create step of object state migrations.
+     * Handles the create step of object state migrations.
      *
      * @throws \Exception
      */
@@ -77,7 +77,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * Handle the update step of object state migrations.
+     * Handles the update step of object state migrations.
      *
      * @throws \Exception
      */
@@ -120,7 +120,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * Handle the deletion step of object state migrations.
+     * Handles the deletion step of object state migrations.
      */
     protected function delete()
     {

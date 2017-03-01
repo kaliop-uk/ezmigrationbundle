@@ -14,7 +14,7 @@ class LanguageManager extends RepositoryExecutor
     protected $supportedActions = array('create', 'delete');
 
     /**
-     * Handle the language create migration action
+     * Handles the language create migration action
      */
     protected function create()
     {
@@ -40,7 +40,7 @@ class LanguageManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the language update migration action
+     * Handles the language update migration action
      *
      * @todo use a matcher for flexible matching?
      */
@@ -58,7 +58,7 @@ class LanguageManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the language delete migration action
+     * Handles the language delete migration action
      */
     protected function delete()
     {

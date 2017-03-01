@@ -20,7 +20,7 @@ interface ExecutorInterface
     public function supportedTypes();
 
     /**
-     * Execute a single action in a migration
+     * Executes a single action in a migration
      *
      * @param MigrationStep $step
      * @return mixed the results of the execution step are wrapped in an event which can be listened to

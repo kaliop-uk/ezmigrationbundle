@@ -8,7 +8,7 @@ namespace Kaliop\eZMigrationBundle\API;
 interface MigrationGeneratorInterface
 {
     /**
-     * Generate a migration definition in array format
+     * Generates a migration definition in array format
      *
      * @param array $matchCondition
      * @param string $mode

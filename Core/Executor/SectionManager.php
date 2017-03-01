@@ -26,7 +26,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the section create migration action
+     * Handles the section create migration action
      */
     protected function create()
     {
@@ -45,7 +45,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the section update migration action
+     * Handles the section update migration action
      */
     protected function update()
     {
@@ -77,7 +77,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the section delete migration action
+     * Handles the section delete migration action
      */
     protected function delete()
     {

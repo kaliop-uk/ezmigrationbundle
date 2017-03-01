@@ -8,7 +8,7 @@ namespace Kaliop\eZMigrationBundle\API;
 interface ReferenceBagInterface
 {
     /**
-     * Add a reference to be retrieved later.
+     * Adds a reference to be retrieved later.
      *
      * @param string $identifier The identifier of the reference
      * @param mixed $value The value of the reference

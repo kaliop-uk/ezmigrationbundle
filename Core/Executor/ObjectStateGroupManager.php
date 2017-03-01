@@ -28,7 +28,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     }
 
     /**
-     * Handle the create step of object state group migrations
+     * Handles the create step of object state group migrations
      *
      * @todo add support for flexible defaultLanguageCode
      */
@@ -62,7 +62,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     }
 
     /**
-     * Handle the update step of object state group migrations
+     * Handles the update step of object state group migrations
      *
      * @todo add support for defaultLanguageCode
      */
@@ -105,7 +105,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     }
 
     /**
-     * Handle the delete step of object state group migrations
+     * Handles the delete step of object state group migrations
      */
     protected function delete()
     {
