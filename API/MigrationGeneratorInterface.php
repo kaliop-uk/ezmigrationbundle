@@ -3,12 +3,12 @@
 namespace Kaliop\eZMigrationBundle\API;
 
 /**
- * Interface that all migration definition handlers need to implement if they can generate a migration.
+ * Interface that all migration definition handlers need to implement if they can generate a migration definition.
  */
 interface MigrationGeneratorInterface
 {
     /**
-     * Generate a migration
+     * Generate a migration definition in array format
      *
      * @param array $matchCondition
      * @param string $mode

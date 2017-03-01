@@ -19,7 +19,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 class Database implements StorageHandlerInterface
 {
     /**
-     * Flag to indicate that the migration version table has been created
+     * Flag to indicate that the migration table has been created
      *
      * @var boolean
      */

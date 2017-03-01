@@ -28,7 +28,7 @@ class MigrationCommand extends AbstractCommand
             ->addOption('add', null, InputOption::VALUE_NONE, "Add the specified migration definition.")
             ->addOption('skip', null, InputOption::VALUE_NONE, "Mark the specified migration as skipped.")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question.")
-            ->addArgument('migration', InputArgument::REQUIRED, 'The version to add/skip (filename with full path) or delete (plain migration name).', null)
+            ->addArgument('migration', InputArgument::REQUIRED, 'The migration to add/skip (filename with full path) or delete (plain migration name).', null)
             ->setHelp(
                 <<<EOT
 The <info>kaliop:migration:migration</info> command allows you to manually delete migrations versions from the migration table:
