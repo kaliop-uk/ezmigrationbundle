@@ -110,7 +110,8 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference. Supports content_type_id and content_type_identifier
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
                                    # The shorthand 'id' can be used instead of 'content_type_id'
                                    # The shorthand 'identifier' can be used instead of 'content_type_identifier'
 
@@ -166,7 +167,8 @@
     references: # Optional
             -
                 identifier: referenceId # A string used to identify the reference
-                attribute: attributeId # An attribute to get the value of for the reference (supports content type id and content type identifier)
+                attribute: attributeId # An attribute to get the value of for the reference
+                                       # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
                                        # The shorthand 'id' can be used instead of 'content_type_id'
                                        # The shorthand 'identifier' can be used instead of 'content_type_identifier'
 

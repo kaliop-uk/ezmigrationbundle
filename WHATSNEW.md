@@ -2,7 +2,13 @@ Version 3.6 (unreleased)
 ========================
 
 * Added a new type of migration step: `migration_definition`. Only supported mode so far: `generate`.
-    For the moment, it is really useful for unit testing, mostly
+    For the moment, it is mostly useful for unit testing
+
+* New: it is now possible to set references to:
+    - content type: creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
+    - language: enabled, language_code, name
+    - object state: priority
+    - user: email, enabled, login
 
 
 Version 3.5

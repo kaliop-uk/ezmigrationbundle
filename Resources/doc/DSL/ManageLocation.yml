@@ -32,7 +32,8 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports: location_id, location_remote_id,
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: location_id, location_remote_id,
                                    # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
                                    # modification_date, name, owner_id, parent_location_id, path, position, priority,
@@ -84,7 +85,8 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # The attribute to get the value of for the reference (supports: location_id, location_remote_id,
+            attribute: attributeId # The attribute to get the value of for the reference.
+                                   # Supports: location_id, location_remote_id,
                                    # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
                                    # modification_date, name, owner_id, parent_location_id, path, position, priority,

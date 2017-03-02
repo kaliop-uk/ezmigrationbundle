@@ -101,6 +101,16 @@ class LanguageManager extends RepositoryExecutor
                 case 'id':
                     $value = $language->id;
                     break;
+                case 'enabled':
+                    $value = $language->enabled;
+                    break;
+                case 'language_code':
+                    $value = $language->languageCode;
+                    break;
+                case 'language_name':
+                case 'name':
+                    $value = $language->name;
+                    break;
                 default:
                     throw new \InvalidArgumentException('Language Manager does not support setting references for attribute ' . $reference['attribute']);
             }

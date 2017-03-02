@@ -299,6 +299,7 @@ EOT
         return $migrationDirectory;
     }
 
+    /// @todo move somewhere else. Maybe to the MigrationService itself ?
     protected function getGeneratingExecutors()
     {
         $migrationService = $this->getMigrationService();

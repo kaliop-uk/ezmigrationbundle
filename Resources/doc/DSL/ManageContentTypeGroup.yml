@@ -6,7 +6,8 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference. Supports content type group id and identifier
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports content type group id and identifier
                                    # The shorthand 'id' can be used instead of 'content_type_group_id'
 
 -
@@ -33,7 +34,8 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference. Supports content type group id and identifier
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports content type group id and identifier
                                    # The shorthand 'id' can be used instead of 'content_type_group_id'
 -
     # Delete one (or more) content type group

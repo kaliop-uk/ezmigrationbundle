@@ -9,7 +9,8 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports: language_id)
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: language_id, enabled, language_code, name
 
 -
     # Delete an existing language

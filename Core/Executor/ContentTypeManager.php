@@ -299,6 +299,24 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 case 'identifier':
                     $value = $contentType->identifier;
                     break;
+                case 'creation_date':
+                    $value = $contentType->creationDate->getTimestamp();
+                    break;
+                case 'modification_date':
+                    $value = $contentType->modificationDate->getTimestamp();
+                    break;
+                case 'name_pattern':
+                    $value = $contentType->nameSchema;
+                    break;
+                case 'remote_id':
+                    $value = $contentType->remoteId;
+                    break;
+                case 'status':
+                    $value = $contentType->status;
+                    break;
+                case 'url_name_pattern':
+                    $value = $contentType->urlAliasSchema;
+                    break;
                 default:
                     throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
             }

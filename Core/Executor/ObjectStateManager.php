@@ -168,6 +168,9 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
                 case 'id':
                     $value = $objectState->id;
                     break;
+                case 'priority':
+                    $value = $objectState->priority;
+                    break;
                 default:
                     throw new \InvalidArgumentException('Object State Manager does not support setting references for attribute ' . $reference['attribute']);
             }

@@ -13,7 +13,8 @@
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id)
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports user_id, email, enabled, login
                                  # The shorthand 'id' can be used instead of 'user_id'
 
 -
@@ -44,7 +45,8 @@
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports user_id)
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports user_id, email, enabled, login
                                  # The shorthand 'id' can be used instead of 'user_id'
 
 -
@@ -79,7 +81,8 @@
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports user_group_id)
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: user_group_id
                                  # The shorthand 'id' can be used instead of 'user_group_id'
 
 -
@@ -110,7 +113,8 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
-                                 # The shorthand 'id' can be used instead of 'content_id'
+                                 # Supports: user_group_id
+                                 # The shorthand 'id' can be used instead of 'user_group_id'
 
 -
     # Note: The users which are not assigned to other groups will be deleted.

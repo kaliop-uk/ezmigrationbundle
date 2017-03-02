@@ -230,6 +230,15 @@ class UserManager extends RepositoryExecutor
                 case 'id':
                     $value = $user->id;
                     break;
+                case 'email':
+                    $value = $user->email;
+                    break;
+                case 'enabled':
+                    $value = $user->enabled;
+                    break;
+                case 'login':
+                    $value = $user->login;
+                    break;
                 default:
                     throw new \InvalidArgumentException('User Manager does not support setting references for attribute ' . $reference['attribute']);
             }

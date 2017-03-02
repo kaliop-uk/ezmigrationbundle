@@ -82,7 +82,8 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports role_id and role_identifier)
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: role_id and role_identifier
                                    # The shorthand 'id' can be used instead of 'role_id'
                                    # The shorthand 'identifier' can be used instead of 'role_identifier'
 
@@ -131,7 +132,8 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports role_id and role_identifier)
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: role_id and role_identifier
                                    # The shorthand 'id' can be used instead of 'role_id'
                                    # The shorthand 'identifier' can be used instead of 'role_identifier'
 

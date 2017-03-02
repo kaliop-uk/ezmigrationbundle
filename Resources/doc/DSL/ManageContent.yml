@@ -90,10 +90,11 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # The attribute to get the value of for the reference (supports: content_id, content_remote_id,
+            attribute: attributeId # The attribute to get the value of for the reference.
+                                   # Supports: content_id, content_remote_id,
                                    # always_available, content_type_id, content_type_identifier, current_version_no,
                                    # location_id, main_language_code, modification_date, name, owner_id, path,
-                                   # publication_date, section_id)
+                                   # publication_date, section_id
 
 -
     type: content
@@ -135,10 +136,11 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # The attribute to get the value of for the reference (supports: content_id, content_remote_id,
+            attribute: attributeId # The attribute to get the value of for the reference
+                                   # supports: content_id, content_remote_id,
                                    # always_available, content_type_id, content_type_identifier, current_version_no,
                                    # location_id, main_language_code, modification_date, name, owner_id, path,
-                                   # publication_date, section_id)
+                                   # publication_date, section_id
 
 -
     type: content

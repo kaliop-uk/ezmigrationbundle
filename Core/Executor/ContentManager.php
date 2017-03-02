@@ -525,6 +525,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     $value = $content->contentInfo->sectionId;
                     break;
                 default:
+
                     throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
