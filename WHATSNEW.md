@@ -1,5 +1,12 @@
-Version 3.5 (unreleased)
+Version 3.6 (unreleased)
 ========================
+
+* Added a new type of migration step: `migration_definition`. Only supported mode so far: `generate`.
+    For the moment, it is really useful for unit testing, mostly
+
+
+Version 3.5
+===========
 
 * New: allow the `generate` command to easily create a migration definition in a custom directory instead of a bundle
 
