@@ -12,7 +12,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
 
 /**
- * Methods to handle content type migrations
+ * Handles content type migrations
  */
 class ContentTypeManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
@@ -327,6 +327,125 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         return true;
     }
 
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $contentTypeCollection = $this->contentTypeMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\ContentType\ContentType $contentType */
+        foreach ($contentTypeCollection as $contentType) {
+
+            $contentTypeData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $contentTypeGroups = $contentType->getContentTypeGroups();
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        array(
+                            'content_type_group' => reset($contentTypeGroups)->identifier,
+                            'identifier' => $contentType->identifier
+                        )
+                    );
+                    break;
+                case 'update':
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        // q: are we allowed to change the group in updates ?
+                        array(
+                            'match' => array(
+                                ContentTypeMatcher::MATCH_CONTENTTYPE_IDENTIFIER => $contentType->identifier
+                            ),
+                            'new_identifier' => $contentType->identifier,
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $contentTypeData = array_merge(
+                        $contentTypeData,
+                        array(
+                            'match' => array(
+                                ContentTypeMatcher::MATCH_CONTENTTYPE_IDENTIFIER => $contentType->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+
+                $fieldTypeService = $this->repository->getFieldTypeService();
+
+                $attributes = array();
+                foreach ($contentType->getFieldDefinitions() as $i => $fieldDefinition) {
+                    $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
+                    $attribute = array(
+                        'identifier' => $fieldDefinition->identifier,
+                        'type' => $fieldTypeIdentifier,
+                        'name' => $fieldDefinition->getName($this->getLanguageCode()),
+                        'description' => (string)$fieldDefinition->getDescription($this->getLanguageCode()),
+                        'required' => $fieldDefinition->isRequired,
+                        'searchable' => $fieldDefinition->isSearchable,
+                        'info-collector' => $fieldDefinition->isInfoCollector,
+                        'disable-translation' => !$fieldDefinition->isTranslatable,
+                        'category' => $fieldDefinition->fieldGroup,
+                        // Should we cheat and do like the eZ4 Admin Interface and used sequential numbering 1,2,3... ?
+                        // But what if the end user then edits the 'update' migration and only leaves in it a single
+                        // field position update? He/she might be surprised when executing it...
+                        'position' => $fieldDefinition->position
+                    );
+
+                    $fieldType = $fieldTypeService->getFieldType($fieldTypeIdentifier);
+                    $nullValue = $fieldType->getEmptyValue();
+                    if ($fieldDefinition->defaultValue != $nullValue) {
+                        $attribute['default-value'] = $this->complexFieldManager->fieldValueToHash(
+                            $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->defaultValue
+                        );
+                    }
+
+                    $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
+                        $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
+                    );
+
+                    $attribute['validator-configuration'] = $fieldDefinition->validatorConfiguration;
+
+                    $attributes[] = $attribute;
+                }
+
+                $contentTypeData = array_merge(
+                    $contentTypeData,
+                    array(
+                        'name' => $contentType->getName($this->getLanguageCode()),
+                        'description' => $contentType->getDescription($this->getLanguageCode()),
+                        'name_pattern' => $contentType->nameSchema,
+                        'url_name_pattern' => $contentType->urlAliasSchema,
+                        'is_container' => $contentType->isContainer,
+                        'lang' => $this->getLanguageCode(),
+                        'attributes' => $attributes
+                    )
+                );
+            }
+
+            $data[] = $contentTypeData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
+    }
+
     /**
      * Helper function to create field definitions to be added to a new/existing content type.
      *
@@ -499,123 +618,5 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         }
 
         return null;
-    }
-
-    /**
-     * @param array $matchCondition
-     * @param string $mode
-     * @throws \Exception
-     * @return array
-     */
-    public function generateMigration(array $matchCondition, $mode)
-    {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
-        $contentTypeCollection = $this->contentTypeMatcher->match($matchCondition);
-        $data = array();
-
-        /** @var \eZ\Publish\API\Repository\Values\ContentType\ContentType $contentType */
-        foreach ($contentTypeCollection as $contentType) {
-
-            $contentTypeData = array(
-                'type' => reset($this->supportedStepTypes),
-                'mode' => $mode
-            );
-
-            switch ($mode) {
-                case 'create':
-                    $contentTypeGroups = $contentType->getContentTypeGroups();
-                    $contentTypeData = array_merge(
-                        $contentTypeData,
-                        array(
-                            'content_type_group' => reset($contentTypeGroups)->identifier,
-                            'identifier' => $contentType->identifier
-                        )
-                    );
-                    break;
-                case 'update':
-                    $contentTypeData = array_merge(
-                        $contentTypeData,
-                        // q: are we allowed to change the group in updates ?
-                        array(
-                            'match' => array(
-                                ContentTypeMatcher::MATCH_CONTENTTYPE_IDENTIFIER => $contentType->identifier
-                            ),
-                            'new_identifier' => $contentType->identifier,
-                        )
-                    );
-                    break;
-                case 'delete':
-                    $contentTypeData = array_merge(
-                        $contentTypeData,
-                        array(
-                            'match' => array(
-                                ContentTypeMatcher::MATCH_CONTENTTYPE_IDENTIFIER => $contentType->identifier
-                            )
-                        )
-                    );
-                    break;
-                default:
-                    throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
-            }
-
-            if ($mode != 'delete') {
-
-                $fieldTypeService = $this->repository->getFieldTypeService();
-
-                $attributes = array();
-                foreach ($contentType->getFieldDefinitions() as $i => $fieldDefinition) {
-                    $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
-                    $attribute = array(
-                        'identifier' => $fieldDefinition->identifier,
-                        'type' => $fieldTypeIdentifier,
-                        'name' => $fieldDefinition->getName($this->getLanguageCode()),
-                        'description' => (string)$fieldDefinition->getDescription($this->getLanguageCode()),
-                        'required' => $fieldDefinition->isRequired,
-                        'searchable' => $fieldDefinition->isSearchable,
-                        'info-collector' => $fieldDefinition->isInfoCollector,
-                        'disable-translation' => !$fieldDefinition->isTranslatable,
-                        'category' => $fieldDefinition->fieldGroup,
-                        // Should we cheat and do like the eZ4 Admin Interface and used sequential numbering 1,2,3... ?
-                        // But what if the end user then edits the 'update' migration and only leaves in it a single
-                        // field position update? He/she might be surprised when executing it...
-                        'position' => $fieldDefinition->position
-                    );
-
-                    $fieldType = $fieldTypeService->getFieldType($fieldTypeIdentifier);
-                    $nullValue = $fieldType->getEmptyValue();
-                    if ($fieldDefinition->defaultValue != $nullValue) {
-                        $attribute['default-value'] = $this->complexFieldManager->fieldValueToHash(
-                            $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->defaultValue
-                        );
-                    }
-
-                    $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
-                        $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
-                    );
-
-                    $attribute['validator-configuration'] = $fieldDefinition->validatorConfiguration;
-
-                    $attributes[] = $attribute;
-                }
-
-                $contentTypeData = array_merge(
-                    $contentTypeData,
-                    array(
-                        'name' => $contentType->getName($this->getLanguageCode()),
-                        'description' => $contentType->getDescription($this->getLanguageCode()),
-                        'name_pattern' => $contentType->nameSchema,
-                        'url_name_pattern' => $contentType->urlAliasSchema,
-                        'is_container' => $contentType->isContainer,
-                        'lang' => $this->getLanguageCode(),
-                        'attributes' => $attributes
-                    )
-                );
-            }
-
-            $data[] = $contentTypeData;
-        }
-
-        $this->loginUser($previousUserId);
-        return $data;
     }
 }

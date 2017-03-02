@@ -7,8 +7,7 @@ use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 
 /**
- * Implements the actions for managing (create/update/delete) sections in the system through
- * migrations and abstracts away the eZ Publish Public API.
+ * Handles section migrations.
  */
 class SectionManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {

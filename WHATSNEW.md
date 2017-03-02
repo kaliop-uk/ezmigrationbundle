@@ -76,7 +76,7 @@ Version 3.5
 
 * New: the `migrate` command now accepts short-version for all options
 
-*  New: an `assert` step is available to validate migrations used by the test suite
+* New: an `assert` step is available to validate migrations used by the test suite
 
 * Improved: make it easier to run the test suite outside of Travis and revamp test instructions
 

@@ -5,8 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 
 /**
- * Implements the actions for managing (create/update/delete) Languages in the system through
- * migrations and abstracts away the eZ Publish Public API.
+ * Handles language migrations.
  */
 class LanguageManager extends RepositoryExecutor
 {

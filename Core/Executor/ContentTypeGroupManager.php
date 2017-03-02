@@ -7,13 +7,14 @@ use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 
+/**
+ * Handles content type groups migrations.
+ */
 class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('content_type_group');
 
-    /**
-     * @var ContentTypeGroupMatcher
-     */
+    /** @var ContentTypeGroupMatcher $contentTypeGroupMatcher */
     protected $contentTypeGroupMatcher;
 
     /**

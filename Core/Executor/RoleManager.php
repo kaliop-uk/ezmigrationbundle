@@ -12,7 +12,7 @@ use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 
 /**
- * Handles the role migration definitions.
+ * Handles role migrations.
  */
 class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
@@ -194,6 +194,80 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     }
 
     /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $roleCollection = $this->roleMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
+        foreach ($roleCollection as $role) {
+            $roleData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'name' => $role->identifier
+                        )
+                    );
+                    break;
+                case 'update':
+                case 'delete':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'match' => array(
+                                RoleMatcher::MATCH_ROLE_IDENTIFIER => $role->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'role' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+                $policies = array();
+                foreach ($role->getPolicies() as $policy) {
+                    $limitations = array();
+
+                    foreach ($policy->getLimitations() as $limitation) {
+                        $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+                    }
+
+                    $policies[] = array(
+                        'module' => $policy->module,
+                        'function' => $policy->function,
+                        'limitations' => $limitations
+                    );
+                }
+
+                $roleData = array_merge(
+                    $roleData,
+                    array(
+                        'policies' => $policies
+                    )
+                );
+            }
+
+            $data[] = $roleData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
+    }
+
+    /**
      * Create a new Limitation object based on the type and value in the $limitation array.
      *
      * <pre>
@@ -303,79 +377,5 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         }
 
         $roleService->addPolicy($role, $policyCreateStruct);
-    }
-
-    /**
-     * @param array $matchCondition
-     * @param string $mode
-     * @throws \Exception
-     * @return array
-     */
-    public function generateMigration(array $matchCondition, $mode)
-    {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
-        $roleCollection = $this->roleMatcher->match($matchCondition);
-        $data = array();
-
-        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        foreach ($roleCollection as $role) {
-            $roleData = array(
-                'type' => reset($this->supportedStepTypes),
-                'mode' => $mode
-            );
-
-            switch ($mode) {
-                case 'create':
-                    $roleData = array_merge(
-                        $roleData,
-                        array(
-                            'name' => $role->identifier
-                        )
-                    );
-                    break;
-                case 'update':
-                case 'delete':
-                    $roleData = array_merge(
-                        $roleData,
-                        array(
-                            'match' => array(
-                                RoleMatcher::MATCH_ROLE_IDENTIFIER => $role->identifier
-                            )
-                        )
-                    );
-                    break;
-                default:
-                    throw new \Exception("Executor 'role' doesn't support mode '$mode'");
-            }
-
-            if ($mode != 'delete') {
-                $policies = array();
-                foreach ($role->getPolicies() as $policy) {
-                    $limitations = array();
-
-                    foreach ($policy->getLimitations() as $limitation) {
-                        $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
-                    }
-
-                    $policies[] = array(
-                        'module' => $policy->module,
-                        'function' => $policy->function,
-                        'limitations' => $limitations
-                    );
-                }
-
-                $roleData = array_merge(
-                    $roleData,
-                    array(
-                        'policies' => $policies
-                    )
-                );
-            }
-
-            $data[] = $roleData;
-        }
-
-        $this->loginUser($previousUserId);
-        return $data;
     }
 }

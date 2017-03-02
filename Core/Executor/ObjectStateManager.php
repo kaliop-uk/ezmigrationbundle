@@ -7,6 +7,9 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 
+/**
+ * Handles object-state migrations.
+ */
 class ObjectStateManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     /**

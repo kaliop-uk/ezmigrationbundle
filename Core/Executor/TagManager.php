@@ -5,6 +5,9 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 
+/**
+ * Handles tag migrations.
+ */
 class TagManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('tag');
@@ -89,14 +92,6 @@ class TagManager extends RepositoryExecutor
         return $tagsCollection;
     }
 
-    protected function checkTagsBundleInstall()
-    {
-        if (!$this->tagService)
-        {
-            throw new \Exception('To manipulate tags you must have NetGen Tags Bundle installed');
-        }
-    }
-
     /**
      * @param string $action
      * @return TagCollection
@@ -137,5 +132,13 @@ class TagManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    protected function checkTagsBundleInstall()
+    {
+        if (!$this->tagService)
+        {
+            throw new \Exception('To manipulate tags you must have NetGen Tags Bundle installed');
+        }
     }
 }

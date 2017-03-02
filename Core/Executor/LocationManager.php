@@ -9,6 +9,9 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 
+/**
+ * Handles location migrations.
+ */
 class LocationManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('location');
@@ -233,93 +236,6 @@ class LocationManager extends RepositoryExecutor
     }
 
     /**
-     * @param int|string|array $locationKey
-     * @return Location
-     */
-    public function matchLocationByKey($locationKey)
-    {
-        return $this->locationMatcher->matchOneByKey($locationKey);
-    }
-
-    /**
-     * NB: weirdly enough, it returns contents, not locations
-     *
-     * @param string $action
-     * @return ContentCollection
-     * @throws \Exception
-     */
-    protected function matchContents($action)
-    {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
-        }
-
-        // Backwards compat
-        if (!isset($this->dsl['match'])) {
-            if (isset($this->dsl['object_id'])) {
-                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
-            } elseif (isset($this->dsl['remote_id'])) {
-                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
-            }
-        }
-
-        $match = $this->dsl['match'];
-
-        // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
-
-        return $this->contentMatcher->matchContent($match);
-    }
-
-    /**
-     * @param $newValue
-     * @param null $currentValue
-     * @return int|null
-     *
-     * * @todo make protected
-     */
-    public function getSortField($newValue, $currentValue = null)
-    {
-        $sortField = $currentValue;
-
-        if ($newValue !== null) {
-            $sortField = $this->sortConverter->hash2SortField($newValue);
-        }
-
-        return $sortField;
-    }
-
-    /**
-     * Get the sort order based on the current value and the value in the DSL definition.
-     *
-     * @see \eZ\Publish\API\Repository\Values\Content\Location::SORT_ORDER_*
-     *
-     * @param int $newValue
-     * @param int $currentValue
-     * @return int|null
-     *
-     * @todo make protected
-     */
-    public function getSortOrder($newValue, $currentValue = null)
-    {
-        $sortOrder = $currentValue;
-
-        if ($newValue !== null) {
-            $sortOrder = $this->sortConverter->hash2SortOrder($newValue);
-        }
-
-        return $sortOrder;
-    }
-
-    /**
      * Sets references to object attributes
      *
      * The Location Manager currently supports setting references to location id.
@@ -422,4 +338,92 @@ class LocationManager extends RepositoryExecutor
 
         return true;
     }
+
+    /**
+     * @param int|string|array $locationKey
+     * @return Location
+     */
+    public function matchLocationByKey($locationKey)
+    {
+        return $this->locationMatcher->matchOneByKey($locationKey);
+    }
+
+    /**
+     * NB: weirdly enough, it returns contents, not locations
+     *
+     * @param string $action
+     * @return ContentCollection
+     * @throws \Exception
+     */
+    protected function matchContents($action)
+    {
+        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
+            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
+        }
+
+        // Backwards compat
+        if (!isset($this->dsl['match'])) {
+            if (isset($this->dsl['object_id'])) {
+                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
+            } elseif (isset($this->dsl['remote_id'])) {
+                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
+            }
+        }
+
+        $match = $this->dsl['match'];
+
+        // convert the references passed in the match
+        foreach ($match as $condition => $values) {
+            if (is_array($values)) {
+                foreach ($values as $position => $value) {
+                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
+                }
+            } else {
+                $match[$condition] = $this->referenceResolver->resolveReference($values);
+            }
+        }
+
+        return $this->contentMatcher->matchContent($match);
+    }
+
+    /**
+     * @param $newValue
+     * @param null $currentValue
+     * @return int|null
+     *
+     * * @todo make protected
+     */
+    public function getSortField($newValue, $currentValue = null)
+    {
+        $sortField = $currentValue;
+
+        if ($newValue !== null) {
+            $sortField = $this->sortConverter->hash2SortField($newValue);
+        }
+
+        return $sortField;
+    }
+
+    /**
+     * Get the sort order based on the current value and the value in the DSL definition.
+     *
+     * @see \eZ\Publish\API\Repository\Values\Content\Location::SORT_ORDER_*
+     *
+     * @param int $newValue
+     * @param int $currentValue
+     * @return int|null
+     *
+     * @todo make protected
+     */
+    public function getSortOrder($newValue, $currentValue = null)
+    {
+        $sortOrder = $currentValue;
+
+        if ($newValue !== null) {
+            $sortOrder = $this->sortConverter->hash2SortOrder($newValue);
+        }
+
+        return $sortOrder;
+    }
+
 }
