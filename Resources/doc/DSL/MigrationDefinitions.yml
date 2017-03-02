@@ -1,0 +1,15 @@
+-
+    type: migration_definition
+    mode: generate
+    migration_type: string # content, content_type, etc...
+    migration_mode: string # create, update, delete
+    match:
+        type: xxx # depending on the migration_type, eg: content_id
+        value: yyy
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references:
+        -
+            identifier: # A string used to identify the reference
+            json_path: zzz # Since the generated migration is a nested structure, you have to use a selector, eg: '[0].name_pattern'
+                           # For syntax, see: http://jmespath.org/tutorial.html, http://jmespath.org/specification.html#grammar

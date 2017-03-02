@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
+use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -241,7 +242,9 @@ EOT
                 }
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
-                $executor->setLanguageCode($parameters['lang']);
+                if ($executor instanceof LanguageAwareInterface) {
+                    $executor->setLanguageCode($parameters['lang']);
+                }
 
                 $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
                 if ($parameters['matchExcept']) {

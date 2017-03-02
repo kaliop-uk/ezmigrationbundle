@@ -27,7 +27,8 @@
         "ext-pdo": "*",
         "nikic/php-parser": "2.*",
         "symfony/process": "*",
-        "symfony/var-dumper": "*"
+        "symfony/var-dumper": "*",
+        "mtdowling/jmespath.php": "2.*"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.2.0",
