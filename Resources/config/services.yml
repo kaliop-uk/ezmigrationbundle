@@ -156,6 +156,9 @@ services:
         arguments:
             - '@ez_migration_bundle.migration_service'
             - '@ez_migration_bundle.reference_resolver.customreference'
+        # avoid 'ServiceCircularReferenceException' errors when this service is injected into a migration service
+        # that is related to the event dispatcher by making it lazy
+        lazy: true
         tags:
             - { name: ez_migration_bundle.executor }
 
