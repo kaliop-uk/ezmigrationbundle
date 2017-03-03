@@ -24,6 +24,8 @@ Version 3.6 (unreleased)
     TIP: if you are unsure about the hash representation of a given field, you can generate a content/create migration
     for an existing content to find out how it looks.
 
+* Fix a case of circular dependencies in services (highlighted by the workflow bundle)
+
 
 Version 3.5
 ===========
