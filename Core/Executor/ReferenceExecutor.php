@@ -3,11 +3,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\VarDumper\VarDumper;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 
 class ReferenceExecutor extends AbstractExecutor
 {

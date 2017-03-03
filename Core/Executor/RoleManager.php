@@ -5,7 +5,6 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;

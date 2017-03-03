@@ -2,11 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\Content\Content;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
-use eZ\Publish\API\Repository\Values\Content\Content;
 
 /**
  * Handles user-group migrations.

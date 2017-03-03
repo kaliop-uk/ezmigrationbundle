@@ -2,11 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
-use \eZ\Publish\API\Repository\Repository;
 
 /**
  * The core manager class that all migration action managers inherit from.
