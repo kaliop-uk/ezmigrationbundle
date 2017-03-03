@@ -10,6 +10,20 @@ Version 3.6 (unreleased)
     - object state: priority
     - user: email, enabled, login
 
+* New: it is now possible to set references to the values of Content fields. The syntax to use is slightly different
+    depending on whether the value for the field at hand is a scalar or a hash. Example code:
+
+            references:
+                -
+                    identifier: a_user_first_name_field_is_a_string
+                    attribute: 'attributes.first_name'
+                -
+                    identifier: a_user_account_field_is_a_hash
+                    attribute: 'attributes.user_account.email'
+
+    TIP: if you are unsure about the hash representation of a given field, you can generate a content/create migration
+    for an existing content to find out how it looks.
+
 
 Version 3.5
 ===========

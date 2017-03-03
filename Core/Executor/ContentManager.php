@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
+use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
@@ -15,7 +16,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
-use eZ\Publish\Core\Base\Exceptions\NotFoundException;
+use JmesPath\Env as JmesPath;
 
 /**
  * Handles content migrations.
@@ -409,6 +410,31 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     $value = $content->contentInfo->sectionId;
                     break;
                 default:
+                    // allow to get the value of fields as well as their sub-parts
+                    if (strpos($reference['attribute'], 'attributes.') === 0) {
+                        $contentType = $this->repository->getContentTypeService()->loadContentType(
+                            $content->contentInfo->contentTypeId
+                        );
+                        $parts = explode('.', $reference['attribute']);
+                        $fieldIdentifier = $parts[1];
+                        $field = $content->getField($fieldIdentifier);
+                        $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
+                        $hashValue = $this->complexFieldManager->fieldValueToHash(
+                            $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
+                        );
+                        if (is_array($hashValue) ) {
+                            if (count($parts) == 2) {
+                                throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has an array value');
+                            }
+                            $value = JmesPath::search(implode('.', array_slice($parts, 2)), $hashValue);
+                        } else {
+                            if (count($parts) > 2) {
+                                throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has a scalar value');
+                            }
+                            $value = $hashValue;
+                        }
+                        break;
+                    }
 
                     throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
             }
