@@ -211,8 +211,11 @@
             filename: lol1
         - ezbinaryfile:
             path: emptyfile.txt
-            filename: lol2
+            filename: lol2.txt
             mime_type: something
+        - ezmedia:
+            path: small.flv
+            filename: lol3.flv
         - ezxmltext:
             content: '<section><paragraph>Hello there! Here is an embedded object: <embed view="embed" size="medium" object_id="[reference:kmb_test_2_1]" /></paragraph></section>'
         - ezrichtext:

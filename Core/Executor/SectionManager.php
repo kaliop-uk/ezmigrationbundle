@@ -3,13 +3,13 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 
 /**
- * Implements the actions for managing (create/update/delete) section in the system through
- * migrations and abstracts away the eZ Publish Public API.
+ * Handles section migrations.
  */
-class SectionManager extends RepositoryExecutor
+class SectionManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('section');
 
@@ -25,7 +25,7 @@ class SectionManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the section create migration action
+     * Handles the section create migration action
      */
     protected function create()
     {
@@ -44,7 +44,7 @@ class SectionManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the section update migration action
+     * Handles the section update migration action
      */
     protected function update()
     {
@@ -61,7 +61,7 @@ class SectionManager extends RepositoryExecutor
             if (isset($this->dsl['identifier'])) {
                 $sectionUpdateStruct->identifier = $this->dsl['identifier'];
             }
-            if (isset($this->dsl['identifier'])) {
+            if (isset($this->dsl['name'])) {
                 $sectionUpdateStruct->name = $this->dsl['name'];
             }
 
@@ -76,7 +76,7 @@ class SectionManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the section delete migration action
+     * Handles the section delete migration action
      */
     protected function delete()
     {
@@ -99,21 +99,13 @@ class SectionManager extends RepositoryExecutor
     protected function matchSections($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action a section.");
+            throw new \Exception("A match condition is required to $action a section");
         }
 
         $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->sectionMatcher->match($match);
     }
@@ -161,5 +153,68 @@ class SectionManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $sectionCollection = $this->sectionMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\Content\Section $section */
+        foreach ($sectionCollection as $section) {
+
+            $sectionData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode,
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $sectionData = array_merge(
+                        $sectionData,
+                        array(
+                            'identifier' => $section->identifier,
+                            'name' => $section->name,
+                        )
+                    );
+                    break;
+                case 'update':
+                    $sectionData = array_merge(
+                        $sectionData,
+                        array(
+                            'match' => array(
+                                SectionMatcher::MATCH_SECTION_ID => $section->id
+                            ),
+                            'identifier' => $section->identifier,
+                            'name' => $section->name,
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $sectionData = array_merge(
+                        $sectionData,
+                        array(
+                            'match' => array(
+                                SectionMatcher::MATCH_SECTION_ID => $section->id
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'section' doesn't support mode '$mode'");
+            }
+
+            $data[] = $sectionData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 }

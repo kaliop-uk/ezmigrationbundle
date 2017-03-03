@@ -45,9 +45,9 @@ class MigrateCommand extends AbstractCommand
                 "The directory or file to load the migration definitions from"
             )
             // nb: when adding options, remember to forward them to sub-commands executed in 'separate-process' mode
-            ->addOption('default-language', null, InputOption::VALUE_REQUIRED, "Default language code that will be used if no language is provided in migration steps")
-            ->addOption('ignore-failures', null, InputOption::VALUE_NONE, "Keep executing migrations even if one fails")
-            ->addOption('clear-cache', null, InputOption::VALUE_NONE, "Clear the cache after the command finishes")
+            ->addOption('default-language', 'l', InputOption::VALUE_REQUIRED, "Default language code that will be used if no language is provided in migration steps")
+            ->addOption('ignore-failures', 'i', InputOption::VALUE_NONE, "Keep executing migrations even if one fails")
+            ->addOption('clear-cache', 'c', InputOption::VALUE_NONE, "Clear the cache after the command finishes")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question")
             ->addOption('no-transactions', 'u', InputOption::VALUE_NONE, "Do not use a repository transaction to wrap each migration. Unsafe, but needed for legacy slot handlers")
             ->addOption('separate-process', 'p', InputOption::VALUE_NONE, "Use a separate php process to run each migration. Safe if your migration leak memory. A tad slower")

@@ -2,8 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 class PHPExecutor extends AbstractExecutor
 {

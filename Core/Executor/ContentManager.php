@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
+use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
@@ -15,17 +16,17 @@ use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
-use eZ\Publish\Core\Base\Exceptions\NotFoundException;
+use JmesPath\Env as JmesPath;
 
 /**
- * Implements the actions for managing (create/update/delete) Content in the system through
- * migrations and abstracts away the eZ Publish Public API.
+ * Handles content migrations.
  *
  * @todo add support for updating of content metadata
  */
 class ContentManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('content');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     protected $contentMatcher;
     protected $sectionMatcher;
@@ -54,7 +55,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the content create migration action type
+     * Handles the content create migration action type
      */
     protected function create()
     {
@@ -186,8 +187,21 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         return $content;
     }
 
+    protected function load()
+    {
+        $contentCollection = $this->matchContents('load');
+
+        if (count($contentCollection) > 1 && isset($this->dsl['references'])) {
+            throw new \Exception("Can not execute Content load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
+        }
+
+        $this->setReferences($contentCollection);
+
+        return $contentCollection;
+    }
+
     /**
-     * Handle the content update migration action type
+     * Handles the content update migration action type
      *
      * @todo handle updating of more metadata fields
      */
@@ -275,7 +289,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Handle the content delete migration action type
+     * Handles the content delete migration action type
      */
     protected function delete()
     {
@@ -303,7 +317,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function matchContents($action)
     {
         if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
+            throw new \Exception("The id or remote id of an object or a match condition is required to $action a location");
         }
 
         // Backwards compat
@@ -315,20 +329,232 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
         }
 
-        $match = $this->dsl['match'];
-
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->contentMatcher->match($match);
+    }
+
+    /**
+     * Sets references to certain content attributes.
+     *
+     * @param \eZ\Publish\API\Repository\Values\Content\Content|ContentCollection $content
+     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
+     * @return boolean
+     *
+     * @todo add support for other attributes: contentTypeId, contentTypeIdentifier, section, etc... ?
+     */
+    protected function setReferences($content)
+    {
+        if (!array_key_exists('references', $this->dsl)) {
+            return false;
+        }
+
+        if ($content instanceof ContentCollection) {
+            if (count($content) > 1) {
+                throw new \InvalidArgumentException('Content Manager does not support setting references for creating/updating of multiple contents');
+            }
+            $content = reset($content);
+        }
+
+        foreach ($this->dsl['references'] as $reference) {
+
+            switch ($reference['attribute']) {
+                case 'object_id':
+                case 'content_id':
+                case 'id':
+                    $value = $content->id;
+                    break;
+                case 'remote_id':
+                case 'content_remote_id':
+                    $value = $content->contentInfo->remoteId;
+                    break;
+                case 'always_available':
+                    $value = $content->contentInfo->alwaysAvailable;
+                    break;
+                case 'content_type_id':
+                    $value = $content->contentInfo->contentTypeId;
+                    break;
+                case 'content_type_identifier':
+                    $contentTypeService = $this->repository->getContentTypeService();
+                    $value = $contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
+                    break;
+                case 'current_version':
+                case 'current_version_no':
+                    $value = $content->contentInfo->currentVersionNo;
+                    break;
+                case 'location_id':
+                case 'main_location_id':
+                    $value = $content->contentInfo->mainLocationId;
+                    break;
+                case 'main_language_code':
+                    $value = $content->contentInfo->mainLanguageCode;
+                    break;
+                case 'modification_date':
+                    $value = $content->contentInfo->modificationDate->getTimestamp();
+                    break;
+                case 'name':
+                    $value = $content->contentInfo->name;
+                    break;
+                case 'owner_id':
+                    $value = $content->contentInfo->ownerId;
+                    break;
+                case 'path':
+                    $locationService = $this->repository->getLocationService();
+                    $value = $locationService->loadLocation($content->contentInfo->mainLocationId)->pathString;
+                    break;
+                case 'publication_date':
+                    $value = $content->contentInfo->publishedDate->getTimestamp();
+                    break;
+                case 'section_id':
+                    $value = $content->contentInfo->sectionId;
+                    break;
+                default:
+                    // allow to get the value of fields as well as their sub-parts
+                    if (strpos($reference['attribute'], 'attributes.') === 0) {
+                        $contentType = $this->repository->getContentTypeService()->loadContentType(
+                            $content->contentInfo->contentTypeId
+                        );
+                        $parts = explode('.', $reference['attribute']);
+                        $fieldIdentifier = $parts[1];
+                        $field = $content->getField($fieldIdentifier);
+                        $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
+                        $hashValue = $this->complexFieldManager->fieldValueToHash(
+                            $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
+                        );
+                        if (is_array($hashValue) ) {
+                            if (count($parts) == 2) {
+                                throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has an array value');
+                            }
+                            $value = JmesPath::search(implode('.', array_slice($parts, 2)), $hashValue);
+                        } else {
+                            if (count($parts) > 2) {
+                                throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has a scalar value');
+                            }
+                            $value = $hashValue;
+                        }
+                        break;
+                    }
+
+                    throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
+            }
+
+            $this->referenceResolver->addReference($reference['identifier'], $value);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     *
+     * @todo add support for dumping all object languages
+     * @todo add 2ndary locations when in 'update' mode
+     * @todo add dumping of sort_field and sort_order for 2ndary locations
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $contentCollection = $this->contentMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\Content\Content $content */
+        foreach ($contentCollection as $content) {
+
+            $location = $this->repository->getLocationService()->loadLocation($content->contentInfo->mainLocationId);
+            $contentType = $this->repository->getContentTypeService()->loadContentType(
+                $content->contentInfo->contentTypeId
+            );
+
+            $contentData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $contentData = array_merge(
+                        $contentData,
+                        array(
+                            'content_type' => $contentType->identifier,
+                            'parent_location' => $location->parentLocationId,
+                            'priority' => $location->priority,
+                            'is_hidden' => $location->invisible,
+                            'sort_field' => $this->sortConverter->sortField2Hash($location->sortField),
+                            'sort_order' => $this->sortConverter->sortOrder2Hash($location->sortOrder),
+                            'remote_id' => $content->contentInfo->remoteId,
+                            'location_remote_id' => $location->remoteId
+                        )
+                    );
+                    $locationService = $this->repository->getLocationService();
+                    $locations = $locationService->loadLocations($content->contentInfo);
+                    if (count($locations) > 1) {
+                        $otherParentLocations = array();
+                        foreach($locations as $otherLocation) {
+                            if ($otherLocation->id != $location->id) {
+                                $otherParentLocations[] = $otherLocation->parentLocationId;
+                            }
+                        }
+                        $contentData['other_parent_locations'] = $otherParentLocations;
+                    }
+                    break;
+                case 'update':
+                    $contentData = array_merge(
+                        $contentData,
+                        array(
+                            'match' => array(
+                                ContentMatcher::MATCH_CONTENT_REMOTE_ID => $content->contentInfo->remoteId
+                            ),
+                            'new_remote_id' => $content->contentInfo->remoteId,
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $contentData = array_merge(
+                        $contentData,
+                        array(
+                            'match' => array(
+                                ContentMatcher::MATCH_CONTENT_REMOTE_ID => $content->contentInfo->remoteId
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'content' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+
+                $attributes = array();
+                foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $fieldIdentifier => $field) {
+                    $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
+                    $attributes[$field->fieldDefIdentifier] = $this->complexFieldManager->fieldValueToHash(
+                        $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
+                    );
+                }
+
+                $contentData = array_merge(
+                    $contentData,
+                    array(
+                        'lang' => $this->getLanguageCode(),
+                        'section' => $content->contentInfo->sectionId,
+                        'owner' => $content->contentInfo->ownerId,
+                        'modification_date' => $content->contentInfo->modificationDate->getTimestamp(),
+                        'publication_date' => $content->contentInfo->publishedDate->getTimestamp(),
+                        'always_available' => (bool)$content->contentInfo->alwaysAvailable,
+                        'attributes' => $attributes
+                    )
+                );
+            }
+
+            $data[] = $contentData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 
     /**
@@ -447,57 +673,6 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Sets references to certain content attributes.
-     *
-     * @param \eZ\Publish\API\Repository\Values\Content\Content|ContentCollection $content
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
-     * @return boolean
-     *
-     * @todo add support for other attributes: contentTypeId, contentTypeIdentifier, section, etc... ?
-     */
-    protected function setReferences($content)
-    {
-        if (!array_key_exists('references', $this->dsl)) {
-            return false;
-        }
-
-        if ($content instanceof ContentCollection) {
-            if (count($content) > 1) {
-                throw new \InvalidArgumentException('Content Manager does not support setting references for creating/updating of multiple contents');
-            }
-            $content = reset($content);
-        }
-
-        foreach ($this->dsl['references'] as $reference) {
-
-            switch ($reference['attribute']) {
-                case 'object_id':
-                case 'content_id':
-                case 'id':
-                    $value = $content->id;
-                    break;
-                case 'remote_id':
-                case 'content_remote_id':
-                    $value = $content->contentInfo->remoteId;
-                    break;
-                case 'location_id':
-                    $value = $content->contentInfo->mainLocationId;
-                    break;
-                case 'path':
-                    $locationService = $this->repository->getLocationService();
-                    $value = $locationService->loadLocation($content->contentInfo->mainLocationId)->pathString;
-                    break;
-                default:
-                    throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
-            }
-
-            $this->referenceResolver->addReference($reference['identifier'], $value);
-        }
-
-        return true;
-    }
-
-    /**
      * @param int|string $date if integer, we assume a timestamp
      * @return \DateTime
      */
@@ -508,108 +683,5 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         } else {
             return new \DateTime($date);
         }
-    }
-
-    /**
-     * @param array $matchCondition
-     * @param string $mode
-     * @throws \Exception
-     * @return array
-     *
-     * @todo add support for dumping all object languages
-     * @todo add 2ndary locations when in 'update' mode
-     * @todo add dumping of sort_field and sort_order for 2ndary locations
-     */
-    public function generateMigration(array $matchCondition, $mode)
-    {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
-        $contentCollection = $this->contentMatcher->match($matchCondition);
-        $data = array();
-
-        /** @var \eZ\Publish\API\Repository\Values\Content\Content $content */
-        foreach ($contentCollection as $content) {
-
-            $location = $this->repository->getLocationService()->loadLocation($content->contentInfo->mainLocationId);
-            $contentType = $this->repository->getContentTypeService()->loadContentType(
-                $content->contentInfo->contentTypeId
-            );
-
-            $contentData = array(
-                'type' => 'content',
-                'mode' => $mode
-            );
-
-            switch ($mode) {
-                case 'create':
-                    $contentData = array_merge(
-                        $contentData,
-                        array(
-                            'content_type' => $contentType->identifier,
-                            'parent_location' => $location->parentLocationId,
-                            'priority' => $location->priority,
-                            'is_hidden' => $location->invisible,
-                            'sort_field' => $this->sortConverter->sortField2Hash($location->sortField),
-                            'sort_order' => $this->sortConverter->sortOrder2Hash($location->sortOrder),
-                            'remote_id' => $content->contentInfo->remoteId,
-                            'location_remote_id' => $location->remoteId
-                        )
-                    );
-                    $locationService = $this->repository->getLocationService();
-                    $locations = $locationService->loadLocations($content->contentInfo);
-                    if (count($locations) > 1) {
-                        $otherParentLocations = array();
-                        foreach($locations as $otherLocation) {
-                            if ($otherLocation->id != $location->id) {
-                                $otherParentLocations[] = $otherLocation->parentLocationId;
-                            }
-                        }
-                        $contentData['other_parent_locations'] = $otherParentLocations;
-                    }
-                    break;
-                case 'update':
-                case 'delete':
-                    $contentData = array_merge(
-                        $contentData,
-                        array(
-                            'match' => array(
-                                'content_remote_id' => $content->contentInfo->remoteId
-                            )
-                        )
-                    );
-                    break;
-                default:
-                    throw new \Exception("Executor 'content' doesn't support mode '$mode'");
-            }
-
-            if ($mode != 'delete') {
-
-
-                $attributes = array();
-                foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $fieldIdentifier => $field) {
-                    $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
-                    $attributes[$field->fieldDefIdentifier] = $this->complexFieldManager->fieldValueToHash(
-                        $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
-                    );
-                }
-
-                $contentData = array_merge(
-                    $contentData,
-                    array(
-                        'lang' => $this->getLanguageCode(),
-                        'section' => $content->contentInfo->sectionId,
-                        'owner' => $content->contentInfo->ownerId,
-                        'modification_date' => $content->contentInfo->modificationDate->getTimestamp(),
-                        'publication_date' => $content->contentInfo->publishedDate->getTimestamp(),
-                        'always_available' => (bool)$content->contentInfo->alwaysAvailable,
-                        'attributes' => $attributes
-                    )
-                );
-            }
-
-            $data[] = $contentData;
-        }
-
-        $this->loginUser($previousUserId);
-        return $data;
     }
 }

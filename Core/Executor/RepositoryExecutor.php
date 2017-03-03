@@ -2,11 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
-use \eZ\Publish\API\Repository\Repository;
 
 /**
  * The core manager class that all migration action managers inherit from.
@@ -143,5 +143,21 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
     public function getDefaultLanguageCode()
     {
         return $this->defaultLanguageCode ?: self::DEFAULT_LANGUAGE_CODE;
+    }
+
+    /**
+     * Courtesy code to avoid reimplementing it in every subclass
+     * @deprecated will be moved into the reference resolver classes
+     */
+    protected function resolveReferencesRecursively($match)
+    {
+        if (is_array($match)) {
+            foreach ($match as $condition => $values) {
+                $match[$condition] = $this->resolveReferencesRecursively($values);
+            }
+            return $match;
+        } else {
+            return $this->referenceResolver->resolveReference($match);
+        }
     }
 }

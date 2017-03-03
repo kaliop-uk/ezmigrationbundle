@@ -11,7 +11,8 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference; supported: object_state_group_id, object_state_group_identifier
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
 
 -
@@ -45,7 +46,8 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference; supported: object_state_group_id, object_state_group_identifier
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
 
 -
@@ -86,7 +88,8 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports object_state_id)
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports object_state_id, priority
                                  # The shorthand 'id' can be used instead of 'object_state_id'
 
 -
@@ -120,7 +123,8 @@
     references: #Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports object_state_id)
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports object_state_id, priority
                                  # The shorthand 'id' can be used instead of 'object_state_id'
 
 -

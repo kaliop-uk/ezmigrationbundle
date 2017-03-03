@@ -8,7 +8,8 @@
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports: section_id, section_identifier, section_name)
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: section_id, section_identifier, section_name
                                  # The shorthand 'id' can be used instead of 'user_id'
 
 -
@@ -37,7 +38,8 @@
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
-            attribute: attribute # An attribute to get the value of for the reference (currently supports: section_id, section_identifier, section_name)
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: section_id, section_identifier, section_name
                                  # The shorthand 'id' can be used instead of 'user_id'
 
 -

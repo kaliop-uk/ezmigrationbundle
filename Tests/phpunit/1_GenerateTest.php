@@ -88,6 +88,18 @@ class GenerateTest extends CommandTest
             array('unit_test_generated_content', null, 'content', 'contenttype_identifier', 'user_group'),
             array('unit_test_generated_content', 'yml', 'content', 'contenttype_identifier', 'user_group', false, 'update'),
             array('unit_test_generated_content', 'json', 'content', 'contenttype_identifier', 'user_group', false, 'delete'),
+            array('unit_test_generated_section', null, 'section', 'section_identifier', 'standard'),
+            array('unit_test_generated_section', 'yml', 'section', 'section_identifier', 'standard', false, 'update'),
+            array('unit_test_generated_section', 'json', 'section', 'section_identifier', 'standard', false, 'delete'),
+            array('unit_test_generated_content_type_group', null, 'content_type_group', 'contenttypegroup_identifier', 'Content'),
+            array('unit_test_generated_content_type_group', 'yml', 'content_type_group', 'contenttypegroup_identifier', 'Content', false, 'update'),
+            array('unit_test_generated_content_type_group', 'json', 'content_type_group', 'contenttypegroup_identifier', 'Content', false, 'delete'),
+            array('unit_test_generated_object_state', null, 'object_state', 'all', null),
+            array('unit_test_generated_object_state', 'yml', 'object_state', 'all', null, false, 'update'),
+            array('unit_test_generated_object_state', 'json', 'object_state', 'all', null, false, 'delete'),
+            array('unit_test_generated_object_state_group', null, 'object_state_group', 'objectstategroup_identifier', 'ez_lock'),
+            array('unit_test_generated_object_state_group', 'yml', 'object_state_group', 'objectstategroup_identifier', 'ez_lock', false, 'update'),
+            array('unit_test_generated_object_state_group', 'json', 'object_state_group', 'objectstategroup_identifier', 'ez_lock', false, 'delete'),
         );
     }
 

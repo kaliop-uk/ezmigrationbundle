@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class EzMigrationExtension extends Extension
 {
+    public static $loadTestConfig = false;
+
     /**
      * {@inheritDoc}
      */
@@ -24,5 +26,10 @@ class EzMigrationExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+
+        if (self::$loadTestConfig != false) {
+            $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Tests/ezpublish/config'));
+            $loader->load('services.yml');
+        }
     }
 }

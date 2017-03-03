@@ -14,7 +14,11 @@
     name: Kaliop Migration Bundle Test Section 1 updated
     identifier: kmb_test_tection_1_updated
     match:
-        id: reference:kmb_test_14_1
+        and:
+            -
+                id: reference:kmb_test_14_1
+            -
+                identifier: kmb_test_tection_1
 
 -
     type: section

@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 /**
  * Interface that all migration definition handlers need to implement.
  *
- * A definition handler takes care of decoding (loading) a specific file format used to define a migration version
+ * A definition handler takes care of decoding (loading) a specific file format used to define a migration
  */
 interface DefinitionParserInterface
 {

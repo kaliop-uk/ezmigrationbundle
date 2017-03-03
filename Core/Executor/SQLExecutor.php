@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 
 class SQLExecutor extends AbstractExecutor
 {
@@ -15,17 +16,22 @@ class SQLExecutor extends AbstractExecutor
 
     protected $supportedStepTypes = array('sql');
 
+    /** @var ReferenceBagInterface $referenceResolver */
+    protected $referenceResolver;
+
     /**
      * @param DatabaseHandler $dbHandler
+     * @param ReferenceBagInterface $referenceResolver
      */
-    public function __construct(DatabaseHandler $dbHandler)
+    public function __construct(DatabaseHandler $dbHandler, ReferenceBagInterface $referenceResolver)
     {
         $this->dbHandler = $dbHandler;
+        $this->referenceResolver = $referenceResolver;
     }
 
     /**
      * @param MigrationStep $step
-     * @return void
+     * @return integer
      * @throws \Exception if migration step is not for this type of db
      */
     public function execute(MigrationStep $step)
@@ -43,6 +49,30 @@ class SQLExecutor extends AbstractExecutor
         }
         $sql = $dsl[$dbType];
 
-        return $conn->exec($sql);
+        // returns the number of affected rows
+        $result = $conn->exec($sql);
+
+        $this->setReferences($result, $dsl);
+
+        return $result;
+    }
+
+    protected function setReferences($result, $dsl)
+    {
+        if (!array_key_exists('references', $dsl)) {
+            return false;
+        }
+
+        foreach ($dsl['references'] as $reference) {
+            switch ($reference['attribute']) {
+                case 'affected_rows':
+                    $value = $result;
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
+            }
+
+            $this->referenceResolver->addReference($reference['identifier'], $value);
+        }
     }
 }

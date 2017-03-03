@@ -125,7 +125,7 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
         $states = array();
 
         foreach ($this->loadAvailableStates() as $key => $state) {
-            if (strpos('/', $key) !== false) {
+            if (strpos($key, '/') !== false) {
                 $states[$state->id] = $state;
             }
         }

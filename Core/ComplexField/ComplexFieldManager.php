@@ -62,7 +62,7 @@ class ComplexFieldManager
             $fieldHandler = $this->getFieldHandler($fieldTypeIdentifier, $contentTypeIdentifier);
             // BC
             if (!$fieldHandler instanceof FieldValueImporterInterface) {
-                $fieldHandler->createValue($hashValue, $context);
+                return $fieldHandler->createValue($hashValue, $context);
             }
             return $fieldHandler->hashToFieldValue($hashValue, $context);
         }

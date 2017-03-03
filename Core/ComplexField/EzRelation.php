@@ -25,7 +25,7 @@ class EzRelation extends AbstractComplexField implements FieldValueImporterInter
      */
     public function hashToFieldValue($fieldValue, array $context = array())
     {
-        if (count($fieldValue) == 1 && isset($fieldValue['destinationContentId'])) {
+        if (is_array($fieldValue) && array_key_exists('destinationContentId', $fieldValue)) {
             // fromHash format
             $id = $fieldValue['destinationContentId'];
         } else {

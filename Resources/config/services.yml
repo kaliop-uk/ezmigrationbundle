@@ -16,7 +16,7 @@ parameters:
         - 'sqlserver'
         - 'sqlanywhere'
 
-    # Deprecated paremeter. Left in for the v1-to-v2 migration to work. Will be removed in v3
+    # Deprecated parameter. Left in for the v1-to-v2 migration to work. Will be removed in v3
     kaliop_bundle_migration.table_name: 'kaliop_versions'
 
     ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
@@ -30,34 +30,36 @@ parameters:
 
     ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
 
+    ez_migration_bundle.executor.migration_definition.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationDefinitionExecutor
     ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
     ez_migration_bundle.executor.sql.class: Kaliop\eZMigrationBundle\Core\Executor\SQLExecutor
+    ez_migration_bundle.executor.reference.class: Kaliop\eZMigrationBundle\Core\Executor\ReferenceExecutor
     ez_migration_bundle.executor.repository.class: Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor
 
     ez_migration_bundle.executor.content_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentManager
     ez_migration_bundle.executor.content_type_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager
     ez_migration_bundle.executor.content_type_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeGroupManager
+    ez_migration_bundle.executor.language_manager.class: Kaliop\eZMigrationBundle\Core\Executor\LanguageManager
     ez_migration_bundle.executor.location_manager.class: Kaliop\eZMigrationBundle\Core\Executor\LocationManager
+    ez_migration_bundle.executor.object_state_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ObjectStateManager
+    ez_migration_bundle.executor.object_state_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ObjectStateGroupManager
     ez_migration_bundle.executor.role_manager.class: Kaliop\eZMigrationBundle\Core\Executor\RoleManager
     ez_migration_bundle.executor.section_manager.class: Kaliop\eZMigrationBundle\Core\Executor\SectionManager
     ez_migration_bundle.executor.tag_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TagManager
-    ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
     ez_migration_bundle.executor.user_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserManager
-    ez_migration_bundle.executor.language_manager.class: Kaliop\eZMigrationBundle\Core\Executor\LanguageManager
-    ez_migration_bundle.executor.object_state_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ObjectStateManager
-    ez_migration_bundle.executor.object_state_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ObjectStateGroupManager
+    ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
 
     ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
-    ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
-    ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
-    ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
-    ez_migration_bundle.role_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher
     ez_migration_bundle.content_type_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher
-    ez_migration_bundle.section_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher
+    ez_migration_bundle.content_type_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher
+    ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
     ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
     ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
-    ez_migration_bundle.content_type_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher
+    ez_migration_bundle.role_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher
+    ez_migration_bundle.section_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher
     ez_migration_bundle.tag_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher
+    ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
+    ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
 
     ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
@@ -66,6 +68,7 @@ parameters:
     ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDate
     ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDateAndTime
     ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
+    ez_migration_bundle.complex_field.ezmedia.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzMedia
     ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
     ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
     ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelationList
@@ -148,6 +151,17 @@ services:
 
     ### executors
 
+    ez_migration_bundle.executor.migration_definition:
+        class: '%ez_migration_bundle.executor.migration_definition.class%'
+        arguments:
+            - '@ez_migration_bundle.migration_service'
+            - '@ez_migration_bundle.reference_resolver.customreference'
+        # avoid 'ServiceCircularReferenceException' errors when this service is injected into a migration service
+        # that is related to the event dispatcher by making it lazy
+        lazy: true
+        tags:
+            - { name: ez_migration_bundle.executor }
+
     ez_migration_bundle.executor.php:
         class: '%ez_migration_bundle.executor.php.class%'
         arguments:
@@ -159,6 +173,15 @@ services:
         class: '%ez_migration_bundle.executor.sql.class%'
         arguments:
             - '@ezpublish.connection'
+            - '@ez_migration_bundle.reference_resolver.customreference'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.reference:
+        class: '%ez_migration_bundle.executor.reference.class%'
+        arguments:
+            - '@service_container'
+            - '@ez_migration_bundle.reference_resolver.customreference'
         tags:
             - { name: ez_migration_bundle.executor }
 
@@ -394,6 +417,15 @@ services:
             - "@?ezpublish.core.io.prefix_url_decorator"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezimage, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezmedia:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezmedia.class%'
+        arguments:
+            - "$io.root_dir$"
+            - "@?ezpublish.core.io.prefix_url_decorator"
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezmedia, priority: 0 }
 
     ez_migration_bundle.complex_field.ezpage:
         parent: ez_migration_bundle.complex_field

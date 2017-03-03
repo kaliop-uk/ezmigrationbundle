@@ -2,11 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\Content\Content;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
-use eZ\Publish\API\Repository\Values\Content\Content;
 
 /**
  * Handles user-group migrations.
@@ -62,9 +62,7 @@ class UserGroupManager extends RepositoryExecutor
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
             foreach ($this->dsl['roles'] as $roleId) {
-                if ($this->referenceResolver->isReference($roleId)) {
-                    $roleId = $this->referenceResolver->resolveReference($roleId);
-                }
+                $roleId = $this->referenceResolver->resolveReference($roleId);
                 $role = $this->roleMatcher->matchOneByKey($roleId);
                 $roleService->assignRoleToUserGroup($role, $userGroup);
             }
@@ -162,7 +160,7 @@ class UserGroupManager extends RepositoryExecutor
     protected function matchUserGroups($action)
     {
         if (!isset($this->dsl['id']) && !isset($this->dsl['group']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The id  of a group or a match condition is required to $action it.");
+            throw new \Exception("The id of a user group or a match condition is required to $action it");
         }
 
         // Backwards compat
@@ -171,22 +169,12 @@ class UserGroupManager extends RepositoryExecutor
                 $this->dsl['match']['id'] = $this->dsl['id'];
             }
             if (isset($this->dsl['group'])) {
-                $this->dsl['match']['email'] = $this->dsl['group'];
+                $this->dsl['match']['id'] = $this->dsl['group'];
             }
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->userGroupMatcher->match($match);
     }

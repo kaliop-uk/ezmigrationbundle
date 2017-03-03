@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 interface MigrationInterface
 {
     /**
-     * Execute the migration.
+     * Executes the migration.
      * @param ContainerInterface $container The container is passed as a way to access everything else
      */
     public static function execute(ContainerInterface $container);

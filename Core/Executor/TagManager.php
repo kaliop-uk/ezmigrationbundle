@@ -5,6 +5,9 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 
+/**
+ * Handles tag migrations.
+ */
 class TagManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('tag');
@@ -89,14 +92,6 @@ class TagManager extends RepositoryExecutor
         return $tagsCollection;
     }
 
-    protected function checkTagsBundleInstall()
-    {
-        if (!$this->tagService)
-        {
-            throw new \Exception('To manipulate tags you must have NetGen Tags Bundle installed');
-        }
-    }
-
     /**
      * @param string $action
      * @return TagCollection
@@ -105,25 +100,11 @@ class TagManager extends RepositoryExecutor
     protected function matchTags($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action a Tag.");
+            throw new \Exception("A match condition is required to $action a Tag");
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    if ($this->referenceResolver->isReference($value)) {
-                        $match[$condition][$position] = $this->referenceResolver->getReferenceValue($value);
-                    }
-                }
-            } else {
-                if ($this->referenceResolver->isReference($values)) {
-                    $match[$condition] = $this->referenceResolver->getReferenceValue($values);
-                }
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->tagMatcher->match($match);
     }
@@ -151,5 +132,13 @@ class TagManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    protected function checkTagsBundleInstall()
+    {
+        if (!$this->tagService)
+        {
+            throw new \Exception('To manipulate tags you must have NetGen Tags Bundle installed');
+        }
     }
 }

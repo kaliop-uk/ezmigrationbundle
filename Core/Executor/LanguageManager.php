@@ -5,8 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 
 /**
- * Implements the actions for managing (create/update/delete) Languages in the system through
- * migrations and abstracts away the eZ Publish Public API.
+ * Handles language migrations.
  */
 class LanguageManager extends RepositoryExecutor
 {
@@ -14,7 +13,7 @@ class LanguageManager extends RepositoryExecutor
     protected $supportedActions = array('create', 'delete');
 
     /**
-     * Handle the language create migration action
+     * Handles the language create migration action
      */
     protected function create()
     {
@@ -40,7 +39,7 @@ class LanguageManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the language update migration action
+     * Handles the language update migration action
      *
      * @todo use a matcher for flexible matching?
      */
@@ -58,7 +57,7 @@ class LanguageManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the language delete migration action
+     * Handles the language delete migration action
      */
     protected function delete()
     {
@@ -100,6 +99,16 @@ class LanguageManager extends RepositoryExecutor
                 case 'language_id':
                 case 'id':
                     $value = $language->id;
+                    break;
+                case 'enabled':
+                    $value = $language->enabled;
+                    break;
+                case 'language_code':
+                    $value = $language->languageCode;
+                    break;
+                case 'language_name':
+                case 'name':
+                    $value = $language->name;
                     break;
                 default:
                     throw new \InvalidArgumentException('Language Manager does not support setting references for attribute ' . $reference['attribute']);

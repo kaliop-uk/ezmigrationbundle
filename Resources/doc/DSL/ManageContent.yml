@@ -27,14 +27,20 @@
         attribute4: >
                     value on multiple
                     lines, but new line is not preserved on parsing
-        # ezimage/ezbinaryfile file attribute example
+        # ezimage/ezbinaryfile/ezmedia  file attribute example
         attribute5:
-            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/, or absolute path
+            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/, MigrationsVersions/media/ or absolute path
             alt_text: xyz # Optional, only used for images
             filename: abc # Optional, taken from the actual file if not specified
-            mime_type: def # Optional. For ezbinaryfile only. If not specified, the actual file is analyzed using the php function mime_content_type()
-        # ezimage/ezbinaryfile file attribute example, using simplified form
-        attribute5b: '/path/to/image'
+            mime_type: def # Optional. For ezbinaryfile and ezmedia only. If not specified, the actual file is analyzed using the php function mime_content_type()
+            has_controller: false # Optional. For ezmedia only
+            autoplay: false # Optional. For ezmedia only
+            loop: false # Optional. For ezmedia only
+            has_controller: false # Optional. For ezmedia only
+            width: 123 # Optional. For ezmedia only
+            height: 456 # Optional. For ezmedia only
+        # ezimage/ezbinaryfile/ezmedia file attribute example, using simplified form
+        attribute5b: '/path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/ or MigrationsVersions/media/, or absolute path
         # ezxmltext, showing an example of using references
         attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
@@ -84,7 +90,11 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports: content_id, content_remote_id, location_id, path)
+            attribute: attributeId # The attribute to get the value of for the reference.
+                                   # Supports: content_id, content_remote_id,
+                                   # always_available, content_type_id, content_type_identifier, current_version_no,
+                                   # location_id, main_language_code, modification_date, name, owner_id, path,
+                                   # publication_date, section_id
 
 -
     type: content
@@ -126,7 +136,11 @@
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference (supports content_id, content_remote_id, location_id, path)
+            attribute: attributeId # The attribute to get the value of for the reference
+                                   # supports: content_id, content_remote_id,
+                                   # always_available, content_type_id, content_type_identifier, current_version_no,
+                                   # location_id, main_language_code, modification_date, name, owner_id, path,
+                                   # publication_date, section_id
 
 -
     type: content
@@ -149,3 +163,34 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+
+-
+    type: content
+    mode: load
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to update
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        location_id: x # int|int[]
+        location_remote_id: xxx # string|string[]
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        content_type: yyy # string|string[] a content type identifier
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # The attribute to get the value of for the reference (supports: content_id, content_remote_id,
+                                   # always_available, content_type_id, content_type_identifier, current_version_no,
+                                   # location_id, main_language_code, modification_date, name, owner_id, path,
+                                   # publication_date, section_id)

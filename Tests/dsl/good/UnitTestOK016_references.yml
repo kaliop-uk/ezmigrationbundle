@@ -1,0 +1,43 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: abc
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref
+    test:
+        equals: abc
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: '%test.param.for.custom.refs%'
+    overwrite: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref
+    test:
+        equals: def
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_test_ref
+
+-
+    type: reference
+    mode: load
+    file: test_refs.yml
+
+-
+    type: assert
+    target: reference
+    identifier: reference:hello
+    test:
+        equals: world

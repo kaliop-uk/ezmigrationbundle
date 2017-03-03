@@ -4,8 +4,12 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 
-class ObjectStateGroupManager extends RepositoryExecutor
+/**
+ * Handles object-state-group migrations.
+ */
+class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     /**
      * @var array
@@ -26,7 +30,7 @@ class ObjectStateGroupManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the create step of object state group migrations
+     * Handles the create step of object state group migrations
      *
      * @todo add support for flexible defaultLanguageCode
      */
@@ -60,7 +64,7 @@ class ObjectStateGroupManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the update step of object state group migrations
+     * Handles the update step of object state group migrations
      *
      * @todo add support for defaultLanguageCode
      */
@@ -103,7 +107,7 @@ class ObjectStateGroupManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the delete step of object state group migrations
+     * Handles the delete step of object state group migrations
      */
     protected function delete()
     {
@@ -126,21 +130,11 @@ class ObjectStateGroupManager extends RepositoryExecutor
     protected function matchObjectStateGroups($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action an ObjectStateGroup.");
+            throw new \Exception("A match condition is required to $action an object state group");
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->objectStateGroupMatcher->match($match);
     }
@@ -173,5 +167,84 @@ class ObjectStateGroupManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $objectStateGroupCollection = $this->objectStateGroupMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup $objectStateGroup */
+        foreach ($objectStateGroupCollection as $objectStateGroup) {
+
+            $groupData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode,
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'identifier' => $objectStateGroup->identifier,
+                        )
+                    );
+                    break;
+                case 'update':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'match' => array(
+                                ObjectStateGroupMatcher::MATCH_OBJECTSTATEGROUP_IDENTIFIER => $objectStateGroup->identifier
+                            ),
+                            'identifier' => $objectStateGroup->identifier,
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'match' => array(
+                                ObjectStateGroupMatcher::MATCH_OBJECTSTATEGROUP_IDENTIFIER => $objectStateGroup->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'object_state_group' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+                $names = array();
+                $descriptions = array();
+                foreach($objectStateGroup->languageCodes as $languageCode) {
+                    $names[$languageCode] =  $objectStateGroup->getName($languageCode);
+                }
+                foreach($objectStateGroup->languageCodes as $languageCode) {
+                    $descriptions[$languageCode] =  $objectStateGroup->getDescription($languageCode);
+                }
+                $groupData = array_merge(
+                    $groupData,
+                    array(
+                        'names' => $names,
+                        'descriptions' => $descriptions,
+                    )
+                );
+            }
+
+            $data[] = $groupData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 }

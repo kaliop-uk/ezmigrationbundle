@@ -1,10 +1,115 @@
-Version 3.4 (unreleased)
+Version 3.6 (unreleased)
 ========================
 
-* Migration step executors can now throw a `MigrationAbortedException` exception to halt the execution of a migration
-    and have it recorded as either 'done' or 'skipped' instead of 'failed'
+* Added a new type of migration step: `migration_definition`. Only supported mode so far: `generate`.
+    For the moment, it is mostly useful for unit testing
 
-* Added a corresponding new event: `ez_migration.migration_aborted` that can be listened to by user code
+* New: it is now possible to set references to:
+    - content type: creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
+    - language: enabled, language_code, name
+    - object state: priority
+    - user: email, enabled, login
+
+* New: it is now possible to set references to the values of Content fields. The syntax to use is slightly different
+    depending on whether the value for the field at hand is a scalar or a hash. Example code:
+
+            references:
+                -
+                    identifier: a_user_first_name_field_is_a_string
+                    attribute: 'attributes.first_name'
+                -
+                    identifier: a_user_account_field_is_a_hash
+                    attribute: 'attributes.user_account.email'
+
+    TIP: if you are unsure about the hash representation of a given field, you can generate a content/create migration
+    for an existing content to find out how it looks.
+
+
+Version 3.5
+===========
+
+* New: allow the `generate` command to easily create a migration definition in a custom directory instead of a bundle
+
+* New: allow the `position` field for attributes in ContentType `create` migrations.
+    *NB* the algorithm used for the sorting of ContentType fields has changed compared to previous versions, for both
+    creation and update:
+    - mixing fields with a specified position and without it results in the fields without position to always go last
+    - for consistent results, it is recommended to always either specify the position for all fields or to none 
+    - the eZ4 Admin Interface does *not* display the actual field position, and shows 10,20,30 instead... In order to
+         see the _real_ position that fields currently have it is recommended to generate a ContentType `create` migration
+
+* New: better support for content fields of type `ezmedia`:
+    - it is now possible to put the binary files next to the migration file, in a subfolder named 'media', similar to 
+        what was already possible for ezimage and ezbinaryfile
+    - the attributes to be used in the migration yml to define an ezmedia field are more consistent with the others
+    - the path to the media binary file in generated migrations has become an absolute path
+
+* New: it is now possible to update Content Type Groups
+
+* New: when creating a Content Type Group, it is possible to set a custom creation date
+
+* New: it is now possible to generate migrations for Sections, Object States, Object State Groups and Content Type Groups
+
+* New: it is now possible to set references to many more attributes when creating/updating Contents:
+    content_id, content_remote_id, always_available, content_type_id, content_type_identifier, current_version_no,
+    location_id, main_language_code, modification_date, name, owner_id, path, publication_date, section_id
+
+* New: it is now possible to set references to many more attributes when creating/updating Locations:
+    location_id, location_remote_id, always_available, content_id, content_type_id, content_type_identifier,
+    current_version_no, depth, is_hidden, main_language_code, main_location_id, main_language_code, modification_date, 
+    name, owner_id, parent_location_id, path, position, priority, publication_date, section_id, sort_field, sort_order
+
+* New: two new migration steps are available: `content/load` and `location/load`.
+   Their purpose is to allow to set references to the attributes of the loaded objects. This way it is f.e. possible
+   to copy the section from one content to another
+
+        -
+            type: content
+            mode: load
+            match:
+                remote_id: firstcontent
+            references:
+                -
+                    identifier: section_ref
+                    attribute: section_id
+        -
+            type: content
+            mode: update
+            match:
+                remote_id: secondcontent
+            section: "reference:section_ref"
+
+* New: it is now possible to manually create references, including both bulk loading from file and getting the value from
+    configuration parameters (useful f.e. to manipulate different contents based on environment).
+    It is alos possible to dump the resolved reference values for debugging puproses.
+    Details in the dedicated [documentation](Resources/doc/DSL/ManageReference.yml)
+
+* New: the `generate` command can be used to generate SQL migrations in YML file format
+
+* New: SQL migrations in YML file format can set references to the number of affected rows
+
+* New: the `migrate` command now accepts short-version for all options
+
+* New: an `assert` step is available to validate migrations used by the test suite
+
+* Improved: make it easier to run the test suite outside of Travis and revamp test instructions
+
+* Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
+
+* Fix: section updates would fail at setting the name
+
+* Fix: 'match all' would fail for Object States
+
+* Fix: properly resolve references in match conditions when these are specified using nested conditions with AND and ORs
+
+
+Version 3.4
+===========
+
+* Added a new event: `ez_migration.migration_aborted` that can be listened to by user code, triggered when a
+    `MigrationAbortedException` is thrown by a migration executor
+
+* Fix BC with custom Complex FieldType handlers created by extending the bundle (bug introduced in 3.2) 
 
 
 Version 3.3
@@ -21,7 +126,8 @@ Version 3.3
     field and sort order of the main location are exported
 
 * New: it is now possible to use a specific type of exception during execution of a Migration Step (or a listener) to
-    abort a migration without having it flagged as failed - it can be flagged as either done or skipped
+    abort a migration without having it flagged as failed - it can be flagged as either done or skipped by throwing a
+    `MigrationAbortedException`
 
 * New: it is now possible to create/update/delete sections via migrations
 

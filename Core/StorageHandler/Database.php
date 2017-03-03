@@ -19,7 +19,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 class Database implements StorageHandlerInterface
 {
     /**
-     * Flag to indicate that the migration version table has been created
+     * Flag to indicate that the migration table has been created
      *
      * @var boolean
      */
@@ -31,13 +31,14 @@ class Database implements StorageHandlerInterface
      *
      * @todo add setter/getter, as we need to clear versionTableExists when switching this
      */
-    private $migrationsTableName;
+    protected $migrationsTableName;
 
     /**
      * @var DatabaseHandler $connection
      */
     protected $dbHandler;
 
+    protected $fieldList = 'migration, md5, path, execution_date, status, execution_error';
     /**
      * @param DatabaseHandler $dbHandler
      * @param string $migrationsTableName
@@ -58,7 +59,7 @@ class Database implements StorageHandlerInterface
 
         /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
         $q = $this->dbHandler->createSelectQuery();
-        $q->select('migration, md5, path, execution_date, status, execution_error')
+        $q->select($this->fieldList)
             ->from($this->migrationsTableName)
             ->orderBy('migration', SelectQuery::ASC);
         $stmt = $q->prepare();
@@ -83,7 +84,7 @@ class Database implements StorageHandlerInterface
 
         /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
         $q = $this->dbHandler->createSelectQuery();
-        $q->select('migration, md5, path, execution_date, status, execution_error')
+        $q->select($this->fieldList)
             ->from($this->migrationsTableName)
             ->where($q->expr->eq('migration', $q->bindValue($migrationName)));
         $stmt = $q->prepare();

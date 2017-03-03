@@ -1,0 +1,29 @@
+# NB: Assertion steps are only available when running the testsuite
+
+-
+    type: assert
+    target: reference # for the moment the only targets available for assertions are references
+    identifier: reference:abcdef # a reference identifier
+    test:
+        # one and only one of the following conditions:
+        # (the conditions correspond to phpunit assertXXX methods from class PHPUnit_Framework_Assert)
+        equals: value # a value to test against
+        arrayHasKey: array
+        arraySubset: array
+        contains: mixed
+        containsOnly: string
+        count: int
+        fileEquals: filename
+        greaterThan: value
+        greaterThanorEqual: value
+        jsonFileEqualsJsonFile: filename
+        jsonStringEqualsJsonFile: filename
+        jsonStringEqualsJsonString: string
+        lessThan: value
+        lessThanOrEqual: value
+        regexp: string
+        same: value
+        stringEndsWith: string
+        stringEqualsFile: filename
+        stringStartsWith: string
+        # etc...

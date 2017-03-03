@@ -12,6 +12,17 @@
 
 -
     type: content_type_group
+    mode: update
+    identifier: test_content_type_group_modified
+    match:
+        or:
+            -
+                id: reference:test_group_id
+            -
+                identifier: reference:test_group_identifier
+
+-
+    type: content_type_group
     mode: delete
     match:
-        identifier: test_content_type_group
+        identifier: test_content_type_group_modified

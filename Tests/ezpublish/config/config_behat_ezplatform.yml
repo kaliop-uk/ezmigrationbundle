@@ -1,5 +1,6 @@
 
 # This file will be appended to the equivalent one from eZPlatform distribution
+# Used to set up an eZPlatform env from scratch for testing purposes (eg. on Travis)
 
 parameters:
     ezpublish.kernel.root_dir: %kernel.root_dir%/../../ezpublish-kernel
@@ -44,16 +45,3 @@ stash:
             inMemory: true
             registerDoctrineAdapter: false
 
-services:
-    ez_migration_bundle.test.step_executed_listener:
-        class: Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener
-        tags:
-            - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
-    ez_migration_bundle.test.before_step_execution_listener:
-        class: Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener
-        tags:
-            - { name: kernel.event_listener, event: ez_migration.before_execution, method: onBeforeStepExecution }
-    ez_migration_bundle.test.custom_reference_resolver:
-        class: Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
-        tags:
-            - { name: ez_migration_bundle.reference_resolver.customreference }

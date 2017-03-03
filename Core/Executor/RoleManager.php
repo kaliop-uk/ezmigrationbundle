@@ -5,14 +5,13 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
-use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
 
 /**
- * Handles the role migration definitions.
+ * Handles role migrations.
  */
 class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
@@ -137,7 +136,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     protected function matchRoles($action)
     {
         if (!isset($this->dsl['name']) && !isset($this->dsl['match'])) {
-            throw new \Exception("The name of a role or a match condition is required to $action it.");
+            throw new \Exception("The name of a role or a match condition is required to $action it");
         }
 
         // Backwards compat
@@ -145,18 +144,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             $this->dsl['match'] = array('identifier' => $this->dsl['name']);
         }
 
-        $match = $this->dsl['match'];
-
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->roleMatcher->match($match);
     }
@@ -201,6 +190,80 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         }
 
         return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $roleCollection = $this->roleMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
+        foreach ($roleCollection as $role) {
+            $roleData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'name' => $role->identifier
+                        )
+                    );
+                    break;
+                case 'update':
+                case 'delete':
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'match' => array(
+                                RoleMatcher::MATCH_ROLE_IDENTIFIER => $role->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'role' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+                $policies = array();
+                foreach ($role->getPolicies() as $policy) {
+                    $limitations = array();
+
+                    foreach ($policy->getLimitations() as $limitation) {
+                        $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+                    }
+
+                    $policies[] = array(
+                        'module' => $policy->module,
+                        'function' => $policy->function,
+                        'limitations' => $limitations
+                    );
+                }
+
+                $roleData = array_merge(
+                    $roleData,
+                    array(
+                        'policies' => $policies
+                    )
+                );
+            }
+
+            $data[] = $roleData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 
     /**
@@ -313,79 +376,5 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         }
 
         $roleService->addPolicy($role, $policyCreateStruct);
-    }
-
-    /**
-     * @param array $matchCondition
-     * @param string $mode
-     * @throws \Exception
-     * @return array
-     */
-    public function generateMigration(array $matchCondition, $mode)
-    {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
-        $roleCollection = $this->roleMatcher->match($matchCondition);
-        $data = array();
-
-        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        foreach ($roleCollection as $role) {
-            $roleData = array(
-                'type' => 'role',
-                'mode' => $mode
-            );
-
-            switch ($mode) {
-                case 'create':
-                    $roleData = array_merge(
-                        $roleData,
-                        array(
-                            'name' => $role->identifier
-                        )
-                    );
-                    break;
-                case 'update':
-                case 'delete':
-                    $roleData = array_merge(
-                        $roleData,
-                        array(
-                            'match' => array(
-                                'identifier' => $role->identifier
-                            )
-                        )
-                    );
-                    break;
-                default:
-                    throw new \Exception("Executor 'role' doesn't support mode '$mode'");
-            }
-
-            if ($mode != 'delete') {
-                $policies = array();
-                foreach ($role->getPolicies() as $policy) {
-                    $limitations = array();
-
-                    foreach ($policy->getLimitations() as $limitation) {
-                        $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
-                    }
-
-                    $policies[] = array(
-                        'module' => $policy->module,
-                        'function' => $policy->function,
-                        'limitations' => $limitations
-                    );
-                }
-
-                $roleData = array_merge(
-                    $roleData,
-                    array(
-                        'policies' => $policies
-                    )
-                );
-            }
-
-            $data[] = $roleData;
-        }
-
-        $this->loginUser($previousUserId);
-        return $data;
     }
 }

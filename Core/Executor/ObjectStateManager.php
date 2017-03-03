@@ -5,8 +5,12 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 
-class ObjectStateManager extends RepositoryExecutor
+/**
+ * Handles object-state migrations.
+ */
+class ObjectStateManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     /**
      * @var array
@@ -34,7 +38,7 @@ class ObjectStateManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the create step of object state migrations.
+     * Handles the create step of object state migrations.
      *
      * @throws \Exception
      */
@@ -76,7 +80,7 @@ class ObjectStateManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the update step of object state migrations.
+     * Handles the update step of object state migrations.
      *
      * @throws \Exception
      */
@@ -119,7 +123,7 @@ class ObjectStateManager extends RepositoryExecutor
     }
 
     /**
-     * Handle the deletion step of object state migrations.
+     * Handles the deletion step of object state migrations.
      */
     protected function delete()
     {
@@ -139,24 +143,14 @@ class ObjectStateManager extends RepositoryExecutor
      * @return ObjectStateCollection
      * @throws \Exception
      */
-    private function matchObjectStates($action)
+    protected function matchObjectStates($action)
     {
         if (!isset($this->dsl['match'])) {
-            throw new \Exception("A match Condition is required to $action an object state.");
+            throw new \Exception("A match condition is required to $action an object state");
         }
-
-        $match = $this->dsl['match'];
 
         // convert the references passed in the match
-        foreach ($match as $condition => $values) {
-            if (is_array($values)) {
-                foreach ($values as $position => $value) {
-                    $match[$condition][$position] = $this->referenceResolver->resolveReference($value);
-                }
-            } else {
-                $match[$condition] = $this->referenceResolver->resolveReference($values);
-            }
-        }
+        $match = $this->resolveReferencesRecursively($this->dsl['match']);
 
         return $this->objectStateMatcher->match($match);
     }
@@ -177,6 +171,9 @@ class ObjectStateManager extends RepositoryExecutor
                 case 'id':
                     $value = $objectState->id;
                     break;
+                case 'priority':
+                    $value = $objectState->priority;
+                    break;
                 default:
                     throw new \InvalidArgumentException('Object State Manager does not support setting references for attribute ' . $reference['attribute']);
             }
@@ -185,5 +182,87 @@ class ObjectStateManager extends RepositoryExecutor
         }
 
         return true;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode)
+    {
+        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $objectStateCollection = $this->objectStateMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $objectState */
+        foreach ($objectStateCollection as $objectState) {
+
+            $groupData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode,
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'object_state_group' => $objectState->getObjectStateGroup()->identifier,
+                            'identifier' => $objectState->identifier,
+                        )
+                    );
+                    break;
+                case 'update':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'match' => array(
+                                ObjectStateMatcher::MATCH_OBJECTSTATE_IDENTIFIER =>
+                                    $objectState->getObjectStateGroup()->identifier . '/' . $objectState->identifier
+                            ),
+                            'identifier' => $objectState->identifier,
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $groupData = array_merge(
+                        $groupData,
+                        array(
+                            'match' => array(
+                                ObjectStateMatcher::MATCH_OBJECTSTATE_IDENTIFIER =>
+                                    $objectState->getObjectStateGroup()->identifier . '/' . $objectState->identifier
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'object_state_group' doesn't support mode '$mode'");
+            }
+
+            if ($mode != 'delete') {
+                $names = array();
+                $descriptions = array();
+                foreach($objectState->languageCodes as $languageCode) {
+                    $names[$languageCode] =  $objectState->getName($languageCode);
+                }
+                foreach($objectState->languageCodes as $languageCode) {
+                    $descriptions[$languageCode] =  $objectState->getDescription($languageCode);
+                }
+                $groupData = array_merge(
+                    $groupData,
+                    array(
+                        'names' => $names,
+                        'descriptions' => $descriptions,
+                    )
+                );
+            }
+
+            $data[] = $groupData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 }

@@ -16,7 +16,7 @@ class EzRichText extends AbstractComplexField implements FieldValueImporterInter
     }
 
     /**
-     * Replace any references in an xml string to be used as the input data for an ezrichtext field.
+     * Replaces any references in an xml string to be used as the input data for an ezrichtext field.
      *
      * @param string|array $fieldValue The definition of teh field value, structured in the yml file. Either a string, or an array with key 'content'
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration

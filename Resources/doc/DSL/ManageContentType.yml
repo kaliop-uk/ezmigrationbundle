@@ -101,13 +101,17 @@
             field-settings: array # Optional, can be used for various field type specific settings
                                   # Within the settings values, the following tag are *currently* resolved:
                                   # reference:<ref>, tag:<tag name>, location:<location remote id>
-                                  # *Note* that this is for bacwards compatibility and may change in the future
+                                  # *Note* that this is for backwards compatibility and may change in the future
+            position: # Optional, will set the attribute to this position.
+                      # NB: unlike in the eZ4 Admin Interface, fields without specified positions will be counted 1,2,3...
+                      # NB: mixing attributes with a position field and some without it might give unexpected results
     # The list in references tells the manager to store specific values for later use by other steps in the current
     # migration.
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # An attribute to get the value of for the reference. Supports content_type_id and content_type_identifier
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
                                    # The shorthand 'id' can be used instead of 'content_type_id'
                                    # The shorthand 'identifier' can be used instead of 'content_type_identifier'
 
@@ -153,15 +157,18 @@
             default-value: # Optional, will be updated if set
             field-settings: array # Optional, can be used for various field type specific settings
             position: # Optional, will move the attribute to this position
-    # Remove all attributes that have their identifiers listed here
-    # Can use both ways to define the list of identifiers.
-    remove_attributes: [identifier1, identifier2, identifier3]
+                      # NB: mixing attributes with a position field and some without it might give unexpected results
+                      # NB: the eZ4 Admin Interface does *not* display the actual field position, and shows 10,20,30 instead...
+                      # In order to see the _real_ position number that fields currently have it is recommended to generate
+                      # a ContentType `create` migration and find it there
+    remove_attributes: [identifier1, identifier2, identifier3] # Optional, remove all attributes that have their identifiers listed here
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
             -
                 identifier: referenceId # A string used to identify the reference
-                attribute: attributeId # An attribute to get the value of for the reference (supports content type id and content type identifier)
+                attribute: attributeId # An attribute to get the value of for the reference
+                                       # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
                                        # The shorthand 'id' can be used instead of 'content_type_id'
                                        # The shorthand 'identifier' can be used instead of 'content_type_identifier'
 
