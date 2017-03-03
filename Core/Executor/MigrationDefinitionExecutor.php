@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
