@@ -4,18 +4,17 @@ namespace Kaliop\eZMigrationBundle\Tests\helper;
 
 use Kaliop\eZMigrationBundle\Core\Executor\AbstractExecutor;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use PHPUnit_Framework_Assert;
-use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
 class AssertExecutor extends  AbstractExecutor
 {
     protected $supportedStepTypes = array('assert');
     protected $supportedActions = array('reference'/*, 'generated'*/);
 
-    /** @var ReferenceBagInterface $referenceResolver */
+    /** @var ReferenceResolverInterface $referenceResolver */
     protected $referenceResolver;
 
-    public function __construct(ReferenceBagInterface $referenceResolver)
+    public function __construct(ReferenceResolverInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
     }

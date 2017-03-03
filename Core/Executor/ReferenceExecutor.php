@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\VarDumper\VarDumper;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 
 class ReferenceExecutor extends AbstractExecutor
 {
@@ -15,10 +15,10 @@ class ReferenceExecutor extends AbstractExecutor
     protected $supportedActions = array('set', 'load', 'dump');
 
     protected $container;
-    /** @var ReferenceBagInterface $referenceResolver */
+    /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
-    public function __construct(ContainerInterface $container, ReferenceBagInterface $referenceResolver)
+    public function __construct(ContainerInterface $container, ReferenceResolverBagInterface $referenceResolver)
     {
         $this->container = $container;
         $this->referenceResolver = $referenceResolver;
