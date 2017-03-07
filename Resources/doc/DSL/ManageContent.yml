@@ -94,7 +94,11 @@
                                    # Supports: content_id, content_remote_id,
                                    # always_available, content_type_id, content_type_identifier, current_version_no,
                                    # location_id, main_language_code, modification_date, name, owner_id, path,
-                                   # publication_date, section_id
+                                   # publication_date, section_id, as well as attributes.$name (for scalar attributes)
+                                   # and complex expressions for non-scalar attributes, such as f.e.
+                                   # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
+                                   # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
+                                   # (for the full syntax supported, see jmespath)
 
 -
     type: content
@@ -140,7 +144,11 @@
                                    # supports: content_id, content_remote_id,
                                    # always_available, content_type_id, content_type_identifier, current_version_no,
                                    # location_id, main_language_code, modification_date, name, owner_id, path,
-                                   # publication_date, section_id
+                                   # publication_date, section_id as well as attributes.$name (for scalar attributes)
+                                   # and complex expressions for non-scalar attributes, such as f.e.
+                                   # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
+                                   # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
+                                   # (for the full syntax supported, see jmespath)
 
 -
     type: content

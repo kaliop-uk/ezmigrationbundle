@@ -2,6 +2,23 @@
 # Also, test usage of expressions to use non-basic selectors to assign references
 
 -
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_17
+    name: Kaliop Migration Bundle Test Class 17
+    name_pattern: '<title>'
+    attributes:
+        -
+            type: ezstring
+            name: title
+            identifier: ezstring
+        -
+            type: ezobjectrelationlist
+            name: ezobjectrelationlist
+            identifier: ezobjectrelationlist
+
+-
     type: content
     mode: create
     content_type: test_class_2
@@ -48,3 +65,15 @@
     identifier: reference:world
     test:
         equals: 1
+
+-
+    type: content_type
+    mode: delete
+    match:
+        content_id: reference:hello
+
+-
+    type: content_type
+    mode: delete
+    match:
+        identifier: kmb_test_17
