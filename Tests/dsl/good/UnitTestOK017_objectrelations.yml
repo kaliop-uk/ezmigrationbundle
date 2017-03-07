@@ -1,0 +1,50 @@
+# test that updating of object-relations attributes works as intended.
+# Also, test usage of expressions to use non-basic selectors to assign references
+
+-
+    type: content
+    mode: create
+    content_type: test_class_2
+    parent_location: 2
+    attributes:
+        title: test object
+        ezobjectrelationlist: [ 57 ]
+    references:
+        -
+            identifier: hello
+            attribute: content_id
+
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:hello
+    attributes:
+        ezobjectrelationlist: [ 41 ]
+
+-
+    type: content
+    mode: load
+    match:
+        content_id: reference:hello
+    references:
+        -
+            identifier: dear
+            attribute: 'attributes.ezobjectrelationlist.destinationContentIds[0]'
+        -
+            identifier: world
+            attribute: 'attributes.ezobjectrelationlist.destinationContentIds.length(@)'
+
+-
+    type: assert
+    target: reference
+    identifier: reference:dear
+    test:
+        equals: 41
+
+-
+    type: assert
+    target: reference
+    identifier: reference:world
+    test:
+        equals: 1

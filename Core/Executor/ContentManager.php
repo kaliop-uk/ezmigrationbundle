@@ -416,17 +416,19 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             $content->contentInfo->contentTypeId
                         );
                         $parts = explode('.', $reference['attribute']);
-                        $fieldIdentifier = $parts[1];
+                        // totally not sure if this list of special chars is correct for what could follow a jmespath identifier...
+                        // also what about quoted strings?
+                        $fieldIdentifier = preg_replace('/[[(|&!{].*$/', '', $parts[1]);
                         $field = $content->getField($fieldIdentifier);
                         $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
                         $hashValue = $this->complexFieldManager->fieldValueToHash(
                             $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
                         );
                         if (is_array($hashValue) ) {
-                            if (count($parts) == 2) {
+                            if (count($parts) == 2 && $fieldIdentifier === $parts[1]) {
                                 throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has an array value');
                             }
-                            $value = JmesPath::search(implode('.', array_slice($parts, 2)), $hashValue);
+                            $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
                         } else {
                             if (count($parts) > 2) {
                                 throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has a scalar value');
