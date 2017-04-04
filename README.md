@@ -297,6 +297,15 @@ and the corresponding php class:
     in the yml file will be removed.
     To make it easy to create a migration for updating a role, please use the `migration:generate` command using the `--type=role` flag
 
+* take care when creating content types: the eZPublish API, used internally by the migration bundle, will let you use dash
+    characters in the content type identifiers, even if the resulting content types will then be unusable, eg.
+    
+    Example of an invalid definition:
+
+            type: ezstring
+            name: Topbar-hover-color
+            identifier:  topbar-hover-color
+
 
 ## Frequently asked questions
 
