@@ -1,0 +1,41 @@
+-
+    type: language
+    mode: create
+    lang: def-LA
+    name: Kaliop Migration Bundle Language 1
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_18
+    name: Kaliop Migration Bundle Test Class 18
+    name_pattern: '<ezstring>'
+    attributes:
+        -
+            type: ezstring
+            name: ezstring
+            identifier: ezstring
+    references:
+        -
+            identifier: kmb_test_18
+            attribute: identifier
+-
+    type: content
+    mode: create
+    content_type: 'reference:kmb_test_18'
+    remote_id: kmb_test_18_content_1
+    parent_location: 2
+    lang: eng-GB
+    attributes:
+        -
+            ezstring: hello world 1
+-
+    type: content
+    mode: create
+    content_type: 'reference:kmb_test_18'
+    remote_id: kmb_test_18_content_2
+    parent_location: 2
+    # lang: should be the default language (def-LA and not eng-GB from the previous)
+    attributes:
+        -
+            ezstring: hello world 2
