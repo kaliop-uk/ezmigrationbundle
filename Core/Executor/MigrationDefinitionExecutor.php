@@ -75,9 +75,6 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         }
         $executor = $this->migrationService->getExecutor($migrationType);
 
-        /*if (isset($dsl['lang']) && $executor instanceof LanguageAwareInterface) {
-            $executor->setLanguageCode($dsl['lang']);
-        }*/
         $context = array();
         if (isset($dsl['lang']) && $dsl['lang'] != '') {
             $context['defaultLanguageCode'] = $dsl['lang'];

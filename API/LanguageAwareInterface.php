@@ -2,6 +2,9 @@
 
 namespace Kaliop\eZMigrationBundle\API;
 
+/**
+ * @deprecated
+ */
 interface LanguageAwareInterface
 {
     /**

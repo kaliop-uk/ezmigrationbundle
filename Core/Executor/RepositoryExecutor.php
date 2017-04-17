@@ -11,7 +11,7 @@ use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
 /**
  * The core manager class that all migration action managers inherit from.
  */
-abstract class RepositoryExecutor extends AbstractExecutor //implements LanguageAwareInterface
+abstract class RepositoryExecutor extends AbstractExecutor
 {
     use RepositoryUserSetterTrait;
 
@@ -89,12 +89,6 @@ abstract class RepositoryExecutor extends AbstractExecutor //implements Language
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
-        //$this->dsl = $step->dsl;
-        //$this->context = $step->context;
-        /*if (isset($step->dsl['lang'])) {
-            $this->setLanguageCode($step->dsl['lang']);
-        }*/
-
         if (method_exists($this, $action)) {
 
             $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
@@ -125,30 +119,23 @@ abstract class RepositoryExecutor extends AbstractExecutor //implements Language
      */
     abstract protected function setReferences($object, $step);
 
-    /*public function setLanguageCode($languageCode)
-    {
-        $this->languageCode = $languageCode;
-    }*/
-
-    public function getLanguageCode($step)
+    /**
+     * @param MigrationStep $step
+     * @return string
+     */
+    protected function getLanguageCode($step)
     {
         return isset($step->dsl['lang']) ? $step->dsl['lang'] : $this->getLanguageCodeFromContext($step->context);
     }
 
-    public function getLanguageCodeFromContext($context)
+    /**
+     * @param array $context
+     * @return string
+     */
+    protected function getLanguageCodeFromContext($context)
     {
         return isset($context['defaultLanguageCode']) ? $context['defaultLanguageCode'] : self::DEFAULT_LANGUAGE_CODE;
     }
-
-    /*public function setDefaultLanguageCode($languageCode)
-    {
-        $this->defaultLanguageCode = $languageCode;
-    }
-
-    public function getDefaultLanguageCode()
-    {
-        return $this->defaultLanguageCode ?: self::DEFAULT_LANGUAGE_CODE;
-    }*/
 
     /**
      * Courtesy code to avoid reimplementing it in every subclass

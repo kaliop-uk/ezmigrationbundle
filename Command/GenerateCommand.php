@@ -242,9 +242,6 @@ EOT
                 }
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
-                /*if ($executor instanceof LanguageAwareInterface) {
-                    $executor->setLanguageCode($parameters['lang']);
-                }*/
                 $context = array();
                 if (isset($parameters['lang']) && $parameters['lang'] != '') {
                     $context['defaultLanguageCode'] = $parameters['lang'];
