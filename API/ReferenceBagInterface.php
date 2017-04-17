@@ -3,7 +3,8 @@
 namespace Kaliop\eZMigrationBundle\API;
 
 /**
- * Used for those reference resolvers which can have their references injected
+ * Used to identify those reference resolvers which can have references injected.
+ * Most of the time one would implement directly ReferenceResolverBagInterface.
  */
 interface ReferenceBagInterface
 {

@@ -543,6 +543,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
             - { name: kernel.event_listener, event: ez_migration.migration_aborted, method: onMigrationAborted }
+            - { name: kernel.event_listener, event: ez_migration.migration_suspended, method: onMigrationSuspended }
 
     ez_migration_bundle.helper.limitation_converter:
         class: '%ez_migration_bundle.helper.limitation_converter.class%'

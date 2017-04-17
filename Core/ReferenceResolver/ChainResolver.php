@@ -4,8 +4,9 @@ namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 
-class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
+class ChainResolver implements ReferenceResolverBagInterface
 {
     /** @var ReferenceResolverInterface[] $resolvers */
     protected $resolvers = array();
@@ -41,6 +42,7 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
     /**
      * @param string $stringIdentifier
      * @return mixed
+     * @throws \Exception
      */
     public function getReferenceValue($stringIdentifier)
     {

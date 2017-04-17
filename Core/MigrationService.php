@@ -14,6 +14,7 @@ use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
@@ -121,6 +122,9 @@ class MigrationService
      * Returns the list of all the migrations which where executed or attempted so far
      *
      * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationCollection
+     *
+     * @todo add limit, offset
+     * @todo allow (in another method?) to retrieve migrations with a given status
      */
     public function getMigrations()
     {
@@ -277,6 +281,17 @@ class MigrationService
 
                 $finalStatus = $e->getCode();
                 $finalMessage = "Abort in execution of step $i: " . $e->getMessage();
+            } catch (MigrationSuspendedException $e) {
+                // allow a migration step (or events) to suspend the migration via a specific exception
+
+                $this->dispatcher->dispatch('ez_migration.migration_suspended', new MigrationSupendedEvent($step, $e));
+
+                /**
+                 * @todo do suspend the migration:
+                 * - current step
+                 * - how do we retrieve the current context from all remaining steps ? Do we have to ?
+                 * - how do we retrieve the complete set of references ?
+                 */
             }
 
             // set migration as done

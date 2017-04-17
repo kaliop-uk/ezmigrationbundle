@@ -2,12 +2,12 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
-use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 
 /**
  * Handle 'any' references by letting the developer store them and retrieve them afterwards
  */
-class CustomReferenceResolver extends AbstractResolver implements ReferenceBagInterface
+class CustomReferenceResolver extends AbstractResolver implements ReferenceResolverBagInterface
 {
     /**
      * Defines the prefix for all reference identifier strings in definitions
