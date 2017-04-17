@@ -25,7 +25,7 @@
     parent_location: 2
     attributes:
         title: test object
-        ezobjectrelationlist: [ 57 ]
+        ezobjectrelationlist: [ 56 ]
     references:
         -
             identifier: hello
@@ -67,7 +67,7 @@
         equals: 1
 
 -
-    type: content_type
+    type: content
     mode: delete
     match:
         content_id: reference:hello
