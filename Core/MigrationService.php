@@ -258,9 +258,6 @@ class MigrationService
 
                     // we validated the fact that we have a good executor at parsing time
                     $executor = $this->executors[$step->type];
-                    if ($executor instanceof LanguageAwareInterface) {
-                        $executor->setLanguageCode(null);
-                    }
 
                     $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
                     $this->dispatcher->dispatch($this->eventPrefix . 'before_execution', $beforeStepExecutionEvent);
@@ -289,8 +286,8 @@ class MigrationService
 
                 /**
                  * @todo do suspend the migration:
-                 * - current step
-                 * - how do we retrieve the current context from all remaining steps ? Do we have to ?
+                 * - current step nr.
+                 * - global context
                  * - how do we retrieve the complete set of references ?
                  */
             }
