@@ -3,11 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-//use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
-use Kaliop\eZMigrationBundle\API\Value\MigrationContext;
 use JmesPath\Env as JmesPath;
 
 class MigrationDefinitionExecutor extends AbstractExecutor

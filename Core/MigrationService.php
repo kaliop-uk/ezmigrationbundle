@@ -6,7 +6,6 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
-//use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
@@ -18,7 +17,6 @@ use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
-use Kaliop\eZMigrationBundle\API\Value\MigrationContext;
 
 class MigrationService
 {
@@ -232,15 +230,6 @@ class MigrationService
 
         $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin);
 
-        // Inject default language code in executors that support it.
-        /*if ($defaultLanguageCode) {
-            foreach ($this->executors as $executor) {
-                if ($executor instanceof LanguageAwareInterface) {
-                    $executor->setDefaultLanguageCode($defaultLanguageCode);
-                }
-            }
-        }*/
-
         // set migration as begun - has to be in own db transaction
         $migration = $this->storageHandler->startMigration($migrationDefinition);
 
@@ -357,7 +346,7 @@ class MigrationService
     /**
      * @param string $defaultLanguageCode
      * @param string $adminLogin
-     * @return array //MigrationContext
+     * @return array
      */
     protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null)
     {
@@ -371,7 +360,6 @@ class MigrationService
         }
 
         return $properties;
-        //return new MigrationContext($properties);
     }
 
     protected function injectContextIntoStep(MigrationStep $step, array $context)

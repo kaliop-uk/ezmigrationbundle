@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 
 class GenerateCommand extends AbstractCommand
 {
