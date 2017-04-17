@@ -18,6 +18,7 @@ use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
+use Kaliop\eZMigrationBundle\API\Event\MigrationSuspendedEvent;
 
 class MigrationService
 {
@@ -284,7 +285,7 @@ class MigrationService
             } catch (MigrationSuspendedException $e) {
                 // allow a migration step (or events) to suspend the migration via a specific exception
 
-                $this->dispatcher->dispatch('ez_migration.migration_suspended', new MigrationSupendedEvent($step, $e));
+                $this->dispatcher->dispatch($this->eventPrefix . 'migration_suspended', new MigrationSuspendedEvent($step, $e));
 
                 /**
                  * @todo do suspend the migration:
