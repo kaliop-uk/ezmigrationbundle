@@ -253,6 +253,9 @@ class MigrationService
 
                     // we validated the fact that we have a good executor at parsing time
                     $executor = $this->executors[$step->type];
+                    if ($executor instanceof LanguageAwareInterface) {
+                        $executor->setLanguageCode(null);
+                    }
 
                     $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
                     $this->dispatcher->dispatch($this->eventPrefix . 'before_execution', $beforeStepExecutionEvent);
