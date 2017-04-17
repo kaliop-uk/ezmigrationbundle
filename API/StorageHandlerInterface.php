@@ -12,9 +12,19 @@ use Kaliop\eZMigrationBundle\API\Value\Migration;
 interface StorageHandlerInterface
 {
     /**
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
      * @return MigrationCollection sorted from oldest to newest
      */
-    public function loadMigrations();
+    public function loadMigrations($limit = null, $offset = null);
+
+    /**
+     * @param int $status see the STATUS_ constants
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
+     * @return MigrationCollection sorted from oldest to newest
+     */
+    public function loadMigrationsByStatus($status, $limit = null, $offset = null);
 
     /**
      * @param string $migrationName

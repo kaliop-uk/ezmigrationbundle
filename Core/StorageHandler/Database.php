@@ -50,10 +50,33 @@ class Database implements StorageHandlerInterface
     }
 
     /**
+     * @param int $limit
+     * @param int $offset
      * @return MigrationCollection
-     * @todo add support offset, limit
      */
-    public function loadMigrations()
+    public function loadMigrations($limit = null, $offset = null)
+    {
+        return $this->loadMigrationsInner(null, $limit, $offset);
+    }
+
+    /**
+     * @param int $status
+     * @param int $limit
+     * @param int $offset
+     * @return MigrationCollection
+     */
+    public function loadMigrationsByStatus($status, $limit = null, $offset = null)
+    {
+        return $this->loadMigrationsInner($status, $limit, $offset);
+    }
+
+    /**
+     * @param int $status
+     * @param int $limit
+     * @param int $offset
+     * @return MigrationCollection
+     */
+    protected function loadMigrationsInner($status = null, $limit = null, $offset = null)
     {
         $this->createMigrationsTableIfNeeded();
 
@@ -62,6 +85,18 @@ class Database implements StorageHandlerInterface
         $q->select($this->fieldList)
             ->from($this->migrationsTableName)
             ->orderBy('migration', SelectQuery::ASC);
+        if ($status != null) {
+            $q->where($q->expr->eq('status', $q->bindValue($status)));
+        }
+        if ($limit > 0 || $offset > 0) {
+            if ($limit <= 0) {
+                $limit = null;
+            }
+            if ($offset == 0) {
+                $offset = null;
+            }
+            $q->limit($limit, $offset);
+        }
         $stmt = $q->prepare();
         $stmt->execute();
         $results = $stmt->fetchAll();

@@ -1,3 +1,17 @@
+Version 4.0 RC-1 (unreleased)
+=============================
+
+* New: migrations can now be suspended and resumed: (WIP for the moment...)
+
+* New: the Executor services have been made reentrant
+
+* BC changes:
+
+    - the following interfaces have been modified: MigrationGeneratorInterface, StorageHandlerInterface, 
+
+    - lots of refactoring in the Core (non API) classes. If you have extended them, be prepared for some porting work
+
+
 Version 3.6
 ===========
 
