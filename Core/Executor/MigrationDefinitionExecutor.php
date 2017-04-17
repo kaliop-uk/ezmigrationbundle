@@ -78,7 +78,10 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         /*if (isset($dsl['lang']) && $executor instanceof LanguageAwareInterface) {
             $executor->setLanguageCode($dsl['lang']);
         }*/
-        $context = array('defaultLanguageCode' => $dsl['lang']);
+        $context = array();
+        if (isset($dsl['lang']) && $dsl['lang'] != '') {
+            $context['defaultLanguageCode'] = $dsl['lang'];
+        }
 
         $matchCondition = array($match['type'] => $match['value']);
         if (isset($match['except']) && $match['except']) {

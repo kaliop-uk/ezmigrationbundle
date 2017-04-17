@@ -398,8 +398,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $attribute = array(
                         'identifier' => $fieldDefinition->identifier,
                         'type' => $fieldTypeIdentifier,
-                        'name' => $fieldDefinition->getName($context['defaultLanguageCode']),
-                        'description' => (string)$fieldDefinition->getDescription($context['defaultLanguageCode']),
+                        'name' => $fieldDefinition->getName($this->getLanguageCodeFromContext($context)),
+                        'description' => (string)$fieldDefinition->getDescription($this->getLanguageCodeFromContext($context)),
                         'required' => $fieldDefinition->isRequired,
                         'searchable' => $fieldDefinition->isSearchable,
                         'info-collector' => $fieldDefinition->isInfoCollector,
@@ -431,12 +431,12 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $contentTypeData = array_merge(
                     $contentTypeData,
                     array(
-                        'name' => $contentType->getName($context['defaultLanguageCode']),
-                        'description' => $contentType->getDescription($context['defaultLanguageCode']),
+                        'name' => $contentType->getName($this->getLanguageCodeFromContext($context)),
+                        'description' => $contentType->getDescription($this->getLanguageCodeFromContext($context)),
                         'name_pattern' => $contentType->nameSchema,
                         'url_name_pattern' => $contentType->urlAliasSchema,
                         'is_container' => $contentType->isContainer,
-                        'lang' => $context['defaultLanguageCode'],
+                        'lang' => $this->getLanguageCodeFromContext($context),
                         'attributes' => $attributes
                     )
                 );

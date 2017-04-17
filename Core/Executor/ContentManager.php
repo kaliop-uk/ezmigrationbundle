@@ -535,7 +535,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             if ($mode != 'delete') {
 
                 $attributes = array();
-                foreach ($content->getFieldsByLanguage($context['defaultLanguageCode']) as $fieldIdentifier => $field) {
+                foreach ($content->getFieldsByLanguage($this->getLanguageCodeFromContext($context)) as $fieldIdentifier => $field) {
                     $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
                     $attributes[$field->fieldDefIdentifier] = $this->complexFieldManager->fieldValueToHash(
                         $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
@@ -545,7 +545,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $contentData = array_merge(
                     $contentData,
                     array(
-                        'lang' => $context['defaultLanguageCode'],
+                        'lang' => $this->getLanguageCodeFromContext($context),
                         'section' => $content->contentInfo->sectionId,
                         'owner' => $content->contentInfo->ownerId,
                         'modification_date' => $content->contentInfo->modificationDate->getTimestamp(),

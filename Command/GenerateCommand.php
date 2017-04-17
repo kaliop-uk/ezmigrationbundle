@@ -245,7 +245,10 @@ EOT
                 /*if ($executor instanceof LanguageAwareInterface) {
                     $executor->setLanguageCode($parameters['lang']);
                 }*/
-                $context = array('defaultLanguageCode' => $parameters['lang']);
+                $context = array();
+                if (isset($parameters['lang']) && $parameters['lang'] != '') {
+                    $context['defaultLanguageCode'] = $parameters['lang'];
+                }
 
                 $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
                 if ($parameters['matchExcept']) {

@@ -132,10 +132,12 @@ abstract class RepositoryExecutor extends AbstractExecutor //implements Language
 
     public function getLanguageCode($step)
     {
-        return isset($step->dsl['lang']) ? $step->dsl['lang'] : (
-            isset($step->context['defaultLanguageCode']) ? $step->context['defaultLanguageCode'] : self::DEFAULT_LANGUAGE_CODE
-        );
-        //return $this->languageCode ?: $this->getDefaultLanguageCode();
+        return isset($step->dsl['lang']) ? $step->dsl['lang'] : $this->getLanguageCodeFromContext($step->context);
+    }
+
+    public function getLanguageCodeFromContext($context)
+    {
+        return isset($context['defaultLanguageCode']) ? $context['defaultLanguageCode'] : self::DEFAULT_LANGUAGE_CODE;
     }
 
     /*public function setDefaultLanguageCode($languageCode)
