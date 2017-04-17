@@ -85,7 +85,7 @@ class Database implements StorageHandlerInterface
         $q->select($this->fieldList)
             ->from($this->migrationsTableName)
             ->orderBy('migration', SelectQuery::ASC);
-        if ($status != null) {
+        if ($status !== null) {
             $q->where($q->expr->eq('status', $q->bindValue($status)));
         }
         if ($limit > 0 || $offset > 0) {

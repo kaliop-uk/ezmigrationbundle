@@ -122,14 +122,26 @@ class MigrationService
     /**
      * Returns the list of all the migrations which where executed or attempted so far
      *
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
      * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationCollection
-     *
-     * @todo add limit, offset
-     * @todo allow (in another method?) to retrieve migrations with a given status
      */
-    public function getMigrations()
+    public function getMigrations($limit = null, $offset = null)
     {
-        return $this->storageHandler->loadMigrations();
+        return $this->storageHandler->loadMigrations($limit, $offset);
+    }
+
+    /**
+     * Returns the list of all the migrations in a given status which where executed or attempted so far
+     *
+     * @param int $status
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
+     * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationCollection
+     */
+    public function getMigrationsByStatus($status, $limit = null, $offset = null)
+    {
+        return $this->storageHandler->loadMigrationsByStatus($status, $limit, $offset);
     }
 
     /**

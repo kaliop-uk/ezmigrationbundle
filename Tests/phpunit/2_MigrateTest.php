@@ -97,7 +97,7 @@ class MigrateTest extends CommandTest
     }
 
     /**
-     * Test the --default-language option for the migrate command.
+     * Tests the --default-language option for the migrate command.
      */
     public function testDefaultLanguage()
     {
@@ -120,7 +120,12 @@ class MigrateTest extends CommandTest
         $repository = $this->getRepository();
         $contentService = $repository->getContentService();
 
-        // check if the content was created with the default language
+        // check that the 1st content was created with the yml-specified language
+        $content = $contentService->loadContentByRemoteId('kmb_test_18_content_1', null, null, false);
+        $this->assertInstanceOf('eZ\Publish\API\Repository\Values\Content\Content', $content);
+        $this->assertSame('eng-GB', $content->contentInfo->mainLanguageCode);
+
+        // check that the 2nd content was created with the default language from cli
         $content = $contentService->loadContentByRemoteId('kmb_test_18_content_2', [$defaultLanguage], null, false);
         $this->assertInstanceOf('eZ\Publish\API\Repository\Values\Content\Content', $content);
         $this->assertSame($defaultLanguage, $content->contentInfo->mainLanguageCode);
