@@ -117,7 +117,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      */
-    protected function setReferences($section)
+    protected function setReferences($section, $step)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;
@@ -158,10 +158,11 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
         $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $sectionCollection = $this->sectionMatcher->match($matchCondition);

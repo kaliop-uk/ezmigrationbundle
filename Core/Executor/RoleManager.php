@@ -140,12 +140,14 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         }
 
         // Backwards compat
-        if (!isset($step->dsl['match'])) {
-            $step->dsl['match'] = array('identifier' => $step->dsl['name']);
+        if (isset($step->dsl['match'])) {
+            $match = $step->dsl['match'];
+        } else {
+            $match = array('identifier' => $step->dsl['name']);
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+        $match = $this->resolveReferencesRecursively($match);
 
         return $this->roleMatcher->match($match);
     }
@@ -159,7 +161,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return boolean
      */
-    protected function setReferences($role)
+    protected function setReferences($role, $step)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;
@@ -195,10 +197,11 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
         $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $roleCollection = $this->roleMatcher->match($matchCondition);

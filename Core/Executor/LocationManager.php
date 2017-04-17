@@ -225,12 +225,14 @@ class LocationManager extends RepositoryExecutor
         }
 
         // Backwards compat
-        if (!isset($step->dsl['match'])) {
-            $step->dsl['match'] = array('location_id' => $step->dsl['location_id']);
+        if (isset($step->dsl['match'])) {
+            $match = $step->dsl['match'];
+        } else {
+            $match = array('location_id' => $step->dsl['location_id']);
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+        $match = $this->resolveReferencesRecursively($match);
 
         return $this->locationMatcher->match($match);
     }
@@ -244,7 +246,7 @@ class LocationManager extends RepositoryExecutor
      * @param \eZ\Publish\API\Repository\Values\Content\Location|LocationCollection $location
      * @return boolean
      */
-    protected function setReferences($location)
+    protected function setReferences($location, $step)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;

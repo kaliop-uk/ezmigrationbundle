@@ -172,10 +172,11 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
         $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $objectStateGroupCollection = $this->objectStateGroupMatcher->match($matchCondition);

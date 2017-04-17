@@ -39,7 +39,7 @@ class UserGroupManager extends RepositoryExecutor
 
         $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier("user_group");
 
-        $userGroupCreateStruct = $userService->newUserGroupCreateStruct($this->getLanguageCode(), $contentType);
+        $userGroupCreateStruct = $userService->newUserGroupCreateStruct($this->getLanguageCode($step), $contentType);
         $userGroupCreateStruct->setField('name', $step->dsl['name']);
 
         if (isset($step->dsl['remote_id'])) {
@@ -164,17 +164,19 @@ class UserGroupManager extends RepositoryExecutor
         }
 
         // Backwards compat
-        if (!isset($step->dsl['match'])) {
+        if (isset($step->dsl['match'])) {
+            $match = $step->dsl['match'];
+        } else {
             if (isset($step->dsl['id'])) {
-                $step->dsl['match']['id'] = $step->dsl['id'];
+                $match = array('id' => $step->dsl['id']);
             }
             if (isset($step->dsl['group'])) {
-                $step->dsl['match']['id'] = $step->dsl['group'];
+                $match = array('id' => $step->dsl['group']);
             }
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+        $match = $this->resolveReferencesRecursively($match);
 
         return $this->userGroupMatcher->match($match);
     }
@@ -186,7 +188,7 @@ class UserGroupManager extends RepositoryExecutor
      * @param \eZ\Publish\API\Repository\Values\User\UserGroup|UserGroupCollection $userGroup
      * @return boolean
      */
-    protected function setReferences($userGroup)
+    protected function setReferences($userGroup, $step)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;

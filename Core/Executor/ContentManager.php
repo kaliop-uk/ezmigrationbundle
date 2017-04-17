@@ -68,12 +68,9 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         /// @todo use a contenttypematcher
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
-        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode(
-            $this->step,
-            $step->context
-        ));
+        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode($step));
 
-        $this->setFields($contentCreateStruct, $step->dsl['attributes'], $contentType);
+        $this->setFields($contentCreateStruct, $step->dsl['attributes'], $contentType, $step);
 
         if (isset($step->dsl['always_available'])) {
             $contentCreateStruct->alwaysAvailable = $step->dsl['always_available'];
@@ -231,7 +228,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
             if (isset($step->dsl['attributes'])) {
-                $this->setFields($contentUpdateStruct, $step->dsl['attributes'], $contentType);
+                $this->setFields($contentUpdateStruct, $step->dsl['attributes'], $contentType, $step);
             }
 
             $versionCreator = null;
@@ -324,16 +321,19 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         }
 
         // Backwards compat
-        if (!isset($step->dsl['match'])) {
+
+        if (isset($step->dsl['match'])) {
+            $match = $step->dsl['match'];
+        } else {
             if (isset($step->dsl['object_id'])) {
-                $step->dsl['match'] = array('content_id' => $step->dsl['object_id']);
+                $match = array('content_id' => $step->dsl['object_id']);
             } elseif (isset($step->dsl['remote_id'])) {
-                $step->dsl['match'] = array('content_remote_id' => $step->dsl['remote_id']);
+                $match = array('content_remote_id' => $step->dsl['remote_id']);
             }
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+        $match = $this->resolveReferencesRecursively($match);
 
         return $this->contentMatcher->match($match);
     }
@@ -347,7 +347,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      *
      * @todo add support for other attributes: contentTypeId, contentTypeIdentifier, section, etc... ?
      */
-    protected function setReferences($content)
+    protected function setReferences($content, $step)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;
@@ -453,6 +453,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      *
@@ -460,7 +461,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @todo add 2ndary locations when in 'update' mode
      * @todo add dumping of sort_field and sort_order for 2ndary locations
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
         $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $contentCollection = $this->contentMatcher->match($matchCondition);
@@ -534,7 +535,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             if ($mode != 'delete') {
 
                 $attributes = array();
-                foreach ($content->getFieldsByLanguage($this->getLanguageCode()) as $fieldIdentifier => $field) {
+                foreach ($content->getFieldsByLanguage($context['defaultLanguageCode']) as $fieldIdentifier => $field) {
                     $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
                     $attributes[$field->fieldDefIdentifier] = $this->complexFieldManager->fieldValueToHash(
                         $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
@@ -544,7 +545,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $contentData = array_merge(
                     $contentData,
                     array(
-                        'lang' => $this->getLanguageCode(),
+                        'lang' => $context['defaultLanguageCode'],
                         'section' => $content->contentInfo->sectionId,
                         'owner' => $content->contentInfo->ownerId,
                         'modification_date' => $content->contentInfo->modificationDate->getTimestamp(),
@@ -566,11 +567,12 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * Helper function to set the fields of a ContentCreateStruct based on the DSL attribute settings.
      *
      * @param ContentCreateStruct|ContentUpdateStruct $createOrUpdateStruct
-     * @param ContentType $contentType
      * @param array $fields see description of expected format in code below
+     * @param ContentType $contentType
+     * @param $step
      * @throws \Exception
      */
-    protected function setFields($createOrUpdateStruct, array $fields, ContentType $contentType)
+    protected function setFields($createOrUpdateStruct, array $fields, ContentType $contentType, $step)
     {
         $i = 0;
         // the 'easy' yml: key = field name, value = value

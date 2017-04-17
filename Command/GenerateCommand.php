@@ -245,12 +245,13 @@ EOT
                 /*if ($executor instanceof LanguageAwareInterface) {
                     $executor->setLanguageCode($parameters['lang']);
                 }*/
+                $context = array('defaultLanguageCode' => $parameters['lang']);
 
                 $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
                 if ($parameters['matchExcept']) {
                     $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
                 }
-                $data = $executor->generateMigration($matchCondition, $parameters['mode']);
+                $data = $executor->generateMigration($matchCondition, $parameters['mode'], $context);
 
                 if (!is_array($data) || !count($data)) {
                     $warning = 'Note: the generated migration is empty';

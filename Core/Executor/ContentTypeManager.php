@@ -51,20 +51,20 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
 
         $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($step->dsl['identifier']);
-        $contentTypeCreateStruct->mainLanguageCode = $this->getLanguageCode();
+        $contentTypeCreateStruct->mainLanguageCode = $this->getLanguageCode($step);
 
         // Object Name pattern
         $contentTypeCreateStruct->nameSchema = $step->dsl['name_pattern'];
 
         // set names for the content type
         $contentTypeCreateStruct->names = array(
-            $this->getLanguageCode() => $step->dsl['name'],
+            $this->getLanguageCode($step) => $step->dsl['name'],
         );
 
         if (isset($step->dsl['description'])) {
             // set description for the content type
             $contentTypeCreateStruct->descriptions = array(
-                $this->getLanguageCode() => $step->dsl['description'],
+                $this->getLanguageCode($step) => $step->dsl['description'],
             );
         }
 
@@ -86,7 +86,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $maxFieldDefinitionPos = 0;
         $fieldDefinitions = array();
         foreach ($step->dsl['attributes'] as $position => $attribute) {
-            $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $step->dsl['identifier']);
+            $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $step->dsl['identifier'], $this->getLanguageCode($step));
             $maxFieldDefinitionPos = $fieldDefinition->position > $maxFieldDefinitionPos ? $fieldDefinition->position : $maxFieldDefinitionPos;
             $fieldDefinitions[] = $fieldDefinition;
         }
@@ -129,19 +129,19 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             $contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
 
             $contentTypeUpdateStruct = $contentTypeService->newContentTypeUpdateStruct();
-            $contentTypeUpdateStruct->mainLanguageCode = $this->getLanguageCode();
+            $contentTypeUpdateStruct->mainLanguageCode = $this->getLanguageCode($step);
 
             if (isset($step->dsl['new_identifier'])) {
                 $contentTypeUpdateStruct->identifier = $step->dsl['new_identifier'];
             }
 
             if (isset($step->dsl['name'])) {
-                $contentTypeUpdateStruct->names = array($this->getLanguageCode() => $step->dsl['name']);
+                $contentTypeUpdateStruct->names = array($this->getLanguageCode($step) => $step->dsl['name']);
             }
 
             if (isset($step->dsl['description'])) {
                 $contentTypeUpdateStruct->descriptions = array(
-                    $this->getLanguageCode() => $step->dsl['description'],
+                    $this->getLanguageCode($step) => $step->dsl['description'],
                 );
             }
 
@@ -170,7 +170,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     if ($existingFieldDefinition) {
                         // Edit existing attribute
                         $fieldDefinitionUpdateStruct = $this->updateFieldDefinition(
-                            $contentTypeService, $attribute, $attribute['identifier'], $contentType->identifier
+                            $contentTypeService, $attribute, $attribute['identifier'], $contentType->identifier, $this->getLanguageCode($step)
                         );
                         $contentTypeService->updateFieldDefinition(
                             $contentTypeDraft,
@@ -185,7 +185,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
                     } else {
                         // Create new attributes, keep them in temp array
-                        $newFieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $contentType->identifier);
+                        $newFieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $contentType->identifier, $this->getLanguageCode($step));
                         $maxFieldDefinitionPos = $newFieldDefinition->position > $maxFieldDefinitionPos ? $newFieldDefinition->position : $maxFieldDefinitionPos;
                         $newFieldDefinitions[] = $newFieldDefinition;
                     }
@@ -256,12 +256,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         }
 
         // Backwards compat
-        if (!isset($step->dsl['match'])) {
-            $step->dsl['match'] = array('identifier' => $step->dsl['identifier']);
+        if (isset($step->dsl['match'])) {
+            $match = $step->dsl['match'];
+        } else {
+            $match = array('identifier' => $step->dsl['identifier']);
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+        $match = $this->resolveReferencesRecursively($match);
 
         return $this->contentTypeMatcher->match($match);
     }
@@ -331,10 +333,11 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
         $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
         $contentTypeCollection = $this->contentTypeMatcher->match($matchCondition);
@@ -395,8 +398,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $attribute = array(
                         'identifier' => $fieldDefinition->identifier,
                         'type' => $fieldTypeIdentifier,
-                        'name' => $fieldDefinition->getName($this->getLanguageCode()),
-                        'description' => (string)$fieldDefinition->getDescription($this->getLanguageCode()),
+                        'name' => $fieldDefinition->getName($context['defaultLanguageCode']),
+                        'description' => (string)$fieldDefinition->getDescription($context['defaultLanguageCode']),
                         'required' => $fieldDefinition->isRequired,
                         'searchable' => $fieldDefinition->isSearchable,
                         'info-collector' => $fieldDefinition->isInfoCollector,
@@ -428,12 +431,12 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $contentTypeData = array_merge(
                     $contentTypeData,
                     array(
-                        'name' => $contentType->getName($this->getLanguageCode()),
-                        'description' => $contentType->getDescription($this->getLanguageCode()),
+                        'name' => $contentType->getName($context['defaultLanguageCode']),
+                        'description' => $contentType->getDescription($context['defaultLanguageCode']),
                         'name_pattern' => $contentType->nameSchema,
                         'url_name_pattern' => $contentType->urlAliasSchema,
                         'is_container' => $contentType->isContainer,
-                        'lang' => $this->getLanguageCode(),
+                        'lang' => $context['defaultLanguageCode'],
                         'attributes' => $attributes
                     )
                 );
@@ -453,10 +456,11 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @param ContentTypeService $contentTypeService
      * @param array $attribute
      * @param string $contentTypeIdentifier
+     * @param string $lang
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinitionCreateStruct
      * @throws \Exception
      */
-    private function createFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $contentTypeIdentifier)
+    private function createFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $contentTypeIdentifier, $lang)
     {
         if (!isset($attribute['identifier']) || !isset($attribute['type'])) {
             throw new \Exception("Keys 'type' and 'identifier' are mandatory to define a new field in a field type");
@@ -470,10 +474,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         foreach ($attribute as $key => $value) {
             switch ($key) {
                 case 'name':
-                    $fieldDefinition->names = array($this->getLanguageCode() => $value);
+                    $fieldDefinition->names = array($lang => $value);
                     break;
                 case 'description':
-                    $fieldDefinition->descriptions = array($this->getLanguageCode() => $value);
+                    $fieldDefinition->descriptions = array($lang => $value);
                     break;
                 case 'required':
                     $fieldDefinition->isRequired = $value;
@@ -518,10 +522,11 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @param array $attribute
      * @param string $fieldTypeIdentifier
      * @param string $contentTypeIdentifier
+     * @param string $lang
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinitionUpdateStruct
      * @throws \Exception
      */
-    private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $fieldTypeIdentifier, $contentTypeIdentifier)
+    private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $fieldTypeIdentifier, $contentTypeIdentifier, $lang)
     {
         if (!isset($attribute['identifier'])) {
             throw new \Exception("The 'identifier' of an attribute is missing in the content type update definition.");
@@ -535,10 +540,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinitionUpdateStruct->identifier = $value;
                     break;
                 case 'name':
-                    $fieldDefinitionUpdateStruct->names = array($this->getLanguageCode() => $value);
+                    $fieldDefinitionUpdateStruct->names = array($lang => $value);
                     break;
                 case 'description':
-                    $fieldDefinitionUpdateStruct->descriptions = array($this->getLanguageCode() => $value);
+                    $fieldDefinitionUpdateStruct->descriptions = array($lang => $value);
                     break;
                 case 'required':
                     $fieldDefinitionUpdateStruct->isRequired = $value;

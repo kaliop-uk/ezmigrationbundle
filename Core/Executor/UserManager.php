@@ -59,7 +59,7 @@ class UserManager extends RepositoryExecutor
             $step->dsl['username'],
             $step->dsl['email'],
             $step->dsl['password'],
-            $this->getLanguageCode(),
+            $this->getLanguageCode($step),
             $userContentType
         );
         $userCreateStruct->setField('first_name', $step->dsl['first_name']);
@@ -109,15 +109,17 @@ class UserManager extends RepositoryExecutor
             $user = $userService->updateUser($user, $userUpdateStruct);
 
             if (isset($step->dsl['groups'])) {
-                if (!is_array($step->dsl['groups'])) {
-                    $step->dsl['groups'] = array($step->dsl['groups']);
+                $groups = $step->dsl['groups'];
+
+                if (!is_array($groups)) {
+                    $groups = array($groups);
                 }
 
                 $assignedGroups = $userService->loadUserGroupsOfUser($user);
 
                 $targetGroupIds = [];
                 // Assigning new groups to the user
-                foreach ($step->dsl['groups'] as $groupToAssignId) {
+                foreach ($groups as $groupToAssignId) {
                     $groupId = $this->referenceResolver->resolveReference($groupToAssignId);
                     $groupToAssign = $this->userGroupMatcher->matchOneByKey($groupId);
                     $targetGroupIds[] = $groupToAssign->id;
@@ -179,7 +181,9 @@ class UserManager extends RepositoryExecutor
         }
 
         // Backwards compat
-        if (!isset($step->dsl['match'])) {
+        if (isset($step->dsl['match'])) {
+            $match = $step->dsl['match'];
+        } else {
             $conds = array();
             if (isset($step->dsl['id'])) {
                 $conds['id'] = $step->dsl['id'];
@@ -193,11 +197,11 @@ class UserManager extends RepositoryExecutor
             if (isset($step->dsl['username'])) {
                 $conds['login'] = $step->dsl['username'];
             }
-            $step->dsl['match'] = $conds;
+            $match = $conds;
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+        $match = $this->resolveReferencesRecursively($match);
 
         return $this->userMatcher->match($match);
     }
@@ -211,7 +215,7 @@ class UserManager extends RepositoryExecutor
      * @throws \InvalidArgumentException when trying to set references to unsupported attributes
      * @return boolean
      */
-    protected function setReferences($user)
+    protected function setReferences($user, $step)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;

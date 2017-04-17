@@ -80,7 +80,7 @@ class LanguageManager extends RepositoryExecutor
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      */
-    protected function setReferences($language)
+    protected function setReferences($language, $step)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;
