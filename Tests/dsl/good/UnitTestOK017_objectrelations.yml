@@ -25,7 +25,7 @@
     parent_location: 2
     attributes:
         title: test object
-        ezobjectrelationlist: [ 56 ]
+        ezobjectrelationlist: [ 49 ]
     references:
         -
             identifier: hello
