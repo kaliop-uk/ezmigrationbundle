@@ -22,16 +22,7 @@ class MigrateTest extends CommandTest
             return;
         }
 
-        // Make sure migration is not in the db: delete it, ignoring errors
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $this->app->run($input, $this->output);
-        $this->fetchOutput();
-
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->assertRegexp('?Added migration?', $output);
+        $this->prepareMigration($filePath);
 
         $count1 = BeforeStepExecutionListener::getExecutions();
         $count2 = StepExecutedListener::getExecutions();
@@ -64,16 +55,7 @@ class MigrateTest extends CommandTest
             return;
         }
 
-        // Make user migration is not in the db: delete it, ignoring errors
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $this->app->run($input, $this->output);
-        $this->fetchOutput();
-
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->assertRegexp('?Added migration?', $output);
+        $this->prepareMigration($filePath);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
         $exitCode = $this->app->run($input, $this->output);
@@ -99,16 +81,7 @@ class MigrateTest extends CommandTest
             return;
         }
 
-        // Make user migration is not in the db: delete it, ignoring errors
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $this->app->run($input, $this->output);
-        $this->fetchOutput();
-
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->assertRegexp('?Added migration?', $output);
+        $this->prepareMigration($filePath);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
         $exitCode = $this->app->run($input, $this->output);
@@ -121,6 +94,46 @@ class MigrateTest extends CommandTest
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+    }
+
+    /**
+     * Test the --default-language option for the migrate command.
+     */
+    public function testDefaultLanguage()
+    {
+        $filePath = $this->dslDir . '/UnitTestOK018_defaultLanguage.yml';
+        $defaultLanguage = 'def-LA';
+
+        $this->prepareMigration($filePath);
+
+        $exitCode = $this->runCommand('kaliop:migration:migrate', array(
+            '--path' => array($filePath),
+            '-n' => true,
+            '-u' => true,
+            '--default-language' => $defaultLanguage,
+        ));
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        // check that there are no notes after adding the migration
+        $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
+
+        $repository = $this->getRepository();
+        $contentService = $repository->getContentService();
+
+        // check if the content was created with the default language
+        $content = $contentService->loadContentByRemoteId('kmb_test_18_content_2', [$defaultLanguage], null, false);
+        $this->assertInstanceOf('eZ\Publish\API\Repository\Values\Content\Content', $content);
+        $this->assertSame($defaultLanguage, $content->contentInfo->mainLanguageCode);
+
+        // cleanup
+        $contentService->deleteContent($content->contentInfo);
+        $contentService->deleteContent($contentService->loadContentInfoByRemoteId('kmb_test_18_content_1'));
+
+        $contentTypeService = $repository->getContentTypeService();
+        $contentTypeService->deleteContentType($contentTypeService->loadContentTypeByIdentifier('kmb_test_18'));
+
+        $langService = $repository->getContentLanguageService();
+        $langService->deleteLanguage($langService->loadLanguage($defaultLanguage));
     }
 
     public function goodDSLProvider()
@@ -172,5 +185,77 @@ class MigrateTest extends CommandTest
             }
         }
         return $out;
+    }
+
+    /**
+     * Add a migration from a file to the migration service.
+     * @param string $filePath
+     */
+    protected function addMigration($filePath)
+    {
+        $exitCode = $this->runCommand('kaliop:migration:migration', [
+            'migration' => $filePath,
+            '--add' => true,
+            '-n' => true,
+        ]);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->assertRegexp('?Added migration?', $output);
+    }
+
+    /**
+     * Delete the migration from the database table
+     * @param string $filePath
+     * @return string
+     */
+    protected function deleteMigration($filePath)
+    {
+        $this->runCommand('kaliop:migration:migration', [
+            'migration' => basename($filePath),
+            '--delete' => true,
+            '-n' => true,
+        ]);
+
+        return $this->fetchOutput();
+    }
+
+    /**
+     * Prepare a migration file for a test.
+     * @param string $filePath
+     */
+    protected function prepareMigration($filePath)
+    {
+        // Make user migration is not in the db: delete it, ignoring errors
+        $this->deleteMigration($filePath);
+        $this->addMigration($filePath);
+    }
+
+    /**
+     * Run a symfony command
+     * @param string $commandName
+     * @param array $params
+     * @return int
+     */
+    protected function runCommand($commandName, array $params)
+    {
+        $params = array_merge(['command' => $commandName], $params);
+        $input = new ArrayInput($params);
+
+        return $this->app->run($input, $this->output);
+    }
+
+    /**
+     * Get the eZ repository
+     * @param int $loginUserId
+     * @return \eZ\Publish\Core\SignalSlot\Repository
+     */
+    protected function getRepository($loginUserId = \Kaliop\eZMigrationBundle\Core\MigrationService::ADMIN_USER_ID)
+    {
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        if ($loginUserId !== false && (is_null($repository->getCurrentUser()) || $repository->getCurrentUser()->id != $loginUserId)) {
+            $repository->setCurrentUser($repository->getUserService()->loadUser($loginUserId));
+        }
+
+        return $repository;
     }
 }

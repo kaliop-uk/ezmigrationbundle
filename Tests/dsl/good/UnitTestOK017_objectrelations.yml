@@ -1,0 +1,79 @@
+# test that updating of object-relations attributes works as intended.
+# Also, test usage of expressions to use non-basic selectors to assign references
+
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_17
+    name: Kaliop Migration Bundle Test Class 17
+    name_pattern: '<title>'
+    attributes:
+        -
+            type: ezstring
+            name: title
+            identifier: title
+        -
+            type: ezobjectrelationlist
+            name: ezobjectrelationlist
+            identifier: ezobjectrelationlist
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_17
+    parent_location: 2
+    attributes:
+        title: test object
+        ezobjectrelationlist: [ 49 ]
+    references:
+        -
+            identifier: hello
+            attribute: content_id
+
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:hello
+    attributes:
+        ezobjectrelationlist: [ 41 ]
+
+-
+    type: content
+    mode: load
+    match:
+        content_id: reference:hello
+    references:
+        -
+            identifier: dear
+            attribute: 'attributes.ezobjectrelationlist.destinationContentIds[0]'
+        -
+            identifier: world
+            attribute: 'attributes.ezobjectrelationlist.destinationContentIds.length(@)'
+
+-
+    type: assert
+    target: reference
+    identifier: reference:dear
+    test:
+        equals: 41
+
+-
+    type: assert
+    target: reference
+    identifier: reference:world
+    test:
+        equals: 1
+
+-
+    type: content
+    mode: delete
+    match:
+        content_id: reference:hello
+
+-
+    type: content_type
+    mode: delete
+    match:
+        identifier: kmb_test_17

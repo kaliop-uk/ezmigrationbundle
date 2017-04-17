@@ -1,8 +1,5 @@
-Version 3.6 (unreleased)
-========================
-
-* Added a new type of migration step: `migration_definition`. Only supported mode so far: `generate`.
-    For the moment, it is mostly useful for unit testing
+Version 3.6
+===========
 
 * New: it is now possible to set references to:
     - content type: creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
@@ -23,6 +20,14 @@ Version 3.6 (unreleased)
 
     TIP: if you are unsure about the hash representation of a given field, you can generate a content/create migration
     for an existing content to find out how it looks.
+
+* Added a new type of migration step: `migration_definition`. Only supported mode so far: `generate`.
+    For the moment, it is mostly useful for unit testing
+
+* Fix a case of circular dependencies in services (highlighted by the workflow bundle)
+
+* Fix: when setting a specific language via a 'lang' attribute in a migration step, the same language would be used for
+    all subsequent steps in the same migration
 
 
 Version 3.5
