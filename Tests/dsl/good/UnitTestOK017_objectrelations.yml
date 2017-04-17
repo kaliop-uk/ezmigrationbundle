@@ -12,7 +12,7 @@
         -
             type: ezstring
             name: title
-            identifier: ezstring
+            identifier: title
         -
             type: ezobjectrelationlist
             name: ezobjectrelationlist
@@ -21,11 +21,11 @@
 -
     type: content
     mode: create
-    content_type: test_class_2
+    content_type: kmb_test_17
     parent_location: 2
     attributes:
         title: test object
-        ezobjectrelationlist: [ 57 ]
+        ezobjectrelationlist: [ 56 ]
     references:
         -
             identifier: hello
@@ -67,7 +67,7 @@
         equals: 1
 
 -
-    type: content_type
+    type: content
     mode: delete
     match:
         content_id: reference:hello
