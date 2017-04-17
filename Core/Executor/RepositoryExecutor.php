@@ -3,7 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Repository;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
+//use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
@@ -11,7 +11,7 @@ use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
 /**
  * The core manager class that all migration action managers inherit from.
  */
-abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAwareInterface
+abstract class RepositoryExecutor extends AbstractExecutor //implements LanguageAwareInterface
 {
     use RepositoryUserSetterTrait;
 
@@ -32,10 +32,10 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
     /**
      * @var array $dsl The parsed DSL instruction array
      */
-    protected $dsl;
+    //protected $dsl;
 
     /** @var array $context The context (configuration) for the execution of the current step */
-    protected $context;
+    //protected $context;
 
     /**
      * The eZ Publish 5 API repository.
@@ -49,12 +49,12 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
      *
      * @var string
      */
-    private $languageCode;
+    //private $languageCode;
 
     /**
      * @var string
      */
-    private $defaultLanguageCode;
+    //private $defaultLanguageCode;
 
     /** @var ReferenceResolverInterface $referenceResolver */
     protected $referenceResolver;
@@ -89,17 +89,17 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
-        $this->dsl = $step->dsl;
-        $this->context = $step->context;
-        if (isset($this->dsl['lang'])) {
-            $this->setLanguageCode($this->dsl['lang']);
-        }
+        //$this->dsl = $step->dsl;
+        //$this->context = $step->context;
+        /*if (isset($step->dsl['lang'])) {
+            $this->setLanguageCode($step->dsl['lang']);
+        }*/
 
         if (method_exists($this, $action)) {
 
             $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
             try {
-                $output = $this->$action();
+                $output = $this->$action($step);
             } catch (\Exception $e) {
                 $this->loginUser($previousUserId);
                 throw $e;
@@ -123,19 +123,22 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
      * @param $object
      * @return boolean
      */
-    abstract protected function setReferences($object);
+    abstract protected function setReferences($object, $step);
 
-    public function setLanguageCode($languageCode)
+    /*public function setLanguageCode($languageCode)
     {
         $this->languageCode = $languageCode;
-    }
+    }*/
 
-    public function getLanguageCode()
+    public function getLanguageCode($step)
     {
-        return $this->languageCode ?: $this->getDefaultLanguageCode();
+        return isset($step['dsl']['lang']) ? $step['dsl']['lang'] : (
+            isset($step->context['defaultLanguageCode']) ? $step->context['defaultLanguageCode'] : self::DEFAULT_LANGUAGE_CODE
+        );
+        //return $this->languageCode ?: $this->getDefaultLanguageCode();
     }
 
-    public function setDefaultLanguageCode($languageCode)
+    /*public function setDefaultLanguageCode($languageCode)
     {
         $this->defaultLanguageCode = $languageCode;
     }
@@ -143,7 +146,7 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
     public function getDefaultLanguageCode()
     {
         return $this->defaultLanguageCode ?: self::DEFAULT_LANGUAGE_CODE;
-    }
+    }*/
 
     /**
      * Courtesy code to avoid reimplementing it in every subclass

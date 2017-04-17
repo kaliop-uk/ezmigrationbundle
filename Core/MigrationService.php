@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
+//use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
@@ -17,6 +18,7 @@ use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
+use Kaliop\eZMigrationBundle\API\Value\MigrationContext;
 
 class MigrationService
 {
@@ -212,11 +214,13 @@ class MigrationService
      * @param MigrationDefinition $migrationDefinition
      * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
      * @param string $defaultLanguageCode
+     * @param string $adminLogin
      * @throws \Exception
      *
      * @todo add support for skipped migrations, partially executed migrations
      */
-    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true, $defaultLanguageCode = null)
+    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
+        $defaultLanguageCode = null, $adminLogin = null)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
@@ -226,14 +230,16 @@ class MigrationService
             throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
+        $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin);
+
         // Inject default language code in executors that support it.
-        if ($defaultLanguageCode) {
+        /*if ($defaultLanguageCode) {
             foreach ($this->executors as $executor) {
                 if ($executor instanceof LanguageAwareInterface) {
                     $executor->setDefaultLanguageCode($defaultLanguageCode);
                 }
             }
-        }
+        }*/
 
         // set migration as begun - has to be in own db transaction
         $migration = $this->storageHandler->startMigration($migrationDefinition);
@@ -253,6 +259,9 @@ class MigrationService
             try {
 
                 foreach ($migrationDefinition->steps as $step) {
+
+                    $step = $this->injectContextIntoStep($step, $migrationContext);
+
                     // we validated the fact that we have a good executor at parsing time
                     $executor = $this->executors[$step->type];
 
@@ -343,6 +352,35 @@ class MigrationService
 
             throw new MigrationStepExecutionException($errorMessage, $i, $e);
         }
+    }
+
+    /**
+     * @param string $defaultLanguageCode
+     * @param string $adminLogin
+     * @return array //MigrationContext
+     */
+    protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null)
+    {
+        $properties = array();
+
+        if ($defaultLanguageCode != null) {
+            $properties['defaultLanguageCode'] = $defaultLanguageCode;
+        }
+        if ($adminLogin != null) {
+            $properties['adminUserLogin'] = $adminLogin;
+        }
+
+        return $properties;
+        //return new MigrationContext($properties);
+    }
+
+    protected function injectContextIntoStep(MigrationStep $step, array $context)
+    {
+        return new MigrationStep(
+            $step->type,
+            $step->dsl,
+            array_merge($step->context, $context)
+        );
     }
 
     /**

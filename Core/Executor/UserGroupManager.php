@@ -29,46 +29,46 @@ class UserGroupManager extends RepositoryExecutor
     /**
      * Method to handle the create operation of the migration instructions
      */
-    protected function create()
+    protected function create($step)
     {
         $userService = $this->repository->getUserService();
 
-        $parentGroupId = $this->dsl['parent_group_id'];
+        $parentGroupId = $step->dsl['parent_group_id'];
         $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
         $parentGroup = $this->userGroupMatcher->matchOneByKey($parentGroupId);
 
         $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier("user_group");
 
         $userGroupCreateStruct = $userService->newUserGroupCreateStruct($this->getLanguageCode(), $contentType);
-        $userGroupCreateStruct->setField('name', $this->dsl['name']);
+        $userGroupCreateStruct->setField('name', $step->dsl['name']);
 
-        if (isset($this->dsl['remote_id'])) {
-            $userGroupCreateStruct->remoteId = $this->dsl['remote_id'];
+        if (isset($step->dsl['remote_id'])) {
+            $userGroupCreateStruct->remoteId = $step->dsl['remote_id'];
         }
 
-        if (isset($this->dsl['description'])) {
-            $userGroupCreateStruct->setField('description', $this->dsl['description']);
+        if (isset($step->dsl['description'])) {
+            $userGroupCreateStruct->setField('description', $step->dsl['description']);
         }
 
-        if (isset($this->dsl['section'])) {
-            $sectionKey = $this->referenceResolver->resolveReference($this->dsl['section']);
+        if (isset($step->dsl['section'])) {
+            $sectionKey = $this->referenceResolver->resolveReference($step->dsl['section']);
             $section = $this->sectionMatcher->matchOneByKey($sectionKey);
             $userGroupCreateStruct->sectionId = $section->id;
         }
 
         $userGroup = $userService->createUserGroup($userGroupCreateStruct, $parentGroup);
 
-        if (isset($this->dsl['roles'])) {
+        if (isset($step->dsl['roles'])) {
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
-            foreach ($this->dsl['roles'] as $roleId) {
+            foreach ($step->dsl['roles'] as $roleId) {
                 $roleId = $this->referenceResolver->resolveReference($roleId);
                 $role = $this->roleMatcher->matchOneByKey($roleId);
                 $roleService->assignRoleToUserGroup($role, $userGroup);
             }
         }
 
-        $this->setReferences($userGroup);
+        $this->setReferences($userGroup, $step);
 
         return $userGroup;
     }
@@ -78,11 +78,11 @@ class UserGroupManager extends RepositoryExecutor
      *
      * @throws \Exception When the ID of the user group is missing from the migration definition.
      */
-    protected function update()
+    protected function update($step)
     {
-        $userGroupCollection = $this->matchUserGroups('update');
+        $userGroupCollection = $this->matchUserGroups('update', $step);
 
-        if (count($userGroupCollection) > 1 && isset($this->dsl['references'])) {
+        if (count($userGroupCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute Group update because multiple groups match, and a references section is specified in the dsl. References can be set when only 1 group matches");
         }
 
@@ -97,24 +97,24 @@ class UserGroupManager extends RepositoryExecutor
             /** @var $contentUpdateStruct \eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct */
             $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
-            if (isset($this->dsl['name'])) {
-                $contentUpdateStruct->setField('name', $this->dsl['name']);
+            if (isset($step->dsl['name'])) {
+                $contentUpdateStruct->setField('name', $step->dsl['name']);
             }
 
-            if (isset($this->dsl['remote_id'])) {
-                $contentUpdateStruct->remoteId = $this->dsl['remote_id'];
+            if (isset($step->dsl['remote_id'])) {
+                $contentUpdateStruct->remoteId = $step->dsl['remote_id'];
             }
 
-            if (isset($this->dsl['description'])) {
-                $contentUpdateStruct->setField('description', $this->dsl['description']);
+            if (isset($step->dsl['description'])) {
+                $contentUpdateStruct->setField('description', $step->dsl['description']);
             }
 
             $updateStruct->contentUpdateStruct = $contentUpdateStruct;
 
             $userGroup = $userService->updateUserGroup($userGroup, $updateStruct);
 
-            if (isset($this->dsl['parent_group_id'])) {
-                $parentGroupId = $this->dsl['parent_group_id'];
+            if (isset($step->dsl['parent_group_id'])) {
+                $parentGroupId = $step->dsl['parent_group_id'];
                 $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
                 $newParentGroup = $this->userGroupMatcher->matchOneByKey($parentGroupId);
 
@@ -122,14 +122,14 @@ class UserGroupManager extends RepositoryExecutor
                 $userService->moveUserGroup($userGroup, $newParentGroup);
             }
 
-            if (isset($this->dsl['section'])) {
-                $this->setSection($userGroup, $this->dsl['section']);
+            if (isset($step->dsl['section'])) {
+                $this->setSection($userGroup, $step->dsl['section']);
             }
 
             $userGroupCollection[$key] = $userGroup;
         }
 
-        $this->setReferences($userGroupCollection);
+        $this->setReferences($userGroupCollection, $step);
 
         return $userGroupCollection;
     }
@@ -139,9 +139,9 @@ class UserGroupManager extends RepositoryExecutor
      *
      * @throws \Exception When there are no groups specified for deletion.
      */
-    protected function delete()
+    protected function delete($step)
     {
-        $userGroupCollection = $this->matchUserGroups('delete');
+        $userGroupCollection = $this->matchUserGroups('delete', $step);
 
         $userService = $this->repository->getUserService();
 
@@ -157,24 +157,24 @@ class UserGroupManager extends RepositoryExecutor
      * @return UserGroupCollection
      * @throws \Exception
      */
-    protected function matchUserGroups($action)
+    protected function matchUserGroups($action, $step)
     {
-        if (!isset($this->dsl['id']) && !isset($this->dsl['group']) && !isset($this->dsl['match'])) {
+        if (!isset($step->dsl['id']) && !isset($step->dsl['group']) && !isset($step->dsl['match'])) {
             throw new \Exception("The id of a user group or a match condition is required to $action it");
         }
 
         // Backwards compat
-        if (!isset($this->dsl['match'])) {
-            if (isset($this->dsl['id'])) {
-                $this->dsl['match']['id'] = $this->dsl['id'];
+        if (!isset($step->dsl['match'])) {
+            if (isset($step->dsl['id'])) {
+                $step->dsl['match']['id'] = $step->dsl['id'];
             }
-            if (isset($this->dsl['group'])) {
-                $this->dsl['match']['id'] = $this->dsl['group'];
+            if (isset($step->dsl['group'])) {
+                $step->dsl['match']['id'] = $step->dsl['group'];
             }
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->userGroupMatcher->match($match);
     }
@@ -188,7 +188,7 @@ class UserGroupManager extends RepositoryExecutor
      */
     protected function setReferences($userGroup)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
@@ -199,7 +199,7 @@ class UserGroupManager extends RepositoryExecutor
             $userGroup = reset($userGroup);
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
                 case 'object_id':

@@ -242,9 +242,9 @@ EOT
                 }
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
-                if ($executor instanceof LanguageAwareInterface) {
+                /*if ($executor instanceof LanguageAwareInterface) {
                     $executor->setLanguageCode($parameters['lang']);
-                }
+                }*/
 
                 $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
                 if ($parameters['matchExcept']) {

@@ -57,63 +57,66 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * Handles the content create migration action type
      */
-    protected function create()
+    protected function create($step)
     {
         $contentService = $this->repository->getContentService();
         $locationService = $this->repository->getLocationService();
         $contentTypeService = $this->repository->getContentTypeService();
 
-        $contentTypeIdentifier = $this->dsl['content_type'];
+        $contentTypeIdentifier = $step->dsl['content_type'];
         $contentTypeIdentifier = $this->referenceResolver->resolveReference($contentTypeIdentifier);
         /// @todo use a contenttypematcher
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
-        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode());
+        $contentCreateStruct = $contentService->newContentCreateStruct($contentType, $this->getLanguageCode(
+            $this->step,
+            $step->context
+        ));
 
-        $this->setFields($contentCreateStruct, $this->dsl['attributes'], $contentType);
+        $this->setFields($contentCreateStruct, $step->dsl['attributes'], $contentType);
 
-        if (isset($this->dsl['always_available'])) {
-            $contentCreateStruct->alwaysAvailable = $this->dsl['always_available'];
+        if (isset($step->dsl['always_available'])) {
+            $contentCreateStruct->alwaysAvailable = $step->dsl['always_available'];
         } else {
             // Could be removed when https://github.com/ezsystems/ezpublish-kernel/pull/1874 is merged,
             // but we strive to support old eZ kernel versions as well...
             $contentCreateStruct->alwaysAvailable = $contentType->defaultAlwaysAvailable;
         }
 
-        if (isset($this->dsl['remote_id'])) {
-            $contentCreateStruct->remoteId = $this->dsl['remote_id'];
+        if (isset($step->dsl['remote_id'])) {
+            $contentCreateStruct->remoteId = $step->dsl['remote_id'];
         }
 
-        if (isset($this->dsl['section'])) {
-            $sectionKey = $this->referenceResolver->resolveReference($this->dsl['section']);
+        if (isset($step->dsl['section'])) {
+            $sectionKey = $this->referenceResolver->resolveReference($step->dsl['section']);
             $section = $this->sectionMatcher->matchOneByKey($sectionKey);
             $contentCreateStruct->sectionId = $section->id;
         }
 
-        if (isset($this->dsl['owner'])) {
-            $owner = $this->getUser($this->dsl['owner']);
+        if (isset($step->dsl['owner'])) {
+            $owner = $this->getUser($step->dsl['owner']);
             $contentCreateStruct->ownerId = $owner->id;
         }
 
         // This is a bit tricky, as the eZPublish API does not support having a different creator and owner with only 1 version.
         // We allow it, hoping that nothing gets broken because of it
-        if (isset($this->dsl['version_creator'])) {
+        if (isset($step->dsl['version_creator'])) {
             $realContentOwnerId = $contentCreateStruct->ownerId;
             if ($realContentOwnerId == null) {
                 $realContentOwnerId = $this->repository->getCurrentUser()->id;
             }
-            $versionCreator = $this->getUser($this->dsl['version_creator']);
+            $versionCreator = $this->getUser($step->dsl['version_creator']);
             $contentCreateStruct->ownerId = $versionCreator->id;
         }
 
-        if (isset($this->dsl['modification_date'])) {
-            $contentCreateStruct->modificationDate = $this->toDateTime($this->dsl['modification_date']);
+        if (isset($step->dsl['modification_date'])) {
+            $contentCreateStruct->modificationDate = $this->toDateTime($step->dsl['modification_date']);
         }
 
         // instantiate a location create struct from the parent location:
         // BC
-        $locationId = isset($this->dsl['parent_location']) ? $this->dsl['parent_location'] : (
-            isset($this->dsl['main_location']) ? $this->dsl['main_location'] : null
+        $locationId = isset($step->dsl['parent_location']) ? $step->dsl['parent_location'] : (
+            isset($step->dsl['main_location']) ? $step->dsl['main_location'] : null
         );
         // 1st resolve references
         $locationId = $this->referenceResolver->resolveReference($locationId);
@@ -121,26 +124,26 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
 
-        if (isset($this->dsl['location_remote_id'])) {
-            $locationCreateStruct->remoteId = $this->dsl['location_remote_id'];
+        if (isset($step->dsl['location_remote_id'])) {
+            $locationCreateStruct->remoteId = $step->dsl['location_remote_id'];
         }
 
-        if (isset($this->dsl['priority'])) {
-            $locationCreateStruct->priority = $this->dsl['priority'];
+        if (isset($step->dsl['priority'])) {
+            $locationCreateStruct->priority = $step->dsl['priority'];
         }
 
-        if (isset($this->dsl['is_hidden'])) {
-            $locationCreateStruct->hidden = $this->dsl['is_hidden'];
+        if (isset($step->dsl['is_hidden'])) {
+            $locationCreateStruct->hidden = $step->dsl['is_hidden'];
         }
 
-        if (isset($this->dsl['sort_field'])) {
-            $locationCreateStruct->sortField = $this->sortConverter->hash2SortField($this->dsl['sort_field']);
+        if (isset($step->dsl['sort_field'])) {
+            $locationCreateStruct->sortField = $this->sortConverter->hash2SortField($step->dsl['sort_field']);
         } else {
             $locationCreateStruct->sortField = $contentType->defaultSortField;
         }
 
-        if (isset($this->dsl['sort_order'])) {
-            $locationCreateStruct->sortOrder = $this->sortConverter->hash2SortOrder($this->dsl['sort_order']);
+        if (isset($step->dsl['sort_order'])) {
+            $locationCreateStruct->sortOrder = $this->sortConverter->hash2SortOrder($step->dsl['sort_order']);
         } else {
             $locationCreateStruct->sortOrder = $contentType->defaultSortOrder;
         }
@@ -148,8 +151,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $locations = array($locationCreateStruct);
 
         // BC
-        $other_locations = isset($this->dsl['other_parent_locations']) ? $this->dsl['other_parent_locations'] : (
-            isset($this->dsl['other_locations']) ? $this->dsl['other_locations'] : null
+        $other_locations = isset($step->dsl['other_parent_locations']) ? $step->dsl['other_parent_locations'] : (
+            isset($step->dsl['other_locations']) ? $step->dsl['other_locations'] : null
         );
         if (isset($other_locations)) {
             foreach ($other_locations as $locationId) {
@@ -164,38 +167,38 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $draft = $contentService->createContent($contentCreateStruct, $locations);
         $content = $contentService->publishVersion($draft->versionInfo);
 
-        if (isset($this->dsl['object_states'])) {
-            $this->setObjectStates($content, $this->dsl['object_states']);
+        if (isset($step->dsl['object_states'])) {
+            $this->setObjectStates($content, $step->dsl['object_states']);
         }
 
         // 2nd part of the hack: re-set the content owner to its intended value
-        if (isset($this->dsl['version_creator']) || isset($this->dsl['publication_date'])) {
+        if (isset($step->dsl['version_creator']) || isset($step->dsl['publication_date'])) {
             $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
 
-            if (isset($this->dsl['version_creator'])) {
+            if (isset($step->dsl['version_creator'])) {
                 $contentMetaDataUpdateStruct->ownerId = $realContentOwnerId;
             }
-            if (isset($this->dsl['publication_date'])) {
-                $contentMetaDataUpdateStruct->publishedDate = $this->toDateTime($this->dsl['publication_date']);
+            if (isset($step->dsl['publication_date'])) {
+                $contentMetaDataUpdateStruct->publishedDate = $this->toDateTime($step->dsl['publication_date']);
             }
 
             $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
         }
 
-        $this->setReferences($content);
+        $this->setReferences($content, $step);
 
         return $content;
     }
 
-    protected function load()
+    protected function load($step)
     {
-        $contentCollection = $this->matchContents('load');
+        $contentCollection = $this->matchContents('load', $step);
 
-        if (count($contentCollection) > 1 && isset($this->dsl['references'])) {
+        if (count($contentCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute Content load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
         }
 
-        $this->setReferences($contentCollection);
+        $this->setReferences($contentCollection, $step);
 
         return $contentCollection;
     }
@@ -205,14 +208,14 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      *
      * @todo handle updating of more metadata fields
      */
-    protected function update()
+    protected function update($step)
     {
         $contentService = $this->repository->getContentService();
         $contentTypeService = $this->repository->getContentTypeService();
 
-        $contentCollection = $this->matchContents('update');
+        $contentCollection = $this->matchContents('update', $step);
 
-        if (count($contentCollection) > 1 && isset($this->dsl['references'])) {
+        if (count($contentCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute Content update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
         }
 
@@ -227,63 +230,63 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
             $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
-            if (isset($this->dsl['attributes'])) {
-                $this->setFields($contentUpdateStruct, $this->dsl['attributes'], $contentType);
+            if (isset($step->dsl['attributes'])) {
+                $this->setFields($contentUpdateStruct, $step->dsl['attributes'], $contentType);
             }
 
             $versionCreator = null;
-            if (isset($this->dsl['version_creator'])) {
-                $versionCreator = $this->getUser($this->dsl['version_creator']);
+            if (isset($step->dsl['version_creator'])) {
+                $versionCreator = $this->getUser($step->dsl['version_creator']);
             }
 
             $draft = $contentService->createContentDraft($contentInfo, null, $versionCreator);
             $contentService->updateContent($draft->versionInfo, $contentUpdateStruct);
             $content = $contentService->publishVersion($draft->versionInfo);
 
-            if (isset($this->dsl['always_available']) ||
-                isset($this->dsl['new_remote_id']) ||
-                isset($this->dsl['owner']) ||
-                isset($this->dsl['modification_date']) ||
-                isset($this->dsl['publication_date'])) {
+            if (isset($step->dsl['always_available']) ||
+                isset($step->dsl['new_remote_id']) ||
+                isset($step->dsl['owner']) ||
+                isset($step->dsl['modification_date']) ||
+                isset($step->dsl['publication_date'])) {
 
                 $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
 
-                if (isset($this->dsl['always_available'])) {
-                    $contentMetaDataUpdateStruct->alwaysAvailable = $this->dsl['always_available'];
+                if (isset($step->dsl['always_available'])) {
+                    $contentMetaDataUpdateStruct->alwaysAvailable = $step->dsl['always_available'];
                 }
 
-                if (isset($this->dsl['new_remote_id'])) {
-                    $contentMetaDataUpdateStruct->remoteId = $this->dsl['new_remote_id'];
+                if (isset($step->dsl['new_remote_id'])) {
+                    $contentMetaDataUpdateStruct->remoteId = $step->dsl['new_remote_id'];
                 }
 
-                if (isset($this->dsl['owner'])) {
-                    $owner = $this->getUser($this->dsl['owner']);
+                if (isset($step->dsl['owner'])) {
+                    $owner = $this->getUser($step->dsl['owner']);
                     $contentMetaDataUpdateStruct->ownerId = $owner->id;
                 }
 
-                if (isset($this->dsl['modification_date'])) {
-                    $contentMetaDataUpdateStruct->modificationDate = $this->toDateTime($this->dsl['modification_date']);
+                if (isset($step->dsl['modification_date'])) {
+                    $contentMetaDataUpdateStruct->modificationDate = $this->toDateTime($step->dsl['modification_date']);
                 }
 
-                if (isset($this->dsl['publication_date'])) {
-                    $contentMetaDataUpdateStruct->publishedDate = $this->toDateTime($this->dsl['publication_date']);
+                if (isset($step->dsl['publication_date'])) {
+                    $contentMetaDataUpdateStruct->publishedDate = $this->toDateTime($step->dsl['publication_date']);
                 }
 
                 $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
             }
 
-            if (isset($this->dsl['section'])) {
-                $this->setSection($content, $this->dsl['section']);
+            if (isset($step->dsl['section'])) {
+                $this->setSection($content, $step->dsl['section']);
             }
 
-            if (isset($this->dsl['object_states'])) {
-                $this->setObjectStates($content, $this->dsl['object_states']);
+            if (isset($step->dsl['object_states'])) {
+                $this->setObjectStates($content, $step->dsl['object_states']);
             }
 
             $contentCollection[$key] = $content;
         }
 
-        $this->setReferences($contentCollection);
+        $this->setReferences($contentCollection, $step);
 
         return $contentCollection;
     }
@@ -291,11 +294,11 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * Handles the content delete migration action type
      */
-    protected function delete()
+    protected function delete($step)
     {
         $contentService = $this->repository->getContentService();
 
-        $contentCollection = $this->matchContents('delete');
+        $contentCollection = $this->matchContents('delete', $step);
 
         foreach ($contentCollection as $content) {
             try {
@@ -314,23 +317,23 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @return ContentCollection
      * @throws \Exception
      */
-    protected function matchContents($action)
+    protected function matchContents($action, $step)
     {
-        if (!isset($this->dsl['object_id']) && !isset($this->dsl['remote_id']) && !isset($this->dsl['match'])) {
+        if (!isset($step->dsl['object_id']) && !isset($step->dsl['remote_id']) && !isset($step->dsl['match'])) {
             throw new \Exception("The id or remote id of an object or a match condition is required to $action a location");
         }
 
         // Backwards compat
-        if (!isset($this->dsl['match'])) {
-            if (isset($this->dsl['object_id'])) {
-                $this->dsl['match'] = array('content_id' => $this->dsl['object_id']);
-            } elseif (isset($this->dsl['remote_id'])) {
-                $this->dsl['match'] = array('content_remote_id' => $this->dsl['remote_id']);
+        if (!isset($step->dsl['match'])) {
+            if (isset($step->dsl['object_id'])) {
+                $step->dsl['match'] = array('content_id' => $step->dsl['object_id']);
+            } elseif (isset($step->dsl['remote_id'])) {
+                $step->dsl['match'] = array('content_remote_id' => $step->dsl['remote_id']);
             }
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->contentMatcher->match($match);
     }
@@ -346,7 +349,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     protected function setReferences($content)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
@@ -357,7 +360,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             $content = reset($content);
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
                 case 'object_id':
@@ -590,9 +593,9 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
 
             $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
-            $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $this->context);
+            $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $step->context);
 
-            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode());
+            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode($step));
 
             $i++;
         }

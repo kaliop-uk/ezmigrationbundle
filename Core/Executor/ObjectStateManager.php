@@ -42,39 +42,39 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      *
      * @throws \Exception
      */
-    protected function create()
+    protected function create($step)
     {
         foreach (array('object_state_group', 'names', 'identifier') as $key) {
-            if (!isset($this->dsl[$key])) {
+            if (!isset($step->dsl[$key])) {
                 throw new \Exception("The '$key' key is missing in a object state creation definition");
             }
         }
 
-        if (!count($this->dsl['names'])) {
+        if (!count($step->dsl['names'])) {
             throw new \Exception('No object state names have been defined. Need to specify at least one to create the state.');
         }
 
         $objectStateService = $this->repository->getObjectStateService();
 
-        $objectStateGroupId = $this->dsl['object_state_group'];
+        $objectStateGroupId = $step->dsl['object_state_group'];
         $objectStateGroupId = $this->referenceResolver->resolveReference($objectStateGroupId);
         $objectStateGroup = $this->objectStateGroupMatcher->matchOneByKey($objectStateGroupId);
 
-        $objectStateCreateStruct = $objectStateService->newObjectStateCreateStruct($this->dsl['identifier']);
+        $objectStateCreateStruct = $objectStateService->newObjectStateCreateStruct($step->dsl['identifier']);
         $objectStateCreateStruct->defaultLanguageCode = self::DEFAULT_LANGUAGE_CODE;
 
-        foreach ($this->dsl['names'] as $languageCode => $name) {
+        foreach ($step->dsl['names'] as $languageCode => $name) {
             $objectStateCreateStruct->names[$languageCode] = $name;
         }
-        if (isset($this->dsl['descriptions'])) {
-            foreach ($this->dsl['descriptions'] as $languageCode => $description) {
+        if (isset($step->dsl['descriptions'])) {
+            foreach ($step->dsl['descriptions'] as $languageCode => $description) {
                 $objectStateCreateStruct->descriptions[$languageCode] = $description;
             }
         }
 
         $objectState = $objectStateService->createObjectState($objectStateGroup, $objectStateCreateStruct);
 
-        $this->setReferences($objectState);
+        $this->setReferences($objectState, $step);
 
         return $objectState;
     }
@@ -84,15 +84,15 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      *
      * @throws \Exception
      */
-    protected function update()
+    protected function update($step)
     {
-        $stateCollection = $this->matchObjectStates('update');
+        $stateCollection = $this->matchObjectStates('update', $step);
 
-        if (count($stateCollection) > 1 && array_key_exists('references', $this->dsl)) {
+        if (count($stateCollection) > 1 && array_key_exists('references', $step->dsl)) {
             throw new \Exception("Can not execute Object State update because multiple states match, and a references section is specified in the dsl. References can be set when only 1 state matches");
         }
 
-        if (count($stateCollection) > 1 && isset($this->dsl['identifier'])) {
+        if (count($stateCollection) > 1 && isset($step->dsl['identifier'])) {
             throw new \Exception("Can not execute Object State update because multiple states match, and an identifier is specified in the dsl.");
         }
 
@@ -101,22 +101,22 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
         foreach ($stateCollection as $state) {
             $objectStateUpdateStruct = $objectStateService->newObjectStateUpdateStruct();
 
-            if (isset($this->dsl['identifier'])) {
-                $objectStateUpdateStruct->identifier = $this->dsl['identifier'];
+            if (isset($step->dsl['identifier'])) {
+                $objectStateUpdateStruct->identifier = $step->dsl['identifier'];
             }
-            if (isset($this->dsl['names'])) {
-                foreach ($this->dsl['names'] as $name) {
+            if (isset($step->dsl['names'])) {
+                foreach ($step->dsl['names'] as $name) {
                     $objectStateUpdateStruct->names[$name['languageCode']] = $name['name'];
                 }
             }
-            if (isset($this->dsl['descriptions'])) {
-                foreach ($this->dsl['descriptions'] as $languageCode => $description) {
+            if (isset($step->dsl['descriptions'])) {
+                foreach ($step->dsl['descriptions'] as $languageCode => $description) {
                     $objectStateUpdateStruct->descriptions[$languageCode] = $description;
                 }
             }
             $state = $objectStateService->updateObjectState($state, $objectStateUpdateStruct);
 
-            $this->setReferences($state);
+            $this->setReferences($state, $step);
         }
 
         return $stateCollection;
@@ -125,9 +125,9 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     /**
      * Handles the deletion step of object state migrations.
      */
-    protected function delete()
+    protected function delete($step)
     {
-        $stateCollection = $this->matchObjectStates('delete');
+        $stateCollection = $this->matchObjectStates('delete', $step);
 
         $objectStateService = $this->repository->getObjectStateService();
 
@@ -143,14 +143,14 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      * @return ObjectStateCollection
      * @throws \Exception
      */
-    protected function matchObjectStates($action)
+    protected function matchObjectStates($action, $step)
     {
-        if (!isset($this->dsl['match'])) {
+        if (!isset($step->dsl['match'])) {
             throw new \Exception("A match condition is required to $action an object state");
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->objectStateMatcher->match($match);
     }
@@ -159,13 +159,13 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      * {@inheritdoc}
      * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $objectState
      */
-    protected function setReferences($objectState)
+    protected function setReferences($objectState, $step)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'object_state_id':
                 case 'id':

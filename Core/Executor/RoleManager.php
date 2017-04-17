@@ -29,12 +29,12 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     /**
      * Method to handle the create operation of the migration instructions
      */
-    protected function create()
+    protected function create($step)
     {
         $roleService = $this->repository->getRoleService();
         $userService = $this->repository->getUserService();
 
-        $roleCreateStruct = $roleService->newRoleCreateStruct($this->dsl['name']);
+        $roleCreateStruct = $roleService->newRoleCreateStruct($step->dsl['name']);
 
         // Publish new role
         $role = $roleService->createRole($roleCreateStruct);
@@ -42,17 +42,17 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             $roleService->publishRoleDraft($role);
         }
 
-        if (isset($this->dsl['policies'])) {
-            foreach ($this->dsl['policies'] as $key => $ymlPolicy) {
+        if (isset($step->dsl['policies'])) {
+            foreach ($step->dsl['policies'] as $key => $ymlPolicy) {
                 $this->addPolicy($role, $roleService, $ymlPolicy);
             }
         }
 
-        if (isset($this->dsl['assign'])) {
-            $this->assignRole($role, $roleService, $userService, $this->dsl['assign']);
+        if (isset($step->dsl['assign'])) {
+            $this->assignRole($role, $roleService, $userService, $step->dsl['assign']);
         }
 
-        $this->setReferences($role);
+        $this->setReferences($role, $step);
 
         return $role;
     }
@@ -60,15 +60,15 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     /**
      * Method to handle the update operation of the migration instructions
      */
-    protected function update()
+    protected function update($step)
     {
-        $roleCollection = $this->matchRoles('update');
+        $roleCollection = $this->matchRoles('update', $step);
 
-        if (count($roleCollection) > 1 && isset($this->dsl['references'])) {
+        if (count($roleCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute Role update because multiple roles match, and a references section is specified in the dsl. References can be set when only 1 role matches");
         }
 
-        if (count($roleCollection) > 1 && isset($this->dsl['new_name'])) {
+        if (count($roleCollection) > 1 && isset($step->dsl['new_name'])) {
             throw new \Exception("Can not execute Role update because multiple roles match, and a new_name is specified in the dsl.");
         }
 
@@ -79,14 +79,14 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         foreach ($roleCollection as $key => $role) {
 
             // Updating role name
-            if (isset($this->dsl['new_name'])) {
+            if (isset($step->dsl['new_name'])) {
                 $update = $roleService->newRoleUpdateStruct();
-                $update->identifier = $this->dsl['new_name'];
+                $update->identifier = $step->dsl['new_name'];
                 $role = $roleService->updateRole($role, $update);
             }
 
-            if (isset($this->dsl['policies'])) {
-                $ymlPolicies = $this->dsl['policies'];
+            if (isset($step->dsl['policies'])) {
+                $ymlPolicies = $step->dsl['policies'];
 
                 // Removing all policies so we can add them back.
                 // TODO: Check and update policies instead of remove and add.
@@ -100,14 +100,14 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                 }
             }
 
-            if (isset($this->dsl['assign'])) {
-                $this->assignRole($role, $roleService, $userService, $this->dsl['assign']);
+            if (isset($step->dsl['assign'])) {
+                $this->assignRole($role, $roleService, $userService, $step->dsl['assign']);
             }
 
             $roleCollection[$key] = $role;
         }
 
-        $this->setReferences($roleCollection);
+        $this->setReferences($roleCollection, $step);
 
         return $roleCollection;
     }
@@ -115,9 +115,9 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     /**
      * Method to handle the delete operation of the migration instructions
      */
-    protected function delete()
+    protected function delete($step)
     {
-        $roleCollection = $this->matchRoles('delete');
+        $roleCollection = $this->matchRoles('delete', $step);
 
         $roleService = $this->repository->getRoleService();
 
@@ -133,19 +133,19 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      * @return RoleCollection
      * @throws \Exception
      */
-    protected function matchRoles($action)
+    protected function matchRoles($action, $step)
     {
-        if (!isset($this->dsl['name']) && !isset($this->dsl['match'])) {
+        if (!isset($step->dsl['name']) && !isset($step->dsl['match'])) {
             throw new \Exception("The name of a role or a match condition is required to $action it");
         }
 
         // Backwards compat
-        if (!isset($this->dsl['match'])) {
-            $this->dsl['match'] = array('identifier' => $this->dsl['name']);
+        if (!isset($step->dsl['match'])) {
+            $step->dsl['match'] = array('identifier' => $step->dsl['name']);
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->roleMatcher->match($match);
     }
@@ -161,7 +161,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      */
     protected function setReferences($role)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
@@ -172,7 +172,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             $role = reset($role);
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'role_id':
                 case 'id':

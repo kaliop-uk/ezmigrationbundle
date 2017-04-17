@@ -3,10 +3,11 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
+//use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationContext;
 use JmesPath\Env as JmesPath;
 
 class MigrationDefinitionExecutor extends AbstractExecutor
@@ -74,9 +75,9 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         }
         $executor = $this->migrationService->getExecutor($migrationType);
 
-        if (isset($dsl['lang']) && $executor instanceof LanguageAwareInterface) {
+        /*if (isset($dsl['lang']) && $executor instanceof LanguageAwareInterface) {
             $executor->setLanguageCode($dsl['lang']);
-        }
+        }*/
 
         $matchCondition = array($match['type'] => $match['value']);
         if (isset($match['except']) && $match['except']) {

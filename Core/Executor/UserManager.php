@@ -28,21 +28,21 @@ class UserManager extends RepositoryExecutor
      *
      * @todo allow setting extra profile attributes!
      */
-    protected function create()
+    protected function create($step)
     {
-        if (!isset($this->dsl['groups'])) {
+        if (!isset($step->dsl['groups'])) {
             throw new \Exception('No user groups set to create user in.');
         }
 
-        if (!is_array($this->dsl['groups'])) {
-            $this->dsl['groups'] = array($this->dsl['groups']);
+        if (!is_array($step->dsl['groups'])) {
+            $step->dsl['groups'] = array($step->dsl['groups']);
         }
 
         $userService = $this->repository->getUserService();
         $contentTypeService = $this->repository->getContentTypeService();
 
         $userGroups = array();
-        foreach ($this->dsl['groups'] as $groupId) {
+        foreach ($step->dsl['groups'] as $groupId) {
             $groupId = $this->referenceResolver->resolveReference($groupId);
             $userGroup = $this->userGroupMatcher->matchOneByKey($groupId);
 
@@ -56,19 +56,19 @@ class UserManager extends RepositoryExecutor
         $userContentType = $contentTypeService->loadContentTypeByIdentifier(self::USER_CONTENT_TYPE);
 
         $userCreateStruct = $userService->newUserCreateStruct(
-            $this->dsl['username'],
-            $this->dsl['email'],
-            $this->dsl['password'],
+            $step->dsl['username'],
+            $step->dsl['email'],
+            $step->dsl['password'],
             $this->getLanguageCode(),
             $userContentType
         );
-        $userCreateStruct->setField('first_name', $this->dsl['first_name']);
-        $userCreateStruct->setField('last_name', $this->dsl['last_name']);
+        $userCreateStruct->setField('first_name', $step->dsl['first_name']);
+        $userCreateStruct->setField('last_name', $step->dsl['last_name']);
 
         // Create the user
         $user = $userService->createUser($userCreateStruct, $userGroups);
 
-        $this->setReferences($user);
+        $this->setReferences($user, $step);
 
         return $user;
     }
@@ -78,15 +78,15 @@ class UserManager extends RepositoryExecutor
      *
      * @todo allow setting extra profile attributes!
      */
-    protected function update()
+    protected function update($step)
     {
-        $userCollection = $this->matchUsers('user');
+        $userCollection = $this->matchUsers('user', $step);
 
-        if (count($userCollection) > 1 && isset($this->dsl['references'])) {
+        if (count($userCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute User update because multiple user match, and a references section is specified in the dsl. References can be set when only 1 user matches");
         }
 
-        if (count($userCollection) > 1 && isset($this->dsl['email'])) {
+        if (count($userCollection) > 1 && isset($step->dsl['email'])) {
             throw new \Exception("Can not execute User update because multiple user match, and an email section is specified in the dsl.");
         }
 
@@ -96,28 +96,28 @@ class UserManager extends RepositoryExecutor
 
             $userUpdateStruct = $userService->newUserUpdateStruct();
 
-            if (isset($this->dsl['email'])) {
-                $userUpdateStruct->email = $this->dsl['email'];
+            if (isset($step->dsl['email'])) {
+                $userUpdateStruct->email = $step->dsl['email'];
             }
-            if (isset($this->dsl['password'])) {
-                $userUpdateStruct->password = (string)$this->dsl['password'];
+            if (isset($step->dsl['password'])) {
+                $userUpdateStruct->password = (string)$step->dsl['password'];
             }
-            if (isset($this->dsl['enabled'])) {
-                $userUpdateStruct->enabled = $this->dsl['enabled'];
+            if (isset($step->dsl['enabled'])) {
+                $userUpdateStruct->enabled = $step->dsl['enabled'];
             }
 
             $user = $userService->updateUser($user, $userUpdateStruct);
 
-            if (isset($this->dsl['groups'])) {
-                if (!is_array($this->dsl['groups'])) {
-                    $this->dsl['groups'] = array($this->dsl['groups']);
+            if (isset($step->dsl['groups'])) {
+                if (!is_array($step->dsl['groups'])) {
+                    $step->dsl['groups'] = array($step->dsl['groups']);
                 }
 
                 $assignedGroups = $userService->loadUserGroupsOfUser($user);
 
                 $targetGroupIds = [];
                 // Assigning new groups to the user
-                foreach ($this->dsl['groups'] as $groupToAssignId) {
+                foreach ($step->dsl['groups'] as $groupToAssignId) {
                     $groupId = $this->referenceResolver->resolveReference($groupToAssignId);
                     $groupToAssign = $this->userGroupMatcher->matchOneByKey($groupId);
                     $targetGroupIds[] = $groupToAssign->id;
@@ -146,7 +146,7 @@ class UserManager extends RepositoryExecutor
             $userCollection[$key] = $user;
         }
 
-        $this->setReferences($userCollection);
+        $this->setReferences($userCollection, $step);
 
         return $userCollection;
     }
@@ -154,9 +154,9 @@ class UserManager extends RepositoryExecutor
     /**
      * Method to handle the delete operation of the migration instructions
      */
-    protected function delete()
+    protected function delete($step)
     {
-        $userCollection = $this->matchUsers('delete');
+        $userCollection = $this->matchUsers('delete', $step);
 
         $userService = $this->repository->getUserService();
 
@@ -172,32 +172,32 @@ class UserManager extends RepositoryExecutor
      * @return UserCollection
      * @throws \Exception
      */
-    protected function matchUsers($action)
+    protected function matchUsers($action, $step)
     {
-        if (!isset($this->dsl['id']) && !isset($this->dsl['user_id']) && !isset($this->dsl['email']) && !isset($this->dsl['username']) && !isset($this->dsl['match'])) {
+        if (!isset($step->dsl['id']) && !isset($step->dsl['user_id']) && !isset($step->dsl['email']) && !isset($step->dsl['username']) && !isset($step->dsl['match'])) {
             throw new \Exception("The id, email or username of a user or a match condition is required to $action it");
         }
 
         // Backwards compat
-        if (!isset($this->dsl['match'])) {
+        if (!isset($step->dsl['match'])) {
             $conds = array();
-            if (isset($this->dsl['id'])) {
-                $conds['id'] = $this->dsl['id'];
+            if (isset($step->dsl['id'])) {
+                $conds['id'] = $step->dsl['id'];
             }
-            if (isset($this->dsl['user_id'])) {
-                $conds['id'] = $this->dsl['user_id'];
+            if (isset($step->dsl['user_id'])) {
+                $conds['id'] = $step->dsl['user_id'];
             }
-            if (isset($this->dsl['email'])) {
-                $conds['email'] = $this->dsl['email'];
+            if (isset($step->dsl['email'])) {
+                $conds['email'] = $step->dsl['email'];
             }
-            if (isset($this->dsl['username'])) {
-                $conds['login'] = $this->dsl['username'];
+            if (isset($step->dsl['username'])) {
+                $conds['login'] = $step->dsl['username'];
             }
-            $this->dsl['match'] = $conds;
+            $step->dsl['match'] = $conds;
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->userMatcher->match($match);
     }
@@ -213,7 +213,7 @@ class UserManager extends RepositoryExecutor
      */
     protected function setReferences($user)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
@@ -224,7 +224,7 @@ class UserManager extends RepositoryExecutor
             $user = reset($user);
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'user_id':
                 case 'id':

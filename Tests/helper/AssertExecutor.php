@@ -61,6 +61,7 @@ class AssertExecutor extends  AbstractExecutor
 
     protected function validate($value, array $condition)
     {
+        /// @todo shall we resolve references as well in the value to check against?
         $targetValue = reset($condition);
         $flip = array_flip($condition);
         $testCondition = reset($flip);

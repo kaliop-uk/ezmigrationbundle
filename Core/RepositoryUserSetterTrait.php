@@ -22,4 +22,15 @@ trait RepositoryUserSetterTrait
 
         return $previousUser->id;
     }
+
+    protected function loginUserByLogin($userLogin)
+    {
+        $previousUser = $this->repository->getCurrentUser();
+
+        if ($userLogin != $previousUser->login) {
+            $this->repository->setCurrentUser($this->repository->getUserService()->loadUserByLogin($userLogin));
+        }
+
+        return $previousUser->id;
+    }
 }
