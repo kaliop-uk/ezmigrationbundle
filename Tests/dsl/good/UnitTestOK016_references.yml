@@ -41,3 +41,9 @@
     identifier: reference:hello
     test:
         equals: world
+
+-
+    type: reference
+    mode: save
+    file: Tests/dsl/good/references/test_refs_generated.yml
+    overwrite: true

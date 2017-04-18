@@ -3,11 +3,12 @@
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 
 /**
  * Handle 'any' references by letting the developer store them and retrieve them afterwards
  */
-class CustomReferenceResolver extends AbstractResolver implements ReferenceResolverBagInterface
+class CustomReferenceResolver extends AbstractResolver implements ReferenceResolverBagInterface, EnumerableReferenceResolverInterface
 {
     /**
      * Defines the prefix for all reference identifier strings in definitions
@@ -57,4 +58,14 @@ class CustomReferenceResolver extends AbstractResolver implements ReferenceResol
 
         return true;
     }
+
+    /**
+     * List all existing references
+     * @return array
+     */
+    public function listReferences()
+    {
+        return $this->references;
+    }
+
 }
