@@ -25,8 +25,7 @@ class MigrationService
     use RepositoryUserSetterTrait;
 
     /**
-     * Constant defining the default Admin user ID.
-     * @todo inject via config parameter
+     * The default Admin user Id, used when no Admin user is specified
      */
     const ADMIN_USER_ID = 14;
 
@@ -245,6 +244,7 @@ class MigrationService
             throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
+        /// @todo add support for setting in $migrationContext a userContentType ?
         $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin);
 
         // set migration as begun - has to be in own db transaction
@@ -316,7 +316,7 @@ class MigrationService
 
             if ($useTransaction) {
                 // there might be workflows or other actions happening at commit time that fail if we are not admin
-                $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+                $previousUserId = $this->loginUser($this->getAdminUserIdentifier($adminLogin));
                 $this->repository->commit();
                 $this->loginUser($previousUserId);
             }
@@ -397,6 +397,19 @@ class MigrationService
             $step->dsl,
             array_merge($step->context, $context)
         );
+    }
+
+    /**
+     * @param string $adminLogin
+     * @return int|string
+     */
+    protected function getAdminUserIdentifier($adminLogin)
+    {
+        if ($adminLogin != null) {
+            return $adminLogin;
+        }
+
+        return self::ADMIN_USER_ID;
     }
 
     /**

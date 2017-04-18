@@ -3,8 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Repository;
-//use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
-use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
 
@@ -16,17 +15,16 @@ abstract class RepositoryExecutor extends AbstractExecutor
     use RepositoryUserSetterTrait;
 
     /**
-     * Constant defining the default language code
+     * Constant defining the default language code (used if not specified by the migration or on the command line)
      */
     const DEFAULT_LANGUAGE_CODE = 'eng-GB';
 
     /**
-     * Constant defining the default Admin user ID.
-     * @todo inject via config parameter
+     * The default Admin user Id, used when no Admin user is specified
      */
     const ADMIN_USER_ID = 14;
 
-    /** @todo inject via config parameter */
+    /** Used if not specified by the migration */
     const USER_CONTENT_TYPE = 'user';
 
     /**
@@ -56,7 +54,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     //private $defaultLanguageCode;
 
-    /** @var ReferenceResolverInterface $referenceResolver */
+    /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
     // to redefine in subclasses if they don't support all methods, or if they support more...
@@ -69,7 +67,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
         $this->repository = $repository;
     }
 
-    public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
+    public function setReferenceResolver(ReferenceResolverBagInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
     }
@@ -91,7 +89,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         if (method_exists($this, $action)) {
 
-            $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+            $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
             try {
                 $output = $this->$action($step);
             } catch (\Exception $e) {
@@ -135,6 +133,29 @@ abstract class RepositoryExecutor extends AbstractExecutor
     protected function getLanguageCodeFromContext($context)
     {
         return isset($context['defaultLanguageCode']) ? $context['defaultLanguageCode'] : self::DEFAULT_LANGUAGE_CODE;
+    }
+
+    /**
+     * @param MigrationStep $step
+     * @return string
+     */
+    protected function getUserContentType($step)
+    {
+        return isset($step->dsl['user_content_type']) ? $step->dsl['user_content_type'] : $this->getUserContentTypeFromContext($step->context);
+    }
+
+    protected function getUserContentTypeFromContext($context)
+    {
+        return isset($context['userContentType']) ? $context['userContentType'] : self::USER_CONTENT_TYPE;
+    }
+
+    protected function getAdminUserIdentifierFromContext($context)
+    {
+        if (isset($context['adminUserLogin'])) {
+            return $context['adminUserLogin'];
+        }
+
+        return self::ADMIN_USER_ID;
     }
 
     /**

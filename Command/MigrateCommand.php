@@ -46,6 +46,7 @@ class MigrateCommand extends AbstractCommand
             )
             // nb: when adding options, remember to forward them to sub-commands executed in 'separate-process' mode
             ->addOption('default-language', 'l', InputOption::VALUE_REQUIRED, "Default language code that will be used if no language is provided in migration steps")
+            ->addOption('admin-login', 'a', InputOption::VALUE_REQUIRED, "Login of admin account used whenever elevated privileges are needed (user id 14 used by default)")
             ->addOption('ignore-failures', 'i', InputOption::VALUE_NONE, "Keep executing migrations even if one fails")
             ->addOption('clear-cache', 'c', InputOption::VALUE_NONE, "Clear the cache after the command finishes")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question")
@@ -191,7 +192,8 @@ EOT
                     $migrationService->executeMigration(
                         $migrationDefinition,
                         !$input->getOption('no-transactions'),
-                        $input->getOption('default-language')
+                        $input->getOption('default-language'),
+                        $input->getOption('admin-login')
                     );
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {

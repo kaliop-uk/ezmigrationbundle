@@ -8,7 +8,7 @@ namespace Kaliop\eZMigrationBundle\API;
 interface EnumerableReferenceResolverInterface
 {
     /**
-     * Adds a reference to be retrieved later.
+     * Lists all existing references
      *
      * @return array key: ref identifier, value: reference value
      */

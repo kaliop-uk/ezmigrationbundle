@@ -3,6 +3,12 @@ Version 4.0 RC-1 (unreleased)
 
 * New: migrations can now be suspended and resumed: (WIP for the moment...)
 
+* New: it is now possible to save the current references to a file
+
+* New: it is now possible to specify a custom Content Type for users created via `user/create` migrations
+
+* New: it is now possible to specify a custom Admin account used to carry out migrations instead of the user 14
+
 * New: the Executor services have been made reentrant
 
 * BC changes:

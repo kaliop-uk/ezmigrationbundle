@@ -53,7 +53,7 @@ class UserManager extends RepositoryExecutor
         }
 
         // FIXME: Hard coding content type to user for now
-        $userContentType = $contentTypeService->loadContentTypeByIdentifier(self::USER_CONTENT_TYPE);
+        $userContentType = $contentTypeService->loadContentTypeByIdentifier($this->getUserContentType($step));
 
         $userCreateStruct = $userService->newUserCreateStruct(
             $step->dsl['username'],

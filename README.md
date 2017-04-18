@@ -285,10 +285,6 @@ and the corresponding php class:
     take a look at the following issue for a possible explanation and ideas for workarounds:
     https://jira.ez.no/browse/EZP-24691
 
-* the bundle does not at the moment support creation of user accounts using a custom contentType
-
-* the bundle at the moment does not support creating entities with a creator other than user id 14 ('admin')
-
 * if you are using eZPublish versions prior to 2015.9, you will not be able to create/update Role definitions that
     contain policies with limitations for custom modules/functions. The known workaround is to take over the
     RoleService and alter its constructor to inject into it the desired limitations
@@ -304,7 +300,7 @@ and the corresponding php class:
 
             type: ezstring
             name: Topbar-hover-color
-            identifier:  topbar-hover-color
+            identifier: topbar-hover-color
 
 
 ## Frequently asked questions
@@ -365,7 +361,7 @@ It is recommended to run the tests suite using a dedicated eZPublish installatio
 
 #### Setting up a dedicated test environment for the bundle
 
-A safer choice to run the tests of the bundle is to set up a dedicated environment, as done when the testsuite is run on
+A safer choice to run the tests of the bundle is to set up a dedicated environment, as done when the test suite is run on
 Travis.
 The advantages are multiple: one one hand you can start with any version of eZPublish you want; on the other you will
 be more confident that the tests wll still pass on Travis.

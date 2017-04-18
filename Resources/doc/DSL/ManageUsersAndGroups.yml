@@ -6,6 +6,7 @@
     username: xyz
     email: xyz
     password: xyz
+    user_content_type: xxx # Optional, Content Type identifier (defaults to 'user')
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     groups: [x, y, z] # The user group ID or IDs (Content IDs or its/their remote_ids as string) to put the user into
     # The list in references tells the manager to store specific values for later use

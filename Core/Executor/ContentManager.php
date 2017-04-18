@@ -463,7 +463,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
         $contentCollection = $this->contentMatcher->match($matchCondition);
         $data = array();
 
