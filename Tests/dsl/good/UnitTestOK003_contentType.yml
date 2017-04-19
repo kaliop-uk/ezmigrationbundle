@@ -223,6 +223,33 @@
 
 -
     type: content_type
+    mode: load
+    match:
+        contenttype_identifier: kmb_test_1_1
+    references:
+        -
+            identifier: dear
+            attribute: 'attributes.title.required'
+        -
+            identifier: world
+            attribute: 'attributes.ezobjectrelationlist."field-settings".selectionContentTypes.length(@)'
+
+-
+    type: assert
+    target: reference
+    identifier: reference:dear
+    test:
+        equals: false
+
+-
+    type: assert
+    target: reference
+    identifier: reference:world
+    test:
+        equals: 1
+
+-
+    type: content_type
     mode: delete
     match:
         identifier: 'reference:kmb_test_1_1'

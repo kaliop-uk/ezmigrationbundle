@@ -62,8 +62,8 @@ class AssertExecutor extends  AbstractExecutor
     {
         /// @todo shall we resolve references as well in the value to check against?
         $targetValue = reset($condition);
-        $flip = array_flip($condition);
-        $testCondition = reset($flip);
+        $keys = array_keys($condition);
+        $testCondition = reset($keys);
         $testMethod = 'assert' . ucfirst($testCondition);
         if (! is_callable(array('PHPUnit_Framework_Assert', $testMethod))) {
             throw new \Exception("Invalid step definition: invalid test condition '$testCondition'");

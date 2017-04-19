@@ -111,9 +111,14 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
-                                   # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
+                                   # Supports: content_type_id, content_type_identifier, creation_date, modification_date,
+                                   #           name_pattern, remote_id, status and url_name_pattern
                                    # The shorthand 'id' can be used instead of 'content_type_id'
                                    # The shorthand 'identifier' can be used instead of 'content_type_identifier'
+                                   # It also supports attributes.$identifier.$field and complex expressions, such as f.e.
+                                   # attributes.title.required (boolean value)
+                                   # attributes.ezobjectrelationlist."field-settings".selectionContentTypes.length(@) (nr. of cotent-types allowed in an object-relations field)
+                                   # (for the full syntax supported, see jmespath)
 
 -
     type: content_type

@@ -4,18 +4,21 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
+use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
+use JmesPath\Env as JmesPath;
 
 /**
  * Handles content type migrations
  */
 class ContentTypeManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
     protected $supportedStepTypes = array('content_type');
 
     protected $contentTypeMatcher;
@@ -106,6 +109,19 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $this->setReferences($contentType, $step);
 
         return $contentType;
+    }
+
+    protected function load($step)
+    {
+        $contentTypeCollection = $this->matchContentTypes('load', $step);
+
+        if (count($contentTypeCollection) > 1 && isset($step->dsl['references'])) {
+            throw new \Exception("Can not execute Content Type load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
+        }
+
+        $this->setReferences($contentTypeCollection, $step);
+
+        return $contentTypeCollection;
     }
 
     /**
@@ -320,6 +336,21 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $value = $contentType->urlAliasSchema;
                     break;
                 default:
+                    // allow to get the value of fields as well as their sub-parts
+                    if (strpos($reference['attribute'], 'attributes.') === 0) {
+                        $parts = explode('.', $reference['attribute']);
+                        // totally not sure if this list of special chars is correct for what could follow a jmespath identifier...
+                        // also what about quoted strings?
+                        $fieldIdentifier = preg_replace('/[[(|&!{].*$/', '', $parts[1]);
+                        $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
+                        $hashValue = $this->fieldDefinitionToHash($contentType, $fieldDefinition, $step->context);
+                        if (count($parts) == 2 && $fieldIdentifier === $parts[1]) {
+                            throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute'] . ': please specify an attribute definition sub element');
+                        }
+                        $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
+                        break;
+                    }
+
                     throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
@@ -390,42 +421,9 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
             if ($mode != 'delete') {
 
-                $fieldTypeService = $this->repository->getFieldTypeService();
-
                 $attributes = array();
                 foreach ($contentType->getFieldDefinitions() as $i => $fieldDefinition) {
-                    $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
-                    $attribute = array(
-                        'identifier' => $fieldDefinition->identifier,
-                        'type' => $fieldTypeIdentifier,
-                        'name' => $fieldDefinition->getName($this->getLanguageCodeFromContext($context)),
-                        'description' => (string)$fieldDefinition->getDescription($this->getLanguageCodeFromContext($context)),
-                        'required' => $fieldDefinition->isRequired,
-                        'searchable' => $fieldDefinition->isSearchable,
-                        'info-collector' => $fieldDefinition->isInfoCollector,
-                        'disable-translation' => !$fieldDefinition->isTranslatable,
-                        'category' => $fieldDefinition->fieldGroup,
-                        // Should we cheat and do like the eZ4 Admin Interface and used sequential numbering 1,2,3... ?
-                        // But what if the end user then edits the 'update' migration and only leaves in it a single
-                        // field position update? He/she might be surprised when executing it...
-                        'position' => $fieldDefinition->position
-                    );
-
-                    $fieldType = $fieldTypeService->getFieldType($fieldTypeIdentifier);
-                    $nullValue = $fieldType->getEmptyValue();
-                    if ($fieldDefinition->defaultValue != $nullValue) {
-                        $attribute['default-value'] = $this->complexFieldManager->fieldValueToHash(
-                            $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->defaultValue
-                        );
-                    }
-
-                    $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
-                        $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
-                    );
-
-                    $attribute['validator-configuration'] = $fieldDefinition->validatorConfiguration;
-
-                    $attributes[] = $attribute;
+                    $attributes[] = $this->fieldDefinitionToHash($contentType, $fieldDefinition, $context);
                 }
 
                 $contentTypeData = array_merge(
@@ -447,6 +445,50 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
         $this->loginUser($previousUserId);
         return $data;
+    }
+
+    /**
+     * @param ContentType $contentType
+     * @param FieldDefinition $fieldDefinition
+     * @param array $context
+     * @return array
+     */
+    protected function fieldDefinitionToHash(ContentType $contentType, FieldDefinition $fieldDefinition, $context)
+    {
+        $fieldTypeService = $this->repository->getFieldTypeService();
+        $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
+
+        $attribute = array(
+            'identifier' => $fieldDefinition->identifier,
+            'type' => $fieldTypeIdentifier,
+            'name' => $fieldDefinition->getName($this->getLanguageCodeFromContext($context)),
+            'description' => (string)$fieldDefinition->getDescription($this->getLanguageCodeFromContext($context)),
+            'required' => $fieldDefinition->isRequired,
+            'searchable' => $fieldDefinition->isSearchable,
+            'info-collector' => $fieldDefinition->isInfoCollector,
+            'disable-translation' => !$fieldDefinition->isTranslatable,
+            'category' => $fieldDefinition->fieldGroup,
+            // Should we cheat and do like the eZ4 Admin Interface and used sequential numbering 1,2,3... ?
+            // But what if the end user then edits the 'update' migration and only leaves in it a single
+            // field position update? He/she might be surprised when executing it...
+            'position' => $fieldDefinition->position
+        );
+
+        $fieldType = $fieldTypeService->getFieldType($fieldTypeIdentifier);
+        $nullValue = $fieldType->getEmptyValue();
+        if ($fieldDefinition->defaultValue != $nullValue) {
+            $attribute['default-value'] = $this->complexFieldManager->fieldValueToHash(
+                $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->defaultValue
+            );
+        }
+
+        $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
+            $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
+        );
+
+        $attribute['validator-configuration'] = $fieldDefinition->validatorConfiguration;
+
+        return $attribute;
     }
 
     /**
