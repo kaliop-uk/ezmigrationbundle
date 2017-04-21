@@ -178,6 +178,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             if (isset($this->dsl['publication_date'])) {
                 $contentMetaDataUpdateStruct->publishedDate = $this->toDateTime($this->dsl['publication_date']);
             }
+            // we have to do this to make sure we preserve the custom modification date
+            if (isset($this->dsl['modification_date'])) {
+                $contentMetaDataUpdateStruct->modificationDate = $this->toDateTime($this->dsl['modification_date']);
+            }
 
             $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
         }
