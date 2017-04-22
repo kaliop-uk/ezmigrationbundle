@@ -344,7 +344,7 @@ class MigrationService
                 true
             );
 
-            throw new MigrationStepExecutionException($errorMessage, $i, $e);
+            throw $e;
         }
     }
 
