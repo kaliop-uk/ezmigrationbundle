@@ -115,9 +115,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     {
         $contentTypeCollection = $this->matchContentTypes('load', $step);
 
-        if (count($contentTypeCollection) > 1 && isset($step->dsl['references'])) {
+        // This check is already done in setReferences
+        /*if (count($contentTypeCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute Content Type load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
-        }
+        }*/
 
         $this->setReferences($contentTypeCollection, $step);
 
@@ -302,7 +303,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
         if ($contentType instanceof ContentTypeCollection) {
             if (count($contentType) > 1) {
-                throw new \InvalidArgumentException('Content Type Manager does not support setting references for creating/updating of multiple content types');
+                throw new \InvalidArgumentException('Content Type Manager does not support setting references for creating/updating/loading of multiple content types');
+            }
+            if (count($contentType) == 0) {
+                throw new \InvalidArgumentException('Content Type Manager does not support setting references for creating/updating/loading of no content types');
             }
             $contentType = reset($contentType);
         }

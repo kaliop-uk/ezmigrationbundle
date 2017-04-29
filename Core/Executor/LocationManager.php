@@ -96,9 +96,10 @@ class LocationManager extends RepositoryExecutor
     {
         $locationCollection = $this->matchLocations('load', $step);
 
-        if (count($locationCollection) > 1 && isset($step->dsl['references'])) {
+        // This check is already done in setReferences
+        /*if (count($locationCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute Location load because multiple locations match, and a references section is specified in the dsl. References can be set when only 1 location matches");
-        }
+        }*/
 
         $this->setReferences($locationCollection, $step);
 
@@ -254,8 +255,12 @@ class LocationManager extends RepositoryExecutor
 
         if ($location instanceof LocationCollection) {
             if (count($location) > 1) {
-                throw new \InvalidArgumentException('Location Manager does not support setting references for creating/updating of multiple locations');
+                throw new \InvalidArgumentException('Location Manager does not support setting references for creating/updating/loading of multiple locations');
             }
+            if (count($location) == 0) {
+                throw new \InvalidArgumentException('Location Manager does not support setting references for creating/updating/loading of no locations');
+            }
+
             $location = reset($location);
         }
 
@@ -313,6 +318,7 @@ class LocationManager extends RepositoryExecutor
                 case 'path':
                     $value = $location->pathString;
                     break;
+                /// Q: does this even exist ?
                 case 'position':
                     $value = $location->position;
                     break;

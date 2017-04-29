@@ -60,10 +60,10 @@ class AssertExecutor extends  AbstractExecutor
 
     protected function validate($value, array $condition)
     {
-        /// @todo shall we resolve references as well in the value to check against?
+        // we do resolve references as well in the value to check against
         $targetValue = reset($condition);
-        $keys = array_keys($condition);
-        $testCondition = reset($keys);
+        $targetValue = $this->referenceResolver->resolveReference($targetValue);
+        $testCondition = key($condition);
         $testMethod = 'assert' . ucfirst($testCondition);
         if (! is_callable(array('PHPUnit_Framework_Assert', $testMethod))) {
             throw new \Exception("Invalid step definition: invalid test condition '$testCondition'");
