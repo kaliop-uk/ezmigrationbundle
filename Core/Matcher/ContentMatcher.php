@@ -254,11 +254,11 @@ class ContentMatcher extends RepositoryMatcher
         return $contents;
     }
 
-
     /**
      * @param $key
      * @param $values
      * @return mixed should it be \eZ\Publish\API\Repository\Values\Content\Query\CriterionInterface ?
+     * @throws \Exception for unsupported keys
      */
     protected function getQueryCriterion($key, $values)
     {

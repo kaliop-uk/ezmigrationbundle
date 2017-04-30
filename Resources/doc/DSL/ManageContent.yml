@@ -110,7 +110,8 @@
         location_remote_id: xxx # string|string[]
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type: yyy # string|string[] a content type identifier
+        content_type_identifier: yyy # string|string[] a content type identifier
+        content_type_id: yyy # int|int[] a content type id
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -121,6 +122,8 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     section: x # string|int Optional section id or identifier
     owner: xxx # user id, login or email if unique; Optional, set the content owner (original creator)
@@ -160,7 +163,8 @@
         location_remote_id: xxx # string|string[]
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type: yyy # string|string[] a content type identifier
+        content_type_identifier: yyy # string|string[] a content type identifier
+        content_type_id: yyy # int|int[] a content type id
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -171,6 +175,8 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
 
 -
     type: content
@@ -182,7 +188,8 @@
         location_remote_id: xxx # string|string[]
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type: yyy # string|string[] a content type identifier
+        content_type_identifier: yyy # string|string[] a content type identifier
+        content_type_id: yyy # int|int[] a content type id
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -193,6 +200,8 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

@@ -17,6 +17,10 @@
         -
             identifier: kmb_test_3
             attribute: identifier
+        -
+            identifier: kmb_test_3_0
+            attribute: id
+
 -
     type: content
     mode: create
@@ -138,6 +142,29 @@
 #    mode: update
 #    location_id: reference:kmb_test_3_3_loc_3
 #    swap_with_location: reference:kmb_test_3_2_loc
+
+-
+    type: location
+    mode: load
+    match:
+        and:
+            - content_id: reference:kmb_test_3_3
+            - location_id: reference:kmb_test_3_3_loc_3
+            - location_remote_id: reference:kmb_test_3_3_loc_3_rid
+            #- content_remote_id: reference:kmb_test_2_1_rid
+            - content_type_id: reference:kmb_test_3_0
+            - content_type_identifier: reference:kmb_test_3
+    references:
+        -
+            identifier: kmb_test_3_5
+            attribute: location_id
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_3_5
+    test:
+        equals: reference:kmb_test_3_3_loc_3
 
 -
     type: content
