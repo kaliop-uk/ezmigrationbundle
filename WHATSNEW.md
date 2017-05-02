@@ -9,10 +9,11 @@ Version 4.0 RC-1 (unreleased)
 
 * New: it is now possible to specify a custom Admin account used to carry out migrations instead of the user 14
 
-* New: it is possible to use a 'not' condition when matching Contents. Matching when using 'and' and 'or' is also more
-    efficient
+* New: it is possible to use a 'not', 'section_id' and 'visibility' condition when matching Contents.
+    Matching when using 'and' and 'or' is also more efficient
 
-* New: it is possible to use a 'not', 'content_type_id' and 'content_type_identifier' condition when matching Locations.
+* New: it is possible to use a 'not', 'content_type_id', 'content_type_identifier', 'section_id' and 'visibility'
+    condition when matching Locations.
     Matching when using 'and' and 'or' is also more efficient
 
 * New: it is now possible to set references to the values of Content Type field definitions. The syntax to use is similar

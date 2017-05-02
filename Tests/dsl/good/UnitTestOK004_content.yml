@@ -293,13 +293,25 @@
         and:
             - content_id: reference:kmb_test_2_1
             - location_id: reference:kmb_test_2_1_loc
-            #- content_remote_id: reference:kmb_test_2_1_rid
+            - content_remote_id: is_this_a_very_unlikely_remoteid
             - content_type_id: reference:kmb_test_2_0
             - content_type_identifier: reference:kmb_test_2
+            - section_id: 2
+            - not:
+                visibility: false
     references:
+        -
+            identifier: yolo
+            attribute: remote_id
         -
             identifier: kmb_test_2_4
             attribute: object_id
+
+-
+    # Dumps a reference to STDOUT. For debugging purposes
+    type: reference
+    mode: dump
+    identifier: reference:yolo
 
 -
     type: assert

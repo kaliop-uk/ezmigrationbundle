@@ -151,9 +151,11 @@
             - content_id: reference:kmb_test_3_3
             - location_id: reference:kmb_test_3_3_loc_3
             - location_remote_id: reference:kmb_test_3_3_loc_3_rid
-            #- content_remote_id: reference:kmb_test_2_1_rid
             - content_type_id: reference:kmb_test_3_0
             - content_type_identifier: reference:kmb_test_3
+            - section_id: 1
+            - not:
+                visibility: false
     references:
         -
             identifier: kmb_test_3_5

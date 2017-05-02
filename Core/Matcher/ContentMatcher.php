@@ -7,7 +7,7 @@ use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 
 /**
- * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
+ * @todo extend to allow matching by subtree, depth, object state, creation/modification date...
  */
 class ContentMatcher extends QueryBasedMatcher
 {
@@ -17,6 +17,7 @@ class ContentMatcher extends QueryBasedMatcher
         self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
         self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER,
+        self::MATCH_SECTION_ID, self::MATCH_VISIBILITY,
         // aliases
         'content_type', 'content_type_id', 'content_type_identifier'
     );

@@ -5,18 +5,22 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
+use eZ\Publish\API\Repository\Values\Content\Location;
 
 /**
- * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
+ * @todo extend to allow matching by subtree, object state, section, creation/modification date...
  */
 class LocationMatcher extends QueryBasedMatcher
 {
     use FlexibleKeyMatcherTrait;
 
+    const MATCH_IS_MAIN_LOCATION = 'is_main_location';
+
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
-        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER,
+        self::MATCH_SECTION_ID, self::MATCH_VISIBILITY
     );
     protected $returns = 'Location';
 
@@ -64,6 +68,26 @@ class LocationMatcher extends QueryBasedMatcher
             return array(self::MATCH_LOCATION_ID => $key);
         }
         return array(self::MATCH_LOCATION_REMOTE_ID => $key);
+    }
+
+    protected function getQueryCriterion($key, $values)
+    {
+        if (!is_array($values)) {
+            $values = array($values);
+        }
+
+        switch ($key) {
+            case self::MATCH_IS_MAIN_LOCATION:
+                /// @todo error/warning if there is more than 1 value...
+                $value = reset($values);
+                if ($value) {
+                    return new Query\Criterion\Location\IsMainLocation(Query\Criterion\Location\IsMainLocation::MAIN);
+                } else {
+                    return new Query\Criterion\Location\IsMainLocation(Query\Criterion\Location\IsMainLocation::NOT_MAIN);
+                }
+        }
+
+        return parent::getQueryCriterion($key, $values);
     }
 
     /**

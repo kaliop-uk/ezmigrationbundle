@@ -16,6 +16,9 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
     const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
     const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
+    const MATCH_SECTION_ID = 'section_id';
+    //const MATCH_SECTION_IDENTIFIER = 'section_identifier';
+    const MATCH_VISIBILITY = 'visibility';
 
     /**
      * @param $key
@@ -62,6 +65,21 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
             case self::MATCH_CONTENT_TYPE_IDENTIFIER:
                 return new Query\Criterion\ContentTypeIdentifier($values);
 
+            case self::MATCH_SECTION_ID:
+                return new Query\Criterion\SectionId($values);
+
+            //case MATCH_SECTION_IDENTIFIER = 'section_identifier':
+            //    return new Query\Criterion\SectionId();
+
+            case self::MATCH_VISIBILITY:
+                /// @todo error/warning if there is more than 1 value...
+                $value = reset($values);
+                if ($value) {
+                    return new Query\Criterion\Visibility(Query\Criterion\Visibility::VISIBLE);
+                } else {
+                    return new Query\Criterion\Visibility(Query\Criterion\Visibility::HIDDEN);
+                }
+
             case self::MATCH_AND:
                 $subCriteria = array();
                 foreach($values as $subCriterion) {
@@ -80,9 +98,8 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
 
             case self::MATCH_NOT:
                 /// @todo throw if more than one sub-criteria found
-                $subCriterion = reset($values);
-                $value = reset($subCriterion);
-                $subCriterion = $this->getQueryCriterion(key($subCriterion), $value);
+                $value = reset($values);
+                $subCriterion = $this->getQueryCriterion(key($values), $value);
                 return new Query\Criterion\LogicalNot($subCriterion);
 
             default:
