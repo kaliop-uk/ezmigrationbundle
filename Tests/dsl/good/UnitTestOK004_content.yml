@@ -297,21 +297,14 @@
             - content_type_id: reference:kmb_test_2_0
             - content_type_identifier: reference:kmb_test_2
             - section: 2
+            - creation_date:
+                gt: 1234567
             - not:
                 visibility: false
     references:
         -
-            identifier: yolo
-            attribute: remote_id
-        -
             identifier: kmb_test_2_4
             attribute: object_id
-
--
-    # Dumps a reference to STDOUT. For debugging purposes
-    type: reference
-    mode: dump
-    identifier: reference:yolo
 
 -
     type: assert

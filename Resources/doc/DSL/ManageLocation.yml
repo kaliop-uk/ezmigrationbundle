@@ -61,6 +61,11 @@
         location_remote_id: # the location remote id(s) of the the locations we want to update
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        is_main_location: true # bool
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of the locations we want to update
         parent_location_remote_id: # the remote location id(s) of the parent(s) of the locations we want to update
@@ -76,9 +81,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set at the same time than parent_location
                           # When a non numeric string is used, it is assumed to be a location remote id
     parent_location: x # Optional The parent location to move the subtree to. Cannot be set at the same time than swap_with_location
@@ -111,6 +116,11 @@
         location_remote_id: # the location remote id(s) we want to delete
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        is_main_location: true # bool
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of locations we want to delete
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to delete
@@ -126,9 +136,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
 -
     type: location
     mode: load
@@ -140,6 +150,11 @@
         location_remote_id: # the location remote id(s) of the location we want to load
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        is_main_location: true # bool
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of locations we want to load
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to load
@@ -155,9 +170,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

@@ -31,9 +31,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     identifier: x # Optional String: new identifier of the object state group
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -67,9 +67,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
 
 
 -
@@ -108,9 +108,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     identifier: x # Optional String: new identifier of the object state
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -143,6 +143,6 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

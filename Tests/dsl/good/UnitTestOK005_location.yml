@@ -160,9 +160,6 @@
         -
             identifier: kmb_test_3_5
             attribute: location_id
-        -
-            identifier: kmb_test_3_5_zzz
-            attribute: position
 
 -
     type: assert

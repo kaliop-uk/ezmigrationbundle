@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 
 /**
  */
@@ -16,6 +17,8 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
     const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
     const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
+    const MATCH_CREATION_DATE = 'creation_date';
+    const MATCH_MODIFICATION_DATE = 'modification_date';
     const MATCH_OBJECT_STATE = 'object_state';
     const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
@@ -23,13 +26,31 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_SUBTREE = 'subtree';
     const MATCH_VISIBILITY = 'visibility';
 
+    static protected $operatorsMap = array(
+        'eq' => Operator::EQ,
+        'gt' => Operator::GT,
+        'gte' => Operator::GTE,
+        'lt' => Operator::LT,
+        'lte' => Operator::LTE,
+        'in' => Operator::IN,
+        'between' => Operator::BETWEEN,
+        'like' => Operator::LIKE,
+        'contains' => Operator::CONTAINS,
+        Operator::EQ => Operator::EQ,
+        Operator::GT => Operator::GT,
+        Operator::GTE => Operator::GTE,
+        Operator::LT => Operator::LT,
+        Operator::LTE => Operator::LTE,
+
+    );
+
     protected $sectionMatcher;
     protected $stateMatcher;
 
     /**
      * @param Repository $repository
-     * @param
-     * @param
+     * @param KeyMatcherInterface $sectionMatcher
+     * @param KeyMatcherInterface $stateMatcher
      * @todo inject the services needed, not the whole repository
      */
     public function __construct(Repository $repository, KeyMatcherInterface $sectionMatcher = null, KeyMatcherInterface $stateMatcher = null)
@@ -71,6 +92,24 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
             case 'content_type_identifier':
             case self::MATCH_CONTENT_TYPE_IDENTIFIER:
                 return new Query\Criterion\ContentTypeIdentifier($values);
+
+            case self::MATCH_CREATION_DATE:
+                //$spec = reset($values);
+                $match = reset($values);
+                $operator = key($values);
+                if (!isset(self::$operatorsMap[$operator])) {
+                    throw new \Exception("Can not use '$operator' as comparison operator for dates");
+                }
+                return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::CREATED, self::$operatorsMap[$operator], $match);
+
+            case self::MATCH_MODIFICATION_DATE:
+                $spec = reset($values);
+                $match = reset($spec);
+                $operator = key($spec);
+                if (!isset(self::$operatorsMap[$operator])) {
+                    throw new \Exception("Can not use '$operator' as comparison operator for dates");
+                }
+                return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::MODIFIED, self::$operatorsMap[$operator], $match);
 
             case self::MATCH_OBJECT_STATE:
                 foreach($values as &$value) {

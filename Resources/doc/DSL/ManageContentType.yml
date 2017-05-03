@@ -137,9 +137,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     new_identifier: xyz # Optional, will update the identifier if set
     name: xyz # Optional, will be updated if set
     description: xyz # Optional, will be updated if set
@@ -195,9 +195,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
 
 # Attribute examples.
 
