@@ -19,6 +19,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_SECTION_ID = 'section_id';
     //const MATCH_SECTION_IDENTIFIER = 'section_identifier';
     const MATCH_VISIBILITY = 'visibility';
+    const MATCH_SUBTREE = 'subtree';
 
     /**
      * @param $key
@@ -70,6 +71,9 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
 
             //case MATCH_SECTION_IDENTIFIER = 'section_identifier':
             //    return new Query\Criterion\SectionId();
+
+            case self::MATCH_SUBTREE:
+                return new Query\Criterion\Subtree($values);
 
             case self::MATCH_VISIBILITY:
                 /// @todo error/warning if there is more than 1 value...

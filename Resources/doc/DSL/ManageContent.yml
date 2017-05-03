@@ -108,11 +108,14 @@
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
         location_remote_id: xxx # string|string[]
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type_identifier: yyy # string|string[] a content type identifier
-        content_type_id: yyy # int|int[] a content type id
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        section_id: xx # int|int[]
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
@@ -161,11 +164,14 @@
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
         location_remote_id: xxx # string|string[]
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type_identifier: yyy # string|string[] a content type identifier
-        content_type_id: yyy # int|int[] a content type id
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        section_id: xx # int|int[]
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
@@ -181,16 +187,19 @@
 -
     type: content
     mode: load
-    match: # Specify ONLY ONE of the following, to match a content or a set of contents to update
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to load
         content_id: x # int|int[]
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
         location_remote_id: xxx # string|string[]
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type_identifier: yyy # string|string[] a content type identifier
-        content_type_id: yyy # int|int[] a content type id
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        section_id: xx # int|int[]
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -

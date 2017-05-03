@@ -55,15 +55,18 @@
     mode: update
     match: # The locations to update
         # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
-        content_id: # the content id(s) of the content we want to add a location to
-        content_remote_id: # the remote content id(s) of the content we want to add a location to
-        location_id: # the location id(s) of the content we want to add a location to
-        location_remote_id: # the location remote id(s) of the content we want to add a location to
-        parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
-        parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
+        content_id: # the content id(s) of the locations we want to update
+        content_remote_id: # the remote content id(s) of the the locations we want to update
+        location_id: # the location id(s) of the the locations we want to update
+        location_remote_id: # the location remote id(s) of the the locations we want to update
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        parent_location_id: # the location id(s) of the parent(s) of the locations we want to update
+        parent_location_remote_id: # the remote location id(s) of the parent(s) of the locations we want to update
+        section_id: xx # int|int[]
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
@@ -99,17 +102,20 @@
 -
     type: location
     mode: delete
-    match: # The locations to update
+    match: # The locations to delete
         # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
-        content_id: # the content id(s) of the content we want to add a location to
-        content_remote_id: # the remote content id(s) of the content we want to add a location to
-        location_id: # the location id(s) of the content we want to add a location to
-        location_remote_id: # the location remote id(s) of the content we want to add a location to
-        parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
-        parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
+        content_id: # the content id(s) of the content we want to delete
+        content_remote_id: # the remote content id(s) of the content we want to delete
+        location_id: # the location id(s) we want to delete
+        location_remote_id: # the location remote id(s) we want to delete
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        parent_location_id: # the location id(s) of the parent(s) of locations we want to delete
+        parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to delete
+        section_id: xx # int|int[]
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
@@ -126,15 +132,18 @@
     mode: load
     match: # The locations to load
         # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
-        content_id: # the content id(s) of the content we want to add a location to
-        content_remote_id: # the remote content id(s) of the content we want to add a location to
-        location_id: # the location id(s) of the content we want to add a location to
-        location_remote_id: # the location remote id(s) of the content we want to add a location to
-        parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
-        parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
+        content_id: # the content id(s) of the locations we want to load
+        content_remote_id: # the remote content id(s) of the locations we want to load
+        location_id: # the location id(s) of the locations we want to load
+        location_remote_id: # the location remote id(s) of the location we want to load
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        parent_location_id: # the location id(s) of the parent(s) of locations we want to load
+        parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to load
+        section_id: xx # int|int[]
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
