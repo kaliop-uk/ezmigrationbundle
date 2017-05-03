@@ -309,11 +309,15 @@ services:
         class: '%ez_migration_bundle.content_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.object_state_matcher'
 
     ez_migration_bundle.location_matcher:
         class: '%ez_migration_bundle.location_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.object_state_matcher'
 
     ez_migration_bundle.user_matcher:
         class: '%ez_migration_bundle.user_matcher.class%'

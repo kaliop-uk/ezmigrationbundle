@@ -346,7 +346,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      *
-     * @todo add support for other attributes: contentTypeId, contentTypeIdentifier, section, etc... ?
+     * @todo add support for other attributes: object_states etc... ?
      */
     protected function setReferences($content, $step)
     {
@@ -415,6 +415,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     break;
                 case 'section_id':
                     $value = $content->contentInfo->sectionId;
+                    break;
+                case 'section_identifier':
+                    $sectionService = $this->repository->getSectionService();
+                    $value = $sectionService->loadSection($content->contentInfo->sectionId)->identifier;
                     break;
                 default:
                     // allow to get the value of fields as well as their sub-parts

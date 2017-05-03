@@ -153,13 +153,16 @@
             - location_remote_id: reference:kmb_test_3_3_loc_3_rid
             - content_type_id: reference:kmb_test_3_0
             - content_type_identifier: reference:kmb_test_3
-            - section_id: 1
+            - section: 1
             - not:
                 visibility: false
     references:
         -
             identifier: kmb_test_3_5
             attribute: location_id
+        -
+            identifier: kmb_test_3_5_zzz
+            attribute: position
 
 -
     type: assert

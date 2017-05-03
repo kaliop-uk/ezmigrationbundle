@@ -3,6 +3,8 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\Content\Query;
+use eZ\Publish\API\Repository\Repository;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 /**
  */
@@ -12,14 +14,30 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_LOCATION_ID = 'location_id';
     const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
     const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
-    const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
-    const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
     const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
     const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
-    const MATCH_SECTION_ID = 'section_id';
-    //const MATCH_SECTION_IDENTIFIER = 'section_identifier';
-    const MATCH_VISIBILITY = 'visibility';
+    const MATCH_OBJECT_STATE = 'object_state';
+    const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
+    const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
+    const MATCH_SECTION = 'section';
     const MATCH_SUBTREE = 'subtree';
+    const MATCH_VISIBILITY = 'visibility';
+
+    protected $sectionMatcher;
+    protected $stateMatcher;
+
+    /**
+     * @param Repository $repository
+     * @param
+     * @param
+     * @todo inject the services needed, not the whole repository
+     */
+    public function __construct(Repository $repository, KeyMatcherInterface $sectionMatcher = null, KeyMatcherInterface $stateMatcher = null)
+    {
+        parent::__construct($repository);
+        $this->sectionMatcher = $sectionMatcher;
+        $this->stateMatcher = $stateMatcher;
+    }
 
     /**
      * @param $key
@@ -46,6 +64,22 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
             case self::MATCH_LOCATION_REMOTE_ID:
                 return new Query\Criterion\LocationRemoteId($values);
 
+            case 'content_type_id':
+            case self::MATCH_CONTENT_TYPE_ID:
+                return new Query\Criterion\ContentTypeId($values);
+
+            case 'content_type_identifier':
+            case self::MATCH_CONTENT_TYPE_IDENTIFIER:
+                return new Query\Criterion\ContentTypeIdentifier($values);
+
+            case self::MATCH_OBJECT_STATE:
+                foreach($values as &$value) {
+                    if (!ctype_digit($value)) {
+                        $value = $this->stateMatcher->matchOneByKey($value)->id;
+                    }
+                }
+                return new Query\Criterion\ObjectStateId($values);
+
             case self::MATCH_PARENT_LOCATION_ID:
                 return new Query\Criterion\ParentLocationId($values);
 
@@ -58,19 +92,13 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 }
                 return new Query\Criterion\ParentLocationId($locationIds);
 
-            case 'content_type_id':
-            case self::MATCH_CONTENT_TYPE_ID:
-                return new Query\Criterion\ContentTypeId($values);
-
-            case 'content_type_identifier':
-            case self::MATCH_CONTENT_TYPE_IDENTIFIER:
-                return new Query\Criterion\ContentTypeIdentifier($values);
-
-            case self::MATCH_SECTION_ID:
+            case self::MATCH_SECTION:
+                foreach($values as &$value) {
+                    if (!ctype_digit($value)) {
+                        $value = $this->sectionMatcher->matchOneByKey($value)->id;
+                    }
+                }
                 return new Query\Criterion\SectionId($values);
-
-            //case MATCH_SECTION_IDENTIFIER = 'section_identifier':
-            //    return new Query\Criterion\SectionId();
 
             case self::MATCH_SUBTREE:
                 return new Query\Criterion\Subtree($values);

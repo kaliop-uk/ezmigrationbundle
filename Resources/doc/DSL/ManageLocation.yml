@@ -36,7 +36,7 @@
                                    # Supports: location_id, location_remote_id,
                                    # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
-                                   # modification_date, name, owner_id, parent_location_id, path, position, priority,
+                                   # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
 
 -
@@ -61,9 +61,10 @@
         location_remote_id: # the location remote id(s) of the the locations we want to update
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of the locations we want to update
         parent_location_remote_id: # the remote location id(s) of the parent(s) of the locations we want to update
-        section_id: xx # int|int[]
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
         or: # match any of the conditions below
@@ -96,7 +97,7 @@
                                    # Supports: location_id, location_remote_id,
                                    # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
-                                   # modification_date, name, owner_id, parent_location_id, path, position, priority,
+                                   # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
 
 -
@@ -110,9 +111,10 @@
         location_remote_id: # the location remote id(s) we want to delete
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of locations we want to delete
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to delete
-        section_id: xx # int|int[]
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
         or: # match any of the conditions below
@@ -138,9 +140,10 @@
         location_remote_id: # the location remote id(s) of the location we want to load
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of locations we want to load
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to load
-        section_id: xx # int|int[]
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
         or: # match any of the conditions below
@@ -163,5 +166,5 @@
             attribute: attributeId # The attribute to get the value of for the reference (supports: location_id, location_remote_id,
                                    # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
-                                   # modification_date, name, owner_id, parent_location_id, path, position, priority,
+                                   # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)

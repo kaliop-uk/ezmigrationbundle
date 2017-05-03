@@ -318,10 +318,6 @@ class LocationManager extends RepositoryExecutor
                 case 'path':
                     $value = $location->pathString;
                     break;
-                /// Q: does this even exist ?
-                case 'position':
-                    $value = $location->position;
-                    break;
                 case 'priority':
                     $value = $location->priority;
                     break;
@@ -330,6 +326,10 @@ class LocationManager extends RepositoryExecutor
                     break;
                 case 'section_id':
                     $value = $location->contentInfo->sectionId;
+                    break;
+                case 'section_identifier':
+                    $sectionService = $this->repository->getSectionService();
+                    $value = $sectionService->loadSection($location->contentInfo->sectionId)->identifier;
                     break;
                 case 'sort_field':
                     $value = $this->sortConverter->sortField2Hash($location->sortField);
