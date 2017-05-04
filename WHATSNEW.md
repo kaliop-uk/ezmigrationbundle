@@ -34,6 +34,12 @@ Version 4.0 RC-1 (unreleased)
     - lots of refactoring in the Core (non API) classes. If you have extended them, be prepared for some porting work
 
 
+Version 3.6.1
+=============
+
+* Fixed: when setting both content creation and modification time upon content creation, modification time was lost
+
+
 Version 3.6
 ===========
 

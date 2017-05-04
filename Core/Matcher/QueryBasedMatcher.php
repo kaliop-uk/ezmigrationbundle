@@ -8,7 +8,7 @@ use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 
 /**
- * @todo extend to allow matching by creator, modifier, owner, language code, content_type_group_id...
+ * @todo extend to allow matching by modifier, language code, content_type_group_id
  */
 abstract class QueryBasedMatcher extends RepositoryMatcher
 {
