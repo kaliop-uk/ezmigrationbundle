@@ -63,12 +63,16 @@
         content_type_id: yyy # int|int[] a content type id
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        depth:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
         is_main_location: true # bool
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of the locations we want to update
         parent_location_remote_id: # the remote location id(s) of the parent(s) of the locations we want to update
+        priority:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
@@ -118,12 +122,16 @@
         content_type_id: yyy # int|int[] a content type id
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        depth:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
         is_main_location: true # bool
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of locations we want to delete
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to delete
+        priority:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
@@ -152,12 +160,16 @@
         content_type_id: yyy # int|int[] a content type id
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        depth:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
         is_main_location: true # bool
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         parent_location_id: # the location id(s) of the parent(s) of locations we want to load
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to load
+        priority:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool

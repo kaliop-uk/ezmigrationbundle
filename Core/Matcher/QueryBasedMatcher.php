@@ -94,7 +94,6 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\ContentTypeIdentifier($values);
 
             case self::MATCH_CREATION_DATE:
-                //$spec = reset($values);
                 $match = reset($values);
                 $operator = key($values);
                 if (!isset(self::$operatorsMap[$operator])) {
@@ -103,9 +102,8 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::CREATED, self::$operatorsMap[$operator], $match);
 
             case self::MATCH_MODIFICATION_DATE:
-                $spec = reset($values);
-                $match = reset($spec);
-                $operator = key($spec);
+                $match = reset($values);
+                $operator = key($values);
                 if (!isset(self::$operatorsMap[$operator])) {
                     throw new \Exception("Can not use '$operator' as comparison operator for dates");
                 }

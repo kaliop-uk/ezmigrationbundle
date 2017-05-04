@@ -154,6 +154,15 @@
             - content_type_id: reference:kmb_test_3_0
             - content_type_identifier: reference:kmb_test_3
             - section: 1
+            - depth:
+                gt: 1
+            - or:
+                -
+                    priority:
+                        lt: 2
+                -
+                    priority:
+                        gte: 2
             - not:
                 visibility: false
     references:

@@ -14,7 +14,9 @@ class LocationMatcher extends QueryBasedMatcher
 {
     use FlexibleKeyMatcherTrait;
 
+    const MATCH_DEPTH = 'depth';
     const MATCH_IS_MAIN_LOCATION = 'is_main_location';
+    const MATCH_PRIORITY = 'priority';
 
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
@@ -82,6 +84,14 @@ class LocationMatcher extends QueryBasedMatcher
         }
 
         switch ($key) {
+            case self::MATCH_DEPTH:
+                $match = reset($values);
+                $operator = key($values);
+                if (!isset(self::$operatorsMap[$operator])) {
+                    throw new \Exception("Can not use '$operator' as comparison operator for depth");
+                }
+                return new Query\Criterion\Location\Depth(self::$operatorsMap[$operator], $match);
+
             case self::MATCH_IS_MAIN_LOCATION:
                 /// @todo error/warning if there is more than 1 value...
                 $value = reset($values);
@@ -90,6 +100,14 @@ class LocationMatcher extends QueryBasedMatcher
                 } else {
                     return new Query\Criterion\Location\IsMainLocation(Query\Criterion\Location\IsMainLocation::NOT_MAIN);
                 }
+
+            case self::MATCH_PRIORITY:
+                $match = reset($values);
+                $operator = key($values);
+                if (!isset(self::$operatorsMap[$operator])) {
+                    throw new \Exception("Can not use '$operator' as comparison operator for depth");
+                }
+                return new Query\Criterion\Location\Priority(self::$operatorsMap[$operator], $match);
         }
 
         return parent::getQueryCriterion($key, $values);
