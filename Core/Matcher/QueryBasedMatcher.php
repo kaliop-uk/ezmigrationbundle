@@ -8,6 +8,7 @@ use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 
 /**
+ * @todo extend to allow matching by creator, modifier, owner, language code, content_type_group_id...
  */
 abstract class QueryBasedMatcher extends RepositoryMatcher
 {
@@ -15,6 +16,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_LOCATION_ID = 'location_id';
     const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
     const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
+    const MATCH_ATTRIBUTE = 'attribute';
     const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
     const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
     const MATCH_CREATION_DATE = 'creation_date';
@@ -84,6 +86,16 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
 
             case self::MATCH_LOCATION_REMOTE_ID:
                 return new Query\Criterion\LocationRemoteId($values);
+
+            case self::MATCH_ATTRIBUTE:
+                $spec = reset($values);
+                $attribute = key($values);
+                $match = reset($spec);
+                $operator = key($spec);
+                if (!isset(self::$operatorsMap[$operator])) {
+                    throw new \Exception("Can not use '$operator' as comparison operator for attributes");
+                }
+                return new Query\Criterion\Field($attribute, self::$operatorsMap[$operator], $match);
 
             case 'content_type_id':
             case self::MATCH_CONTENT_TYPE_ID:

@@ -11,8 +11,8 @@
         parent_location_id: # the location id(s) of the parent(s) of contents we want to add a location to
         parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
     parent_location: y # The Location ID of the parent where the new location should be placed. When a non numeric string is used, it is assumed to be a location remote id
-    priority: x # Optional
     is_hidden: true|false # Optional
+    priority: x # Optional
     sort_field: x # Optional. Possible values for sort_field are:
                   # - published
                   # - priority
@@ -44,8 +44,8 @@
     mode: create
     match: ... # See above
     parent_location: [x, y, z] # Multiple locations can be added in a single step using an array
-    priority: x # Optional
     is_hidden: ... # See above
+    priority: x # Optional
     sort_field: ... # See above
     sort_order: ... # See above
     references: ... # See above
@@ -59,6 +59,9 @@
         content_remote_id: # the remote content id(s) of the the locations we want to update
         location_id: # the location id(s) of the the locations we want to update
         location_remote_id: # the location remote id(s) of the the locations we want to update
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
         creation_date:
@@ -88,14 +91,14 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
-    swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set at the same time than parent_location
-                          # When a non numeric string is used, it is assumed to be a location remote id
     parent_location: x # Optional The parent location to move the subtree to. Cannot be set at the same time than swap_with_location
                        # When a non numeric string is used, it is assumed to be a location remote id
-    priority: x # Optional, will be updated if set
     is_hidden: true|false # Optional, Set the visibility of the location
+    priority: x # Optional, will be updated if set
     sort_field: x # Optional
     sort_order: ASC|DESC # Optional
+    swap_with_location: y # Optional, The ID of the location to swap the location with. Cannot be set at the same time than parent_location
+                          # When a non numeric string is used, it is assumed to be a location remote id
     remote_id: # Optional, Set the remote_id of the location
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
@@ -118,6 +121,9 @@
         content_remote_id: # the remote content id(s) of the content we want to delete
         location_id: # the location id(s) we want to delete
         location_remote_id: # the location remote id(s) we want to delete
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
         content_type_identifier: yyy # string|string[] a content type identifier
         content_type_id: yyy # int|int[] a content type id
         creation_date:
@@ -154,6 +160,9 @@
         # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
         content_id: # the content id(s) of the locations we want to load
         content_remote_id: # the remote content id(s) of the locations we want to load
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
         location_id: # the location id(s) of the locations we want to load
         location_remote_id: # the location remote id(s) of the location we want to load
         content_type_identifier: yyy # string|string[] a content type identifier

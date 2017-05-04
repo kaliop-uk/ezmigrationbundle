@@ -7,9 +7,6 @@ use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Location;
 
-/**
- * @todo extend to allow matching by subtree, object state, section, creation/modification date...
- */
 class LocationMatcher extends QueryBasedMatcher
 {
     use FlexibleKeyMatcherTrait;
@@ -21,13 +18,13 @@ class LocationMatcher extends QueryBasedMatcher
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
-        self::MATCH_CONTENT_TYPE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER, self::MATCH_CREATION_DATE,
+        self::MATCH_ATTRIBUTE, self::MATCH_CONTENT_TYPE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER, self::MATCH_CREATION_DATE,
         self::MATCH_MODIFICATION_DATE, self::MATCH_OBJECT_STATE, self::MATCH_PARENT_LOCATION_ID,
         self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_SECTION, self::MATCH_SUBTREE, self::MATCH_VISIBILITY,
         // aliases
         'content_type', 'content_type_id', 'content_type_identifier',
         // location-only
-        self::MATCH_IS_MAIN_LOCATION,
+        self::MATCH_DEPTH, self::MATCH_IS_MAIN_LOCATION, self::MATCH_PRIORITY,
     );
     protected $returns = 'Location';
 

@@ -299,6 +299,9 @@
             - section: 2
             - creation_date:
                 gt: 1234567
+            - attribute:
+                ezstring:
+                    eq: 'hello world 1'
             - not:
                 visibility: false
     references:
