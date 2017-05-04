@@ -9,12 +9,13 @@ Version 4.0 RC-1 (unreleased)
 
 * New: it is now possible to specify a custom Admin account used to carry out migrations instead of the user 14
 
-* New: it is possible to use a 'not', 'attribute', 'creation_date', 'modification_date', 'object_state', 'section', 'subtree'
-    and 'visibility' condition when matching Contents.
+* New: it is possible to use a 'not', 'attribute', 'creation_date', 'group', 'modification_date', 'object_state', 'owner',
+    'section', 'subtree' and 'visibility' condition when matching Contents.
     Matching when using 'and' and 'or' is also more efficient
 
 * New: it is possible to use a 'not', 'attribute', 'content_type_id', 'content_type_identifier', 'creation_date', 'depth',
-    'modification_date', 'object_state', 'priority', 'section', 'subtree' and 'visibility' condition when matching Locations.
+    'group', 'modification_date', 'object_state', 'owner', 'priority', 'section', 'subtree' and 'visibility' condition 
+    when matching Locations.
     Matching when using 'and' and 'or' is also more efficient
 
 * New: it is now possible to set references to the values of Content Type field definitions. The syntax to use is similar

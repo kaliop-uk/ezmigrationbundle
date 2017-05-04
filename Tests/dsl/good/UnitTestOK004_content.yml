@@ -302,6 +302,7 @@
             - attribute:
                 ezstring:
                     eq: 'hello world 1'
+            - owner: anonymous
             - not:
                 visibility: false
     references:

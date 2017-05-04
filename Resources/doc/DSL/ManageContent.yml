@@ -115,9 +115,11 @@
         content_type_identifier: yyy # string|string[] a content type identifier
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
@@ -181,7 +183,9 @@
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
@@ -215,9 +219,11 @@
         content_type_identifier: yyy # string|string[] a content type identifier
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)

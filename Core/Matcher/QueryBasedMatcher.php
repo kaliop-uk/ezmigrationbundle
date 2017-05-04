@@ -20,8 +20,10 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
     const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
     const MATCH_CREATION_DATE = 'creation_date';
+    const MATCH_GROUP = 'group';
     const MATCH_MODIFICATION_DATE = 'modification_date';
     const MATCH_OBJECT_STATE = 'object_state';
+    const MATCH_OWNER = 'owner';
     const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
     const MATCH_SECTION = 'section';
@@ -46,20 +48,28 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
 
     );
 
+    protected $groupMatcher;
     protected $sectionMatcher;
     protected $stateMatcher;
+    protected $userMatcher;
 
     /**
      * @param Repository $repository
+     * @param KeyMatcherInterface $groupMatcher
      * @param KeyMatcherInterface $sectionMatcher
      * @param KeyMatcherInterface $stateMatcher
+     * @param KeyMatcherInterface $userMatcher
      * @todo inject the services needed, not the whole repository
      */
-    public function __construct(Repository $repository, KeyMatcherInterface $sectionMatcher = null, KeyMatcherInterface $stateMatcher = null)
+    public function __construct(Repository $repository, KeyMatcherInterface $groupMatcher = null,
+        KeyMatcherInterface $sectionMatcher = null, KeyMatcherInterface $stateMatcher = null,
+        KeyMatcherInterface $userMatcher = null)
     {
         parent::__construct($repository);
+        $this->userMatcher = $userMatcher;
         $this->sectionMatcher = $sectionMatcher;
         $this->stateMatcher = $stateMatcher;
+        $this->userMatcher = $userMatcher;
     }
 
     /**
@@ -113,6 +123,14 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 }
                 return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::CREATED, self::$operatorsMap[$operator], $match);
 
+            case self::MATCH_GROUP:
+                foreach($values as &$value) {
+                    if (!ctype_digit($value)) {
+                        $value = $this->groupMatcher->matchOneByKey($value)->id;
+                    }
+                }
+                return new Query\Criterion\UserMetadata(Query\Criterion\UserMetadata::GROUP, Operator::IN, $values);
+
             case self::MATCH_MODIFICATION_DATE:
                 $match = reset($values);
                 $operator = key($values);
@@ -128,6 +146,14 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                     }
                 }
                 return new Query\Criterion\ObjectStateId($values);
+
+            case self::MATCH_OWNER:
+                foreach($values as &$value) {
+                    if (!ctype_digit($value)) {
+                        $value = $this->userMatcher->matchOneByKey($value)->id;
+                    }
+                }
+                return new Query\Criterion\UserMetadata(Query\Criterion\UserMetadata::OWNER, Operator::IN, $values);
 
             case self::MATCH_PARENT_LOCATION_ID:
                 return new Query\Criterion\ParentLocationId($values);
