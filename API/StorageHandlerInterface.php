@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 
 /**
- * Implemented by classes which store details of the executed migrations
+ * Implemented by classes which store details of the executing/executed migrations
  */
 interface StorageHandlerInterface
 {

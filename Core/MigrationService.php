@@ -50,7 +50,8 @@ class MigrationService
 
     protected $eventPrefix = 'ez_migration.';
 
-    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository, EventDispatcherInterface $eventDispatcher)
+    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository,
+        EventDispatcherInterface $eventDispatcher)
     {
         $this->loader = $loader;
         $this->storageHandler = $storageHandler;
@@ -302,6 +303,9 @@ class MigrationService
                  * - global context
                  * - how do we retrieve the complete set of references ?
                  */
+
+                $finalStatus = Migration::STATUS_SUSPENDED;
+                $finalMessage = "Suspended in execution of step $i: " . $e->getMessage();
             }
 
             // set migration as done

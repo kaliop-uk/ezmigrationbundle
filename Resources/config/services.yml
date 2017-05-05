@@ -2,8 +2,9 @@ parameters:
     # The directory (inside each bundle) where to look for migrations definitions
     # NB: this pasrasmeter will be renamed in v3
     kaliop_bundle_migration.version_directory: 'MigrationVersions'
-    # The dtabase table used to store migration information. Will be created automatically
+    # The database tables used to store migration information. Will be created automatically
     ez_migration_bundle.table_name: 'kaliop_migrations'
+    ez_migration_bundle.context_table_name: 'kaliop_migrations_contexts'
     # Used to discriminate valid migration definitions
     ez_migration_bundle.valid_databases:
         # names have to correspond to doctrine 'platform', short of version numbers and lowercase
@@ -28,7 +29,8 @@ parameters:
     ez_migration_bundle.definition_parser.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\SQLDefinitionParser
     ez_migration_bundle.definition_parser.php.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\PHPDefinitionParser
 
-    ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
+    ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Migration
+    ez_migration_bundle.context_storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Context
 
     ez_migration_bundle.executor.migration_definition.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationDefinitionExecutor
     ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
@@ -148,6 +150,15 @@ services:
         arguments:
             - '@ezpublish.connection'
             - '%ez_migration_bundle.table_name%'
+
+    ez_migration_bundle.context_storage_handler:
+        alias: ez_migration_bundle.context_storage_handler.database
+
+    ez_migration_bundle.context_storage_handler.database:
+        class: '%ez_migration_bundle.context_storage_handler.database.class%'
+        arguments:
+            - '@ezpublish.connection'
+            - '%ez_migration_bundle.context_table_name%'
 
     ### executors
 
