@@ -89,10 +89,11 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\ContentId($values);
 
             case self::MATCH_LOCATION_ID:
-                return new Query\Criterion\LocationId($values);
+                // NB: seems to cause problems with EZP 2014.3
+                return new Query\Criterion\LocationId(reset($values));
 
             case self::MATCH_CONTENT_REMOTE_ID:
-                return new Query\Criterion\RemoteId(reset($values));
+                return new Query\Criterion\RemoteId($values);
 
             case self::MATCH_LOCATION_REMOTE_ID:
                 return new Query\Criterion\LocationRemoteId($values);

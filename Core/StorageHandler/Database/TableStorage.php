@@ -36,6 +36,8 @@ abstract class TableStorage
         $this->tableName = $tableName;
     }
 
+    abstract function createTable();
+
     /**
      * @return mixed
      */
@@ -88,15 +90,23 @@ abstract class TableStorage
         return true;
     }
 
-    abstract function createTable();
-
     /**
-     * Removes all data from storage
+     * Removes all data from storage as well as removing the tables itself
      */
     protected function drop()
     {
         if ($this->tableExist($this->tableName)) {
             $this->dbHandler->exec('DROP TABLE ' . $this->tableName);
+        }
+    }
+
+    /**
+     * Removes all data from storage
+     */
+    public function truncate()
+    {
+        if ($this->tableExist($this->tableName)) {
+            $this->dbHandler->exec('TRUNCATE ' . $this->tableName);
         }
     }
 }

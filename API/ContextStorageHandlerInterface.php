@@ -2,7 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\API;
 
-use Kaliop\eZMigrationBundle\API\Collection\MigrationCollection;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 
