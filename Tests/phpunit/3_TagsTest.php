@@ -71,5 +71,4 @@ class TagsTest extends CommandTest
         }
         return $out;
     }
-
 }

@@ -45,12 +45,15 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
         Operator::GTE => Operator::GTE,
         Operator::LT => Operator::LT,
         Operator::LTE => Operator::LTE,
-
     );
 
+    /** @var  KeyMatcherInterface $groupMatcher */
     protected $groupMatcher;
+    /** @var  KeyMatcherInterface $sectionMatcher */
     protected $sectionMatcher;
+    /** @var  KeyMatcherInterface $stateMatcher */
     protected $stateMatcher;
+    /** @var  KeyMatcherInterface $userMatcher */
     protected $userMatcher;
 
     /**

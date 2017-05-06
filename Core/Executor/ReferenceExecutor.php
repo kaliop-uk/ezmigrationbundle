@@ -115,6 +115,9 @@ class ReferenceExecutor extends AbstractExecutor
         return $data;
     }
 
+    /**
+     * @todo find a smart way to allow saving the references file next to the current migration
+     */
     protected function save($dsl, $context)
     {
         if (!isset($dsl['file'])) {
@@ -131,7 +134,7 @@ class ReferenceExecutor extends AbstractExecutor
         }
 
         if (! $this->referenceResolver instanceof EnumerableReferenceResolverInterface) {
-            throw new \Exception("Can not savie references as resolver is not enumerable");
+            throw new \Exception("Can not save references as resolver is not enumerable");
         }
 
         $data = $this->referenceResolver->listReferences();
@@ -146,7 +149,7 @@ class ReferenceExecutor extends AbstractExecutor
                 $data = Yaml::dump($data);
                 break;
             default:
-                throw new \Exception("Invalid step definition: unsupported file extension for loading references from");
+                throw new \Exception("Invalid step definition: unsupported file extension for saving references to");
         }
 
         file_put_contents($fileName, $data);

@@ -19,7 +19,7 @@ abstract class AbstractMatcher implements MatcherInterface
             throw new \Exception($this->returns . ' can not be matched because the matching conditions are empty');
         }
 
-        if (count($conditions) > $this->maxConditions) {
+        if ($this->maxConditions > 0 && count($conditions) > $this->maxConditions) {
             throw new \Exception($this->returns . " can not be matched because multiple matching conditions are specified. Only {$this->maxConditions} condition(s) are supported");
         }
 
@@ -33,6 +33,7 @@ abstract class AbstractMatcher implements MatcherInterface
 
     protected function matchAnd($conditionsArray)
     {
+        /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
             throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'and' clause.");
         }
@@ -60,6 +61,7 @@ abstract class AbstractMatcher implements MatcherInterface
 
     protected function matchOr(array $conditionsArray)
     {
+        /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
             throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'or' clause.");
         }
@@ -92,5 +94,9 @@ abstract class AbstractMatcher implements MatcherInterface
         return reset($results);
     }
 
+    /**
+     * @param array $conditions
+     * @return array|\ArrayObject the keys must be a unique identifier of the matched entities
+     */
     abstract public function match(array $conditions);
 }

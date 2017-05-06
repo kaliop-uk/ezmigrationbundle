@@ -1,0 +1,13 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_21
+    value: hello
+
+-
+    type: migration
+    mode: suspend
+    until:
+        match:
+            "reference:kmb_test_21":
+                eq: hello

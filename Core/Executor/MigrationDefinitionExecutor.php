@@ -53,7 +53,8 @@ class MigrationDefinitionExecutor extends AbstractExecutor
      * @return array
      * @throws \Exception
      */
-    protected function generate($dsl, $context) {
+    protected function generate($dsl, $context)
+    {
         if (!isset($dsl['migration_type'])) {
             throw new \Exception("Invalid step definition: miss 'migration_type'");
         }
@@ -106,7 +107,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
     }
 
     /**
-     * @todo cache this for faster acccess
+     * @todo cache this for faster access
      * @return array
      */
     protected function getGeneratingExecutors()

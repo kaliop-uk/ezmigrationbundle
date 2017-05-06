@@ -92,11 +92,11 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
     }
 
     /**
-     * Removes all migration contexts from storage (regardless of the migration status)
+     * Removes all migration contexts from storage (regardless of the migration status/existence)
      */
     public function deleteMigrationContexts()
     {
-
+        $this->truncate();
     }
 
     public function createTable()
@@ -108,8 +108,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         $schema = new Schema();
 
         $t = $schema->createTable($this->tableName);
-        $t->addColumn('migration', 'string', array('length' => 255));
-        $t->addColumn('context', 'string', array('length' => 4000));
+        $t->addColumn('migration', 'text');
         $t->addColumn('insertion_date', 'integer');
         $t->setPrimaryKey(array('migration'));
 

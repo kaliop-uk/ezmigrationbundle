@@ -28,6 +28,7 @@
         "nikic/php-parser": "2.*",
         "symfony/process": "*",
         "symfony/var-dumper": "*",
+        "symfony/validator": "*",
         "mtdowling/jmespath.php": "2.*"
     },
     "require-dev": {

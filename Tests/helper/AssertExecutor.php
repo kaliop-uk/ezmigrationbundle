@@ -58,6 +58,13 @@ class AssertExecutor extends  AbstractExecutor
     {
     }*/
 
+    /**
+     * @todo !important switch to using symfony/validator for uniformity with the rest of the codebase ?
+     *       This would allow us to move the 'assert' executor outside of test code...
+     * @param mixed $value
+     * @param array $condition
+     * @throws \Exception
+     */
     protected function validate($value, array $condition)
     {
         // we do resolve references as well in the value to check against

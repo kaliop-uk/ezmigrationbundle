@@ -1,0 +1,12 @@
+-
+    type: migration
+    mode: cancel
+    message: string # Optional
+
+-
+    type: migration
+    mode: suspend
+    message: string # Optional
+    until: # Optional. If set, migration will be suspended until the given condition. NB: needs a cronjob to be set
+           # up to later resume
+        date: timestamp # unix timestamp
