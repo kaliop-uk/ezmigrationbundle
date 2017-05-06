@@ -68,5 +68,16 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
                 ));
             }
         }
+
+        if ($container->has('ez_migration_bundle.context_handler')) {
+            $contextHandlerService = $container->findDefinition('ez_migration_bundle.context_handler');
+            $ContextProviders = $container->findTaggedServiceIds('ez_migration_bundle.context_provider');
+
+            foreach ($ContextProviders as $id => $tags) {
+                foreach ($tags as $attributes) {
+                    $contextHandlerService->addMethodCall('addProvider', array(new Reference($id), $attributes['label']));
+                }
+            }
+        }
     }
 }

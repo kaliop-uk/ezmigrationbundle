@@ -3,12 +3,11 @@
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 
 use Kaliop\eZMigrationBundle\API\ContextStorageHandlerInterface;
-use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Doctrine\DBAL\Schema\Schema;
 
 class Context extends TableStorage implements ContextStorageHandlerInterface
 {
-    protected $fieldList = 'migration, context, references, insertion_date';
+    protected $fieldList = 'migration, context, insertion_date';
 
     public function loadMigrationContext($migrationName)
     {
@@ -24,7 +23,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (is_array($result) && !empty($result)) {
-            return $this->arrayToContext($result);
+            return $this->stringToContext($result['context']);
         }
 
         return null;
@@ -33,25 +32,63 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
     /**
      * Stores a migration context
      *
-     * @param MigrationDefinition $migrationDefinition
-     * @return Migration
-     * @throws \Exception If the migration exists already
+     * @param string $migrationName
+     * @param array $context
      */
-    public function storeMigrationContext(MigrationDefinition $migrationDefinition)
+    public function storeMigrationContext($migrationName, array $context)
     {
+        $this->createTableIfNeeded();
 
+        // select for update
+
+        // annoyingly enough, neither Doctrine nor EZP provide built in support for 'FOR UPDATE' in their query builders...
+        // at least the doctrine one allows us to still use parameter binding when we add our sql particle
+        $conn = $this->getConnection();
+
+        $qb = $conn->createQueryBuilder();
+        $qb->select('*')
+            ->from($this->tableName, 'm')
+            ->where('migration = ?');
+        $sql = $qb->getSQL() . ' FOR UPDATE';
+
+        $conn->beginTransaction();
+
+        $stmt = $conn->executeQuery($sql, array($migrationName));
+        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (is_array($existingMigrationData)) {
+            // context exists
+
+            $conn->update(
+                $this->tableName,
+                array(
+                    'insertion_date' => time(),
+                    'context' => $this->contextToString($context),
+                ),
+                array('migration' => $migrationName)
+            );
+            $conn->commit();
+
+        } else {
+            // context did not exist. Create it!
+
+            // commit immediately, to release the lock and avoid deadlocks
+            $conn->commit();
+
+            $conn->insert($this->tableName, array($migrationName, $this->contextToString($context), time()));
+        }
     }
 
     /**
-     * Removes a migration context from storage (regardless of the migration status)
+     * Removes a migration context from storage
      *
-     * @param Migration $migration
+     * @param string $migrationName
      */
-    public function deleteMigrationContext(Migration $migration)
+    public function deleteMigrationContext($migrationName)
     {
         $this->createTableIfNeeded();
         $conn = $this->getConnection();
-        $conn->delete($this->tableName, array('migration' => $migration->name));
+        $conn->delete($this->tableName, array('migration' => $migrationName));
     }
 
     /**
@@ -73,7 +110,6 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         $t = $schema->createTable($this->tableName);
         $t->addColumn('migration', 'string', array('length' => 255));
         $t->addColumn('context', 'string', array('length' => 4000));
-        $t->addColumn('references', 'string', array('length' => 32));
         $t->addColumn('insertion_date', 'integer');
         $t->setPrimaryKey(array('migration'));
 
@@ -82,8 +118,13 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         }
     }
 
-    protected function arrayToContext(array $data)
+    protected function stringToContext($data)
     {
-        return json_decode($data['context'], true);
+        return json_decode($data, true);
+    }
+
+    protected function contextToString(array $context)
+    {
+        return json_encode($context);
     }
 }

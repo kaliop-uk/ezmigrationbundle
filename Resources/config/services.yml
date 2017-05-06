@@ -29,6 +29,8 @@ parameters:
     ez_migration_bundle.definition_parser.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\SQLDefinitionParser
     ez_migration_bundle.definition_parser.php.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\PHPDefinitionParser
 
+    ez_migration_bundle.context_handler.class: Kaliop\eZMigrationBundle\Core\ContextHandler
+
     ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Migration
     ez_migration_bundle.context_storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Context
 
@@ -101,6 +103,9 @@ services:
             - '@ez_migration_bundle.storage_handler'
             - '@ezpublish.api.repository'
             - '@event_dispatcher'
+            - '@ez_migration_bundle.context_handler'
+        tags:
+            - { name: ez_migration_bundle.context_provider, label: migration_service }
 
     ### loaders
 
@@ -547,6 +552,8 @@ services:
     ez_migration_bundle.reference_resolver.customreference.base:
         class: '%ez_migration_bundle.reference_resolver.customreference.class%'
         arguments: []
+        tags:
+            - { name: ez_migration_bundle.context_provider, label: reference_resolver_customreference }
 
     # NB: This service will see added to the chain any service tagged as 'ez_migration_bundle.reference_resolver.customreference'
     ez_migration_bundle.reference_resolver.customreference.flexible:
@@ -555,6 +562,12 @@ services:
             - [ '@ez_migration_bundle.reference_resolver.customreference.base' ]
 
     ### misc
+
+    ez_migration_bundle.context_handler:
+        class: '%ez_migration_bundle.context_handler.class%'
+        arguments:
+            - '@ez_migration_bundle.context_storage_handler'
+        lazy: true
 
     # This service is used for the verbose mode when executing migrations on the command line
     ez_migration_bundle.step_executed_listener.tracing:

@@ -2,9 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\API;
 
-use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use Kaliop\eZMigrationBundle\API\Value\Migration;
-
 /**
  * Implemented by classes which store details of the executing migrations contexts
  */
@@ -18,19 +15,17 @@ interface ContextStorageHandlerInterface
 
     /**
      * Stores a migration context
-     *
-     * @param MigrationDefinition $migrationDefinition
-     * @return Migration
-     * @throws \Exception If the migration exists already
+     * @param string $migrationName
+     * @param array $context
      */
-    public function storeMigrationContext(MigrationDefinition $migrationDefinition);
+    public function storeMigrationContext($migrationName, array $context);
 
     /**
      * Removes a migration context from storage (regardless of the migration status)
      *
-     * @param Migration $migration
+     * @param string $migrationName
      */
-    public function deleteMigrationContext(Migration $migration);
+    public function deleteMigrationContext($migrationName);
 
     /**
      * Removes all migration contexts from storage (regardless of the migration status)

@@ -10,6 +10,7 @@ use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
+use Kaliop\eZMigrationBundle\API\ContextProviderInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
@@ -20,7 +21,7 @@ use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationSuspendedEvent;
 
-class MigrationService
+class MigrationService implements ContextProviderInterface
 {
     use RepositoryUserSetterTrait;
 
@@ -48,15 +49,23 @@ class MigrationService
 
     protected $dispatcher;
 
+    /**
+     * @var ContextHandler $contextHandler
+     */
+    protected $contextHandler;
+
     protected $eventPrefix = 'ez_migration.';
 
+    protected $migrationContext = array();
+
     public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository,
-        EventDispatcherInterface $eventDispatcher)
+        EventDispatcherInterface $eventDispatcher, $contextHandler)
     {
         $this->loader = $loader;
         $this->storageHandler = $storageHandler;
         $this->repository = $repository;
         $this->dispatcher = $eventDispatcher;
+        $this->contextHandler = $contextHandler;
     }
 
     public function addDefinitionParser(DefinitionParserInterface $DefinitionParser)
@@ -297,12 +306,10 @@ class MigrationService
 
                 $this->dispatcher->dispatch($this->eventPrefix . 'migration_suspended', new MigrationSuspendedEvent($step, $e));
 
-                /**
-                 * @todo do suspend the migration:
-                 * - current step nr.
-                 * - global context
-                 * - how do we retrieve the complete set of references ?
-                 */
+                // prepare data for the context handler
+                $this->migrationContext[$migrationDefinition->name] = array('step' => $i, 'context' => $migrationContext);
+                // let the context handler store our data, along context data from any other (tagged) service which has some
+                $this->contextHandler->storeCurrentContext($migrationDefinition->name);
 
                 $finalStatus = Migration::STATUS_SUSPENDED;
                 $finalMessage = "Suspended in execution of step $i: " . $e->getMessage();
@@ -469,5 +476,23 @@ class MigrationService
         }
 
         return $message;
+    }
+
+    /**
+     * @param string $migrationName
+     * @return array
+     */
+    public function getCurrentContext($migrationName)
+    {
+        return isset($this->migrationContext[$migrationName]) ? $this->migrationContext[$migrationName] : null;
+    }
+
+    /**
+     * @param string $migrationName
+     * @param array $context
+     */
+    public function restoreContext($migrationName, array $context)
+    {
+        $this->migrationContext[$migrationName] = $context;
     }
 }
