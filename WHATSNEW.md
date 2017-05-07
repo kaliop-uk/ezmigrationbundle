@@ -29,6 +29,10 @@ Version 4.0 RC-1 (unreleased)
 
 * BC changes:
 
+    - eZPublish 5.3 and eZPublish Community 2014.3 are not supported any more (eZPublish 5.3 ended support in May 2017)
+
+    - the code will start targeting php 5.6 as minimum version starting with this release
+
     - the following interfaces have been modified: MigrationGeneratorInterface, StorageHandlerInterface, 
 
     - lots of refactoring in the Core (non API) classes. If you have extended them, be prepared for some porting work

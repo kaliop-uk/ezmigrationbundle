@@ -22,8 +22,8 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
-        "ezsystems/ezpublish-kernel": ">=5.3|>=2014.03",
+        "php": ">=5.6",
+        "ezsystems/ezpublish-kernel": ">=5.4|>=2014.11",
         "ext-pdo": "*",
         "nikic/php-parser": "2.*",
         "symfony/process": "*",

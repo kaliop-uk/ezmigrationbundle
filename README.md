@@ -10,9 +10,9 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 ## Requirements
 
-* PHP 5.4 or later.
+* PHP 5.6 or later.
 
-* eZPublish Enterprise 5.3 or Community 2014.3 or later.
+* eZPublish Enterprise 5.4 or Community 2014.11 or later.
 
 
 ## Installation
