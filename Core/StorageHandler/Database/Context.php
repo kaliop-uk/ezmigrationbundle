@@ -62,8 +62,8 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
             $conn->update(
                 $this->tableName,
                 array(
-                    'insertion_date' => time(),
                     'context' => $this->contextToString($context),
+                    'insertion_date' => time(),
                 ),
                 array('migration' => $migrationName)
             );
@@ -75,7 +75,11 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
             // commit immediately, to release the lock and avoid deadlocks
             $conn->commit();
 
-            $conn->insert($this->tableName, array($migrationName, $this->contextToString($context), time()));
+            $conn->insert($this->tableName, array(
+                'migration' => $migrationName,
+                'context' => $this->contextToString($context),
+                'insertion_date' => time(),
+            ));
         }
     }
 
@@ -108,7 +112,8 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         $schema = new Schema();
 
         $t = $schema->createTable($this->tableName);
-        $t->addColumn('migration', 'text');
+        $t->addColumn('migration', 'string', array('length' => 255));
+        $t->addColumn('context', 'text');
         $t->addColumn('insertion_date', 'integer');
         $t->setPrimaryKey(array('migration'));
 

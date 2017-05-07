@@ -8,6 +8,8 @@ use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
+use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 
 /**
  * Tests the MigrationAbortedException, as well as direct manipulation of the migration service
@@ -37,8 +39,9 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
     public function testExecuteGoodDSL($filePath = '')
     {
         $bundles = $this->container->getParameter('kernel.bundles');
+        $ms = $this->container->get('ez_migration_bundle.migration_service');
 
-        if ($filePath == '' || !isset($bundles['NetgenTagsBundle'])) {
+        if ($filePath == '') {
             $this->markTestSkipped();
             return;
         }
@@ -54,22 +57,28 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegexp('?Added migration?', $output);
 
-        //$count1 = BeforeStepExecutionListener::getExecutions();
-        //$count2 = StepExecutedListener::getExecutions();
+        $count1 = BeforeStepExecutionListener::getExecutions();
+        $count2 = StepExecutedListener::getExecutions();
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
 
-        /// @todo add after suspension/cancellation checks
-        /*
-        // check that there are no notes after adding the migration
-        $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
-        // simplistic check on the event listeners having fired off correctly
-        $this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
-        $this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
-        */
+        $count3 = BeforeStepExecutionListener::getExecutions();
+        $count4 = StepExecutedListener::getExecutions();
+        $this->assertEquals($count1 + 2, $count3, "Migration not suspended/canceled: executed incorrect number of steps");
+        $this->assertEquals($count2 + 1, $count4, "Migration not suspended/canceled: executed incorrect number of steps");
+
+        $m = $ms->getMigration(basename($filePath));
+        $this->assertThat(
+            $m->status,
+            $this->logicalOr(
+                $this->equalTo(Migration::STATUS_SUSPENDED),
+                $this->equalTo(Migration::STATUS_DONE)
+            ),
+            'Migration supposed to be aborted/suspended but in unexpected state'
+        );
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);

@@ -57,7 +57,10 @@ class MigrationExecutor extends AbstractExecutor
         $message = isset($dsl['message']) ? $dsl['message'] : '';
 
         if (isset($dsl['if'])) {
-            /// @todo ...
+            if (!$this->matchConditions($dsl['if'])) {
+                // q: return timestamp, matched condition or ... ?
+                return true;
+            }
         }
 
         throw new MigrationAbortedException($message);
@@ -77,10 +80,10 @@ class MigrationExecutor extends AbstractExecutor
             throw new \Exception("An until condition is required to suspend a migration");
         }
 
-        if ($matched = $this->matchConditions($dsl['until'])) {
+        if ($this->matchConditions($dsl['until'])) {
             // the time has come to resume!
             // q: return timestamp, matched condition or ... ?
-            return $matched;
+            return true;
         }
 
         throw new MigrationSuspendedException($message);

@@ -10,4 +10,10 @@
     until:
         match:
             "reference:kmb_test_21":
-                eq: hello
+                eq: world
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_21b
+    value: unreachable

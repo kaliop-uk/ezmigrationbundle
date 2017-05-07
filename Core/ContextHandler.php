@@ -36,7 +36,7 @@ class ContextHandler
     {
         $context = array();
         foreach($this->providers as $label => $provider) {
-            $context[$label] = $provider->getCurrentContext();
+            $context[$label] = $provider->getCurrentContext($migrationName);
         }
 
         $this->storageHandler->storeMigrationContext($migrationName, $context);
@@ -54,7 +54,7 @@ class ContextHandler
         }
         foreach($this->providers as $label => $provider) {
             if (isset($context[$label])) {
-                $provider->restoreContext($context[$label]);
+                $provider->restoreContext($migrationName, $context[$label]);
             }
         }
     }
