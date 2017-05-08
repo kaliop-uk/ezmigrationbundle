@@ -53,7 +53,7 @@ EOT
 
         $suspendedMigrations = $migrationService->getMigrationsByStatus(Migration::STATUS_SUSPENDED);
 
-        $output->writeln('<info>Found ' . count($suspendedMigrations) . 'suspended migrations</info>');
+        $output->writeln('<info>Found ' . count($suspendedMigrations) . ' suspended migrations</info>');
 
         if (!count($suspendedMigrations)) {
             $output->writeln('Nothing to do');
@@ -75,7 +75,7 @@ EOT
         }
 
         foreach($suspendedMigrations as $suspendedMigration) {
-            $this->writeln("<info>Resuming {$suspendedMigration->name}</info>");
+            $output->writeln("<info>Resuming {$suspendedMigration->name}</info>");
 
             try {
                 $migrationService->resumeMigration($suspendedMigration, !$input->getOption('no-transactions'));

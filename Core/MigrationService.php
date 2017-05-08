@@ -409,12 +409,13 @@ class MigrationService implements ContextProviderInterface
             throw new \Exception("Can not resume migration '{$migration->name}': it is not in suspended status");
         }
 
-        $migrationDefinitions = $this->getMigrationsDefinitions($migration->path);
+        $migrationDefinitions = $this->getMigrationsDefinitions(array($migration->path));
         if (!count($migrationDefinitions)) {
             throw new \Exception("Can not resume migration '{$migration->name}': its definition is missing");
         }
 
-        $migrationDefinition = reset($migrationDefinitions->getArrayCopy());
+        $defs = $migrationDefinitions->getArrayCopy();
+        $migrationDefinition = reset($defs);
 
         $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
         if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
@@ -423,7 +424,7 @@ class MigrationService implements ContextProviderInterface
 
         // restore context
         $this->contextHandler->restoreCurrentContext($migration->name);
-        $restoredContext = $this->migrationContext;
+        $restoredContext = $this->migrationContext[$migration->name];
 
         /// @todo check that restored context is valid
 
