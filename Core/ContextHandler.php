@@ -58,4 +58,9 @@ class ContextHandler
             }
         }
     }
+
+    public function deleteContext($migrationName)
+    {
+        $this->storageHandler->deleteMigrationContext($migrationName);
+    }
 }

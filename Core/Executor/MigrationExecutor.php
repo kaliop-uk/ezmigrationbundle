@@ -102,7 +102,8 @@ class MigrationExecutor extends AbstractExecutor
                     return time() >= $values;
 
                 case 'match':
-                    return reset($this->referenceMatcher->match($values));
+                    $match = $this->referenceMatcher->match($values);
+                    return reset($match);
 
                 default:
                     throw new \Exception("Unknown until condition: '$key' when suspending a migration");

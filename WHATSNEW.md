@@ -1,7 +1,19 @@
 Version 4.0 RC-1 (unreleased)
 =============================
 
+* New: migrations can now be cancelled by using a custom migration step. Ex:
+
+        -
+            type: migration
+            mode: cancel
+            if: ...
+
 * New: migrations can now be suspended and resumed: (WIP for the moment...)
+
+        -
+            type: migration
+            mode: suspended
+            until: ...
 
 * New: it is now possible to save the current references to a file
 

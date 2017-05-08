@@ -80,4 +80,13 @@ interface StorageHandlerInterface
      */
     public function skipMigration(MigrationDefinition $migrationDefinition);
 
+    /**
+     * Resumes a migration (updates it, from SUSPENDED to status STARTED)
+     *
+     * @param Migration $migration
+     * @return Migration
+     * @throws \Exception If the migration was not present or not suspended
+     */
+    public function resumeMigration(Migration $migration);
+
 }

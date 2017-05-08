@@ -1,12 +1,20 @@
 -
     type: migration
     mode: cancel
-    message: string # Optional
+    message: string # Optional. Will be part of the migration status stored in the database
+    if: # Optional. If set, the migration will be halted when the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+
 
 -
     type: migration
     mode: suspend
-    message: string # Optional
-    until: # Optional. If set, migration will be suspended until the given condition. NB: needs a cronjob to be set
-           # up to later resume
+    message: string # Optional. Will be part of the migration status stored in the database
+    until: # Optional. If set, migration will be suspended until the given condition is satisfied.
+           # NB: needs a cronjob to be set up to later resume
+           # Use only one of either 'date' or 'match'
         date: timestamp # unix timestamp
+        match: # Optional. If set, the migration will be suspended until the condition is matched
+            "reference:_ref_name": # name of a reference to be used for the test
+                _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

@@ -240,11 +240,9 @@ class MigrationService implements ContextProviderInterface
      * @param string $defaultLanguageCode
      * @param string $adminLogin
      * @throws \Exception
-     *
-     * @todo add support for skipped migrations, partially executed migrations
      */
     public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
-        $defaultLanguageCode = null, $adminLogin = null)
+                                     $defaultLanguageCode = null, $adminLogin = null)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
@@ -260,21 +258,37 @@ class MigrationService implements ContextProviderInterface
         // set migration as begun - has to be in own db transaction
         $migration = $this->storageHandler->startMigration($migrationDefinition);
 
+        $this->executeMigrationInner($migration, $migrationDefinition, $migrationContext, 0, $useTransaction, $adminLogin);
+    }
+
+    /**
+     * @param Migration $migration
+     * @param MigrationDefinition $migrationDefinition
+     * @param array $migrationContext
+     * @param int $stepOffset
+     * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
+     * @param string $adminLogin
+     * @throws \Exception
+     */
+    public function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
+        $migrationContext, $stepOffset = 0, $useTransaction = true, $adminLogin = null)
+    {
         if ($useTransaction) {
             $this->repository->beginTransaction();
         }
 
         $previousUserId = null;
+        $steps = array_slice($migrationDefinition->steps->getArrayCopy(), $stepOffset);
 
         try {
 
-            $i = 1;
+            $i = $stepOffset+1;
             $finalStatus = Migration::STATUS_DONE;
             $finalMessage = null;
 
             try {
 
-                foreach ($migrationDefinition->steps as $step) {
+                foreach ($steps as $step) {
 
                     $step = $this->injectContextIntoStep($step, $migrationContext);
 
@@ -380,6 +394,48 @@ class MigrationService implements ContextProviderInterface
 
             throw new MigrationStepExecutionException($errorMessage, $i, $e);
         }
+    }
+
+    /**
+     * @param Migration $migration
+     * @param bool $useTransaction
+     * @throws \Exception
+     *
+     * @todo add support for adminLogin ?
+     */
+    public function resumeMigration(Migration $migration, $useTransaction = true)
+    {
+        if ($migration->status != Migration::STATUS_SUSPENDED) {
+            throw new \Exception("Can not resume migration '{$migration->name}': it is not in suspended status");
+        }
+
+        $migrationDefinitions = $this->getMigrationsDefinitions($migration->path);
+        if (!count($migrationDefinitions)) {
+            throw new \Exception("Can not resume migration '{$migration->name}': its definition is missing");
+        }
+
+        $migrationDefinition = reset($migrationDefinitions->getArrayCopy());
+
+        $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
+        if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
+            throw new \Exception("Can not resume migration '{$migration->name}': {$migrationDefinition->parsingError}");
+        }
+
+        // restore context
+        $this->contextHandler->restoreCurrentContext($migration->name);
+        $restoredContext = $this->migrationContext;
+
+        /// @todo check that restored context is valid
+
+        // update migration status
+        $migration = $this->storageHandler->resumeMigration($migration);
+
+        // clean up restored context - ideally it should be in the same db transaction as the line above
+        $this->contextHandler->deleteContext($migration->name);
+
+        // and go
+        $this->executeMigrationInner($migration, $migrationDefinition, $restoredContext['context'],
+            $restoredContext['step'], $useTransaction);
     }
 
     /**

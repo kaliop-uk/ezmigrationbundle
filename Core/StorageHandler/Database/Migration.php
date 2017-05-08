@@ -331,6 +331,64 @@ class Migration extends TableStorage implements StorageHandlerInterface
         return $migration;
     }
 
+    public function resumeMigration(APIMigration $migration)
+    {
+        $this->createTableIfNeeded();
+
+        // select for update
+
+        // annoyingly enough, neither Doctrine nor EZP provide built in support for 'FOR UPDATE' in their query builders...
+        // at least the doctrine one allows us to still use parameter binding when we add our sql particle
+        $conn = $this->getConnection();
+
+        $qb = $conn->createQueryBuilder();
+        $qb->select('*')
+            ->from($this->tableName, 'm')
+            ->where('migration = ?');
+        $sql = $qb->getSQL() . ' FOR UPDATE';
+
+        $conn->beginTransaction();
+
+        $stmt = $conn->executeQuery($sql, array($migration->name));
+        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!is_array($existingMigrationData)) {
+            // commit immediately, to release the lock and avoid deadlocks
+            $conn->commit();
+            throw new \Exception("Migration '{$migration->name}' can not be resumed as it is not found");
+        }
+
+        // migration exists
+
+        // fail if it was not suspended
+        if ($existingMigrationData['status'] != APIMigration::STATUS_SUSPENDED) {
+            // commit to release the lock
+            $conn->commit();
+            throw new \Exception("Migration '{$migration->name}' can not be resumed as it is not suspended");
+        }
+
+        $migration = new APIMigration(
+            $migration->name,
+            $migration->md5,
+            $migration->path,
+            time(),
+            APIMigration::STATUS_STARTED
+        );
+
+        $conn->update(
+            $this->tableName,
+            array(
+                'execution_date' => $migration->executionDate,
+                'status' => APIMigration::STATUS_STARTED,
+                'execution_error' => null
+            ),
+            array('migration' => $migration->name)
+        );
+        $conn->commit();
+
+        return $migration;
+    }
+
     /**
      * Removes all migration from storage (regardless of their status)
      */
