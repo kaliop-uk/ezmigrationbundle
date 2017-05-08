@@ -270,7 +270,7 @@ class MigrationService implements ContextProviderInterface
      * @param string $adminLogin
      * @throws \Exception
      */
-    public function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
+    protected function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
         $migrationContext, $stepOffset = 0, $useTransaction = true, $adminLogin = null)
     {
         if ($useTransaction) {
