@@ -10,7 +10,7 @@ use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
-use Kaliop\eZMigrationBundle\Core\FieldHandler\FieldHandlerManager;
+use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;

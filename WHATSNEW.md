@@ -1,6 +1,9 @@
 Version 4.0 RC-1 (unreleased)
 =============================
 
+* New: the `ka:mi:migration` status command learned a new `--info` action to give detailed information on a single
+    migration at a time
+
 * New: migrations can now be cancelled by using a custom migration step. Ex:
 
         -

@@ -56,6 +56,7 @@ EOT
                 $index[$migration->name] = array('migration' => $migration);
 
                 // no definition, but a migration is there. Check if the definition sits elsewhere on disk than we expect it to be...
+                // q: what if we have a loader which does not work with is_file? Could we remove this check?
                 if ($migration->path != '' && is_file($migration->path)) {
                     try {
                         $migrationDefinitionCollection = $migrationsService->getMigrationsDefinitions(array($migration->path));
