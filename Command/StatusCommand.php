@@ -19,12 +19,7 @@ class StatusCommand extends AbstractCommand
     {
         $this->setName('kaliop:migration:status')
             ->setDescription('View the status of a set of migrations.')
-            ->addOption(
-                'path',
-                null,
-                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                "The directory or file to load the migration definitions from"
-            )
+            ->addOption('path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "The directory or file to load the migration definitions from")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:status</info> command displays the status of all available migrations:
 
