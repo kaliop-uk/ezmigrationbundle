@@ -435,8 +435,9 @@ class MigrationService implements ContextProviderInterface
         $this->contextHandler->deleteContext($migration->name);
 
         // and go
+        // note: we store the current step counting starting at 1, but use offset staring at 0, hence the -1 here
         $this->executeMigrationInner($migration, $migrationDefinition, $restoredContext['context'],
-            $restoredContext['step'], $useTransaction);
+            $restoredContext['step'] - 1, $useTransaction);
     }
 
     /**
