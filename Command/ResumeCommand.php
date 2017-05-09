@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 /**
  * Command to resume suspended migrations.
  *
- * @todo add support for resuming a single migration or a set based on path
+ * @todo add support for resuming a set based on path
  * @todo add support for the separate-process cli switch
  */
 class ResumeCommand extends AbstractCommand
@@ -31,9 +31,8 @@ class ResumeCommand extends AbstractCommand
             ->addOption('ignore-failures', 'i', InputOption::VALUE_NONE, "Keep resuming migrations even if one fails")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question.")
             ->addOption('no-transactions', 'u', InputOption::VALUE_NONE, "Do not use a repository transaction to wrap each migration. Unsafe, but needed for legacy slot handlers")
-            //->addArgument('migration', InputArgument::REQUIRED, 'The migration to add/skip (filename with full path) or delete (plain migration name).', null)
-            ->setHelp(
-                <<<EOT
+            ->addOption('migration', 'm', InputOption::VALUE_REQUIRED, 'A single migration to resume (plain migration name).', null)
+            ->setHelp(<<<EOT
 The <info>kaliop:migration:resume</info> command allows you to resume any suspended migration
 EOT
             );
@@ -45,15 +44,28 @@ EOT
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return null|int null or 0 if everything went fine, or an error code
+     * @throws \Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
 
         $migrationService = $this->getMigrationService();
-        //$migrationNameOrPath = $input->getArgument('migration');
 
-        $suspendedMigrations = $migrationService->getMigrationsByStatus(Migration::STATUS_SUSPENDED);
+        $migrationName = $input->getOption('migration');
+        if ($migrationName != null) {
+            $suspendedMigration = $migrationService->getMigration($migrationName);
+            if (!$suspendedMigration) {
+                throw new \Exception("Migration '$migrationName' not found");
+            }
+            if ($suspendedMigration->status != Migration::STATUS_SUSPENDED) {
+                throw new \Exception("Migration '$migrationName' is not suspended, can not resume it");
+            }
+
+            $suspendedMigrations = array($suspendedMigration);
+        } else {
+            $suspendedMigrations = $migrationService->getMigrationsByStatus(Migration::STATUS_SUSPENDED);
+        };
 
         $output->writeln('<info>Found ' . count($suspendedMigrations) . ' suspended migrations</info>');
 
