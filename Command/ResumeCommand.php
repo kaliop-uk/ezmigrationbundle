@@ -48,6 +48,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
+
         $migrationService = $this->getMigrationService();
         //$migrationNameOrPath = $input->getArgument('migration');
 
