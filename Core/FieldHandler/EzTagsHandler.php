@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 
-class EzTags extends AbstractComplexField implements FieldValueImporterInterface
+class EzTags extends AbstractFieldHandler implements FieldValueImporterInterface
 {
     protected $tagMatcher;
 

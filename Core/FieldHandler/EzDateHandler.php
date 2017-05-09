@@ -1,10 +1,10 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 
-class EzDate extends AbstractComplexField implements FieldValueConverterInterface
+class EzDate extends AbstractFieldHandler implements FieldValueConverterInterface
 {
     /**
      * Creates a value object to use as the field value when setting a boolean field type.

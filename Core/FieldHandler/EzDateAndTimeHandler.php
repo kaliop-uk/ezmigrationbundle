@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 
-class EzDateAndTime extends AbstractComplexField implements FieldValueConverterInterface, FieldDefinitionConverterInterface
+class EzDateAndTime extends AbstractFieldHandler implements FieldValueConverterInterface, FieldDefinitionConverterInterface
 {
     /**
      * @param int|string|null $fieldValue use a timestamp; if as string, prepend it with @ sign

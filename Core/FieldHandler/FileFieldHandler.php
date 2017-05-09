@@ -1,10 +1,10 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\IO\UrlDecorator;
 
-class FileField extends AbstractComplexField
+class FileFieldHandler extends AbstractFieldHandler
 {
     protected $ioRootDir;
     protected $ioDecorator;

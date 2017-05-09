@@ -54,7 +54,7 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
             asort($priorities);
 
             foreach ($priorities as $id => $priority) {
-                $migrationService->addMethodCall('addComplexField', $handlers[$id]);
+                $migrationService->addMethodCall('addFieldHandler', $handlers[$id]);
             }
         }
 

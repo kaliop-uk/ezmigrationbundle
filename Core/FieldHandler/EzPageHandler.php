@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Bundle\EzPublishCoreBundle\FieldType\Page\PageService;
 use eZ\Publish\Core\FieldType\Page\Value as PageValue;
@@ -9,7 +9,7 @@ use eZ\Publish\Core\FieldType\Page\HashConverter;
 use eZ\Publish\Core\FieldType\Page\Parts\Page;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 
-class EzPage extends AbstractComplexField implements FieldValueImporterInterface
+class EzPage extends AbstractFieldHandler implements FieldValueImporterInterface
 {
     /** @var PageService $pageService */
     protected $pageService;

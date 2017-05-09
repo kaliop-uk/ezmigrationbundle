@@ -67,21 +67,21 @@ parameters:
     ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
     ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
 
-    ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
-    ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
-    ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
-    ez_migration_bundle.complex_field.ezboolean.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBoolean
-    ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDate
-    ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDateAndTime
-    ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
-    ez_migration_bundle.complex_field.ezmedia.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzMedia
-    ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
-    ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
-    ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelationList
-    ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
-    ez_migration_bundle.complex_field.ezselection.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzSelection
-    ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
-    ez_migration_bundle.complex_field.eztags.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzTags
+    ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\FieldHandlerManager
+    ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzAuthor
+    ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzBinaryFile
+    ez_migration_bundle.complex_field.ezboolean.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzBoolean
+    ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzDate
+    ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzDateAndTime
+    ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzImage
+    ez_migration_bundle.complex_field.ezmedia.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzMedia
+    ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzPage
+    ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRelation
+    ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRelationList
+    ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRichText
+    ez_migration_bundle.complex_field.ezselection.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzSelection
+    ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzXmlText
+    ez_migration_bundle.complex_field.eztags.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzTags
 
     ez_migration_bundle.reference_resolver.chain.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainResolver
     ez_migration_bundle.reference_resolver.chain_prefix.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainPrefixResolver

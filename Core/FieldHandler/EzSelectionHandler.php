@@ -1,12 +1,12 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\Selection\Value as SelectionValue;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use \eZ\Publish\API\Repository\Repository;
 
-class EzSelection extends AbstractComplexField implements FieldValueImporterInterface
+class EzSelection extends AbstractFieldHandler implements FieldValueImporterInterface
 {
     protected $repository;
 

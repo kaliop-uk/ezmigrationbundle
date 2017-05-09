@@ -51,6 +51,8 @@ Version 4.0 RC-1 (unreleased)
 
     - the following interfaces have been modified: MigrationGeneratorInterface, StorageHandlerInterface, 
 
+    - the following deprecated interfaces have been removed: ComplexFieldInterface 
+
     - lots of refactoring in the Core (non API) classes. If you have extended them, be prepared for some porting work
 
 

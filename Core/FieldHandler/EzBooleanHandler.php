@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\Checkbox\Value as CheckboxValue;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 
-class EzBoolean extends AbstractComplexField implements FieldValueImporterInterface
+class EzBoolean extends AbstractFieldHandler implements FieldValueImporterInterface
 {
     /**
      * Creates a value object to use as the field value when setting a boolean field type.

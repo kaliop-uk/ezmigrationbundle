@@ -10,7 +10,7 @@ use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
-use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
+use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use JmesPath\Env as JmesPath;
 
 /**
@@ -25,15 +25,15 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     protected $contentTypeGroupMatcher;
     // This resolver is used to resolve references in content-type settings definitions
     protected $extendedReferenceResolver;
-    protected $complexFieldManager;
+    protected $fieldHandlerManager;
 
     public function __construct(ContentTypeMatcher $matcher, ContentTypeGroupMatcher $contentTypeGroupMatcher,
-        ReferenceResolverInterface $extendedReferenceResolver, ComplexFieldManager $complexFieldManager)
+                                ReferenceResolverInterface $extendedReferenceResolver, FieldHandlerManager $fieldHandlerManager)
     {
         $this->contentTypeMatcher = $matcher;
         $this->contentTypeGroupMatcher = $contentTypeGroupMatcher;
         $this->extendedReferenceResolver = $extendedReferenceResolver;
-        $this->complexFieldManager = $complexFieldManager;
+        $this->fieldHandlerManager = $fieldHandlerManager;
     }
 
     /**
@@ -481,12 +481,12 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $fieldType = $fieldTypeService->getFieldType($fieldTypeIdentifier);
         $nullValue = $fieldType->getEmptyValue();
         if ($fieldDefinition->defaultValue != $nullValue) {
-            $attribute['default-value'] = $this->complexFieldManager->fieldValueToHash(
+            $attribute['default-value'] = $this->fieldHandlerManager->fieldValueToHash(
                 $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->defaultValue
             );
         }
 
-        $attribute['field-settings'] = $this->complexFieldManager->fieldSettingsToHash(
+        $attribute['field-settings'] = $this->fieldHandlerManager->fieldSettingsToHash(
             $fieldTypeIdentifier, $contentType->identifier, $fieldDefinition->fieldSettings
         );
 
@@ -542,7 +542,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     break;
                 case 'default-value':
                     /// @todo check that this works for all field types. Maybe we should use fromHash() on the field type,
-                    ///       or, better, use the complexFieldManager?
+                    ///       or, better, use the FieldHandlerManager?
                     $fieldDefinition->defaultValue = $value;
                     break;
                 case 'field-settings':
@@ -644,8 +644,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         }
 
         // then handle the conversion of the settings from Hash to Repo representation
-        if ($this->complexFieldManager->managesFieldDefinition($fieldTypeIdentifier, $contentTypeIdentifier)) {
-            $ret = $this->complexFieldManager->hashToFieldSettings($fieldTypeIdentifier, $contentTypeIdentifier, $value);
+        if ($this->fieldHandlerManager->managesFieldDefinition($fieldTypeIdentifier, $contentTypeIdentifier)) {
+            $ret = $this->fieldHandlerManager->hashToFieldSettings($fieldTypeIdentifier, $contentTypeIdentifier, $value);
         }
 
         return $ret;

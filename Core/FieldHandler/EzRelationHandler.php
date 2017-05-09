@@ -1,13 +1,13 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\Relation\Value;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 
-class EzRelation extends AbstractComplexField implements FieldValueImporterInterface, FieldDefinitionConverterInterface
+class EzRelation extends AbstractFieldHandler implements FieldValueImporterInterface, FieldDefinitionConverterInterface
 {
     protected $contentMatcher;
 

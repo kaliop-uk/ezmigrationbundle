@@ -10,7 +10,7 @@ use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
-use Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager;
+use Kaliop\eZMigrationBundle\Core\FieldHandler\FieldHandlerManager;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
@@ -32,7 +32,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected $sectionMatcher;
     protected $userMatcher;
     protected $objectStateMatcher;
-    protected $complexFieldManager;
+    protected $fieldHandlerManager;
     protected $locationManager;
     protected $sortConverter;
 
@@ -41,7 +41,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         SectionMatcher $sectionMatcher,
         UserMatcher $userMatcher,
         ObjectStateMatcher $objectStateMatcher,
-        ComplexFieldManager $complexFieldManager,
+        FieldHandlerManager $fieldHandlerManager,
         LocationManager $locationManager,
         SortConverter $sortConverter
     ) {
@@ -49,7 +49,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $this->sectionMatcher = $sectionMatcher;
         $this->userMatcher = $userMatcher;
         $this->objectStateMatcher = $objectStateMatcher;
-        $this->complexFieldManager = $complexFieldManager;
+        $this->fieldHandlerManager = $fieldHandlerManager;
         $this->locationManager = $locationManager;
         $this->sortConverter = $sortConverter;
     }
@@ -432,7 +432,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                         $fieldIdentifier = preg_replace('/[[(|&!{].*$/', '', $parts[1]);
                         $field = $content->getField($fieldIdentifier);
                         $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
-                        $hashValue = $this->complexFieldManager->fieldValueToHash(
+                        $hashValue = $this->fieldHandlerManager->fieldValueToHash(
                             $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
                         );
                         if (is_array($hashValue) ) {
@@ -545,7 +545,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $attributes = array();
                 foreach ($content->getFieldsByLanguage($this->getLanguageCodeFromContext($context)) as $fieldIdentifier => $field) {
                     $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
-                    $attributes[$field->fieldDefIdentifier] = $this->complexFieldManager->fieldValueToHash(
+                    $attributes[$field->fieldDefIdentifier] = $this->fieldHandlerManager->fieldValueToHash(
                         $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
                     );
                 }
@@ -645,11 +645,11 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function getFieldValue($value, FieldDefinition $fieldDefinition, $contentTypeIdentifier, array $context = array())
     {
         $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
-        if (is_array($value) || $this->complexFieldManager->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
+        if (is_array($value) || $this->fieldHandlerManager->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
             // inject info about the current content type and field into the context
             $context['contentTypeIdentifier'] = $contentTypeIdentifier;
             $context['fieldIdentifier'] = $fieldDefinition->identifier;
-            return $this->complexFieldManager->hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $value, $context);
+            return $this->fieldHandlerManager->hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $value, $context);
         }
 
         return $this->getSingleFieldValue($value, $fieldDefinition, $contentTypeIdentifier, $context);
