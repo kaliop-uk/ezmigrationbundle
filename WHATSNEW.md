@@ -8,12 +8,16 @@ Version 4.0 RC-1 (unreleased)
             mode: cancel
             if: ...
 
-* New: migrations can now be suspended and resumed: (WIP for the moment...)
+    More details in [Resources/doc/DSL/Migrations.yml](Resources/doc/DSL/Migrations.yml)
+
+* New: migrations can now be suspended and resumed:
 
         -
             type: migration
             mode: suspended
             until: ...
+
+    More details in [Resources/doc/DSL/Migrations.yml](Resources/doc/DSL/Migrations.yml)
 
 * New: it is now possible to save the current references to a file
 
