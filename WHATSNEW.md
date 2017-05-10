@@ -1,3 +1,10 @@
+Version 3.6.3
+=============
+
+New: the `migrate` command by default will print out the number of executed, failed and skipped migrations, as well as
+    time and memory taken
+
+
 Version 3.6.2
 =============
 
