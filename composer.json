@@ -37,7 +37,8 @@
         "codeclimate/php-test-reporter": "~0.4"
     },
     "conflict": {
-        "netgen/tagsbundle": "1.*"
+        "netgen/tagsbundle": "1.*",
+        "ezsystems/ezpublish-kernel": "6.7.3"
     },
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }

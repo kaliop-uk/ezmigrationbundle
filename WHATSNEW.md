@@ -1,3 +1,16 @@
+Version 3.6.2
+=============
+
+Fix: when using an AND condition to match locations, the results where closer to what an OR condition would produce; too
+    many nodes would be matched
+
+
+Version 3.6.1
+=============
+
+Fix: when setting both content creation and modification time upon content creation, modification time was lost
+
+
 Version 3.6
 ===========
 

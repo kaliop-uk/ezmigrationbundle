@@ -104,7 +104,9 @@ class LocationMatcher extends RepositoryMatcher
 
         foreach ($contentIds as $contentId) {
             $content = $this->repository->getContentService()->loadContent($contentId);
-            $locations = array_merge($locations, $this->repository->getLocationService()->loadLocations($content->contentInfo));
+            foreach($this->repository->getLocationService()->loadLocations($content->contentInfo) as $location) {
+                $locations[$location->id] = $location;
+            }
         }
 
         return $locations;
@@ -122,7 +124,9 @@ class LocationMatcher extends RepositoryMatcher
 
         foreach ($remoteContentIds as $remoteContentId) {
             $content = $this->repository->getContentService()->loadContentByRemoteId($remoteContentId);
-            $locations = array_merge($locations, $this->repository->getLocationService()->loadLocations($content->contentInfo));
+            foreach($this->repository->getLocationService()->loadLocations($content->contentInfo) as $location) {
+                $locations[$location->id] = $location;
+            }
         }
 
         return $locations;
@@ -137,7 +141,7 @@ class LocationMatcher extends RepositoryMatcher
         $locations = [];
 
         foreach ($locationIds as $locationId) {
-            $locations[] = $this->repository->getLocationService()->loadLocation($locationId);
+            $locations[$locationId] = $this->repository->getLocationService()->loadLocation($locationId);
         }
 
         return $locations;
@@ -152,7 +156,8 @@ class LocationMatcher extends RepositoryMatcher
         $locations = [];
 
         foreach ($locationRemoteIds as $locationRemoteId) {
-            $locations[] = $this->repository->getLocationService()->loadLocationByRemoteId($locationRemoteId);
+            $location = $this->repository->getLocationService()->loadLocationByRemoteId($locationRemoteId);
+            $locations[$location->id] = $location;
         }
 
         return $locations;
@@ -173,7 +178,7 @@ class LocationMatcher extends RepositoryMatcher
         $locations = [];
 
         foreach ($results->searchHits as $result) {
-            $locations[] = $result->valueObject;
+            $locations[$result->valueObject->id] = $result->valueObject;
         }
 
         return $locations;
@@ -189,7 +194,7 @@ class LocationMatcher extends RepositoryMatcher
 
         foreach ($parentLocationRemoteIds as $parentLocationRemoteId) {
             $location = $this->repository->getLocationService()->loadLocationByRemoteId($parentLocationRemoteId);
-            $locationIds[] = $location->id;
+            $locationIds[$location->id] = $location->id;
         }
 
         return $this->findLocationsByParentLocationIds($locationIds);
