@@ -48,6 +48,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $start = microtime(true);
+
         $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
 
         $migrationService = $this->getMigrationService();
@@ -88,19 +90,34 @@ EOT
             }
         }
 
+        $executed = 0;
+        $failed = 0;
+
         foreach($suspendedMigrations as $suspendedMigration) {
             $output->writeln("<info>Resuming {$suspendedMigration->name}</info>");
 
             try {
                 $migrationService->resumeMigration($suspendedMigration, !$input->getOption('no-transactions'));
+
+                $executed++;
             } catch (\Exception $e) {
                 if ($input->getOption('ignore-failures')) {
                     $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                    $failed++;
                     continue;
                 }
                 $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
                 return 1;
             }
+        }
+
+        $time = microtime(true) - $start;
+        $this->writeln("Resumed $executed migrations, failed $failed");
+        if ($input->getOption('separate-process')) {
+            // in case of using subprocesses, we can not measure max memory used
+            $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
+        } else {
+            $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
         }
     }
 }

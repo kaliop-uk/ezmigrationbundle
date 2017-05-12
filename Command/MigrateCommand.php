@@ -69,6 +69,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $start = microtime(true);
+
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
@@ -117,12 +119,17 @@ EOT
             }
         }
 
+        $executed = 0;
+        $failed = 0;
+        $skipped = 0;
+
         /** @var MigrationDefinition $migrationDefinition */
         foreach ($toExecute as $name => $migrationDefinition) {
 
             // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
             if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
                 $output->writeln("<comment>Skipping $name</comment>\n");
+                $skipped++;
                 continue;
             }
 
@@ -172,9 +179,12 @@ EOT
                         throw new \Exception($errorMsg);
                     }
 
+                    $executed++;
+
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
                         $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                        $failed++;
                         continue;
                     }
                     $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
@@ -190,9 +200,11 @@ EOT
                         $input->getOption('default-language'),
                         $input->getOption('admin-login')
                     );
+                    $executed++;
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
                         $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                        $failed++;
                         continue;
                     }
                     $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
@@ -209,6 +221,10 @@ EOT
             $inputArray = new ArrayInput(array('command' => 'cache:clear'));
             $command->run($inputArray, $output);
         }
+
+        $time = microtime(true) - $start;
+        $this->writeln("Executed $executed migrations, failed $failed, skipped $skipped");
+        $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
     }
 
     /**
