@@ -3,9 +3,11 @@ Version 4.0 RC-1 (unreleased)
 
 * New: the `migrate` command by default will print out the number of executed, failed and skipped migrations, as well as
     time and memory taken
-    
-* New: the `ka:mi:migration` status command learned a new `--info` action to give detailed information on a single
+
+* New: the `ka:mi:migration` command learned a new `--info` action to give detailed information on a single migration
     migration at a time
+
+* New: the `ka:mi:status` command learned a new `--summary` option to print only the number of migrations per status
 
 * New: migrations can now be cancelled by using a custom migration step. Ex:
 
