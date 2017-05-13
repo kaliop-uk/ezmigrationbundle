@@ -7,14 +7,24 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 
 /**
- * Implemented by classes which store details of the executed migrations
+ * Implemented by classes which store details of the executing/executed migrations
  */
 interface StorageHandlerInterface
 {
     /**
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
      * @return MigrationCollection sorted from oldest to newest
      */
-    public function loadMigrations();
+    public function loadMigrations($limit = null, $offset = null);
+
+    /**
+     * @param int $status see the STATUS_ constants
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
+     * @return MigrationCollection sorted from oldest to newest
+     */
+    public function loadMigrationsByStatus($status, $limit = null, $offset = null);
 
     /**
      * @param string $migrationName
@@ -69,5 +79,14 @@ interface StorageHandlerInterface
      * @throws \Exception If the migration was already executed, skipped or executing
      */
     public function skipMigration(MigrationDefinition $migrationDefinition);
+
+    /**
+     * Resumes a migration (updates it, from SUSPENDED to status STARTED)
+     *
+     * @param Migration $migration
+     * @return Migration
+     * @throws \Exception If the migration was not present or not suspended
+     */
+    public function resumeMigration(Migration $migration);
 
 }

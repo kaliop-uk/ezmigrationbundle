@@ -27,18 +27,18 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * Handles the section create migration action
      */
-    protected function create()
+    protected function create($step)
     {
         $sectionService = $this->repository->getSectionService();
 
         $sectionCreateStruct = $sectionService->newSectionCreateStruct();
 
-        $sectionCreateStruct->identifier = $this->dsl['identifier'];
-        $sectionCreateStruct->name = $this->dsl['name'];
+        $sectionCreateStruct->identifier = $step->dsl['identifier'];
+        $sectionCreateStruct->name = $step->dsl['name'];
 
         $section = $sectionService->createSection($sectionCreateStruct);
 
-        $this->setReferences($section);
+        $this->setReferences($section, $step);
 
         return $section;
     }
@@ -46,11 +46,11 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * Handles the section update migration action
      */
-    protected function update()
+    protected function update($step)
     {
-        $sectionCollection = $this->matchSections('update');
+        $sectionCollection = $this->matchSections('update', $step);
 
-        if (count($sectionCollection) > 1 && array_key_exists('references', $this->dsl)) {
+        if (count($sectionCollection) > 1 && array_key_exists('references', $step->dsl)) {
             throw new \Exception("Can not execute Section update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 section matches");
         }
 
@@ -58,11 +58,11 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
         foreach ($sectionCollection as $key => $section) {
             $sectionUpdateStruct = $sectionService->newSectionUpdateStruct();
 
-            if (isset($this->dsl['identifier'])) {
-                $sectionUpdateStruct->identifier = $this->dsl['identifier'];
+            if (isset($step->dsl['identifier'])) {
+                $sectionUpdateStruct->identifier = $step->dsl['identifier'];
             }
-            if (isset($this->dsl['name'])) {
-                $sectionUpdateStruct->name = $this->dsl['name'];
+            if (isset($step->dsl['name'])) {
+                $sectionUpdateStruct->name = $step->dsl['name'];
             }
 
             $section = $sectionService->updateSection($section, $sectionUpdateStruct);
@@ -70,7 +70,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             $sectionCollection[$key] = $section;
         }
 
-        $this->setReferences($sectionCollection);
+        $this->setReferences($sectionCollection, $step);
 
         return $sectionCollection;
     }
@@ -78,9 +78,9 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * Handles the section delete migration action
      */
-    protected function delete()
+    protected function delete($step)
     {
-        $sectionCollection = $this->matchSections('delete');
+        $sectionCollection = $this->matchSections('delete', $step);
 
         $sectionService = $this->repository->getSectionService();
 
@@ -96,16 +96,16 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @return SectionCollection
      * @throws \Exception
      */
-    protected function matchSections($action)
+    protected function matchSections($action, $step)
     {
-        if (!isset($this->dsl['match'])) {
+        if (!isset($step->dsl['match'])) {
             throw new \Exception("A match condition is required to $action a section");
         }
 
-        $match = $this->dsl['match'];
+        $match = $step->dsl['match'];
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->sectionMatcher->match($match);
     }
@@ -117,9 +117,9 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      */
-    protected function setReferences($section)
+    protected function setReferences($section, $step)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
@@ -130,7 +130,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             $section = reset($section);
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
                 case 'section_id':
@@ -149,7 +149,11 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
                     throw new \InvalidArgumentException('Section Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;
@@ -158,12 +162,13 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
         $sectionCollection = $this->sectionMatcher->match($matchCondition);
         $data = array();
 

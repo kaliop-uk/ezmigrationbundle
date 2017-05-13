@@ -81,11 +81,6 @@
     identifier: xyz # Class identifier
     name: xyz # Name of new class
     name_pattern: pattern # Pattern to use for the name of the contents (ex: <title>)
-    description: xyz # Optional
-    url_name_pattern: pattern # Optional
-    is_container: true|false # Optional, defaults to false
-    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
-    default_always_available: true|false # Optional, defaults to true
     attributes:
         -
             type: xyz # Attribute type (See list https://doc.ez.no/display/EZP/FieldTypes+reference)
@@ -105,15 +100,25 @@
             position: # Optional, will set the attribute to this position.
                       # NB: unlike in the eZ4 Admin Interface, fields without specified positions will be counted 1,2,3...
                       # NB: mixing attributes with a position field and some without it might give unexpected results
+    default_always_available: true|false # Optional, defaults to true
+    description: xyz # Optional
+    is_container: true|false # Optional, defaults to false
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    url_name_pattern: pattern # Optional
     # The list in references tells the manager to store specific values for later use by other steps in the current
     # migration.
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
-                                   # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
+                                   # Supports: content_type_id, content_type_identifier, creation_date, modification_date,
+                                   #           name_pattern, remote_id, status and url_name_pattern
                                    # The shorthand 'id' can be used instead of 'content_type_id'
                                    # The shorthand 'identifier' can be used instead of 'content_type_identifier'
+                                   # It also supports attributes.$identifier.$field and complex expressions, such as f.e.
+                                   # attributes.title.required (boolean value)
+                                   # attributes.ezobjectrelationlist."field-settings".selectionContentTypes.length(@) (nr. of cotent-types allowed in an object-relations field)
+                                   # (for the full syntax supported, see jmespath)
 
 -
     type: content_type
@@ -132,16 +137,16 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
-    new_identifier: xyz # Optional, will update the identifier if set
-    name: xyz # Optional, will be updated if set
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     description: xyz # Optional, will be updated if set
-    name_pattern: xyz # Optional, will be updated if set
-    url_name_pattern: xyz # Optional, will be updated if set
     is_container: true|false # Optional, will be updated if set
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    name: xyz # Optional, will be updated if set
+    name_pattern: xyz # Optional, will be updated if set
+    new_identifier: xyz # Optional, will update the identifier if set
+    url_name_pattern: xyz # Optional, will be updated if set
     attributes: # Optional, if set will update existing ones or add new ones.
         -
             identifier: xyz # Identifier of the attribute to update or identifier of the new attribute to add
@@ -190,9 +195,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
 
 # Attribute examples.
 

@@ -34,31 +34,31 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
      *
      * @todo add support for flexible defaultLanguageCode
      */
-    protected function create()
+    protected function create($step)
     {
         foreach (array('names', 'identifier') as $key) {
-            if (!isset($this->dsl[$key])) {
+            if (!isset($step->dsl[$key])) {
                 throw new \Exception("The '$key' key is missing in a object state group creation definition");
             }
         }
 
         $objectStateService = $this->repository->getObjectStateService();
 
-        $objectStateGroupCreateStruct = $objectStateService->newObjectStateGroupCreateStruct($this->dsl['identifier']);
+        $objectStateGroupCreateStruct = $objectStateService->newObjectStateGroupCreateStruct($step->dsl['identifier']);
         $objectStateGroupCreateStruct->defaultLanguageCode = self::DEFAULT_LANGUAGE_CODE;
 
-        foreach ($this->dsl['names'] as $languageCode => $name) {
+        foreach ($step->dsl['names'] as $languageCode => $name) {
             $objectStateGroupCreateStruct->names[$languageCode] = $name;
         }
-        if (isset($this->dsl['descriptions'])) {
-            foreach ($this->dsl['descriptions'] as $languageCode => $description) {
+        if (isset($step->dsl['descriptions'])) {
+            foreach ($step->dsl['descriptions'] as $languageCode => $description) {
                 $objectStateGroupCreateStruct->descriptions[$languageCode] = $description;
             }
         }
 
         $objectStateGroup = $objectStateService->createObjectStateGroup($objectStateGroupCreateStruct);
 
-        $this->setReferences($objectStateGroup);
+        $this->setReferences($objectStateGroup, $step);
 
         return $objectStateGroup;
     }
@@ -68,39 +68,39 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
      *
      * @todo add support for defaultLanguageCode
      */
-    protected function update()
+    protected function update($step)
     {
         $objectStateService = $this->repository->getObjectStateService();
 
-        $groupsCollection = $this->matchObjectStateGroups('update');
+        $groupsCollection = $this->matchObjectStateGroups('update', $step);
 
-        if (count($groupsCollection) > 1 && isset($this->dsl['references'])) {
+        if (count($groupsCollection) > 1 && isset($step->dsl['references'])) {
             throw new \Exception("Can not execute Object State Group update because multiple groups match, and a references section is specified in the dsl. References can be set when only 1 state group matches");
         }
 
-        if (count($groupsCollection) > 1 && isset($this->dsl['identifier'])) {
+        if (count($groupsCollection) > 1 && isset($step->dsl['identifier'])) {
             throw new \Exception("Can not execute Object State Group update because multiple groups match, and an identifier is specified in the dsl.");
         }
 
         foreach ($groupsCollection as $objectStateGroup) {
             $objectStateGroupUpdateStruct = $objectStateService->newObjectStateGroupUpdateStruct();
 
-            if (isset($this->dsl['identifier'])) {
-                $objectStateGroupUpdateStruct->identifier = $this->dsl['identifier'];
+            if (isset($step->dsl['identifier'])) {
+                $objectStateGroupUpdateStruct->identifier = $step->dsl['identifier'];
             }
-            if (isset($this->dsl['names'])) {
-                foreach ($this->dsl['names'] as $languageCode => $name) {
+            if (isset($step->dsl['names'])) {
+                foreach ($step->dsl['names'] as $languageCode => $name) {
                     $objectStateGroupUpdateStruct->names[$languageCode] = $name;
                 }
             }
-            if (isset($this->dsl['descriptions'])) {
-                foreach ($this->dsl['descriptions'] as $languageCode => $description) {
+            if (isset($step->dsl['descriptions'])) {
+                foreach ($step->dsl['descriptions'] as $languageCode => $description) {
                     $objectStateGroupUpdateStruct->descriptions[$languageCode] = $description;
                 }
             }
             $objectStateGroup = $objectStateService->updateObjectStateGroup($objectStateGroup, $objectStateGroupUpdateStruct);
 
-            $this->setReferences($objectStateGroup);
+            $this->setReferences($objectStateGroup, $step);
         }
 
         return $groupsCollection;
@@ -109,9 +109,9 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     /**
      * Handles the delete step of object state group migrations
      */
-    protected function delete()
+    protected function delete($step)
     {
-        $groupsCollection = $this->matchObjectStateGroups('delete');
+        $groupsCollection = $this->matchObjectStateGroups('delete', $step);
 
         $objectStateService = $this->repository->getObjectStateService();
 
@@ -127,14 +127,14 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
      * @return ObjectStateGroupCollection
      * @throws \Exception
      */
-    protected function matchObjectStateGroups($action)
+    protected function matchObjectStateGroups($action, $step)
     {
-        if (!isset($this->dsl['match'])) {
+        if (!isset($step->dsl['match'])) {
             throw new \Exception("A match condition is required to $action an object state group");
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->objectStateGroupMatcher->match($match);
     }
@@ -143,13 +143,13 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
      * {@inheritdoc}
      * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup $objectStateGroup
      */
-    protected function setReferences($objectStateGroup)
+    protected function setReferences($objectStateGroup, $step)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'object_state_group_id':
                 case 'id':
@@ -163,7 +163,11 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
                     throw new \InvalidArgumentException('Object State Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;
@@ -172,12 +176,13 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
         $objectStateGroupCollection = $this->objectStateGroupMatcher->match($matchCondition);
         $data = array();
 

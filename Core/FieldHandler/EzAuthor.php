@@ -1,6 +1,6 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\Author\Value as AuthorValue;
 use eZ\Publish\Core\FieldType\Author\Author;
@@ -9,7 +9,7 @@ use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 /**
  * @todo is this needed at all ?
  */
-class EzAuthor extends AbstractComplexField implements FieldValueImporterInterface
+class EzAuthor extends AbstractFieldHandler implements FieldValueImporterInterface
 {
     /**
      * Creates a value object to use as the field value when setting an author field type.

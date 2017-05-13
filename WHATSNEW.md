@@ -1,21 +1,75 @@
-Version 3.6.3
-=============
+Version 4.0 RC-1
+================
 
-New: the `migrate` command by default will print out the number of executed, failed and skipped migrations, as well as
+* New: the `migrate` command by default will print out the number of executed, failed and skipped migrations, as well as
     time and memory taken
 
+* New: the `ka:mi:migration` command learned a new `--info` action to give detailed information on a single migration
+    migration at a time
 
-Version 3.6.2
-=============
+* New: the `ka:mi:status` command learned a new `--summary` option to print only the number of migrations per status
 
-Fix: when using an AND condition to match locations, the results where closer to what an OR condition would produce; too
-    many nodes would be matched
+* New: migrations can now be cancelled by using a custom migration step. Ex:
+
+        -
+            type: migration
+            mode: cancel
+            if: ...
+
+    More details in [Resources/doc/DSL/Migrations.yml](Resources/doc/DSL/Migrations.yml)
+
+* New: migrations can now be suspended and resumed:
+
+        -
+            type: migration
+            mode: suspended
+            until: ...
+
+    More details in [Resources/doc/DSL/Migrations.yml](Resources/doc/DSL/Migrations.yml)
+
+* New: it is possible to use `overwrite: true` to change the value of an existing reference
+
+* New: it is now possible to save the current references to a file
+
+* New: it is now possible to specify a custom Content Type for users created via `user/create` migrations
+
+* New: it is now possible to specify a custom Admin account used to carry out migrations instead of the user 14
+
+* New: it is possible to use a 'not', 'attribute', 'creation_date', 'group', 'modification_date', 'object_state', 'owner',
+    'section', 'subtree' and 'visibility' condition when matching Contents.
+    Matching when using 'and' and 'or' is also more efficient
+
+* New: it is possible to use a 'not', 'attribute', 'content_type_id', 'content_type_identifier', 'creation_date', 'depth',
+    'group', 'modification_date', 'object_state', 'owner', 'priority', 'section', 'subtree' and 'visibility' condition 
+    when matching Locations.
+    Matching when using 'and' and 'or' is also more efficient
+
+* New: it is now possible to set references to the values of Content Type field definitions. The syntax to use is similar
+    to the one available for Content fields, described in the notes for release 3.6 a few lines below
+
+* New: it is now possible to set references to 'section_identifier' when creating/updating/loading Contents and Locations
+
+* Fixed: removed from the list of possible references which can be set for Locations the non-working 'position'
+
+* New: the Executor services have been made reentrant
+
+* BC changes:
+
+    - eZPublish 5.3 and eZPublish Community 2014.3 are not supported any more (eZPublish 5.3 ended support in May 2017)
+
+    - the code will start targeting php 5.6 as minimum version starting with this release
+
+    - the following interfaces have been modified: MigrationGeneratorInterface, StorageHandlerInterface, 
+
+    - the following deprecated interfaces have been removed: ComplexFieldInterface 
+
+    - lots of refactoring in the Core (non API) classes. If you have extended them, be prepared for some porting work
 
 
 Version 3.6.1
 =============
 
-Fix: when setting both content creation and modification time upon content creation, modification time was lost
+* Fixed: when setting both content creation and modification time upon content creation, modification time was lost
 
 
 Version 3.6

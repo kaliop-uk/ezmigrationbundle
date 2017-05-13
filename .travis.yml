@@ -11,29 +11,35 @@ sudo: false
 # We limit the matrix to one version of eZPublish for each version of PHP
 matrix:
   include:
-    # ezpublish-community 2014.3 corresponds to enterprise 5.3, still supported, installs via composer
-    - php: 5.4
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=0
+    # ezpublish-community 2014.3 corresponds to enterprise 5.3, not supported any more since end of May 2017.
+    #- php: 5.4
+    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=0
     #- php: 5.5
     #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.3.2 netgen/tagsbundle:1.O' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=0
-    # the last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4
+
+    # The last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4
+    # About php versions:
+    #     - php 5.6 can be installed on RHEL/CentOS 6, which is the oldest currently supported
+    #     - current Debian Stable comes with php 5.6 too (Debian 7 has php 5.4 but it is only in LTS support by now)
+    # We thus only test on php 5.6
     #- php: 5.4
     #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4 netgen/tagsbundle:~2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
-    - php: 5.5
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4 netgen/tagsbundle:~2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    #- php: 5.5
+    #  env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4 netgen/tagsbundle:~2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     - php: 5.6
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4 netgen/tagsbundle:~2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
+
     # latest version currently available of eZPlatform aka eZPublish 6
     #- php: 5.6
-    #  env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.0 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    #  env: EZ_PACKAGES='ezsystems/ezplatform:~1.8.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     - php: 7.0
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     - php: 7.1
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
   #allow_failures:
-    # this currently fails because of eZPublish services.yml not quoting usage of @, despite it being tested with Sf 2.8...
-    #- php: 7.0
+    # this currently fails because of the refactoring of location matcher
+    #- php: 5.4
 
 before_install:
   # No need for a web server, until we start testing using Selenium

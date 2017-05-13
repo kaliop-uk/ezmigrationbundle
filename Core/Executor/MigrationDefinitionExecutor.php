@@ -3,7 +3,6 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
@@ -54,7 +53,8 @@ class MigrationDefinitionExecutor extends AbstractExecutor
      * @return array
      * @throws \Exception
      */
-    protected function generate($dsl, $context) {
+    protected function generate($dsl, $context)
+    {
         if (!isset($dsl['migration_type'])) {
             throw new \Exception("Invalid step definition: miss 'migration_type'");
         }
@@ -74,15 +74,16 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         }
         $executor = $this->migrationService->getExecutor($migrationType);
 
-        if (isset($dsl['lang']) && $executor instanceof LanguageAwareInterface) {
-            $executor->setLanguageCode($dsl['lang']);
+        $context = array();
+        if (isset($dsl['lang']) && $dsl['lang'] != '') {
+            $context['defaultLanguageCode'] = $dsl['lang'];
         }
 
         $matchCondition = array($match['type'] => $match['value']);
         if (isset($match['except']) && $match['except']) {
             $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
         }
-        $result = $executor->generateMigration($matchCondition, $migrationMode);
+        $result = $executor->generateMigration($matchCondition, $migrationMode, $context);
 
         $this->setReferences($result, $dsl);
 
@@ -100,13 +101,17 @@ class MigrationDefinitionExecutor extends AbstractExecutor
                 throw new \InvalidArgumentException('MigrationDefinition Executor does not support setting references if not using a json_path expression');
             }
 
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
             $value = JmesPath::search($reference['json_path'], $result);
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
     }
 
     /**
-     * @todo cache this for faster acccess
+     * @todo cache this for faster access
      * @return array
      */
     protected function getGeneratingExecutors()

@@ -5,26 +5,27 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
+use eZ\Publish\API\Repository\Values\Content\Location;
 
-/**
- * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
- * @todo optimize the matches on multiple conditions (and, or) by compiling them in a single query
- */
-class LocationMatcher extends RepositoryMatcher
+class LocationMatcher extends QueryBasedMatcher
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_CONTENT_ID = 'content_id';
-    const MATCH_LOCATION_ID = 'location_id';
-    const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
-    const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
-    const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
-    const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
+    const MATCH_DEPTH = 'depth';
+    const MATCH_IS_MAIN_LOCATION = 'is_main_location';
+    const MATCH_PRIORITY = 'priority';
 
     protected $allowedConditions = array(
-        self::MATCH_AND, self::MATCH_OR,
+        self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
-        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID
+        self::MATCH_ATTRIBUTE, self::MATCH_CONTENT_TYPE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER, self::MATCH_GROUP,
+        self::MATCH_CREATION_DATE, self::MATCH_MODIFICATION_DATE, self::MATCH_OBJECT_STATE, self::MATCH_OWNER,
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_SECTION, self::MATCH_SUBTREE,
+        self::MATCH_VISIBILITY,
+        // aliases
+        'content_type', 'content_type_id', 'content_type_identifier',
+        // location-only
+        self::MATCH_DEPTH, self::MATCH_IS_MAIN_LOCATION, self::MATCH_PRIORITY,
     );
     protected $returns = 'Location';
 
@@ -47,35 +48,17 @@ class LocationMatcher extends RepositoryMatcher
 
         foreach ($conditions as $key => $values) {
 
-            if (!is_array($values)) {
-                $values = array($values);
+            $query = new LocationQuery();
+            $query->limit = PHP_INT_MAX;
+            $query->filter = $this->getQueryCriterion($key, $values);
+            $results = $this->repository->getSearchService()->findLocations($query);
+
+            $locations = [];
+            foreach ($results->searchHits as $result) {
+                $locations[$result->valueObject->id] = $result->valueObject;
             }
 
-            switch ($key) {
-                case self::MATCH_CONTENT_ID:
-                   return new LocationCollection($this->findLocationsByContentIds($values));
-
-                case self::MATCH_LOCATION_ID:
-                    return new LocationCollection($this->findLocationsByLocationIds($values));
-
-                case self::MATCH_CONTENT_REMOTE_ID:
-                    return new LocationCollection($this->findLocationsByContentRemoteIds($values));
-
-                case self::MATCH_LOCATION_REMOTE_ID:
-                    return new LocationCollection($this->findLocationsByLocationRemoteIds($values));
-
-                case self::MATCH_PARENT_LOCATION_ID:
-                    return new LocationCollection($this->findLocationsByParentLocationIds($values));
-
-                case self::MATCH_PARENT_LOCATION_REMOTE_ID:
-                    return new LocationCollection($this->findLocationsByParentLocationRemoteIds($values));
-
-                case self::MATCH_AND:
-                    return $this->matchAnd($values);
-
-                case self::MATCH_OR:
-                    return $this->matchOr($values);
-            }
+            return new LocationCollection($locations);
         }
     }
 
@@ -92,11 +75,48 @@ class LocationMatcher extends RepositoryMatcher
         return array(self::MATCH_LOCATION_REMOTE_ID => $key);
     }
 
+    protected function getQueryCriterion($key, $values)
+    {
+        if (!is_array($values)) {
+            $values = array($values);
+        }
+
+        switch ($key) {
+            case self::MATCH_DEPTH:
+                $match = reset($values);
+                $operator = key($values);
+                if (!isset(self::$operatorsMap[$operator])) {
+                    throw new \Exception("Can not use '$operator' as comparison operator for depth");
+                }
+                return new Query\Criterion\Location\Depth(self::$operatorsMap[$operator], $match);
+
+            case self::MATCH_IS_MAIN_LOCATION:
+                /// @todo error/warning if there is more than 1 value...
+                $value = reset($values);
+                if ($value) {
+                    return new Query\Criterion\Location\IsMainLocation(Query\Criterion\Location\IsMainLocation::MAIN);
+                } else {
+                    return new Query\Criterion\Location\IsMainLocation(Query\Criterion\Location\IsMainLocation::NOT_MAIN);
+                }
+
+            case self::MATCH_PRIORITY:
+                $match = reset($values);
+                $operator = key($values);
+                if (!isset(self::$operatorsMap[$operator])) {
+                    throw new \Exception("Can not use '$operator' as comparison operator for depth");
+                }
+                return new Query\Criterion\Location\Priority(self::$operatorsMap[$operator], $match);
+        }
+
+        return parent::getQueryCriterion($key, $values);
+    }
+
     /**
      * Returns all locations of a set of objects
      *
      * @param int[] $contentIds
      * @return Location[]
+     * @deprecated
      */
     protected function findLocationsByContentIds(array $contentIds)
     {
@@ -117,6 +137,7 @@ class LocationMatcher extends RepositoryMatcher
      *
      * @param int[] $remoteContentIds
      * @return Location[]
+     * @deprecated
      */
     protected function findLocationsByContentRemoteIds(array $remoteContentIds)
     {
@@ -135,6 +156,7 @@ class LocationMatcher extends RepositoryMatcher
     /**
      * @param int[] $locationIds
      * @return Location[]
+     * @deprecated
      */
     protected function findLocationsByLocationIds(array $locationIds)
     {
@@ -150,6 +172,7 @@ class LocationMatcher extends RepositoryMatcher
     /**
      * @param int[] $locationRemoteIds
      * @return Location[]
+     * @deprecated
      */
     protected function findLocationsByLocationRemoteIds($locationRemoteIds)
     {
@@ -166,6 +189,7 @@ class LocationMatcher extends RepositoryMatcher
     /**
      * @param int[] $parentLocationIds
      * @return Location[]
+     * @deprecated
      */
     protected function findLocationsByParentLocationIds($parentLocationIds)
     {
@@ -187,6 +211,7 @@ class LocationMatcher extends RepositoryMatcher
     /**
      * @param int[] $parentLocationRemoteIds
      * @return Location[]
+     * @deprecated
      */
     protected function findLocationsByParentLocationRemoteIds($parentLocationRemoteIds)
     {

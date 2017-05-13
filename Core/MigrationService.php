@@ -2,29 +2,31 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\DefinitionParserInterface;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
+use Kaliop\eZMigrationBundle\API\ContextProviderInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
+use Kaliop\eZMigrationBundle\API\Event\MigrationSuspendedEvent;
 
-class MigrationService
+class MigrationService implements ContextProviderInterface
 {
     use RepositoryUserSetterTrait;
 
     /**
-     * Constant defining the default Admin user ID.
-     * @todo inject via config parameter
+     * The default Admin user Id, used when no Admin user is specified
      */
     const ADMIN_USER_ID = 14;
 
@@ -47,14 +49,23 @@ class MigrationService
 
     protected $dispatcher;
 
+    /**
+     * @var ContextHandler $contextHandler
+     */
+    protected $contextHandler;
+
     protected $eventPrefix = 'ez_migration.';
 
-    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository, EventDispatcherInterface $eventDispatcher)
+    protected $migrationContext = array();
+
+    public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository,
+        EventDispatcherInterface $eventDispatcher, $contextHandler)
     {
         $this->loader = $loader;
         $this->storageHandler = $storageHandler;
         $this->repository = $repository;
         $this->dispatcher = $eventDispatcher;
+        $this->contextHandler = $contextHandler;
     }
 
     public function addDefinitionParser(DefinitionParserInterface $DefinitionParser)
@@ -120,11 +131,26 @@ class MigrationService
     /**
      * Returns the list of all the migrations which where executed or attempted so far
      *
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
      * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationCollection
      */
-    public function getMigrations()
+    public function getMigrations($limit = null, $offset = null)
     {
-        return $this->storageHandler->loadMigrations();
+        return $this->storageHandler->loadMigrations($limit, $offset);
+    }
+
+    /**
+     * Returns the list of all the migrations in a given status which where executed or attempted so far
+     *
+     * @param int $status
+     * @param int $limit 0 or below will be treated as 'no limit'
+     * @param int $offset
+     * @return \Kaliop\eZMigrationBundle\API\Collection\MigrationCollection
+     */
+    public function getMigrationsByStatus($status, $limit = null, $offset = null)
+    {
+        return $this->storageHandler->loadMigrationsByStatus($status, $limit, $offset);
     }
 
     /**
@@ -212,11 +238,11 @@ class MigrationService
      * @param MigrationDefinition $migrationDefinition
      * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
      * @param string $defaultLanguageCode
+     * @param string $adminLogin
      * @throws \Exception
-     *
-     * @todo add support for skipped migrations, partially executed migrations
      */
-    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true, $defaultLanguageCode = null)
+    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
+                                     $defaultLanguageCode = null, $adminLogin = null)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
@@ -226,38 +252,48 @@ class MigrationService
             throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
-        // Inject default language code in executors that support it.
-        if ($defaultLanguageCode) {
-            foreach ($this->executors as $executor) {
-                if ($executor instanceof LanguageAwareInterface) {
-                    $executor->setDefaultLanguageCode($defaultLanguageCode);
-                }
-            }
-        }
+        /// @todo add support for setting in $migrationContext a userContentType ?
+        $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin);
 
         // set migration as begun - has to be in own db transaction
         $migration = $this->storageHandler->startMigration($migrationDefinition);
 
+        $this->executeMigrationInner($migration, $migrationDefinition, $migrationContext, 0, $useTransaction, $adminLogin);
+    }
+
+    /**
+     * @param Migration $migration
+     * @param MigrationDefinition $migrationDefinition
+     * @param array $migrationContext
+     * @param int $stepOffset
+     * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
+     * @param string $adminLogin
+     * @throws \Exception
+     */
+    protected function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
+        $migrationContext, $stepOffset = 0, $useTransaction = true, $adminLogin = null)
+    {
         if ($useTransaction) {
             $this->repository->beginTransaction();
         }
 
         $previousUserId = null;
+        $steps = array_slice($migrationDefinition->steps->getArrayCopy(), $stepOffset);
 
         try {
 
-            $i = 1;
+            $i = $stepOffset+1;
             $finalStatus = Migration::STATUS_DONE;
             $finalMessage = null;
 
             try {
 
-                foreach ($migrationDefinition->steps as $step) {
+                foreach ($steps as $step) {
+
+                    $step = $this->injectContextIntoStep($step, $migrationContext);
+
                     // we validated the fact that we have a good executor at parsing time
                     $executor = $this->executors[$step->type];
-                    if ($executor instanceof LanguageAwareInterface) {
-                        $executor->setLanguageCode(null);
-                    }
 
                     $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
                     $this->dispatcher->dispatch($this->eventPrefix . 'before_execution', $beforeStepExecutionEvent);
@@ -279,6 +315,18 @@ class MigrationService
 
                 $finalStatus = $e->getCode();
                 $finalMessage = "Abort in execution of step $i: " . $e->getMessage();
+            } catch (MigrationSuspendedException $e) {
+                // allow a migration step (or events) to suspend the migration via a specific exception
+
+                $this->dispatcher->dispatch($this->eventPrefix . 'migration_suspended', new MigrationSuspendedEvent($step, $e));
+
+                // prepare data for the context handler
+                $this->migrationContext[$migrationDefinition->name] = array('step' => $i, 'context' => $migrationContext);
+                // let the context handler store our data, along context data from any other (tagged) service which has some
+                $this->contextHandler->storeCurrentContext($migrationDefinition->name);
+
+                $finalStatus = Migration::STATUS_SUSPENDED;
+                $finalMessage = "Suspended in execution of step $i: " . $e->getMessage();
             }
 
             // set migration as done
@@ -293,7 +341,7 @@ class MigrationService
 
             if ($useTransaction) {
                 // there might be workflows or other actions happening at commit time that fail if we are not admin
-                $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+                $previousUserId = $this->loginUser($this->getAdminUserIdentifier($adminLogin));
                 $this->repository->commit();
                 $this->loginUser($previousUserId);
             }
@@ -349,6 +397,91 @@ class MigrationService
     }
 
     /**
+     * @param Migration $migration
+     * @param bool $useTransaction
+     * @throws \Exception
+     *
+     * @todo add support for adminLogin ?
+     */
+    public function resumeMigration(Migration $migration, $useTransaction = true)
+    {
+        if ($migration->status != Migration::STATUS_SUSPENDED) {
+            throw new \Exception("Can not resume migration '{$migration->name}': it is not in suspended status");
+        }
+
+        $migrationDefinitions = $this->getMigrationsDefinitions(array($migration->path));
+        if (!count($migrationDefinitions)) {
+            throw new \Exception("Can not resume migration '{$migration->name}': its definition is missing");
+        }
+
+        $defs = $migrationDefinitions->getArrayCopy();
+        $migrationDefinition = reset($defs);
+
+        $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
+        if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
+            throw new \Exception("Can not resume migration '{$migration->name}': {$migrationDefinition->parsingError}");
+        }
+
+        // restore context
+        $this->contextHandler->restoreCurrentContext($migration->name);
+        $restoredContext = $this->migrationContext[$migration->name];
+
+        /// @todo check that restored context is valid
+
+        // update migration status
+        $migration = $this->storageHandler->resumeMigration($migration);
+
+        // clean up restored context - ideally it should be in the same db transaction as the line above
+        $this->contextHandler->deleteContext($migration->name);
+
+        // and go
+        // note: we store the current step counting starting at 1, but use offset staring at 0, hence the -1 here
+        $this->executeMigrationInner($migration, $migrationDefinition, $restoredContext['context'],
+            $restoredContext['step'] - 1, $useTransaction);
+    }
+
+    /**
+     * @param string $defaultLanguageCode
+     * @param string $adminLogin
+     * @return array
+     */
+    protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null)
+    {
+        $properties = array();
+
+        if ($defaultLanguageCode != null) {
+            $properties['defaultLanguageCode'] = $defaultLanguageCode;
+        }
+        if ($adminLogin != null) {
+            $properties['adminUserLogin'] = $adminLogin;
+        }
+
+        return $properties;
+    }
+
+    protected function injectContextIntoStep(MigrationStep $step, array $context)
+    {
+        return new MigrationStep(
+            $step->type,
+            $step->dsl,
+            array_merge($step->context, $context)
+        );
+    }
+
+    /**
+     * @param string $adminLogin
+     * @return int|string
+     */
+    protected function getAdminUserIdentifier($adminLogin)
+    {
+        if ($adminLogin != null) {
+            return $adminLogin;
+        }
+
+        return self::ADMIN_USER_ID;
+    }
+
+    /**
      * Turns eZPublish cryptic exceptions into something more palatable for random devs
      * @todo should this be moved to a lower layer ?
      *
@@ -401,5 +534,23 @@ class MigrationService
         }
 
         return $message;
+    }
+
+    /**
+     * @param string $migrationName
+     * @return array
+     */
+    public function getCurrentContext($migrationName)
+    {
+        return isset($this->migrationContext[$migrationName]) ? $this->migrationContext[$migrationName] : null;
+    }
+
+    /**
+     * @param string $migrationName
+     * @param array $context
+     */
+    public function restoreContext($migrationName, array $context)
+    {
+        $this->migrationContext[$migrationName] = $context;
     }
 }

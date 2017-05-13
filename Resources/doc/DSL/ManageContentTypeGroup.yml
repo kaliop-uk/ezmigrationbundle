@@ -26,9 +26,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     identifier: xyz  # Identifier/name of new content type group
     modification_date: 123 # Optional, custom modification date for the content type group (timestamp)
     references: #Optional
@@ -54,6 +54,6 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
-            _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

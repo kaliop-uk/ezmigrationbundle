@@ -2,8 +2,8 @@
 
 -
     type: assert
-    target: reference # for the moment the only targets available for assertions are references
-    identifier: reference:abcdef # a reference identifier
+    target: reference # for the moment the only targets available for assertions are references, so this is a fixed value
+    identifier: reference:abcdef # a reference identifier. NB: must include the 'reference:' part
     test:
         # one and only one of the following conditions:
         # (the conditions correspond to phpunit assertXXX methods from class PHPUnit_Framework_Assert)

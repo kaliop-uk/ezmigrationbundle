@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\BinaryFile\Value as BinaryFileValue;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 
-class EzBinaryFile extends FileField implements FieldValueConverterInterface
+class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterface
 {
     /**
      * @param array|string $fieldValue The path to the file or an array with 'path' key

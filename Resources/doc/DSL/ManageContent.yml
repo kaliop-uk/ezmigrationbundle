@@ -3,20 +3,6 @@
     mode: create
     content_type: xxx # Content type identifier
     parent_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
-    priority: 0 # Optional. Set the priority of the main location
-    is_hidden: true|false # Optional
-    sort_field: x # Optional. See ManageLocation.yml for details
-    sort_order: ASC|DESC # Optional
-    location_remote_id: xxx # Optional, remote id of the new location which will be created
-    other_parent_locations: [x, y, z] # Optional, ids of extra parent locations. When a non numeric string is used as element, it is assumed to be a location remote id
-    remote_id: custom_remote_id # Optional, will set a custom remote id
-    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
-    section: x # string|int Optional section id or identifier
-    owner: xxx # user id, login or email if unique; Optional, set the content owner
-    version_creator: yyy # user id, login or email if unique; Optional, set the creator of the 1st version
-    modification_date: zzz # Optional, set content modification date (if integer: timestamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
-    publication_date: zzz # Optional, set content publication date (if integer: timstamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
-    always_available: true|false # Optional, will default to content type defaultAlwaysAvailable
     attributes:
         attribute1: value1
         attribute2: value2
@@ -81,10 +67,24 @@
         attribute15: [ 1, "option 2" ] # array of selection options ids or textual values
         # ezselection, single value
         attribute16: "option 3" # integer index or string
+    always_available: true|false # Optional, will default to content type defaultAlwaysAvailable
+    is_hidden: true|false # Optional
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    location_remote_id: xxx # Optional, remote id of the new location which will be created
+    modification_date: zzz # Optional, set content modification date (if integer: timestamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier
         - yyy
+    other_parent_locations: [x, y, z] # Optional, ids of extra parent locations. When a non numeric string is used as element, it is assumed to be a location remote id
+    owner: xxx # user id, login or email if unique; Optional, set the content owner
+    priority: 0 # Optional. Set the priority of the main location
+    publication_date: zzz # Optional, set content publication date (if integer: timstamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
+    remote_id: custom_remote_id # Optional, will set a custom remote id
+    section: x # string|int Optional section id or identifier
+    sort_field: x # Optional. See ManageLocation.yml for details
+    sort_order: ASC|DESC # Optional
+    version_creator: yyy # user id, login or email if unique; Optional, set the creator of the 1st version
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
@@ -108,10 +108,24 @@
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
         location_remote_id: xxx # string|string[]
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type: yyy # string|string[] a content type identifier
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
@@ -120,21 +134,23 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
-    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
-    section: x # string|int Optional section id or identifier
-    owner: xxx # user id, login or email if unique; Optional, set the content owner (original creator)
-    version_creator: yyy # user id, login or email if unique; Optional, set the creator of the new version
-    modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
-    publication_date: zzz # Optional, set content publication date (for formats, see: http://php.net/manual/en/datetime.formats.php)
-    new_remote_id: xxx # string Optional set a new RemoteId
-    always_available: true|false # Optional
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     attributes: # the list of attribute identifier value pairs. For the format to use, see above
         attribute1: value1
         attribute2: value2
+    always_available: true|false # Optional
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
+    new_remote_id: xxx # string Optional set a new RemoteId
     # Optionally assign object states to the content
     object_states:
         - xxx # int|string an object state id or identifier. For the format to use, see above
+    owner: xxx # user id, login or email if unique; Optional, set the content owner (original creator)
+    publication_date: zzz # Optional, set content publication date (for formats, see: http://php.net/manual/en/datetime.formats.php)
+    section: x # string|int Optional section id or identifier
+    version_creator: yyy # user id, login or email if unique; Optional, set the creator of the new version
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
@@ -158,10 +174,24 @@
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
         location_remote_id: xxx # string|string[]
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type: yyy # string|string[] a content type identifier
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
@@ -170,20 +200,36 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
 
 -
     type: content
     mode: load
-    match: # Specify ONLY ONE of the following, to match a content or a set of contents to update
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to load
         content_id: x # int|int[]
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
         location_remote_id: xxx # string|string[]
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
-        content_type: yyy # string|string[] a content type identifier
-        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
@@ -192,7 +238,9 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

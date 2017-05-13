@@ -30,32 +30,32 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
      * @throws \Exception
      * @todo add support for setting creator id
      */
-    protected function create()
+    protected function create($step)
     {
-        if (!isset($this->dsl['identifier'])) {
+        if (!isset($step->dsl['identifier'])) {
             throw new \Exception("The 'identifier' key is required to create a new content type group.");
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
 
-        $createStruct = $contentTypeService->newContentTypeGroupCreateStruct($this->dsl['identifier']);
+        $createStruct = $contentTypeService->newContentTypeGroupCreateStruct($step->dsl['identifier']);
 
-        if (isset($this->dsl['creation_date'])) {
-            $createStruct->creationDate = $this->toDateTime($this->dsl['creation_date']);
+        if (isset($step->dsl['creation_date'])) {
+            $createStruct->creationDate = $this->toDateTime($step->dsl['creation_date']);
         }
 
         $group = $contentTypeService->createContentTypeGroup($createStruct);
 
-        $this->setReferences($group);
+        $this->setReferences($group, $step);
 
         return $group;
     }
 
-    protected function update()
+    protected function update($step)
     {
-        $groupsCollection = $this->matchContentTypeGroups('update');
+        $groupsCollection = $this->matchContentTypeGroups('update', $step);
 
-        if (count($groupsCollection) > 1 && array_key_exists('references', $this->dsl)) {
+        if (count($groupsCollection) > 1 && array_key_exists('references', $step->dsl)) {
             throw new \Exception("Can not execute Content Type Group update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 matches");
         }
 
@@ -64,11 +64,11 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
         foreach ($groupsCollection as $key => $contentTypeGroup) {
             $updateStruct = $contentTypeService->newContentTypeGroupUpdateStruct();
 
-            if (isset($this->dsl['identifier'])) {
-                $updateStruct->identifier = $this->dsl['identifier'];
+            if (isset($step->dsl['identifier'])) {
+                $updateStruct->identifier = $step->dsl['identifier'];
             }
-            if (isset($this->dsl['modification_date'])) {
-                $updateStruct->modificationDate = $this->toDateTime($this->dsl['modification_date']);
+            if (isset($step->dsl['modification_date'])) {
+                $updateStruct->modificationDate = $this->toDateTime($step->dsl['modification_date']);
             }
 
             $contentTypeService->updateContentTypeGroup($contentTypeGroup, $updateStruct);
@@ -77,14 +77,14 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
             $groupsCollection[$key] = $group;
         }
 
-        $this->setReferences($groupsCollection);
+        $this->setReferences($groupsCollection, $step);
 
         return $groupsCollection;
     }
 
-    protected function delete()
+    protected function delete($step)
     {
-        $groupsCollection = $this->matchContentTypeGroups('delete');
+        $groupsCollection = $this->matchContentTypeGroups('delete', $step);
 
         $contentTypeService = $this->repository->getContentTypeService();
 
@@ -100,14 +100,14 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
      * @return ContentTypeGroupCollection
      * @throws \Exception
      */
-    protected function matchContentTypeGroups($action)
+    protected function matchContentTypeGroups($action, $step)
     {
-        if (!isset($this->dsl['match'])) {
+        if (!isset($step->dsl['match'])) {
             throw new \Exception("A match condition is required to $action an object state group");
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->contentTypeGroupMatcher->match($match);
     }
@@ -116,9 +116,9 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
      * @param ContentTypeGroup|ContentTypeGroupCollection $object
      * @return bool
      */
-    protected function setReferences($object)
+    protected function setReferences($object, $step)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
@@ -129,7 +129,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
             $object = reset($object);
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
                 case 'content_type_group_id':
@@ -144,7 +144,11 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
                     throw new \InvalidArgumentException('Content Type Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;
@@ -153,12 +157,13 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     /**
      * @param array $matchCondition
      * @param string $mode
+     * @param array $context
      * @throws \Exception
      * @return array
      */
-    public function generateMigration(array $matchCondition, $mode)
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
         $contentTypeGroupCollection = $this->contentTypeGroupMatcher->match($matchCondition);
         $data = array();
 

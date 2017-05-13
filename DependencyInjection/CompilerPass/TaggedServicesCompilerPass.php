@@ -54,7 +54,7 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
             asort($priorities);
 
             foreach ($priorities as $id => $priority) {
-                $migrationService->addMethodCall('addComplexField', $handlers[$id]);
+                $migrationService->addMethodCall('addFieldHandler', $handlers[$id]);
             }
         }
 
@@ -66,6 +66,17 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
                 $customReferenceResolver->addMethodCall('addResolver', array(
                     new Reference($id)
                 ));
+            }
+        }
+
+        if ($container->has('ez_migration_bundle.context_handler')) {
+            $contextHandlerService = $container->findDefinition('ez_migration_bundle.context_handler');
+            $ContextProviders = $container->findTaggedServiceIds('ez_migration_bundle.context_provider');
+
+            foreach ($ContextProviders as $id => $tags) {
+                foreach ($tags as $attributes) {
+                    $contextHandlerService->addMethodCall('addProvider', array(new Reference($id), $attributes['label']));
+                }
             }
         }
     }

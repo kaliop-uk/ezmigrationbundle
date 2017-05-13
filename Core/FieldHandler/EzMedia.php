@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\Media\Value as MediaValue;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 
-class EzMedia extends FileField implements FieldValueConverterInterface
+class EzMedia extends FileFieldHandler implements FieldValueConverterInterface
 {
     /**
      * Creates a value object to use as the field value when setting a media field type.

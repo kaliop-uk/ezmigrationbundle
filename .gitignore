@@ -3,3 +3,4 @@
 /composer
 /composer.phar
 /composer.lock
+/Tests/dsl/good/references/test_refs_generated.yml

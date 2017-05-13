@@ -1,0 +1,34 @@
+-
+    # Cancel execution of a migration: all steps following the current one will not be executed.
+    # The migrations will show up as 'executed' when checking ist status
+    type: migration
+    mode: cancel
+    message: string # Optional. Will be part of the migration status stored in the database
+    if: # Optional. If set, the migration will be halted when the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+
+
+-
+    # Suspend execution of a migration: 'freeze" execution at the current step.
+    # The migration will be resumed when running the `command ka:mi:resume`, and the 'until' condition will be checked again,
+    # at which point the migration will either keep executing or be re-suspended.
+    # Note that the values of all references existing at the time of migration suspension will be preserved and restored
+    # upon resuming.
+    type: migration
+    mode: suspend
+    message: string # Optional. Will be part of the migration status stored in the database
+    load:
+        type: content/location/content_type # use this to re-load an entity and recalculate the references when the migration
+                                            # is resumed. NB: ALL other references are fixed on the 1st execution and
+                                            # will keep the same value upon resuming.
+        match: # same as when loading content/location/content_type
+        references:  # same as when loading content/location/content_type
+    until: # Optional. If set, migration will be suspended until the given condition is satisfied.
+           # NB: needs a cronjob to be set up to later resume.
+           # Use only one of either 'date' or 'match'
+        date: timestamp # unix timestamp
+        match: # Optional. If set, the migration will be suspended until the condition is matched
+            "reference:_ref_name": # Name of a reference to be used for the test.
+                                   # NB: it should have been set using the 'load' tag in the same migration step
+                _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

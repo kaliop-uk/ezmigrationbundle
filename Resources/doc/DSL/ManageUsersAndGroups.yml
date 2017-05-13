@@ -6,6 +6,7 @@
     username: xyz
     email: xyz
     password: xyz
+    user_content_type: xxx # Optional, Content Type identifier (defaults to 'user')
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     groups: [x, y, z] # The user group ID or IDs (Content IDs or its/their remote_ids as string) to put the user into
     # The list in references tells the manager to store specific values for later use
@@ -33,7 +34,7 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     email: xyz # Optional. NB: can only be set if the match definition latches a single user
     password: xyz # Optional
     enabled: true|false # Optional
@@ -65,7 +66,7 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
 
 -
     type: user_group
@@ -100,7 +101,7 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     name: xyz # Optional. Can only be used when the group to be updated is single
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID or group's remote_id
@@ -132,4 +133,4 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
-                _condition_: value # where _condition_ can any of ones specified above, including 'and' and 'or'
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

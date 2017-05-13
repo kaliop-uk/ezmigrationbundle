@@ -1,0 +1,19 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_20
+    value: hello
+
+-
+    type: migration
+    mode: cancel
+    until:
+        match:
+            "reference:kmb_test_21":
+                eq: hello
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_20b
+    value: unreachable

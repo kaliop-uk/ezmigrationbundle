@@ -1,11 +1,11 @@
 <?php
 
-namespace Kaliop\eZMigrationBundle\Core\ComplexField;
+namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 
-class EzImage extends FileField implements FieldValueConverterInterface
+class EzImage extends FileFieldHandler implements FieldValueConverterInterface
 {
     /**
      * Creates a value object to use as the field value when setting an image field type.

@@ -6,27 +6,17 @@ use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 
-/**
- * @todo extend to allow matching by visibility, subtree, depth, object state, section, creation/modification date...
- * @todo optimize the matches on multiple conditions (and, or) by compiling them in a single query
- */
-class ContentMatcher extends RepositoryMatcher
+class ContentMatcher extends QueryBasedMatcher
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_CONTENT_ID = 'content_id';
-    const MATCH_LOCATION_ID = 'location_id';
-    const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
-    const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
-    const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
-    const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
-    const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
-    const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
-
     protected $allowedConditions = array(
-        self::MATCH_AND, self::MATCH_OR,
+        self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
-        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER,
+        self::MATCH_ATTRIBUTE, self::MATCH_CONTENT_TYPE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER, self::MATCH_GROUP,
+        self::MATCH_CREATION_DATE, self::MATCH_MODIFICATION_DATE, self::MATCH_OBJECT_STATE, self::MATCH_OWNER,
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_SECTION, self::MATCH_SUBTREE,
+        self::MATCH_VISIBILITY,
         // aliases
         'content_type', 'content_type_id', 'content_type_identifier'
     );
@@ -51,10 +41,6 @@ class ContentMatcher extends RepositoryMatcher
 
         foreach ($conditions as $key => $values) {
 
-            if (!is_array($values)) {
-                $values = array($values);
-            }
-
             // BC support
             if ($key == 'content_type') {
                 if (is_int($values[0]) || ctype_digit($values[0])) {
@@ -64,39 +50,29 @@ class ContentMatcher extends RepositoryMatcher
                 }
             }
 
+            $query = new Query();
+            $query->limit = PHP_INT_MAX;
+            $query->filter = $this->getQueryCriterion($key, $values);
             switch ($key) {
-                case self::MATCH_CONTENT_ID:
-                   return new ContentCollection($this->findContentsByContentIds($values));
-
-                case self::MATCH_LOCATION_ID:
-                    return new ContentCollection($this->findContentsByLocationIds($values));
-
-                case self::MATCH_CONTENT_REMOTE_ID:
-                    return new ContentCollection($this->findContentsByContentRemoteIds($values));
-
-                case self::MATCH_LOCATION_REMOTE_ID:
-                    return new ContentCollection($this->findContentsByLocationRemoteIds($values));
-
-                case self::MATCH_PARENT_LOCATION_ID:
-                    return new ContentCollection($this->findContentsByParentLocationIds($values));
-
-                case self::MATCH_PARENT_LOCATION_REMOTE_ID:
-                    return new ContentCollection($this->findContentsByParentLocationRemoteIds($values));
-
                 case 'content_type_id':
                 case self::MATCH_CONTENT_TYPE_ID:
-                    return new ContentCollection($this->findContentsByContentTypeIds($values));
-
                 case 'content_type_identifier':
                 case self::MATCH_CONTENT_TYPE_IDENTIFIER:
-                    return new ContentCollection($this->findContentsByContentTypeIdentifiers($values));
-
-                case self::MATCH_AND:
-                    return $this->matchAnd($values);
-
-                case self::MATCH_OR:
-                    return $this->matchOr($values);
+                    // sort objects by depth, lower to higher, so that deleting them has less chances of failure
+                    // NB: we only do this in eZP versions that allow depth sorting on content queries
+                    if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
+                        $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+                    }
             }
+            $results = $this->repository->getSearchService()->findContent($query);
+
+            $contents = [];
+            foreach ($results->searchHits as $result) {
+                // make sure we return every object only once
+                $contents[$result->valueObject->contentInfo->id] = $result->valueObject;
+            }
+
+            return new ContentCollection($contents);
         }
     }
 
@@ -116,6 +92,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param int[] $contentIds
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByContentIds(array $contentIds)
     {
@@ -133,6 +110,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param string[] $remoteContentIds
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByContentRemoteIds(array $remoteContentIds)
     {
@@ -150,6 +128,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param int[] $locationIds
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByLocationIds(array $locationIds)
     {
@@ -167,6 +146,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param string[] $remoteLocationIds
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByLocationRemoteIds($remoteLocationIds)
     {
@@ -184,6 +164,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param int[] $parentLocationIds
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByParentLocationIds($parentLocationIds)
     {
@@ -204,6 +185,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param string[] $remoteParentLocationIds
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByParentLocationRemoteIds($remoteParentLocationIds)
     {
@@ -221,6 +203,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param string[] $contentTypeIdentifiers
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByContentTypeIdentifiers(array $contentTypeIdentifiers)
     {
@@ -247,6 +230,7 @@ class ContentMatcher extends RepositoryMatcher
     /**
      * @param int[] $contentTypeIds
      * @return Content[]
+     * @deprecated
      */
     protected function findContentsByContentTypeIds(array $contentTypeIds)
     {
@@ -268,4 +252,5 @@ class ContentMatcher extends RepositoryMatcher
 
         return $contents;
     }
+
 }

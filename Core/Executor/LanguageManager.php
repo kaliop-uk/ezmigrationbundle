@@ -15,25 +15,25 @@ class LanguageManager extends RepositoryExecutor
     /**
      * Handles the language create migration action
      */
-    protected function create()
+    protected function create($step)
     {
         $languageService = $this->repository->getContentLanguageService();
 
-        if (!isset($this->dsl['lang'])) {
+        if (!isset($step->dsl['lang'])) {
             throw new \Exception("The 'lang' key is required to create a new language.");
         }
 
         $languageCreateStruct = $languageService->newLanguageCreateStruct();
-        $languageCreateStruct->languageCode = $this->dsl['lang'];
-        if (isset($this->dsl['name'])) {
-            $languageCreateStruct->name = $this->dsl['name'];
+        $languageCreateStruct->languageCode = $step->dsl['lang'];
+        if (isset($step->dsl['name'])) {
+            $languageCreateStruct->name = $step->dsl['name'];
         }
-        if (isset($this->dsl['enabled'])) {
-            $languageCreateStruct->enabled = (bool)$this->dsl['enabled'];
+        if (isset($step->dsl['enabled'])) {
+            $languageCreateStruct->enabled = (bool)$step->dsl['enabled'];
         }
         $language = $languageService->createLanguage($languageCreateStruct);
 
-        $this->setReferences($language);
+        $this->setReferences($language, $step);
 
         return $language;
     }
@@ -43,30 +43,30 @@ class LanguageManager extends RepositoryExecutor
      *
      * @todo use a matcher for flexible matching?
      */
-    protected function update()
+    protected function update($step)
     {
         throw new \Exception('Language update is not implemented yet');
 
         /*$languageService = $this->repository->getContentLanguageService();
 
-        if (!isset($this->dsl['lang'])) {
+        if (!isset($step->dsl['lang'])) {
             throw new \Exception("The 'lang' key is required to update a language.");
         }
 
-        $this->setReferences($language);*/
+        $this->setReferences($language, $step);*/
     }
 
     /**
      * Handles the language delete migration action
      */
-    protected function delete()
+    protected function delete($step)
     {
-        if (!isset($this->dsl['lang'])) {
+        if (!isset($step->dsl['lang'])) {
             throw new \Exception("The 'lang' key is required to delete a language.");
         }
 
         $languageService = $this->repository->getContentLanguageService();
-        $language = $languageService->loadLanguage($this->dsl['lang']);
+        $language = $languageService->loadLanguage($step->dsl['lang']);
 
         $languageService->deleteLanguage($language);
 
@@ -80,9 +80,9 @@ class LanguageManager extends RepositoryExecutor
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      */
-    protected function setReferences($language)
+    protected function setReferences($language, $step)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
@@ -93,7 +93,7 @@ class LanguageManager extends RepositoryExecutor
             $language = reset($language);
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
 
             switch ($reference['attribute']) {
                 case 'language_id':
@@ -114,7 +114,11 @@ class LanguageManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Language Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;

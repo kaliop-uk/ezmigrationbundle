@@ -3,39 +3,37 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Repository;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
-use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
 
 /**
  * The core manager class that all migration action managers inherit from.
  */
-abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAwareInterface
+abstract class RepositoryExecutor extends AbstractExecutor
 {
     use RepositoryUserSetterTrait;
 
     /**
-     * Constant defining the default language code
+     * Constant defining the default language code (used if not specified by the migration or on the command line)
      */
     const DEFAULT_LANGUAGE_CODE = 'eng-GB';
 
     /**
-     * Constant defining the default Admin user ID.
-     * @todo inject via config parameter
+     * The default Admin user Id, used when no Admin user is specified
      */
     const ADMIN_USER_ID = 14;
 
-    /** @todo inject via config parameter */
+    /** Used if not specified by the migration */
     const USER_CONTENT_TYPE = 'user';
 
     /**
      * @var array $dsl The parsed DSL instruction array
      */
-    protected $dsl;
+    //protected $dsl;
 
     /** @var array $context The context (configuration) for the execution of the current step */
-    protected $context;
+    //protected $context;
 
     /**
      * The eZ Publish 5 API repository.
@@ -49,14 +47,14 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
      *
      * @var string
      */
-    private $languageCode;
+    //private $languageCode;
 
     /**
      * @var string
      */
-    private $defaultLanguageCode;
+    //private $defaultLanguageCode;
 
-    /** @var ReferenceResolverInterface $referenceResolver */
+    /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
     // to redefine in subclasses if they don't support all methods, or if they support more...
@@ -69,7 +67,7 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
         $this->repository = $repository;
     }
 
-    public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
+    public function setReferenceResolver(ReferenceResolverBagInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
     }
@@ -89,17 +87,11 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
-        $this->dsl = $step->dsl;
-        $this->context = $step->context;
-        if (isset($this->dsl['lang'])) {
-            $this->setLanguageCode($this->dsl['lang']);
-        }
-
         if (method_exists($this, $action)) {
 
-            $previousUserId = $this->loginUser(self::ADMIN_USER_ID);
+            $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
             try {
-                $output = $this->$action();
+                $output = $this->$action($step);
             } catch (\Exception $e) {
                 $this->loginUser($previousUserId);
                 throw $e;
@@ -123,26 +115,47 @@ abstract class RepositoryExecutor extends AbstractExecutor implements LanguageAw
      * @param $object
      * @return boolean
      */
-    abstract protected function setReferences($object);
+    abstract protected function setReferences($object, $step);
 
-    public function setLanguageCode($languageCode)
+    /**
+     * @param MigrationStep $step
+     * @return string
+     */
+    protected function getLanguageCode($step)
     {
-        $this->languageCode = $languageCode;
+        return isset($step->dsl['lang']) ? $step->dsl['lang'] : $this->getLanguageCodeFromContext($step->context);
     }
 
-    public function getLanguageCode()
+    /**
+     * @param array $context
+     * @return string
+     */
+    protected function getLanguageCodeFromContext($context)
     {
-        return $this->languageCode ?: $this->getDefaultLanguageCode();
+        return isset($context['defaultLanguageCode']) ? $context['defaultLanguageCode'] : self::DEFAULT_LANGUAGE_CODE;
     }
 
-    public function setDefaultLanguageCode($languageCode)
+    /**
+     * @param MigrationStep $step
+     * @return string
+     */
+    protected function getUserContentType($step)
     {
-        $this->defaultLanguageCode = $languageCode;
+        return isset($step->dsl['user_content_type']) ? $step->dsl['user_content_type'] : $this->getUserContentTypeFromContext($step->context);
     }
 
-    public function getDefaultLanguageCode()
+    protected function getUserContentTypeFromContext($context)
     {
-        return $this->defaultLanguageCode ?: self::DEFAULT_LANGUAGE_CODE;
+        return isset($context['userContentType']) ? $context['userContentType'] : self::USER_CONTENT_TYPE;
+    }
+
+    protected function getAdminUserIdentifierFromContext($context)
+    {
+        if (isset($context['adminUserLogin'])) {
+            return $context['adminUserLogin'];
+        }
+
+        return self::ADMIN_USER_ID;
     }
 
     /**

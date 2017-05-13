@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
-use Kaliop\eZMigrationBundle\API\LanguageAwareInterface;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -242,15 +241,16 @@ EOT
                 }
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
-                if ($executor instanceof LanguageAwareInterface) {
-                    $executor->setLanguageCode($parameters['lang']);
+                $context = array();
+                if (isset($parameters['lang']) && $parameters['lang'] != '') {
+                    $context['defaultLanguageCode'] = $parameters['lang'];
                 }
 
                 $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
                 if ($parameters['matchExcept']) {
                     $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
                 }
-                $data = $executor->generateMigration($matchCondition, $parameters['mode']);
+                $data = $executor->generateMigration($matchCondition, $parameters['mode'], $context);
 
                 if (!is_array($data) || !count($data)) {
                     $warning = 'Note: the generated migration is empty';

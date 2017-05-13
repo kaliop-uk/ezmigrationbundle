@@ -4,8 +4,10 @@ namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 
-class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
+class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenceResolverInterface
 {
     /** @var ReferenceResolverInterface[] $resolvers */
     protected $resolvers = array();
@@ -41,6 +43,7 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
     /**
      * @param string $stringIdentifier
      * @return mixed
+     * @throws \Exception
      */
     public function getReferenceValue($stringIdentifier)
     {
@@ -49,6 +52,7 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
         foreach ($this->resolvers as $resolver) {
             if ($resolver->isReference($stringIdentifier)) {
                 $stringIdentifier = $resolver->getReferenceValue($stringIdentifier);
+                // In case of many resolvers resolving the same ref, the last one wins. Should we default to the 1st winning ?
                 $resolvedOnce = true;
             }
         }
@@ -87,5 +91,21 @@ class ChainResolver implements ReferenceResolverInterface, ReferenceBagInterface
         }
 
         return false;
+    }
+
+    public function listReferences()
+    {
+        $refs = array();
+
+        foreach ($this->resolvers as $resolver) {
+            if (! $resolver instanceof EnumerableReferenceResolverInterface) {
+                throw new \Exception("Could not enumerate references because of chained resolver of type: " . get_class($resolver));
+            }
+
+            // later resolvers are stronger (see getReferenceValue)
+            $refs = array_merge($refs, $resolver->listReferences());
+        }
+
+        return $refs;
     }
 }

@@ -3,11 +3,12 @@
 namespace Kaliop\eZMigrationBundle\Tests\helper;
 
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 
 /**
  * Does nothing for the moment, except making sure that it can be injected correctly via a tagged service
  */
-class CustomReferenceResolver implements PrefixBasedResolverInterface
+class CustomReferenceResolver implements PrefixBasedResolverInterface, EnumerableReferenceResolverInterface
 {
     public function isReference($stringIdentifier)
     {
@@ -33,5 +34,10 @@ class CustomReferenceResolver implements PrefixBasedResolverInterface
     public function getRegexp()
     {
         return '';
+    }
+
+    public function listReferences()
+    {
+        return array();
     }
 }

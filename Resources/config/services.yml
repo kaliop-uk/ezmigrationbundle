@@ -2,8 +2,9 @@ parameters:
     # The directory (inside each bundle) where to look for migrations definitions
     # NB: this pasrasmeter will be renamed in v3
     kaliop_bundle_migration.version_directory: 'MigrationVersions'
-    # The dtabase table used to store migration information. Will be created automatically
+    # The database tables used to store migration information. Will be created automatically
     ez_migration_bundle.table_name: 'kaliop_migrations'
+    ez_migration_bundle.context_table_name: 'kaliop_migrations_contexts'
     # Used to discriminate valid migration definitions
     ez_migration_bundle.valid_databases:
         # names have to correspond to doctrine 'platform', short of version numbers and lowercase
@@ -28,8 +29,12 @@ parameters:
     ez_migration_bundle.definition_parser.sql.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\SQLDefinitionParser
     ez_migration_bundle.definition_parser.php.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\PHPDefinitionParser
 
-    ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database
+    ez_migration_bundle.context_handler.class: Kaliop\eZMigrationBundle\Core\ContextHandler
 
+    ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Migration
+    ez_migration_bundle.context_storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Context
+
+    ez_migration_bundle.executor.migration.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationExecutor
     ez_migration_bundle.executor.migration_definition.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationDefinitionExecutor
     ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
     ez_migration_bundle.executor.sql.class: Kaliop\eZMigrationBundle\Core\Executor\SQLExecutor
@@ -55,27 +60,28 @@ parameters:
     ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
     ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
     ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
+    ez_migration_bundle.reference_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ReferenceMatcher
     ez_migration_bundle.role_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher
     ez_migration_bundle.section_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher
     ez_migration_bundle.tag_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher
     ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
     ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
 
-    ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\ComplexField\ComplexFieldManager
-    ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzAuthor
-    ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBinaryFile
-    ez_migration_bundle.complex_field.ezboolean.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzBoolean
-    ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDate
-    ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzDateAndTime
-    ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzImage
-    ez_migration_bundle.complex_field.ezmedia.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzMedia
-    ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzPage
-    ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelation
-    ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRelationList
-    ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzRichText
-    ez_migration_bundle.complex_field.ezselection.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzSelection
-    ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzXmlText
-    ez_migration_bundle.complex_field.eztags.class: Kaliop\eZMigrationBundle\Core\ComplexField\EzTags
+    ez_migration_bundle.complex_field_manager.class: Kaliop\eZMigrationBundle\Core\FieldHandlerManager
+    ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzAuthor
+    ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzBinaryFile
+    ez_migration_bundle.complex_field.ezboolean.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzBoolean
+    ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzDate
+    ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzDateAndTime
+    ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzImage
+    ez_migration_bundle.complex_field.ezmedia.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzMedia
+    ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzPage
+    ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRelation
+    ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRelationList
+    ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRichText
+    ez_migration_bundle.complex_field.ezselection.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzSelection
+    ez_migration_bundle.complex_field.ezxmltext.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzXmlText
+    ez_migration_bundle.complex_field.eztags.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzTags
 
     ez_migration_bundle.reference_resolver.chain.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainResolver
     ez_migration_bundle.reference_resolver.chain_prefix.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainPrefixResolver
@@ -99,6 +105,9 @@ services:
             - '@ez_migration_bundle.storage_handler'
             - '@ezpublish.api.repository'
             - '@event_dispatcher'
+            - '@ez_migration_bundle.context_handler'
+        tags:
+            - { name: ez_migration_bundle.context_provider, label: migration_service }
 
     ### loaders
 
@@ -149,7 +158,26 @@ services:
             - '@ezpublish.connection'
             - '%ez_migration_bundle.table_name%'
 
+    ez_migration_bundle.context_storage_handler:
+        alias: ez_migration_bundle.context_storage_handler.database
+
+    ez_migration_bundle.context_storage_handler.database:
+        class: '%ez_migration_bundle.context_storage_handler.database.class%'
+        arguments:
+            - '@ezpublish.connection'
+            - '%ez_migration_bundle.context_table_name%'
+
     ### executors
+
+    ez_migration_bundle.executor.migration:
+        class: '%ez_migration_bundle.executor.migration.class%'
+        arguments:
+            - '@ez_migration_bundle.reference_matcher'
+            - '@ez_migration_bundle.executor.content_manager'
+            - '@ez_migration_bundle.executor.location_manager'
+            - '@ez_migration_bundle.executor.content_type_manager'
+        tags:
+            - { name: ez_migration_bundle.executor }
 
     ez_migration_bundle.executor.migration_definition:
         class: '%ez_migration_bundle.executor.migration_definition.class%'
@@ -169,18 +197,18 @@ services:
         tags:
             - { name: ez_migration_bundle.executor }
 
-    ez_migration_bundle.executor.sql:
-        class: '%ez_migration_bundle.executor.sql.class%'
-        arguments:
-            - '@ezpublish.connection'
-            - '@ez_migration_bundle.reference_resolver.customreference'
-        tags:
-            - { name: ez_migration_bundle.executor }
-
     ez_migration_bundle.executor.reference:
         class: '%ez_migration_bundle.executor.reference.class%'
         arguments:
             - '@service_container'
+            - '@ez_migration_bundle.reference_resolver.customreference'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.sql:
+        class: '%ez_migration_bundle.executor.sql.class%'
+        arguments:
+            - '@ezpublish.connection'
             - '@ez_migration_bundle.reference_resolver.customreference'
         tags:
             - { name: ez_migration_bundle.executor }
@@ -309,36 +337,29 @@ services:
         class: '%ez_migration_bundle.content_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
-
-    ez_migration_bundle.location_matcher:
-        class: '%ez_migration_bundle.location_matcher.class%'
-        arguments:
-            - '@ezpublish.api.repository'
-
-    ez_migration_bundle.user_matcher:
-        class: '%ez_migration_bundle.user_matcher.class%'
-        arguments:
-            - '@ezpublish.api.repository'
-
-    ez_migration_bundle.user_group_matcher:
-        class: '%ez_migration_bundle.user_group_matcher.class%'
-        arguments:
-            - '@ezpublish.api.repository'
-
-    ez_migration_bundle.role_matcher:
-        class: '%ez_migration_bundle.role_matcher.class%'
-        arguments:
-            - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.user_group_matcher'
+            - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.object_state_matcher'
+            - '@ez_migration_bundle.user_matcher'
 
     ez_migration_bundle.content_type_matcher:
         class: '%ez_migration_bundle.content_type_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
 
-    ez_migration_bundle.section_matcher:
-        class: '%ez_migration_bundle.section_matcher.class%'
+    ez_migration_bundle.content_type_group_matcher:
+        class: '%ez_migration_bundle.content_type_group_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
+
+    ez_migration_bundle.location_matcher:
+        class: '%ez_migration_bundle.location_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.user_group_matcher'
+            - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.object_state_matcher'
+            - '@ez_migration_bundle.user_matcher'
 
     ez_migration_bundle.object_state_matcher:
         class: '%ez_migration_bundle.object_state_matcher.class%'
@@ -350,8 +371,19 @@ services:
         arguments:
             - '@ezpublish.api.repository'
 
-    ez_migration_bundle.content_type_group_matcher:
-        class: '%ez_migration_bundle.content_type_group_matcher.class%'
+    ez_migration_bundle.reference_matcher:
+        class: '%ez_migration_bundle.reference_matcher.class%'
+        arguments:
+            - '@ez_migration_bundle.reference_resolver.customreference'
+            - '@validator'
+
+    ez_migration_bundle.role_matcher:
+        class: '%ez_migration_bundle.role_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.section_matcher:
+        class: '%ez_migration_bundle.section_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
 
@@ -360,6 +392,16 @@ services:
         arguments:
             - '@ezpublish.translation_helper'
             - '@?ezpublish.api.service.tags'
+
+    ez_migration_bundle.user_matcher:
+        class: '%ez_migration_bundle.user_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.user_group_matcher:
+        class: '%ez_migration_bundle.user_group_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
 
     ### field handlers
 
@@ -528,6 +570,8 @@ services:
     ez_migration_bundle.reference_resolver.customreference.base:
         class: '%ez_migration_bundle.reference_resolver.customreference.class%'
         arguments: []
+        tags:
+            - { name: ez_migration_bundle.context_provider, label: reference_resolver_customreference }
 
     # NB: This service will see added to the chain any service tagged as 'ez_migration_bundle.reference_resolver.customreference'
     ez_migration_bundle.reference_resolver.customreference.flexible:
@@ -537,12 +581,19 @@ services:
 
     ### misc
 
+    ez_migration_bundle.context_handler:
+        class: '%ez_migration_bundle.context_handler.class%'
+        arguments:
+            - '@ez_migration_bundle.context_storage_handler'
+        lazy: true
+
     # This service is used for the verbose mode when executing migrations on the command line
     ez_migration_bundle.step_executed_listener.tracing:
         class: '%ez_migration_bundle.step_executed_listener.tracing.class%'
         tags:
             - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
             - { name: kernel.event_listener, event: ez_migration.migration_aborted, method: onMigrationAborted }
+            - { name: kernel.event_listener, event: ez_migration.migration_suspended, method: onMigrationSuspended }
 
     ez_migration_bundle.helper.limitation_converter:
         class: '%ez_migration_bundle.helper.limitation_converter.class%'

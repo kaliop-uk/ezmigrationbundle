@@ -20,6 +20,19 @@
     overwrite: true|false # Optional, default false. If not set, and any reference already exists, an exception is thrown
 
 -
+    # Save the complete set of references currently defined to a json or yaml file
+    type: reference
+    mode: save
+    file: xxx # path to the file to load. It must have an extension of .yml or .json.
+              # It can be an absolute path.
+              # NB: if found, the token '{ENV}' will be replaced with the current Symfony environment, eg:
+              # ezpublish/config/migrations_{ENV}.yml will become ezpublish/config/migrations_dev.yml
+              #
+              # The format for the contents of this file is: an array of reference-key => reference-value
+              # The reference-value can be a Symfony configuration parameter by using the syntax '%name%'
+    overwrite: true|false # Optional, default false. If not set, and the file already exists, an exception is thrown
+
+-
     # Dumps a reference to STDOUT. For debugging purposes
     type: reference
     mode: dump

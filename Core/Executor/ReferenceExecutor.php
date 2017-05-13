@@ -7,18 +7,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\VarDumper\VarDumper;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 
 class ReferenceExecutor extends AbstractExecutor
 {
     protected $supportedStepTypes = array('reference');
-    protected $supportedActions = array('set', 'load', 'dump');
+    protected $supportedActions = array('set', 'load', 'save', 'dump');
 
     protected $container;
-    /** @var ReferenceBagInterface $referenceResolver */
+    /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
-    public function __construct(ContainerInterface $container, ReferenceBagInterface $referenceResolver)
+    public function __construct(ContainerInterface $container, ReferenceResolverBagInterface $referenceResolver)
     {
         $this->container = $container;
         $this->referenceResolver = $referenceResolver;
@@ -46,7 +47,8 @@ class ReferenceExecutor extends AbstractExecutor
         return $this->$action($step->dsl, $step->context);
     }
 
-    protected function set($dsl, $context) {
+    protected function set($dsl, $context)
+    {
         if (!isset($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: miss 'identifier' for setting reference");
         }
@@ -104,13 +106,59 @@ class ReferenceExecutor extends AbstractExecutor
             if (preg_match('/%.+%$/', $value)) {
                 $value = $this->container->getParameter(trim($value, '%'));
             }
-            $this->referenceResolver->addReference($refName, $value, $overwrite);
+
+            if (!$this->referenceResolver->addReference($refName, $value, $overwrite)) {
+                throw new \Exception("Failed adding to Reference Resolver the reference: $refName");
+            }
         }
 
         return $data;
     }
 
-    protected function dump($dsl, $context) {
+    /**
+     * @todo find a smart way to allow saving the references file next to the current migration
+     */
+    protected function save($dsl, $context)
+    {
+        if (!isset($dsl['file'])) {
+            throw new \Exception("Invalid step definition: miss 'file' for saving references");
+        }
+        $fileName = $dsl['file'];
+
+        $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
+
+        $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
+
+        if (is_file($fileName) && !$overwrite) {
+            throw new \Exception("Invalid step definition: file '$fileName' for saving references already exists");
+        }
+
+        if (! $this->referenceResolver instanceof EnumerableReferenceResolverInterface) {
+            throw new \Exception("Can not save references as resolver is not enumerable");
+        }
+
+        $data = $this->referenceResolver->listReferences();
+
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        switch ($ext) {
+            case 'json':
+                $data = json_encode($data, JSON_PRETTY_PRINT);
+                break;
+            case 'yml':
+            case 'yaml':
+                $data = Yaml::dump($data);
+                break;
+            default:
+                throw new \Exception("Invalid step definition: unsupported file extension for saving references to");
+        }
+
+        file_put_contents($fileName, $data);
+
+        return $data;
+    }
+
+    protected function dump($dsl, $context)
+    {
         if (!isset($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: miss 'identifier' for dumping reference");
         }

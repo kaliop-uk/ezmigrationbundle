@@ -33,23 +33,23 @@ class TagManager extends RepositoryExecutor
      * @return mixed
      * @throws \Exception
      */
-    protected function create()
+    protected function create($step)
     {
         $this->checkTagsBundleInstall();
 
-        $alwaysAvail = isset($this->dsl['always_available']) ? $this->dsl['always_available'] : true;
+        $alwaysAvail = isset($step->dsl['always_available']) ? $step->dsl['always_available'] : true;
         $parentTagId = 0;
-        if (isset($this->dsl['parent_tag_id'])) {
-            $parentTagId = $this->dsl['parent_tag_id'];
+        if (isset($step->dsl['parent_tag_id'])) {
+            $parentTagId = $step->dsl['parent_tag_id'];
             $parentTagId = $this->referenceResolver->resolveReference($parentTagId);
         }
-        $remoteId = isset($this->dsl['remote_id']) ? $this->dsl['remote_id'] : null;
+        $remoteId = isset($step->dsl['remote_id']) ? $step->dsl['remote_id'] : null;
 
-        if (isset($this->dsl['lang'])) {
-            $lang = $this->dsl['lang'];
-        } elseif (isset($this->dsl['main_language_code'])) {
+        if (isset($step->dsl['lang'])) {
+            $lang = $step->dsl['lang'];
+        } elseif (isset($step->dsl['main_language_code'])) {
             // deprecated tag
-            $lang = $this->dsl['main_language_code'];
+            $lang = $step->dsl['main_language_code'];
         } else {
             throw new \Exception("The 'lang' key is required to create a tag.");
         }
@@ -62,28 +62,28 @@ class TagManager extends RepositoryExecutor
         );
         $tagCreateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct($tagCreateArray);
 
-        foreach ($this->dsl['keywords'] as $langCode => $keyword)
+        foreach ($step->dsl['keywords'] as $langCode => $keyword)
         {
             $tagCreateStruct->setKeyword($keyword, $langCode);
         }
 
         $tag = $this->tagService->createTag($tagCreateStruct);
-        $this->setReferences($tag);
+        $this->setReferences($tag, $step);
 
         return $tag;
     }
 
-    protected function update()
+    protected function update($step)
     {
         $this->checkTagsBundleInstall();
         throw new \Exception('Tag update is not implemented yet');
     }
 
-    protected function delete()
+    protected function delete($step)
     {
         $this->checkTagsBundleInstall();
 
-        $tagsCollection = $this->matchTags('delete');
+        $tagsCollection = $this->matchTags('delete', $step);
 
         foreach ($tagsCollection as $tag) {
             $this->tagService->deleteTag($tag);
@@ -97,14 +97,14 @@ class TagManager extends RepositoryExecutor
      * @return TagCollection
      * @throws \Exception
      */
-    protected function matchTags($action)
+    protected function matchTags($action, $step)
     {
-        if (!isset($this->dsl['match'])) {
+        if (!isset($step->dsl['match'])) {
             throw new \Exception("A match condition is required to $action a Tag");
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($this->dsl['match']);
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
         return $this->tagMatcher->match($match);
     }
@@ -113,13 +113,13 @@ class TagManager extends RepositoryExecutor
      * @param $object
      * @return bool
      */
-    protected function setReferences($object)
+    protected function setReferences($object, $step)
     {
-        if (!array_key_exists('references', $this->dsl)) {
+        if (!array_key_exists('references', $step->dsl)) {
             return false;
         }
 
-        foreach ($this->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'id':
                     $value = $object->id;
@@ -128,7 +128,11 @@ class TagManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;
