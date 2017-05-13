@@ -18,7 +18,7 @@ class PHPExecutor extends AbstractExecutor
 
     /**
      * @param MigrationStep $step
-     * @return void
+     * @return mixed
      * @throws \Exception
      */
     public function execute(MigrationStep $step)

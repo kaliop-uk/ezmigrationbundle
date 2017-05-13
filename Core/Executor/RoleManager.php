@@ -188,7 +188,11 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     throw new \InvalidArgumentException('Role Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;

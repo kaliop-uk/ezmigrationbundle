@@ -173,6 +173,9 @@ services:
         class: '%ez_migration_bundle.executor.migration.class%'
         arguments:
             - '@ez_migration_bundle.reference_matcher'
+            - '@ez_migration_bundle.executor.content_manager'
+            - '@ez_migration_bundle.executor.location_manager'
+            - '@ez_migration_bundle.executor.content_type_manager'
         tags:
             - { name: ez_migration_bundle.executor }
 

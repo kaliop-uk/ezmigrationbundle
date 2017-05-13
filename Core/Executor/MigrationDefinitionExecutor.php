@@ -101,8 +101,12 @@ class MigrationDefinitionExecutor extends AbstractExecutor
                 throw new \InvalidArgumentException('MigrationDefinition Executor does not support setting references if not using a json_path expression');
             }
 
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
             $value = JmesPath::search($reference['json_path'], $result);
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
     }
 

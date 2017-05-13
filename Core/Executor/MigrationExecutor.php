@@ -3,25 +3,26 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
-use Symfony\Component\Validator\Constraints;
 
 class MigrationExecutor extends AbstractExecutor
 {
     protected $supportedStepTypes = array('migration');
     protected $supportedActions = array('cancel', 'suspend');
 
-    /** @var \Kaliop\eZMigrationBundle\Core\MigrationService $migrationService */
-    //protected $migrationService;
-
     protected $referenceMatcher;
+    protected $contentManager;
+    protected $locationManager;
+    protected $contentTypeManager;
 
-    public function __construct($referenceMatcher)
+    public function __construct($referenceMatcher, ExecutorInterface $contentManager, ExecutorInterface $locationManager, ExecutorInterface $contentTypeManager)
     {
-        //$this->migrationService = $migrationService;
         $this->referenceMatcher = $referenceMatcher;
+        $this->contentManager = $contentManager;
+        $this->locationManager = $locationManager;
+        $this->contentTypeManager = $contentTypeManager;
     }
 
     /**
@@ -80,6 +81,10 @@ class MigrationExecutor extends AbstractExecutor
             throw new \Exception("An until condition is required to suspend a migration");
         }
 
+        if (isset($dsl['load'])) {
+            $this->loadEntity($dsl['load'], $context);
+        }
+
         if ($this->matchConditions($dsl['until'])) {
             // the time has come to resume!
             // q: return timestamp, matched condition or ... ?
@@ -87,6 +92,30 @@ class MigrationExecutor extends AbstractExecutor
         }
 
         throw new MigrationSuspendedException($message);
+    }
+
+    protected function loadEntity($dsl, $context) {
+        if (!isset($dsl['type']) || !isset($dsl['match'])) {
+            throw new \Exception("A 'type' and a 'match' are required to load entities when suspending a migration");
+        }
+
+        $dsl['mode'] = 'load';
+        // be kind to users and allow them not to specify this explicitly
+        if (isset($dsl['references'])) {
+            foreach($dsl['references'] as &$refDef) {
+                $refDef['overwrite'] = true;
+            }
+        }
+        $step = new MigrationStep($dsl['type'], $dsl, $context);
+
+        switch($dsl['type']) {
+            case 'content':
+                return $this->contentManager->execute($step);
+            case 'location':
+                return $this->locationManager->execute($step);
+            case 'content_type':
+                return $this->contentTypeManager->execute($step);
+        }
     }
 
     protected function matchConditions($conditions)

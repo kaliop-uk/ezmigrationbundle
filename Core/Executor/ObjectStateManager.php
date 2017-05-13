@@ -178,7 +178,11 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
                     throw new \InvalidArgumentException('Object State Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $this->referenceResolver->addReference($reference['identifier'], $value);
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;

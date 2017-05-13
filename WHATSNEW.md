@@ -27,6 +27,8 @@ Version 4.0 RC-1 (unreleased)
 
     More details in [Resources/doc/DSL/Migrations.yml](Resources/doc/DSL/Migrations.yml)
 
+* New: it is possible to use `overwrite: true` to change the value of an existing reference
+
 * New: it is now possible to save the current references to a file
 
 * New: it is now possible to specify a custom Content Type for users created via `user/create` migrations

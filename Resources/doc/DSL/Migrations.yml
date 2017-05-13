@@ -18,10 +18,17 @@
     type: migration
     mode: suspend
     message: string # Optional. Will be part of the migration status stored in the database
+    load:
+        type: content/location/content_type # use this to re-load an entity and recalculate the references when the migration
+                                            # is resumed. NB: ALL other references are fixed on the 1st execution and
+                                            # will keep the same value upon resuming.
+        match: # same as when loading content/location/content_type
+        references:  # same as when loading content/location/content_type
     until: # Optional. If set, migration will be suspended until the given condition is satisfied.
-           # NB: needs a cronjob to be set up to later resume
+           # NB: needs a cronjob to be set up to later resume.
            # Use only one of either 'date' or 'match'
         date: timestamp # unix timestamp
         match: # Optional. If set, the migration will be suspended until the condition is matched
-            "reference:_ref_name": # name of a reference to be used for the test
+            "reference:_ref_name": # Name of a reference to be used for the test.
+                                   # NB: it should have been set using the 'load' tag in the same migration step
                 _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

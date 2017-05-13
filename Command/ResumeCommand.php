@@ -112,12 +112,7 @@ EOT
         }
 
         $time = microtime(true) - $start;
-        $this->writeln("Resumed $executed migrations, failed $failed");
-        if ($input->getOption('separate-process')) {
-            // in case of using subprocesses, we can not measure max memory used
-            $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
-        } else {
-            $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
-        }
+        $output->writeln("Resumed $executed migrations, failed $failed");
+        $output->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
     }
 }
