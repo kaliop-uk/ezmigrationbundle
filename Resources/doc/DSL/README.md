@@ -107,13 +107,24 @@ In the update role action we retrieve the value of the reference by using the `r
 
 To tell the system that you want to use a previously stored reference you need to prefix the reference name with the string
 `reference:`. This instructs the system to look in the list of stored references and replace the current tag with the value
-associated to the reference found.
+associated to the reference found. Eg:
 
 > **Important:** Please note that the reference **must be a quoted string**, as `reference:<reference_name>` uses
 > YAML reserved characters.
 >
 > **Bad:** `some_key: reference:foo`<br>
 > **Good:** `some_key: 'reference:foo'`
+
+Note that, unlike variables in programming laguages, you can not change the value of an existing references by default.
+This is done to prevent accidental overwrites of an existing reference with another one, as the most common use case
+for reference is set once, use multiple times.
+If you want to be able to change the value of a reference after having created it, use the `overwrite` tag:
+
+        references:
+            -
+                identifier: section_page_class
+                attribute: content_type_id
+                overwrite: true
 
 *NB:* references are stored *in memory* only and will not propagate across different migrations, unless you
 execute the migrations in a single command (and without the 'separate processes' switch).
