@@ -1,9 +1,12 @@
 Version 4.0 RC-2 (unreleased)
 =============================
 
-* New: it is now possible to send emails as migration steps
+* New: it is now possible to send emails as migration steps.
+    More details in [Resources/doc/DSL/Mails.yml](Resources/doc/DSL/Mails.yml)
 
-* New: it is now possible to execute http calls as migration steps
+* New: it is now possible to execute http calls as migration steps.
+    More details in [Resources/doc/DSL/HTTP.yml](Resources/doc/DSL/HTTP.yml)
+
 
 Version 4.0 RC-1
 ================
