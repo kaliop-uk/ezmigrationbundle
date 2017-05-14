@@ -1,0 +1,19 @@
+-
+    # Send a mail
+    # The swiftmailer lib will be used under the hood
+    type: mail
+    mode: send
+    from: string # references will be resolved
+    to: string/array # references will be resolved
+    cc: string/array # references will be resolved
+    bcc: string/array # references will be resolved
+    subject: string # references will be resolved within the string, as happens for rich text fields: use the following
+                    # syntax: "this is an email subject about [reference:my_ref] etc..."
+    body: string # references will be resolved within the string, as happens for rich text fields: use the following
+                 # syntax: "this is an email subject about [reference:my_ref] etc..."
+    attach: string # a path to a file. References will be resolved
+    priority: string # references will be resolved
+    read_receipt_to: string # references will be resolved
+    return_path: string # references will be resolved
+    reply_to: string # references will be resolved
+    sender: string # references will be resolved

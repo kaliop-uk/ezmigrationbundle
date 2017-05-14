@@ -23,13 +23,14 @@
     ],
     "require": {
         "php": ">=5.6",
-        "ezsystems/ezpublish-kernel": ">=5.4|>=2014.11",
         "ext-pdo": "*",
+        "ezsystems/ezpublish-kernel": ">=5.4|>=2014.11",
+        "mtdowling/jmespath.php": "2.*",
         "nikic/php-parser": "2.*",
         "symfony/process": "*",
-        "symfony/var-dumper": "*",
+        "symfony/swiftmailer-bundle": "*",
         "symfony/validator": "*",
-        "mtdowling/jmespath.php": "2.*"
+        "symfony/var-dumper": "*"
     },
     "require-dev": {
         "mikey179/vfsStream": "~1.2.0",

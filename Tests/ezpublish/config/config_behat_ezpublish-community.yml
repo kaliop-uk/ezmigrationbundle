@@ -30,3 +30,7 @@ parameters:
 ez_publish_legacy:
     root_dir: %kernel.root_dir%/../../ezpublish-legacy
 
+swiftmailer:
+    spool:
+        type: file
+        path: '%kernel.root_dir%/spool'

@@ -45,3 +45,7 @@ stash:
             inMemory: true
             registerDoctrineAdapter: false
 
+swiftmailer:
+    spool:
+        type: file
+        path: '%kernel.root_dir%/spool'

@@ -1,3 +1,9 @@
+Version 4.0 RC-2 (unreleased)
+=============================
+
+* New: it is now possible to send emails as migration steps
+
+
 Version 4.0 RC-1
 ================
 
