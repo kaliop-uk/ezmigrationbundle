@@ -34,6 +34,7 @@ parameters:
     ez_migration_bundle.storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Migration
     ez_migration_bundle.context_storage_handler.database.class: Kaliop\eZMigrationBundle\Core\StorageHandler\Database\Context
 
+    ez_migration_bundle.executor.http.class: Kaliop\eZMigrationBundle\Core\Executor\HTTPExecutor
     ez_migration_bundle.executor.mail.class: Kaliop\eZMigrationBundle\Core\Executor\MailExecutor
     ez_migration_bundle.executor.migration.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationExecutor
     ez_migration_bundle.executor.migration_definition.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationDefinitionExecutor
@@ -169,6 +170,14 @@ services:
             - '%ez_migration_bundle.context_table_name%'
 
     ### executors
+
+    ez_migration_bundle.executor.http:
+        class: '%ez_migration_bundle.executor.http.class%'
+        arguments:
+            - '@service_container'
+            - '@ez_migration_bundle.reference_resolver.customreference'
+        tags:
+            - { name: ez_migration_bundle.executor }
 
     ez_migration_bundle.executor.mail:
         class: '%ez_migration_bundle.executor.mail.class%'

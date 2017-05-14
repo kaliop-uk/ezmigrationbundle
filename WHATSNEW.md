@@ -3,6 +3,7 @@ Version 4.0 RC-2 (unreleased)
 
 * New: it is now possible to send emails as migration steps
 
+* New: it is now possible to execute http calls as migration steps
 
 Version 4.0 RC-1
 ================

@@ -1,0 +1,52 @@
+-
+    # Make an HTTP call
+    # HttplugBundle will be used under the hood: it is an abstraction layer which allows to use different http clients
+    # based on Symfony configuration
+    type: http
+    mode: call
+    client: acme # The name of a client as configured in Sf config under httplug / clients.
+                 # For info on how to set it up, see the notes below, as well as:
+                 # http://docs.php-http.org/en/latest/integrations/symfony-bundle.html
+    uri: http://a.web.site/hi/there # You can probably set up the hostname in the client config and only leave the url here
+                                    # References will be replaced as long as they are in brackets, eg:
+                                    # http://a.web.site/hi/there?param=[reference:my_ref]
+    body: some-payload # String; optional. References will be resolved as long as they are in brackets
+    headers: # array; optional. In case you want to send custom headers. NB: these can be set up in the configuration of the client as well
+        X-something: value # string
+    method: GET # string; optional. Defaults to GET
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: status_code, reason_phrase, protocol_version, body
+
+# *** Setting it up: ***
+#
+# 1. use Composer to require BOTH php-http/httplug-bundle and one of the http plug implementations, such as eg. php-http/curl-client
+# 2. activate in your Kernel class the `Http\HttplugBundle\HttplugBundle` bundle
+# 3. define in a configuration file an httplug client, eg:
+#
+# httplug:
+#    plugins:
+#        logger: ~
+#    clients:
+#        acme:
+#            factory: 'httplug.factory.curl'
+#            plugins:
+#                - 'httplug.plugin.logger'
+#                -
+#                    header_defaults:
+#                        headers:
+#                            "X-FOO": bar
+#                -
+#                    authentication:
+#                        acme_basic:
+#                            type: 'basic'
+#                            username: 'my_username'
+#                            password: 'p4ssw0rd'
+#            config:
+#                CURLOPT_SSL_VERIFYHOST: false
+#
+# 4. you can now use the name of the client you defined in the migration 'http' steps
