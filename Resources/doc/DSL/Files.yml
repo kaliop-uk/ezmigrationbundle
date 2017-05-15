@@ -1,0 +1,66 @@
+-
+    # Load a file's contents or metadata into a reference
+    type: file
+    mode: load
+    file: xxx # string. Filename including path. References will be resolved
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: size, uid, gid, ctime, mtime, atime, body
+
+-
+    type: file
+    mode: save
+    file: xxx # string. Filename including path. References will be resolved
+    body: "file contents" # string. References will be replaced as long as they are within square brackets
+                          # eg. to save to a file the value of reference 'abc', write: body: "[reference:abc]"
+    overwrite: true|false # Optional, default false. If not set, and the file already exists, an exception is thrown
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: size, uid, gid, ctime, mtime, atime, body
+
+-
+    type: file
+    mode: delete
+    file: xxx # string. Filename including path. References will be resolved
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: size, uid, gid, ctime, mtime, atime, body
+
+-
+    type: file
+    mode: copy
+    from: xxx # string. Filename including path. References will be resolved
+    to: yyy # string. Filename including path. References will be resolved
+    overwrite: true|false # Optional, default false. If not set, and the target file already exists, an exception is thrown
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference *taken from the source file*.
+                                   # Supports: size, uid, gid, ctime, mtime, atime, body
+-
+    type: file
+    mode: move
+    from: xxx # string. Filename including path. References will be resolved
+    to: yyy # string. Filename including path. References will be resolved
+    overwrite: true|false # Optional, default false. If not set, and the target file already exists, an exception is thrown
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference *taken from the source file*.
+                                   # Supports: size, uid, gid, ctime, mtime, atime, body

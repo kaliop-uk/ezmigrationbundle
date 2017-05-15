@@ -7,6 +7,9 @@ Version 4.0 RC-2 (unreleased)
 * New: it is now possible to execute http calls as migration steps.
     More details in [Resources/doc/DSL/HTTP.yml](Resources/doc/DSL/HTTP.yml)
 
+* New: it is now possible to load/save/delete/copy/move files as migration steps.
+    More details in [Resources/doc/DSL/Files.yml](Resources/doc/DSL/Files.yml)
+
 
 Version 4.0 RC-1
 ================
