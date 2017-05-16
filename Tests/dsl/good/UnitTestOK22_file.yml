@@ -1,0 +1,63 @@
+-
+     type: reference
+     mode: set
+     identifier: kmb_test_22_x
+     value: /tmp/x.txt
+
+-
+     type: reference
+     mode: set
+     identifier: kmb_test_22_y
+     value: /tmp/y.txt
+
+-
+     type: reference
+     mode: set
+     identifier: kmb_test_22_z
+     value: world
+
+-
+    type: file
+    mode: save
+    file: reference:kmb_test_22_x
+    body: "hello [reference:kmb_test_22_z]"
+
+-
+    type: file
+    mode: load
+    file: reference:kmb_test_22_x
+    references:
+        -
+            attribute: body
+            identifier: aaa1
+        -
+            attribute: size
+            identifier: aaa2
+        -
+            attribute: atime
+            identifier: aaa3
+        -
+            attribute: ctime
+            identifier: aaa4
+
+-
+    type: file
+    mode: copy
+    from: reference:kmb_test_22_x
+    to: reference:kmb_test_22_y
+
+-
+    type: file
+    mode: delete
+    file: reference:kmb_test_22_y
+
+-
+    type: file
+    mode: move
+    from: reference:kmb_test_22_x
+    to: reference:kmb_test_22_y
+
+-
+    type: file
+    mode: delete
+    file: reference:kmb_test_22_y
