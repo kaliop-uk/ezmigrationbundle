@@ -13,7 +13,7 @@ class FileExecutor extends AbstractExecutor
     /** @var PrefixBasedResolverInterface $referenceResolver */
     protected $referenceResolver;
 
-    public function __construct($mailService, PrefixBasedResolverInterface $referenceResolver)
+    public function __construct(PrefixBasedResolverInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
     }
