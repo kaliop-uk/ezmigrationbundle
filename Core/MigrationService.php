@@ -238,7 +238,7 @@ class MigrationService implements ContextProviderInterface
      * @param MigrationDefinition $migrationDefinition
      * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
      * @param string $defaultLanguageCode
-     * @param string $adminLogin
+     * @param string|int|false|null $adminLogin when false, current user is used; when null, hardcoded admin account
      * @throws \Exception
      */
     public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
@@ -267,7 +267,7 @@ class MigrationService implements ContextProviderInterface
      * @param array $migrationContext
      * @param int $stepOffset
      * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
-     * @param string $adminLogin
+     * @param string|int|false|null $adminLogin used only for committing db transaction if needed. If false or null, hardcoded admin is used
      * @throws \Exception
      */
     protected function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
@@ -442,7 +442,7 @@ class MigrationService implements ContextProviderInterface
 
     /**
      * @param string $defaultLanguageCode
-     * @param string $adminLogin
+     * @param string|int|false $adminLogin
      * @return array
      */
     protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null)
@@ -452,7 +452,7 @@ class MigrationService implements ContextProviderInterface
         if ($defaultLanguageCode != null) {
             $properties['defaultLanguageCode'] = $defaultLanguageCode;
         }
-        if ($adminLogin != null) {
+        if ($adminLogin !== null) {
             $properties['adminUserLogin'] = $adminLogin;
         }
 

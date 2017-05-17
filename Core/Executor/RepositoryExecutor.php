@@ -90,6 +90,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
         if (method_exists($this, $action)) {
 
             $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
+
             try {
                 $output = $this->$action($step);
             } catch (\Exception $e) {
@@ -149,6 +150,10 @@ abstract class RepositoryExecutor extends AbstractExecutor
         return isset($context['userContentType']) ? $context['userContentType'] : self::USER_CONTENT_TYPE;
     }
 
+    /**
+     * @param $context we have to return FALSE is it is set as adminUserLogin, whereas if NULL is set, we return the default admin
+     * @return int|string|false
+     */
     protected function getAdminUserIdentifierFromContext($context)
     {
         if (isset($context['adminUserLogin'])) {

@@ -11,11 +11,15 @@ trait RepositoryUserSetterTrait
 {
     /**
      * Helper method to log in a user that can make changes to the system.
-     * @param int|string $userLoginOrId a user login or user-id
-     * @return int id of the previously logged in user
+     * @param int|string|false $userLoginOrId a user login or user-id. If *false* is passed in, current user is not changed and false is returned
+     * @return int|false id of the previously logged in user
      */
     protected function loginUser($userLoginOrId)
     {
+        if ($userLoginOrId === false) {
+            return null;
+        }
+
         $previousUser = $this->repository->getCurrentUser();
 
         if (is_int($userLoginOrId)) {
