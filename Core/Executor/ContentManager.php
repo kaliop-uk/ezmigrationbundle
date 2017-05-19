@@ -607,7 +607,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
 
             if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
-                throw new \Exception("Field '$fieldIdentifier' is not present in field type '{$contentType->identifier}'");
+                throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
             }
 
             $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
