@@ -240,6 +240,9 @@ class MigrationService implements ContextProviderInterface
      * @param string $defaultLanguageCode
      * @param string|int|false|null $adminLogin when false, current user is used; when null, hardcoded admin account
      * @throws \Exception
+     *
+     * @todo treating a null and false $adminLogin values differently is prone to hard-to-track errors.
+     *       Shall we use instead -1 to indicate the desire to not-login-as-admin-user-at-all ?
      */
     public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
                                      $defaultLanguageCode = null, $adminLogin = null)
@@ -342,6 +345,7 @@ class MigrationService implements ContextProviderInterface
             if ($useTransaction) {
                 // there might be workflows or other actions happening at commit time that fail if we are not admin
                 $previousUserId = $this->loginUser($this->getAdminUserIdentifier($adminLogin));
+
                 $this->repository->commit();
                 $this->loginUser($previousUserId);
             }
@@ -452,6 +456,7 @@ class MigrationService implements ContextProviderInterface
         if ($defaultLanguageCode != null) {
             $properties['defaultLanguageCode'] = $defaultLanguageCode;
         }
+        // nb: other parts of the codebase treat differently a false and null values for $properties['adminUserLogin']
         if ($adminLogin !== null) {
             $properties['adminUserLogin'] = $adminLogin;
         }

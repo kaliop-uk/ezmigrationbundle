@@ -17,7 +17,7 @@ trait RepositoryUserSetterTrait
     protected function loginUser($userLoginOrId)
     {
         if ($userLoginOrId === false) {
-            return null;
+            return false;
         }
 
         $previousUser = $this->repository->getCurrentUser();
