@@ -1,6 +1,6 @@
 parameters:
     # The directory (inside each bundle) where to look for migrations definitions
-    # NB: this pasrasmeter will be renamed in v3
+    # NB: this parameter will be renamed in v3
     kaliop_bundle_migration.version_directory: 'MigrationVersions'
     # The database tables used to store migration information. Will be created automatically
     ez_migration_bundle.table_name: 'kaliop_migrations'
