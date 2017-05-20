@@ -287,7 +287,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      * @param array $limitation
      * @return \eZ\Publish\API\Repository\Values\User\Limitation
      */
-    private function createLimitation(RoleService $roleService, array $limitation)
+    protected function createLimitation(RoleService $roleService, array $limitation)
     {
         $limitationType = $roleService->getLimitationType($limitation['identifier']);
 
@@ -318,7 +318,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      * @param \eZ\Publish\API\Repository\UserService $userService
      * @param array $assignments
      */
-    private function assignRole(Role $role, RoleService $roleService, UserService $userService, array $assignments)
+    protected function assignRole(Role $role, RoleService $roleService, UserService $userService, array $assignments)
     {
         foreach ($assignments as $assign) {
             switch ($assign['type']) {
@@ -371,7 +371,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      * @param \eZ\Publish\API\Repository\RoleService $roleService
      * @param array $policy
      */
-    private function addPolicy(Role $role, RoleService $roleService, array $policy)
+    protected function addPolicy(Role $role, RoleService $roleService, array $policy)
     {
         $policyCreateStruct = $roleService->newPolicyCreateStruct($policy['module'], $policy['function']);
 

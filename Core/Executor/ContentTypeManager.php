@@ -510,7 +510,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinitionCreateStruct
      * @throws \Exception
      */
-    private function createFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $contentTypeIdentifier, $lang)
+    protected function createFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $contentTypeIdentifier, $lang)
     {
         if (!isset($attribute['identifier']) || !isset($attribute['type'])) {
             throw new \Exception("Keys 'type' and 'identifier' are mandatory to define a new field in a field type");
@@ -576,7 +576,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinitionUpdateStruct
      * @throws \Exception
      */
-    private function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $fieldTypeIdentifier, $contentTypeIdentifier, $lang)
+    protected function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $fieldTypeIdentifier, $contentTypeIdentifier, $lang)
     {
         if (!isset($attribute['identifier'])) {
             throw new \Exception("The 'identifier' of an attribute is missing in the content type update definition.");
@@ -628,7 +628,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         return $fieldDefinitionUpdateStruct;
     }
 
-    private function getFieldSettings($value, $fieldTypeIdentifier, $contentTypeIdentifier)
+    protected function getFieldSettings($value, $fieldTypeIdentifier, $contentTypeIdentifier)
     {
         // 1st update any references in the value array
         // q: shall we delegate this exclusively to the hashToFieldSettings call below ?
@@ -662,7 +662,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @param string $fieldIdentifier
      * @return \eZ\Publish\API\Repository\Values\ContentType\FieldDefinition|null
      */
-    private function contentTypeHasFieldDefinition(ContentType $contentType, $fieldIdentifier)
+    protected function contentTypeHasFieldDefinition(ContentType $contentType, $fieldIdentifier)
     {
         $existingFieldDefinitions = $contentType->fieldDefinitions;
 
