@@ -324,9 +324,9 @@ class MigrationService implements ContextProviderInterface
                 $this->dispatcher->dispatch($this->eventPrefix . 'migration_suspended', new MigrationSuspendedEvent($step, $e));
 
                 // prepare data for the context handler
-                $this->migrationContext[$migrationDefinition->name] = array('step' => $i, 'context' => $migrationContext);
+                $this->migrationContext[$migration->name] = array('step' => $i, 'context' => $migrationContext);
                 // let the context handler store our data, along context data from any other (tagged) service which has some
-                $this->contextHandler->storeCurrentContext($migrationDefinition->name);
+                $this->contextHandler->storeCurrentContext($migration->name);
 
                 $finalStatus = Migration::STATUS_SUSPENDED;
                 $finalMessage = "Suspended in execution of step $i: " . $e->getMessage();
