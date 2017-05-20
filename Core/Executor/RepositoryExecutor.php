@@ -42,18 +42,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     protected $repository;
 
-    /**
-     * Language code for current step.
-     *
-     * @var string
-     */
-    //private $languageCode;
-
-    /**
-     * @var string
-     */
-    //private $defaultLanguageCode;
-
     /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
