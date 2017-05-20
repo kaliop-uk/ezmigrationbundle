@@ -221,29 +221,31 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             throw new \Exception("Can not execute Content update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
         }
 
-        $contentType = null;
+        $contentType = array();
 
         foreach ($contentCollection as $key => $content) {
             $contentInfo = $content->contentInfo;
 
-            if ($contentType == null) {
-                $contentType = $contentTypeService->loadContentType($contentInfo->contentTypeId);
+            if ($contentType[$contentInfo->contentTypeId] == null) {
+                $contentType[$contentInfo->contentTypeId] = $contentTypeService->loadContentType($contentInfo->contentTypeId);
             }
 
-            $contentUpdateStruct = $contentService->newContentUpdateStruct();
+            if (isset($step->dsl['attributes']) || isset($step->dsl['version_creator'])) {
+                $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
-            if (isset($step->dsl['attributes'])) {
-                $this->setFields($contentUpdateStruct, $step->dsl['attributes'], $contentType, $step);
+                if (isset($step->dsl['attributes'])) {
+                    $this->setFields($contentUpdateStruct, $step->dsl['attributes'], $contentType[$contentInfo->contentTypeId], $step);
+                }
+
+                $versionCreator = null;
+                if (isset($step->dsl['version_creator'])) {
+                    $versionCreator = $this->getUser($step->dsl['version_creator']);
+                }
+
+                $draft = $contentService->createContentDraft($contentInfo, null, $versionCreator);
+                $contentService->updateContent($draft->versionInfo, $contentUpdateStruct);
+                $content = $contentService->publishVersion($draft->versionInfo);
             }
-
-            $versionCreator = null;
-            if (isset($step->dsl['version_creator'])) {
-                $versionCreator = $this->getUser($step->dsl['version_creator']);
-            }
-
-            $draft = $contentService->createContentDraft($contentInfo, null, $versionCreator);
-            $contentService->updateContent($draft->versionInfo, $contentUpdateStruct);
-            $content = $contentService->publishVersion($draft->versionInfo);
 
             if (isset($step->dsl['always_available']) ||
                 isset($step->dsl['new_remote_id']) ||

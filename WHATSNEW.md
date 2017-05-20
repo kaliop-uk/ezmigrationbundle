@@ -1,5 +1,15 @@
-Version 4.0 RC-2 (unreleased)
+Version 4.0 RC-3 (unreleased)
 =============================
+
+* Improved: do not publish a new content version when only metadata is changed but not field values for content/update
+
+* Fix: allow updating in one migration step many contents of different types
+
+* New: allow to run migrations without changing into an admin user (only for developers, not yet from the command line)
+
+
+Version 4.0 RC-2
+================
 
 * New: it is now possible to send emails as migration steps.
     More details in [Resources/doc/DSL/Mails.yml](Resources/doc/DSL/Mails.yml)
