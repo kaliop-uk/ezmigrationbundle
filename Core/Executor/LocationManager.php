@@ -141,21 +141,21 @@ class LocationManager extends RepositoryExecutor
             ) {
                 $locationUpdateStruct = $locationService->newLocationUpdateStruct();
 
-                    if (isset($step->dsl['priority'])) {
-                        $locationUpdateStruct->priority = $step->dsl['priority'];
-                    }
+                if (isset($step->dsl['priority'])) {
+                    $locationUpdateStruct->priority = $step->dsl['priority'];
+                }
 
-                    if (isset($step->dsl['sort_field'])) {
-                        $locationUpdateStruct->sortField = $this->getSortField($step->dsl['sort_field'], $location->sortField);
-                    }
+                if (isset($step->dsl['sort_field'])) {
+                    $locationUpdateStruct->sortField = $this->getSortField($step->dsl['sort_field'], $location->sortField);
+                }
 
-                    if (isset($step->dsl['sort_order'])) {
-                        $locationUpdateStruct->sortOrder = $this->getSortOrder($step->dsl['sort_order'], $location->sortOrder);
-                    }
+                if (isset($step->dsl['sort_order'])) {
+                    $locationUpdateStruct->sortOrder = $this->getSortOrder($step->dsl['sort_order'], $location->sortOrder);
+                }
 
-                    if (isset($step->dsl['remote_id'])) {
-                        $locationUpdateStruct->remoteId = $step->dsl['remote_id'];
-                    }
+                if (isset($step->dsl['remote_id'])) {
+                    $locationUpdateStruct->remoteId = $step->dsl['remote_id'];
+                }
 
                 $location = $locationService->updateLocation($location, $locationUpdateStruct);
             }
