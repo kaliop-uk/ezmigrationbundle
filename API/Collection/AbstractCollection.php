@@ -70,4 +70,14 @@ class AbstractCollection extends \ArrayObject
     {
         throw new \InvalidArgumentException("Can not add element of type '" . (is_object($newval) ? get_class($newval) : gettype($newval)) . "' to Collection of type '" . get_class($this) . "'");
     }
+
+    /**
+     * Allow the class to be serialized to php using var_export
+     * @param array $data
+     * @return static
+     */
+    public static function __set_state(array $data)
+    {
+        return new static($data);
+    }
 }

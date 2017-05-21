@@ -30,16 +30,33 @@ class MigrationDefinition extends AbstractValue
      * @param string $path
      * @param string $rawDefinition
      * @param int $status
-     * @param MigrationStep[] $steps
+     * @param MigrationStep[]|MigrationStepsCollection $steps
      * @param string $parsingError
      */
-    public function __construct($name, $path, $rawDefinition, $status = 0, array $steps = array(), $parsingError = null)
+    public function __construct($name, $path, $rawDefinition, $status = 0, $steps = array(), $parsingError = null)
     {
         $this->name = $name;
         $this->path = $path;
         $this->rawDefinition = $rawDefinition;
         $this->status = $status;
-        $this->steps = new MigrationStepsCollection($steps);
+        $this->steps = ($steps instanceof MigrationStepsCollection) ? $steps : new MigrationStepsCollection($steps);
         $this->parsingError = $parsingError;
+    }
+
+    /**
+     * Allow the class to be serialized to php using var_export
+     * @param array $data
+     * @return static
+     */
+    public static function __set_state(array $data)
+    {
+        return new static(
+            $data['name'],
+            $data['path'],
+            $data['rawDefinition'],
+            $data['status'],
+            $data['steps'],
+            $data['parsingError']
+        );
     }
 }

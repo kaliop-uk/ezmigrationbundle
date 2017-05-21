@@ -19,4 +19,18 @@ class MigrationStep extends AbstractValue
         $this->dsl = $dsl;
         $this->context = $context;
     }
+
+    /**
+     * Allow the class to be serialized to php using var_export
+     * @param array $data
+     * @return static
+     */
+    public static function __set_state(array $data)
+    {
+        return new static(
+            $data['type'],
+            $data['dsl'],
+            $data['context']
+        );
+    }
 }
