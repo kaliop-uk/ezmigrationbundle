@@ -252,6 +252,7 @@ class MigrationService implements ContextProviderInterface
         }
 
         if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
+            /// @todo !important name of entity should be gotten dynamically (migration vs. workflow)
             throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
@@ -372,7 +373,7 @@ class MigrationService implements ContextProviderInterface
                     if ($previousUserId && $e2->getMessage() == 'There is no active transaction.') {
                         // since the migration succeeded and it was committed, no use to mark it as failed...
                         $finalStatus = Migration::STATUS_DONE;
-                        $errorMessage = 'Error post migration execution: ' . $this->getFullExceptionMessage($e2) .
+                        $errorMessage = 'Error post '.$this->getEntityName($migration).' execution: ' . $this->getFullExceptionMessage($e2) .
                             ' in file ' . $e2->getFile() . ' line ' . $e2->getLine();
                     } else {
                         $errorMessage .= '. In addition, an exception was thrown while rolling back: ' .
@@ -410,12 +411,12 @@ class MigrationService implements ContextProviderInterface
     public function resumeMigration(Migration $migration, $useTransaction = true)
     {
         if ($migration->status != Migration::STATUS_SUSPENDED) {
-            throw new \Exception("Can not resume migration '{$migration->name}': it is not in suspended status");
+            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': it is not in suspended status");
         }
 
         $migrationDefinitions = $this->getMigrationsDefinitions(array($migration->path));
         if (!count($migrationDefinitions)) {
-            throw new \Exception("Can not resume migration '{$migration->name}': its definition is missing");
+            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': its definition is missing");
         }
 
         $defs = $migrationDefinitions->getArrayCopy();
@@ -423,7 +424,7 @@ class MigrationService implements ContextProviderInterface
 
         $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
         if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-            throw new \Exception("Can not resume migration '{$migration->name}': {$migrationDefinition->parsingError}");
+            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': {$migrationDefinition->parsingError}");
         }
 
         // restore context
@@ -557,5 +558,10 @@ class MigrationService implements ContextProviderInterface
     public function restoreContext($migrationName, array $context)
     {
         $this->migrationContext[$migrationName] = $context;
+    }
+
+    protected function getEntityName($migration)
+    {
+        return strtolower(end(explode('\\', get_class($migration))));
     }
 }

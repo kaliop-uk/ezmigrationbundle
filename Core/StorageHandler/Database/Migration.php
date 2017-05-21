@@ -171,7 +171,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
     public function endMigration(APIMigration $migration, $force = false)
     {
         if ($migration->status == APIMigration::STATUS_STARTED) {
-            throw new \Exception("Migration '{$migration->name}' can not be ended as its status is 'started'...");
+            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be ended as its status is 'started'...");
         }
 
         $this->createTableIfNeeded();
@@ -198,13 +198,13 @@ class Migration extends TableStorage implements StorageHandlerInterface
         if (!is_array($existingMigrationData)) {
             // commit to release the lock
             $conn->commit();
-            throw new \Exception("Migration '{$migration->name}' can not be ended as it is not found");
+            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be ended as it is not found");
         }
 
         if (($existingMigrationData['status'] != APIMigration::STATUS_STARTED) && !$force) {
             // commit to release the lock
             $conn->commit();
-            throw new \Exception("Migration '{$migration->name}' can not be ended as it is not executing");
+            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be ended as it is not executing");
         }
 
         $conn->update(
@@ -355,7 +355,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         if (!is_array($existingMigrationData)) {
             // commit immediately, to release the lock and avoid deadlocks
             $conn->commit();
-            throw new \Exception("Migration '{$migration->name}' can not be resumed as it is not found");
+            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be resumed as it is not found");
         }
 
         // migration exists
@@ -364,7 +364,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         if ($existingMigrationData['status'] != APIMigration::STATUS_SUSPENDED) {
             // commit to release the lock
             $conn->commit();
-            throw new \Exception("Migration '{$migration->name}' can not be resumed as it is not suspended");
+            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be resumed as it is not suspended");
         }
 
         $migration = new APIMigration(
@@ -445,5 +445,10 @@ class Migration extends TableStorage implements StorageHandlerInterface
             $data['status'],
             $data['execution_error']
         );
+    }
+
+    protected function getEntityName($migration)
+    {
+        return end(explode('\\', get_class($migration)));
     }
 }
