@@ -1,0 +1,20 @@
+# Executing custom processes as migration steps
+
+-
+    type: process
+    mode: run
+    command: find # a string, or a reference. It should not include whitespace and options, as it will be escaped for security
+    arguments: # an array of arguments
+        - reference:someref # references will be resolved and escaped
+        - '-type'
+        - 'f'
+    disable_output: false # bool, optional. Useful to save memory if the process creates a lot of output
+    environment: [] # array, optional
+    timeout: 86400 # integer, optional. Max process execution time in seconds (1 day by default)
+    working_directory: '/somedir' #string, optional
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: # An attribute to get the value of for the reference. Supports: output, error_output, exit_code

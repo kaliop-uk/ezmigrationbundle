@@ -7,6 +7,9 @@ Version 4.0 RC-3 (unreleased)
 
 * New: allow to run migrations without changing into an admin user (only for developers, not yet from the command line)
 
+* New: it is now possible to execute external processes as migration steps.
+    More details in [Resources/doc/DSL/Processes.yml](Resources/doc/DSL/Mails.yml)
+
 
 Version 4.0 RC-2
 ================

@@ -24,10 +24,10 @@ class Configuration implements ConfigurationInterface
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
 
-        $rootNode->children()
+        /*$rootNode->children()
             ->scalarNode('version_directory')->defaultValue('MigrationVersion')->cannotBeEmpty()->end()
             ->scalarNode('table_name')->defaultValue('kaliop_versions')->cannotBeEmpty()->end()
-        ->end();
+        ->end();*/
 
         return $treeBuilder;
     }

@@ -40,6 +40,7 @@ parameters:
     ez_migration_bundle.executor.migration.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationExecutor
     ez_migration_bundle.executor.migration_definition.class: Kaliop\eZMigrationBundle\Core\Executor\MigrationDefinitionExecutor
     ez_migration_bundle.executor.php.class: Kaliop\eZMigrationBundle\Core\Executor\PHPExecutor
+    ez_migration_bundle.executor.process.class: Kaliop\eZMigrationBundle\Core\Executor\ProcessExecutor
     ez_migration_bundle.executor.sql.class: Kaliop\eZMigrationBundle\Core\Executor\SQLExecutor
     ez_migration_bundle.executor.reference.class: Kaliop\eZMigrationBundle\Core\Executor\ReferenceExecutor
     ez_migration_bundle.executor.repository.class: Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor
@@ -220,6 +221,13 @@ services:
         class: '%ez_migration_bundle.executor.php.class%'
         arguments:
             - '@service_container'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.process:
+        class: '%ez_migration_bundle.executor.process.class%'
+        arguments:
+            - '@ez_migration_bundle.reference_resolver.customreference'
         tags:
             - { name: ez_migration_bundle.executor }
 
