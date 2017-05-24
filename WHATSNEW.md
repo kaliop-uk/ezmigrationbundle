@@ -1,5 +1,5 @@
-Version 4.0 RC-3 (unreleased)
-=============================
+Version 4.0 RC-3
+================
 
 * Improved: do not publish a new content version when only metadata is changed but not field values for content/update
 
