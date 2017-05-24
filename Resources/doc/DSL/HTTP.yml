@@ -20,7 +20,7 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
-                                   # Supports: status_code, reason_phrase, protocol_version, body
+                                   # Supports: status_code, reason_phrase, protocol_version, body, body_size
 
 # *** Setting it up: ***
 #

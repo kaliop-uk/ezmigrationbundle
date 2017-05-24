@@ -81,6 +81,12 @@ class HTTPExecutor extends AbstractExecutor
         return $response;
     }
 
+    /**
+     * @param ResponseInterface $response
+     * @param array $dsl
+     * @return bool
+     * @todo use jmespath syntax to allow setting refs to response headers
+     */
     protected function setReferences(ResponseInterface $response, $dsl)
     {
         if (!array_key_exists('references', $dsl)) {
@@ -99,7 +105,10 @@ class HTTPExecutor extends AbstractExecutor
                     $value = $response->getProtocolVersion();
                     break;
                 case 'body':
-                    $value = $response->getBody();
+                    $value = $response->getBody()->__toString();
+                    break;
+                case 'body_size':
+                    $value = $response->getBody()->getSize();
                     break;
                 default:
                     throw new \InvalidArgumentException('HTTP executor does not support setting references for attribute ' . $reference['attribute']);
