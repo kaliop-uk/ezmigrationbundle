@@ -40,7 +40,7 @@ For example using the path from the snippet above the system would look first fo
 `MigrationVersions/images/path/to/the/image.jpg` in the bundle's directory, and if no file is found there, look for
 `/path/to/the/image.jpg`
 
-Please see the `ManageContent.yml` DSL definition file in the `Resources/doc/DSL` folder for more information.
+Please see the `Contents.yml` DSL definition file in the `Resources/doc/DSL` folder for more information.
 
 ### Importing ezflow zones and blocks
 
