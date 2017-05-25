@@ -1,0 +1,136 @@
+-
+    type: user
+    mode: create
+    first_name: xyz
+    last_name: xyz
+    username: xyz
+    email: xyz
+    password: xyz
+    user_content_type: xxx # Optional, Content Type identifier (defaults to 'user')
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    groups: [x, y, z] # The user group ID or IDs (Content IDs or its/their remote_ids as string) to put the user into
+    # The list in references tells the manager to store specific values for later use
+    # by other steps in the current migration.
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports user_id, email, enabled, login
+                                 # The shorthand 'id' can be used instead of 'user_id'
+
+-
+    type: user
+    mode: update
+    match: # Only one of the following can be specified, to define which users to update
+        id: x # int|int[]
+        email: xyz # string|string[]
+        login: # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    email: xyz # Optional. NB: can only be set if the match definition latches a single user
+    password: xyz # Optional
+    enabled: true|false # Optional
+    # Optional, Group ID / list of group IDs (or its/their remote_ids) the user has to be a member of.
+    # The user will be removed from all groups that are not in the list
+    groups: [x, y, z]
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports user_id, email, enabled, login
+                                 # The shorthand 'id' can be used instead of 'user_id'
+
+-
+    type: user
+    mode: delete
+    match: # Only one of the following can be specified, to define which users to delete
+        id: x # int|int[]
+        email: xyz # string|string[]
+        login: # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+
+-
+    type: user_group
+    mode: create
+    parent_group_id: x # The content ID of the user group to put the new group into, can be an array. Content remote_id(s) also supported.
+    name: xyz
+    description: xyz # Optional
+    roles: [x, y, z] # The role names or ids to assign to the group
+    remote_id: custom_remote_id # Optional, will set a custom remote id
+    section: x # string|int Optional section id or identifier
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: user_group_id
+                                 # The shorthand 'id' can be used instead of 'user_group_id'
+
+-
+    type: user_group
+    mode: update
+    match: # Define which groups to update. Only one match condition at a time supported
+        id: x # int|int[]
+        content_remote_id: yyy # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    name: xyz # Optional. Can only be used when the group to be updated is single
+    description: xyz # Optional
+    parent_group_id: x # Optional, the new parent user group ID or group's remote_id
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    remote_id: custom_remote_id # Optional, will set a custom remote id
+    section: x # string|int Optional section id or identifier
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # Supports: user_group_id
+                                 # The shorthand 'id' can be used instead of 'user_group_id'
+
+-
+    # Note: The users which are not assigned to other groups will be deleted.
+    type: user_group
+    mode: delete
+    match: # Only one of the following can be specified, to define which groups to delete
+        id: x # int|int[]
+        content_remote_id: yyy # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

@@ -1,0 +1,28 @@
+-
+    type: tag
+    mode: create
+    always_available: true|false # Optional (false by default)
+    parent_tag_id: 0 # Optional. Parent tag id (0 by default)
+    remote_id: custom_remote_id # Optional, will set a custom remote id
+    lang: eng-GB
+    keywords:
+        language_code: "Keyword" # ex : eng-GB: "Test keyword"
+
+-
+    type: tag
+    mode: delete
+    match: # The locations to update
+        # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
+        id: # the id(s) of the tag(s) we want to delete
+        remote_id: # the remote id(s) of the tag(s) we want to delete
+        keyword: # the keyword(s) of the tag(s) we want to delete
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

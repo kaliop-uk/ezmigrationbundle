@@ -1,0 +1,148 @@
+-
+    mode: create
+    type: object_state_group
+    identifier: x # String identifier of the object state group
+    names: # Array of names keyed by language code.
+        languageCodeA: name
+        languageCodeB: name
+    descriptions: # Optional: array of descriptions keyed by language code.
+        languageCodeA: description
+        languageCodeB: description
+    references: #Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: object_state_group_id, object_state_group_identifier
+                                 # The shorthand 'id' can be used instead of 'object_state_group_id'
+
+-
+    mode: update
+    type: object_state_group
+    match: # only one of the following keys is allowed
+        id: x # int|int[] The Id of the object state group(s) to update.
+        identifier: y # string|string[] The Identifier of the object state group(s) to update
+        all: ~ # matches ALL object state groups
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    identifier: x # Optional String: new identifier of the object state group
+    names: # Optional: array of names keyed by language code.
+        languageCodeA: name
+        languageCodeB: name
+    descriptions: # Optional: array of descriptions keyed by language code.
+        languageCodeA: description
+        languageCodeB: description
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: #Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: object_state_group_id, object_state_group_identifier
+                                 # The shorthand 'id' can be used instead of 'object_state_group_id'
+
+-
+    # The users which are not assigned to other groups will be deleted.
+    mode: delete
+    type: object_state_group
+    match: # only one of the following keys is allowed
+        id: x # int|int[] The Id of the object state group(s) to update.
+        identifier: y # string|string[] The Identifier of the object state group(s) to update
+        all: ~ # matches ALL object state groups
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+
+
+-
+    mode: create
+    type: object_state
+    object_state_group: x # The Id of the object state group the new state will be created under.
+    identifier: xyz # The string identifier of the new object state.
+    names: # Array of names keyed by language code.
+        languageCodeA: name
+        languageCodeB: name
+    descriptions: # Optional: array of descriptions keyed by language code.
+        languageCodeA: description
+        languageCodeB: description
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: #Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports object_state_id, priority
+                                 # The shorthand 'id' can be used instead of 'object_state_id'
+
+-
+    mode: update
+    type: object_state
+    match: # only one of the following keys is allowed
+        id: x # int|int[] The Id of the object state to update.
+        identifier: x # string|string[] The string identifier of the object state to update. If the identifier is not unique, use group-identifier/state-identifier
+        all: ~ # matches ALL object states
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    identifier: x # Optional String: new identifier of the object state
+    names: # Optional: array of names keyed by language code.
+        languageCodeA: name
+        languageCodeB: name
+    descriptions: # Optional: array of descriptions keyed by language code.
+        languageCodeA: description
+        languageCodeB: description
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: #Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports object_state_id, priority
+                                 # The shorthand 'id' can be used instead of 'object_state_id'
+
+-
+    mode: delete
+    type: object_state
+    match: # only one of the following keys is allowed
+        id: x # int|int[] The Id of the object state to update.
+        identifier: x # string|string[] The string identifier of the object state to update. If the identifier is not unique, use group-identifier/state-identifier
+        all: ~ # matches ALL object states
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

@@ -1,0 +1,252 @@
+-
+    type: content
+    mode: create
+    content_type: xxx # Content type identifier
+    parent_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
+    attributes:
+        attribute1: value1
+        attribute2: value2
+        attribute3: |
+                    value can be
+                    on multiple lines
+                    and new lines are preserved on parsing
+        attribute4: >
+                    value on multiple
+                    lines, but new line is not preserved on parsing
+        # ezimage/ezbinaryfile/ezmedia  file attribute example
+        attribute5:
+            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/, MigrationsVersions/media/ or absolute path
+            alt_text: xyz # Optional, only used for images
+            filename: abc # Optional, taken from the actual file if not specified
+            mime_type: def # Optional. For ezbinaryfile and ezmedia only. If not specified, the actual file is analyzed using the php function mime_content_type()
+            has_controller: false # Optional. For ezmedia only
+            autoplay: false # Optional. For ezmedia only
+            loop: false # Optional. For ezmedia only
+            has_controller: false # Optional. For ezmedia only
+            width: 123 # Optional. For ezmedia only
+            height: 456 # Optional. For ezmedia only
+        # ezimage/ezbinaryfile/ezmedia file attribute example, using simplified form
+        attribute5b: '/path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/ or MigrationsVersions/media/, or absolute path
+        # ezxmltext, showing an example of using references
+        attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
+        # Adding values to an ezauthor field
+        attribute7:
+            -
+              name: Test Author
+              email: test@example.com
+            -
+              name: Another Author
+              email: another@example.com
+        # Adding values to an ezobjectrelation field
+        attribute8: x # content id or remote_id or string: reference:xxx
+        # Adding values to an ezobjectrelationlist field
+        attribute9: [ x, reference:xxx ] # array of content ids or remote ids or reference strings
+        # ezurl, using 2 different syntaxes
+        attribute10: http://a/great/link
+        attribute11:
+            link: http://another/link
+            text: the url text
+        # ezgmaplocation
+        attribute12:
+            latitude: 1.0
+            longitude: 2.0
+            address: 'Angel, London'
+        # ezgmaplocation - NULL value
+        attribute13:
+            latitude: null
+            longitude: null
+        # eztags, setting 2-or-more tags
+        attribute14:
+            # one tag
+            - id: 12
+            #  one tag
+            - remote_id: abc
+            # zero or more tags
+            - keyword: hello
+        # ezselection, multiple values
+        attribute15: [ 1, "option 2" ] # array of selection options ids or textual values
+        # ezselection, single value
+        attribute16: "option 3" # integer index or string
+    always_available: true|false # Optional, will default to content type defaultAlwaysAvailable
+    is_hidden: true|false # Optional
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    location_remote_id: xxx # Optional, remote id of the new location which will be created
+    modification_date: zzz # Optional, set content modification date (if integer: timestamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
+    # Optionally assign object states to the content
+    object_states:
+        - xxx # int|string an object state id or identifier. If the identifier is not unique, use obj-state-gorup-identifier/obj-state-identifier
+        - yyy
+    other_parent_locations: [x, y, z] # Optional, ids of extra parent locations. When a non numeric string is used as element, it is assumed to be a location remote id
+    owner: xxx # user id, login or email if unique; Optional, set the content owner
+    priority: 0 # Optional. Set the priority of the main location
+    publication_date: zzz # Optional, set content publication date (if integer: timstamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
+    remote_id: custom_remote_id # Optional, will set a custom remote id
+    section: x # string|int Optional section id or identifier
+    sort_field: x # Optional. See ManageLocation.yml for details
+    sort_order: ASC|DESC # Optional
+    version_creator: yyy # user id, login or email if unique; Optional, set the creator of the 1st version
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # The attribute to get the value of for the reference.
+                                   # Supports: content_id, content_remote_id,
+                                   # always_available, content_type_id, content_type_identifier, current_version_no,
+                                   # location_id, main_language_code, modification_date, name, owner_id, path,
+                                   # publication_date, section_id, as well as attributes.$name (for scalar attributes)
+                                   # and complex expressions for non-scalar attributes, such as f.e.
+                                   # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
+                                   # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
+                                   # (for the full syntax supported, see jmespath)
+
+-
+    type: content
+    mode: update
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to update
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        location_id: x # int|int[]
+        location_remote_id: xxx # string|string[]
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    attributes: # the list of attribute identifier value pairs. For the format to use, see above
+        attribute1: value1
+        attribute2: value2
+    always_available: true|false # Optional
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    modification_date: zzz # Optional, set content modification date (for formats, see: http://php.net/manual/en/datetime.formats.php)
+    new_remote_id: xxx # string Optional set a new RemoteId
+    # Optionally assign object states to the content
+    object_states:
+        - xxx # int|string an object state id or identifier. For the format to use, see above
+    owner: xxx # user id, login or email if unique; Optional, set the content owner (original creator)
+    publication_date: zzz # Optional, set content publication date (for formats, see: http://php.net/manual/en/datetime.formats.php)
+    section: x # string|int Optional section id or identifier
+    version_creator: yyy # user id, login or email if unique; Optional, set the creator of the new version
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # The attribute to get the value of for the reference
+                                   # supports: content_id, content_remote_id,
+                                   # always_available, content_type_id, content_type_identifier, current_version_no,
+                                   # location_id, main_language_code, modification_date, name, owner_id, path,
+                                   # publication_date, section_id as well as attributes.$name (for scalar attributes)
+                                   # and complex expressions for non-scalar attributes, such as f.e.
+                                   # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
+                                   # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
+                                   # (for the full syntax supported, see jmespath)
+
+-
+    type: content
+    mode: delete
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to remove
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        location_id: x # int|int[]
+        location_remote_id: xxx # string|string[]
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+
+-
+    type: content
+    mode: load
+    match: # Specify ONLY ONE of the following, to match a content or a set of contents to load
+        content_id: x # int|int[]
+        content_remote_id: xxx # string|string[]
+        location_id: x # int|int[]
+        location_remote_id: xxx # string|string[]
+        attribute:
+            _attr_name_:
+                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+        content_type_id: yyy # int|int[] a content type id
+        content_type_identifier: yyy # string|string[] a content type identifier
+        creation_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
+        modification_date:
+            _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
+        owner: xxx # user id, login or email if unique
+        parent_location_id: x # int|int[]
+        parent_location_remote_id: xxx # string|string[]
+        section: xx # int|int[]|string|string[] section id(s) or identifier(s)
+        subtree: /1/2/2345 # string|string[]
+        visibility: true # bool
+        or: # match any of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # The attribute to get the value of for the reference (supports: content_id, content_remote_id,
+                                   # always_available, content_type_id, content_type_identifier, current_version_no,
+                                   # location_id, main_language_code, modification_date, name, owner_id, path,
+                                   # publication_date, section_id)
