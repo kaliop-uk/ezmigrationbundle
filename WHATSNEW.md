@@ -1,3 +1,9 @@
+Version 4.0 RC-4 (unreleased)
+=============================
+
+* Added 'append' action to 'file' executor
+
+
 Version 4.0 RC-3
 ================
 

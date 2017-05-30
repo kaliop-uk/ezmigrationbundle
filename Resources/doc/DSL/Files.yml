@@ -28,6 +28,20 @@
 
 -
     type: file
+    mode: append
+    file: xxx # string. Filename including path. References will be resolved
+    body: "file contents" # string. References will be replaced as long as they are within square brackets
+                          # eg. to save to a file the value of reference 'abc', write: body: "[reference:abc]"
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+                                   # Supports: size, uid, gid, ctime, mtime, atime, body
+
+-
+    type: file
     mode: delete
     file: xxx # string. Filename including path. References will be resolved
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
