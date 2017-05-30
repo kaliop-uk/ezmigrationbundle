@@ -374,7 +374,7 @@ Steps to set up a dedicated test environment:
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)
-[![Latest Stable Version](https://poser.pugx.org/kaliop/ezmigrationbundle/v/stable)](https://packagist.org/packages/kaliop/ezobjectwrapperbundle)
+[![Latest Stable Version](https://poser.pugx.org/kaliop/ezmigrationbundle/v/stable)](https://packagist.org/packages/kaliop/ezmigrationbundle)
 [![Total Downloads](https://poser.pugx.org/kaliop/ezmigrationbundle/downloads)](https://packagist.org/packages/kaliop/ezmigrationbundle)
 
 [![Build Status](https://travis-ci.org/kaliop-uk/ezmigrationbundle.svg?branch=master)](https://travis-ci.org/kaliop-uk/ezmigrationbundle)
