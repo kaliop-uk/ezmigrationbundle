@@ -15,6 +15,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 use JmesPath\Env as JmesPath;
 
@@ -32,6 +33,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected $sectionMatcher;
     protected $userMatcher;
     protected $objectStateMatcher;
+    protected $objectStateGroupMatcher;
     protected $fieldHandlerManager;
     protected $locationManager;
     protected $sortConverter;
@@ -41,6 +43,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         SectionMatcher $sectionMatcher,
         UserMatcher $userMatcher,
         ObjectStateMatcher $objectStateMatcher,
+        ObjectStateGroupMatcher $objectStateGroupMatcher,
         FieldHandlerManager $fieldHandlerManager,
         LocationManager $locationManager,
         SortConverter $sortConverter
@@ -49,6 +52,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $this->sectionMatcher = $sectionMatcher;
         $this->userMatcher = $userMatcher;
         $this->objectStateMatcher = $objectStateMatcher;
+        $this->objectStateGroupMatcher = $objectStateGroupMatcher;
         $this->fieldHandlerManager = $fieldHandlerManager;
         $this->locationManager = $locationManager;
         $this->sortConverter = $sortConverter;
@@ -352,7 +356,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
      *
-     * @todo add support for other attributes: object_states etc... ?
+     * @todo add support for other attributes... ?
      */
     protected function setReferences($content, $step)
     {
@@ -427,6 +431,14 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     $value = $sectionService->loadSection($content->contentInfo->sectionId)->identifier;
                     break;
                 default:
+                    if (strpos($reference['attribute'], 'object_state.') === 0) {
+                        $stateGroupKey = substr($reference['attribute'], 13);
+                        $stateGroup = $this->objectStateGroupMatcher->matchOneByKey($stateGroupKey);
+                        $value = $stateGroupKey . '/' . $this->repository->getObjectStateService()->
+                            getContentState($content->contentInfo, $stateGroup)->identifier;
+                        break;
+                    }
+
                     // allow to get the value of fields as well as their sub-parts
                     if (strpos($reference['attribute'], 'attributes.') === 0) {
                         $contentType = $this->repository->getContentTypeService()->loadContentType(

@@ -262,6 +262,7 @@ services:
             - '@ez_migration_bundle.section_matcher'
             - '@ez_migration_bundle.user_matcher'
             - '@ez_migration_bundle.object_state_matcher'
+            - '@ez_migration_bundle.object_state_group_matcher'
             - '@ez_migration_bundle.complex_field_manager'
             - '@ez_migration_bundle.executor.location_manager'
             - '@ez_migration_bundle.helper.sort_converter'

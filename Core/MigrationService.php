@@ -189,7 +189,7 @@ class MigrationService implements ContextProviderInterface
     }
 
     /**
-     * Not be called by external users for normal use cases, you should use executeMigration() instead
+     * Not to be called by external users for normal use cases, you should use executeMigration() instead
      *
      * @param Migration $migration
      */
@@ -245,7 +245,7 @@ class MigrationService implements ContextProviderInterface
      *       Shall we use instead -1 to indicate the desire to not-login-as-admin-user-at-all ?
      */
     public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
-                                     $defaultLanguageCode = null, $adminLogin = null)
+        $defaultLanguageCode = null, $adminLogin = null)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);

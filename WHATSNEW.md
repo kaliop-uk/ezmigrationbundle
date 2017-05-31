@@ -3,6 +3,9 @@ Version 4.0 RC-4 (unreleased)
 
 * Added 'append' action to 'file' executor
 
+* It is now possible to set a reference to a Content by using a syntax similar to `object_state.ez_lock` to specify the
+    desired State Group
+
 
 Version 4.0 RC-3
 ================
