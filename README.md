@@ -263,7 +263,7 @@ and the corresponding php class:
 
 ## Known Issues and limitations
 
-* unlike the Symfony Migrations Bundle, this bundle does not support rollback of changes. Read above for the reason.
+* unlike the Doctrine Migrations Bundle, this bundle does not support rollback of changes. Read above for the reason.
 
 * if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
     related to how the dual-kernel works in eZPublish, and the fact that the legacy and Symfony kernels use a separate
