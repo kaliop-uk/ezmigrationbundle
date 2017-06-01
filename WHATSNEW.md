@@ -6,6 +6,10 @@ Version 4.0 RC-4 (unreleased)
 * It is now possible to set a reference to a Content by using a syntax similar to `object_state.ez_lock` to specify the
     desired State Group
 
+* Fix the Migration/Cancel step
+
+* Allow to use a reference for Migration/Suspend when comparing to a date 
+
 
 Version 4.0 RC-3
 ================

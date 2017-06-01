@@ -6,6 +6,7 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
 class MigrationExecutor extends AbstractExecutor
 {
@@ -13,13 +14,15 @@ class MigrationExecutor extends AbstractExecutor
     protected $supportedActions = array('cancel', 'suspend');
 
     protected $referenceMatcher;
+    protected $referenceResolver;
     protected $contentManager;
     protected $locationManager;
     protected $contentTypeManager;
 
-    public function __construct($referenceMatcher, ExecutorInterface $contentManager, ExecutorInterface $locationManager, ExecutorInterface $contentTypeManager)
+    public function __construct($referenceMatcher, ReferenceResolverInterface $referenceResolver, ExecutorInterface $contentManager, ExecutorInterface $locationManager, ExecutorInterface $contentTypeManager)
     {
         $this->referenceMatcher = $referenceMatcher;
+        $this->referenceResolver = $referenceResolver;
         $this->contentManager = $contentManager;
         $this->locationManager = $locationManager;
         $this->contentTypeManager = $contentTypeManager;
@@ -85,7 +88,7 @@ class MigrationExecutor extends AbstractExecutor
             $this->loadEntity($dsl['load'], $context);
         }
 
-        if ($this->matchConditions($dsl['until'])) {
+        if ($this->matchSuspend($dsl['until'])) {
             // the time has come to resume!
             // q: return timestamp, matched condition or ... ?
             return true;
@@ -120,22 +123,23 @@ class MigrationExecutor extends AbstractExecutor
 
     protected function matchConditions($conditions)
     {
-        foreach ($conditions as $key => $values) {
+        $match = $this->referenceMatcher->match($conditions);
+        return reset($match);
+    }
 
-            /*if (!is_array($values)) {
-                $values = array($values);
-            }*/
+    protected function matchSuspend($conditions)
+    {
+        foreach ($conditions as $key => $values) {
 
             switch ($key) {
                 case 'date':
-                    return time() >= $values;
+                    return time() >= $this->referenceResolver->resolveReference($values);
 
                 case 'match':
-                    $match = $this->referenceMatcher->match($values);
-                    return reset($match);
+                    return $this->matchConditions($values);
 
                 default:
-                    throw new \Exception("Unknown until condition: '$key' when suspending a migration");
+                    throw new \Exception("Unknown until condition: '$key' when suspending a migration ".var_export($conditions, true));
             }
         }
     }
