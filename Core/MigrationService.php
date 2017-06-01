@@ -281,6 +281,7 @@ class MigrationService implements ContextProviderInterface
             $this->repository->beginTransaction();
         }
 
+        $this->migrationContext[$migration->name] = array('context' => $migrationContext);
         $previousUserId = null;
         $steps = array_slice($migrationDefinition->steps->getArrayCopy(), $stepOffset);
 
@@ -293,6 +294,8 @@ class MigrationService implements ContextProviderInterface
             try {
 
                 foreach ($steps as $step) {
+                    // save enough data in the context to be able to successfully suspend/resume
+                    $this->migrationContext[$migration->name]['step'] = $i;
 
                     $step = $this->injectContextIntoStep($step, $migrationContext);
 
@@ -324,9 +327,7 @@ class MigrationService implements ContextProviderInterface
 
                 $this->dispatcher->dispatch($this->eventPrefix . 'migration_suspended', new MigrationSuspendedEvent($step, $e));
 
-                // prepare data for the context handler
-                $this->migrationContext[$migration->name] = array('step' => $i, 'context' => $migrationContext);
-                // let the context handler store our data, along context data from any other (tagged) service which has some
+                // let the context handler store our context, along with context data from any other (tagged) service which has some
                 $this->contextHandler->storeCurrentContext($migration->name);
 
                 $finalStatus = Migration::STATUS_SUSPENDED;
@@ -445,7 +446,7 @@ class MigrationService implements ContextProviderInterface
         $this->contextHandler->deleteContext($migration->name);
 
         // and go
-        // note: we store the current step counting starting at 1, but use offset staring at 0, hence the -1 here
+        // note: we store the current step counting starting at 1, but use offset starting at 0, hence the -1 here
         $this->executeMigrationInner($migration, $migrationDefinition, $restoredContext['context'],
             $restoredContext['step'] - 1, $useTransaction);
     }

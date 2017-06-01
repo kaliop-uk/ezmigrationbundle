@@ -139,7 +139,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * @param $context we have to return FALSE is it is set as adminUserLogin, whereas if NULL is set, we return the default admin
+     * @param $context we have to return FALSE if that is set as adminUserLogin, whereas if NULL is set, we return the default admin
      * @return int|string|false
      */
     protected function getAdminUserIdentifierFromContext($context)
