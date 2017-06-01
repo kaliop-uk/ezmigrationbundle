@@ -429,9 +429,14 @@ class MigrationService implements ContextProviderInterface
 
         // restore context
         $this->contextHandler->restoreCurrentContext($migration->name);
-        $restoredContext = $this->migrationContext[$migration->name];
 
-        /// @todo check that restored context is valid
+        if (!isset($this->migrationContext[$migration->name])) {
+            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is missing");
+        }
+        $restoredContext = $this->migrationContext[$migration->name];
+        if (!is_array($restoredContext) || !isset($restoredContext['context']) || !isset($restoredContext['step'] )) {
+            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is invalid");
+        }
 
         // update migration status
         $migration = $this->storageHandler->resumeMigration($migration);
