@@ -16,6 +16,8 @@ parameters:
         - 'drizzle'
         - 'sqlserver'
         - 'sqlanywhere'
+    # Set to false to disable completely the debug output of executed migration steps in verbose mode
+    ez_migration_bundle.enable_debug_output: true
 
     # Deprecated parameter. Left in for the v1-to-v2 migration to work. Will be removed in v3
     kaliop_bundle_migration.table_name: 'kaliop_versions'
@@ -626,6 +628,8 @@ services:
     # This service is used for the verbose mode when executing migrations on the command line
     ez_migration_bundle.step_executed_listener.tracing:
         class: '%ez_migration_bundle.step_executed_listener.tracing.class%'
+        arguments:
+            - '%ez_migration_bundle.enable_debug_output%'
         tags:
             - { name: kernel.event_listener, event: ez_migration.step_executed, method: onStepExecuted }
             - { name: kernel.event_listener, event: ez_migration.migration_aborted, method: onMigrationAborted }

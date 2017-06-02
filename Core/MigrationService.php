@@ -56,6 +56,8 @@ class MigrationService implements ContextProviderInterface
 
     protected $eventPrefix = 'ez_migration.';
 
+    protected $eventEntity = 'migration';
+
     protected $migrationContext = array();
 
     public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository,
@@ -252,8 +254,7 @@ class MigrationService implements ContextProviderInterface
         }
 
         if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-            /// @todo !important name of entity should be gotten dynamically (migration vs. workflow)
-            throw new \Exception("Can not execute migration '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
+            throw new \Exception("Can not execute " . $this->getEntityName($migrationDefinition). " '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
         /// @todo add support for setting in $migrationContext a userContentType ?
@@ -318,14 +319,14 @@ class MigrationService implements ContextProviderInterface
             } catch (MigrationAbortedException $e) {
                 // allow a migration step (or events) to abort the migration via a specific exception
 
-                $this->dispatcher->dispatch($this->eventPrefix . 'migration_aborted', new MigrationAbortedEvent($step, $e));
+                $this->dispatcher->dispatch($this->eventPrefix . $this->eventEntity . '_aborted', new MigrationAbortedEvent($step, $e));
 
                 $finalStatus = $e->getCode();
                 $finalMessage = "Abort in execution of step $i: " . $e->getMessage();
             } catch (MigrationSuspendedException $e) {
                 // allow a migration step (or events) to suspend the migration via a specific exception
 
-                $this->dispatcher->dispatch($this->eventPrefix . 'migration_suspended', new MigrationSuspendedEvent($step, $e));
+                $this->dispatcher->dispatch($this->eventPrefix . $this->eventEntity . '_suspended', new MigrationSuspendedEvent($step, $e));
 
                 // let the context handler store our context, along with context data from any other (tagged) service which has some
                 $this->contextHandler->storeCurrentContext($migration->name);
@@ -568,6 +569,6 @@ class MigrationService implements ContextProviderInterface
 
     protected function getEntityName($migration)
     {
-        return strtolower(end(explode('\\', get_class($migration))));
+        return strtolower(preg_replace('/Definition$/', '', end(explode('\\', get_class($migration)))));
     }
 }

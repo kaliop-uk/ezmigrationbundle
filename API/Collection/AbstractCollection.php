@@ -18,7 +18,7 @@ class AbstractCollection extends \ArrayObject
     public function __construct($input = array(), $flags = 0, $iterator_class = "ArrayIterator")
     {
         foreach ($input as $value) {
-            if (!is_a($value, $this->allowedClass)) {
+            if (!$this->isValidElement($value)) {
                 $this->throwInvalid($value);
             }
         }
@@ -31,7 +31,7 @@ class AbstractCollection extends \ArrayObject
      */
     public function append($value)
     {
-        if (!is_a($value, $this->allowedClass)) {
+        if (!$this->isValidElement($value)) {
             $this->throwInvalid($value);
         }
 
@@ -45,7 +45,7 @@ class AbstractCollection extends \ArrayObject
     public function exchangeArray($input)
     {
         foreach ($input as $value) {
-            if (!is_a($value, $this->allowedClass)) {
+            if (!$this->isValidElement($value)) {
                 $this->throwInvalid($value);
             }
         }
@@ -55,20 +55,25 @@ class AbstractCollection extends \ArrayObject
 
     /**
      * @param mixed $index
-     * @param mixed $newval
+     * @param mixed $value
      */
-    public function offsetSet($index, $newval)
+    public function offsetSet($index, $value)
     {
-        if (!is_a($newval, $this->allowedClass)) {
-            $this->throwInvalid($newval);
+        if (!$this->isValidElement($value)) {
+            $this->throwInvalid($value);
         }
 
-        parent::offsetSet($index, $newval);
+        parent::offsetSet($index, $value);
     }
 
-    protected function throwInvalid($newval)
+    protected function isValidElement($value)
     {
-        throw new \InvalidArgumentException("Can not add element of type '" . (is_object($newval) ? get_class($newval) : gettype($newval)) . "' to Collection of type '" . get_class($this) . "'");
+        return is_a($value, $this->allowedClass);
+    }
+
+    protected function throwInvalid($value)
+    {
+        throw new \InvalidArgumentException("Can not add element of type '" . (is_object($value) ? get_class($value) : gettype($value)) . "' to Collection of type '" . get_class($this) . "'");
     }
 
     /**

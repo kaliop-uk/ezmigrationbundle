@@ -12,12 +12,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * A listener designed to give feedback on the execution of migration steps
  *
- * @todo qdd proper support for plural forms, as well as for proper sentences when dealing with empty collections
+ * @todo add proper support for plural forms, as well as for proper sentences when dealing with empty collections
  */
 class TracingStepExecutedListener
 {
+    /** @var  OutputInterface $output */
     protected $output;
     protected $minVerbosityLevel = OutputInterface::VERBOSITY_VERBOSE;
+    protected $entity = 'migration';
+    protected $enabled = true;
+
+    public function __construct($enabled = true)
+    {
+        $this->enabled = $enabled;
+    }
 
     public function setOutput(OutputInterface $output)
     {
@@ -33,12 +41,25 @@ class TracingStepExecutedListener
         $this->minVerbosityLevel = $level;
     }
 
+    public function enable()
+    {
+        $this->enabled = true;
+    }
+
+    public function disable()
+    {
+        $this->enabled = false;
+    }
+
     public function onStepExecuted(StepExecutedEvent $event)
     {
+        if ($this->enabled) {
+            return;
+        }
+
         $obj = $event->getResult();
         $type = $event->getStep()->type;
         $dsl = $event->getStep()->dsl;
-        $action = isset($dsl['mode']) ? ($dsl['mode'] . 'd') : 'acted upon';
 
         switch ($type) {
             case 'content':
@@ -52,6 +73,7 @@ class TracingStepExecutedListener
             case 'tag':
             case 'user':
             case 'user_group':
+                $action = isset($dsl['mode']) ? ($dsl['mode'] . 'd') : 'acted upon';
                 $out = $type . ' ' . $this->getObjectIdentifierAsString($obj) . ' has been ' . $action;
                 break;
             case 'sql':
@@ -62,47 +84,51 @@ class TracingStepExecutedListener
                 break;
             default:
                 // custom migration step types...
-                $out = "migration step '$type' has been executed";
+                if (isset($dsl['mode'])) {
+                    $type .= ' / ' . $dsl['mode'];
+                }
+                $out = $this->entity . " step '$type' has been executed";
         }
 
-        if ($this->output) {
-            if ($this->output->getVerbosity() >= $this->minVerbosityLevel) {
-                $this->output->writeln($out);
-            }
-        } else {
-            echo $out . "\n";
-        }
+        $this->echoMessage($out);
     }
 
     public function onMigrationAborted(MigrationAbortedEvent $event)
     {
+        if ($this->enabled) {
+            return;
+        }
+
         $type = $event->getStep()->type;
         $dsl = $event->getStep()->dsl;
         if (isset($dsl['mode'])) {
             $type .= '/' . $dsl['mode'];
         }
 
-        $out = "migration aborted with status " . $event->getException()->getCode() . " during execution of step '$type'. Message: " . $event->getException()->getMessage();
+        $out = $this->entity . " aborted with status " . $event->getException()->getCode() . " during execution of step '$type'. Message: " . $event->getException()->getMessage();
 
-        if ($this->output) {
-            if ($this->output->getVerbosity() >= $this->minVerbosityLevel) {
-                $this->output->writeln($out);
-            }
-        } else {
-            echo $out . "\n";
-        }
+        $this->echoMessage($out);
     }
 
     public function onMigrationSuspended(MigrationSuspendedEvent $event)
     {
+        if ($this->enabled) {
+            return;
+        }
+
         $type = $event->getStep()->type;
         $dsl = $event->getStep()->dsl;
         if (isset($dsl['mode'])) {
             $type .= '/' . $dsl['mode'];
         }
 
-        $out = "migration suspended during execution of step '$type'. Message: " . $event->getException()->getMessage();
+        $out = $this->entity . " suspended during execution of step '$type'. Message: " . $event->getException()->getMessage();
 
+        $this->echoMessage($out);
+    }
+
+    protected function echoMessage($out)
+    {
         if ($this->output) {
             if ($this->output->getVerbosity() >= $this->minVerbosityLevel) {
                 $this->output->writeln($out);
