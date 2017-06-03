@@ -53,7 +53,7 @@ class TracingStepExecutedListener
 
     public function onStepExecuted(StepExecutedEvent $event)
     {
-        if ($this->enabled) {
+        if (!$this->enabled) {
             return;
         }
 
@@ -95,7 +95,7 @@ class TracingStepExecutedListener
 
     public function onMigrationAborted(MigrationAbortedEvent $event)
     {
-        if ($this->enabled) {
+        if (!$this->enabled) {
             return;
         }
 
@@ -112,7 +112,7 @@ class TracingStepExecutedListener
 
     public function onMigrationSuspended(MigrationSuspendedEvent $event)
     {
-        if ($this->enabled) {
+        if (!$this->enabled) {
             return;
         }
 
