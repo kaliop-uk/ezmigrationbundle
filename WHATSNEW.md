@@ -3,12 +3,16 @@ Version 4.0 RC-4 (unreleased)
 
 * Added 'append' action to 'file' executor
 
-* It is now possible to set a reference to a Content by using a syntax similar to `object_state.ez_lock` to specify the
-    desired State Group
+* It is now possible to set a reference to a Content State by using a syntax similar to f.e. `object_state.ez_lock` to
+    specify the desired State Group
+
+* Allow to use a reference for Migration/Suspend when comparing to a date 
 
 * Fix the Migration/Cancel step
 
-* Allow to use a reference for Migration/Suspend when comparing to a date 
+* Fix retrieving body of http responses
+
+* Allow to install along newer with Nikic/php- parser
 
 
 Version 4.0 RC-3
