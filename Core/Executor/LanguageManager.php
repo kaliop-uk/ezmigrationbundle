@@ -58,6 +58,8 @@ class LanguageManager extends RepositoryExecutor
 
     /**
      * Handles the language delete migration action
+     *
+     * @todo use a matcher for flexible matching?
      */
     protected function delete($step)
     {
@@ -86,12 +88,8 @@ class LanguageManager extends RepositoryExecutor
             return false;
         }
 
-        if ($language instanceof LanguageCollection) {
-            if (count($language) > 1) {
-                throw new \InvalidArgumentException('Language Manager does not support setting references for creating/updating of multiple languages');
-            }
-            $language = reset($language);
-        }
+        $this->setReferencesCommon($language, $step);
+        $language = $this->insureSingleEntity($language, $step);
 
         foreach ($step->dsl['references'] as $reference) {
 

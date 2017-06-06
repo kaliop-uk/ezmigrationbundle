@@ -221,12 +221,8 @@ class UserManager extends RepositoryExecutor
             return false;
         }
 
-        if ($user instanceof UserCollection) {
-            if (count($user) > 1) {
-                throw new \InvalidArgumentException('User Manager does not support setting references for creating/updating of multiple users');
-            }
-            $user = reset($user);
-        }
+        $this->setReferencesCommon($user, $step);
+        $user = $this->insureSingleEntity($user, $step);
 
         foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {

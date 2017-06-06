@@ -136,6 +136,7 @@
                                    # Supports: role_id and role_identifier
                                    # The shorthand 'id' can be used instead of 'role_id'
                                    # The shorthand 'identifier' can be used instead of 'role_identifier'
+                                   # 'count' can be used to set a reference to the number of items matched
 
 -
     type: role

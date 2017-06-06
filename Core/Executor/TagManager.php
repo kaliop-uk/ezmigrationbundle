@@ -119,6 +119,9 @@ class TagManager extends RepositoryExecutor
             return false;
         }
 
+        $this->setReferencesCommon($object, $step);
+        $object = $this->insureSingleEntity($object, $step);
+
         foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'id':

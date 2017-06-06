@@ -41,6 +41,7 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: section_id, section_identifier, section_name
                                  # The shorthand 'id' can be used instead of 'user_id'
+                                 # 'count' can be used to set a reference to the number of items matched
 
 -
     type: section

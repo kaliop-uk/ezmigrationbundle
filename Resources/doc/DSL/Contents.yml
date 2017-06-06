@@ -169,6 +169,7 @@
                                    # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
                                    # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
                                    # (for the full syntax supported, see jmespath)
+                                   # 'count' can be used to set a reference to the number of items matched
 
 -
     type: content
@@ -259,4 +260,4 @@
                                    # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
                                    # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
                                    # (for the full syntax supported, see jmespath)
-
+                                   # 'count' can be used to set a reference to the number of items matched

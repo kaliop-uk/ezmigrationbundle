@@ -194,12 +194,8 @@ class UserGroupManager extends RepositoryExecutor
             return false;
         }
 
-        if ($userGroup instanceof UserGroupCollection) {
-            if (count($userGroup) > 1) {
-                throw new \InvalidArgumentException('UserGroup Manager does not support setting references for creating/updating of multiple groups');
-            }
-            $userGroup = reset($userGroup);
-        }
+        $this->setReferencesCommon($userGroup, $step);
+        $userGroup = $this->insureSingleEntity($userGroup, $step);
 
         foreach ($step->dsl['references'] as $reference) {
 

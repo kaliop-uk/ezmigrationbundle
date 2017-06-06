@@ -49,6 +49,7 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports user_id, email, enabled, login
                                  # The shorthand 'id' can be used instead of 'user_id'
+                                 # 'count' can be used to set a reference to the number of items matched
 
 -
     type: user
@@ -116,6 +117,7 @@
             attribute: attribute # An attribute to get the value of for the reference
                                  # Supports: user_group_id
                                  # The shorthand 'id' can be used instead of 'user_group_id'
+                                 # 'count' can be used to set a reference to the number of items matched
 
 -
     # Note: The users which are not assigned to other groups will be deleted.

@@ -123,12 +123,8 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             return false;
         }
 
-        if ($section instanceof SectionCollection) {
-            if (count($section) > 1) {
-                throw new \InvalidArgumentException('Section Manager does not support setting references for creating/updating of multiple sections');
-            }
-            $section = reset($section);
-        }
+        $this->setReferencesCommon($section, $step);
+        $section = $this->insureSingleEntity($section, $step);
 
         foreach ($step->dsl['references'] as $reference) {
 

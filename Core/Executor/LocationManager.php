@@ -253,16 +253,8 @@ class LocationManager extends RepositoryExecutor
             return false;
         }
 
-        if ($location instanceof LocationCollection) {
-            if (count($location) > 1) {
-                throw new \InvalidArgumentException('Location Manager does not support setting references for creating/updating/loading of multiple locations');
-            }
-            if (count($location) == 0) {
-                throw new \InvalidArgumentException('Location Manager does not support setting references for creating/updating/loading of no locations');
-            }
-
-            $location = reset($location);
-        }
+        $this->setReferencesCommon($location, $step);
+        $location = $this->insureSingleEntity($location, $step);
 
         foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {

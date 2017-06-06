@@ -167,12 +167,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             return false;
         }
 
-        if ($role instanceof RoleCollection) {
-            if (count($role) > 1) {
-                throw new \InvalidArgumentException('Role Manager does not support setting references for creating/updating of multiple roles');
-            }
-            $role = reset($role);
-        }
+        $this->setReferencesCommon($role, $step);
+        $role = $this->insureSingleEntity($role, $step);
 
         foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {

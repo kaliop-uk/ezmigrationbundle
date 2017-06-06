@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Repository;
+use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
@@ -149,6 +150,58 @@ abstract class RepositoryExecutor extends AbstractExecutor
         }
 
         return self::ADMIN_USER_ID;
+    }
+
+    protected function setReferencesCommon($entity, $step)
+    {
+        // allow setting *some* refs even when we have 0 or N matches
+        foreach ($step->dsl['references'] as $key => $reference) {
+            switch($reference['attribute']) {
+
+                case 'count':
+                    $value = count($entity);
+                    $overwrite = false;
+                    if (isset($reference['overwrite'])) {
+                        $overwrite = $reference['overwrite'];
+                    }
+                    $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+                    unset($step->dsl['references'][$key]);
+                    break;
+
+                default:
+                    // do nothing
+            }
+        }
+    }
+
+    protected function insureSingleEntity($entity, $step)
+    {
+        if ($entity instanceof AbstractCollection) {
+            if (count($entity) > 1) {
+                throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for multiple ' . $this->getCollectionName($entity) . 's');
+            }
+            if (count($entity) == 0) {
+                throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for no ' . $this->getCollectionName($entity). 's');
+            }
+
+            $entity = reset($entity);
+        }
+
+        return $entity;
+    }
+
+    protected function getSelfName()
+    {
+        $className = get_class($this);
+        // CamelCase to Camel Case using negative look-behind in regexp
+        return preg_replace('/(?<!^)[A-Z]/', ' $0', $className);
+    }
+
+    protected function getCollectionName($collection)
+    {
+        $className = str_replace('Collection', '', get_class($collection));
+        // CamelCase to snake case using negative look-behind in regexp
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', ' $0', $collection));
     }
 
     /**

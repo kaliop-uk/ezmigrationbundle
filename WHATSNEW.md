@@ -10,11 +10,14 @@ Version 4.0 RC-4 (unreleased)
 
 * New: it is now possible to match contents based on what other contents they relate to/from
 
+* New: allow to set references to the number of items matched whenever updating/deleting any entity from the repository
+    (contents, locations, etc...)
+
+* New: allow to install along newer with Nikic/php- parser
+
 * Fix the Migration/Cancel step
 
-* Fix retrieving body of http responses
-
-* Allow to install along newer with Nikic/php- parser
+* Fix: retrieving body of http responses
 
 
 Version 4.0 RC-3

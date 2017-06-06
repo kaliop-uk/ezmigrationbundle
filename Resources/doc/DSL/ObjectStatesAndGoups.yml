@@ -49,6 +49,7 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
+                                 # 'count' can be used to set a reference to the number of items matched
 
 -
     # The users which are not assigned to other groups will be deleted.
@@ -70,7 +71,6 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
-
 
 -
     mode: create
@@ -126,6 +126,7 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports object_state_id, priority
                                  # The shorthand 'id' can be used instead of 'object_state_id'
+                                 # 'count' can be used to set a reference to the number of items matched
 
 -
     mode: delete

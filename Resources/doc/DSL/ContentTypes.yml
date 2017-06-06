@@ -176,6 +176,7 @@
                                        # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
                                        # The shorthand 'id' can be used instead of 'content_type_id'
                                        # The shorthand 'identifier' can be used instead of 'content_type_identifier'
+                                       # 'count' can be used to set a reference to the number of items matched
 
 -
     # Delete one or more content type(s)

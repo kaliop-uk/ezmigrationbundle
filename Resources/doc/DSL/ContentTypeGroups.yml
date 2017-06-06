@@ -37,6 +37,8 @@
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports content type group id and identifier
                                    # The shorthand 'id' can be used instead of 'content_type_group_id'
+                                   # 'count' can be used to set a reference to the number of items matched
+
 -
     # Delete one (or more) content type group
     type: content_type_group

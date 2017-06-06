@@ -364,15 +364,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             return false;
         }
 
-        if ($content instanceof ContentCollection) {
-            if (count($content) > 1) {
-                throw new \InvalidArgumentException('Content Manager does not support setting references for creating/updating/loading of multiple contents');
-            }
-            if (count($content) == 0) {
-                throw new \InvalidArgumentException('Content Manager does not support setting references for creating/updating/loading of no contents');
-            }
-            $content = reset($content);
-        }
+        $this->setReferencesCommon($content, $step);
+        $content = $this->insureSingleEntity($content, $step);
 
         foreach ($step->dsl['references'] as $reference) {
 

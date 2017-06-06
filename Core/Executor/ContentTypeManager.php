@@ -301,15 +301,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             return false;
         }
 
-        if ($contentType instanceof ContentTypeCollection) {
-            if (count($contentType) > 1) {
-                throw new \InvalidArgumentException('Content Type Manager does not support setting references for creating/updating/loading of multiple content types');
-            }
-            if (count($contentType) == 0) {
-                throw new \InvalidArgumentException('Content Type Manager does not support setting references for creating/updating/loading of no content types');
-            }
-            $contentType = reset($contentType);
-        }
+        $this->setReferencesCommon($contentType, $step);
+        $contentType = $this->insureSingleEntity($contentType, $step);
 
         foreach ($step->dsl['references'] as $reference) {
             switch ($reference['attribute']) {

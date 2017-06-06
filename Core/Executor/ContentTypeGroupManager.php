@@ -122,12 +122,8 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
             return false;
         }
 
-        if ($object instanceof ContentTypeGroupCollection) {
-            if (count($object) > 1) {
-                throw new \InvalidArgumentException('Content Type Group Manager does not support setting references for creating/updating of multiple Content Type Groups');
-            }
-            $object = reset($object);
-        }
+        $this->setReferencesCommon($object, $step);
+        $object = $this->insureSingleEntity($object, $step);
 
         foreach ($step->dsl['references'] as $reference) {
 

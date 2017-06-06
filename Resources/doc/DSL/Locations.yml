@@ -113,6 +113,7 @@
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
+                                   # 'count' can be used to set a reference to the number of items matched
 
 -
     type: location
@@ -210,3 +211,4 @@
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
+                                   # 'count' can be used to set a reference to the number of items matched
