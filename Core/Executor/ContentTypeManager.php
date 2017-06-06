@@ -252,6 +252,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     {
         $contentTypeCollection = $this->matchContentTypes('delete', $step);
 
+        $this->setReferences($contentTypeCollection, $step);
+
         $contentTypeService = $this->repository->getContentTypeService();
 
         foreach ($contentTypeCollection as $contentType) {

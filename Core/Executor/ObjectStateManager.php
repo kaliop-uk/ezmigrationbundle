@@ -129,6 +129,8 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     {
         $stateCollection = $this->matchObjectStates('delete', $step);
 
+        $this->setReferences($stateCollection, $step);
+
         $objectStateService = $this->repository->getObjectStateService();
 
         foreach ($stateCollection as $state) {

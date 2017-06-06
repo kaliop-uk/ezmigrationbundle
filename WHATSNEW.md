@@ -3,15 +3,17 @@ Version 4.0 RC-4 (unreleased)
 
 * New: added 'append' action to 'file' executor
 
+* New: it is now possible to match contents based on what other contents they relate to/from
+
 * New: it is now possible to set a reference to a Content State by using a syntax similar to f.e. `object_state.ez_lock` to
     specify the desired State Group
 
 * New: allow to use a reference for Migration/Suspend when comparing to a date 
 
-* New: it is now possible to match contents based on what other contents they relate to/from
-
 * New: allow to set references to the number of items matched whenever updating/deleting any entity from the repository
     (contents, locations, etc...)
+
+* New: allow to set references when deleting any entity from the repository
 
 * New: allow to install along newer with Nikic/php- parser
 

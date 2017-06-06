@@ -143,6 +143,8 @@ class UserGroupManager extends RepositoryExecutor
     {
         $userGroupCollection = $this->matchUserGroups('delete', $step);
 
+        $this->setReferences($userGroupCollection, $step);
+
         $userService = $this->repository->getUserService();
 
         foreach ($userGroupCollection as $userGroup) {

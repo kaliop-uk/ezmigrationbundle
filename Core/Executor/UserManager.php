@@ -160,6 +160,8 @@ class UserManager extends RepositoryExecutor
     {
         $userCollection = $this->matchUsers('delete', $step);
 
+        $this->setReferences($userCollection, $step);
+
         $userService = $this->repository->getUserService();
 
         foreach ($userCollection as $user) {

@@ -113,6 +113,8 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     {
         $groupsCollection = $this->matchObjectStateGroups('delete', $step);
 
+        $this->setReferences($groupsCollection, $step);
+
         $objectStateService = $this->repository->getObjectStateService();
 
         foreach ($groupsCollection as $objectStateGroup) {

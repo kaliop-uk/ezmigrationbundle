@@ -86,6 +86,8 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     {
         $groupsCollection = $this->matchContentTypeGroups('delete', $step);
 
+        $this->setReferences($groupsCollection, $step);
+
         $contentTypeService = $this->repository->getContentTypeService();
 
         foreach ($groupsCollection as $contentTypeGroup) {

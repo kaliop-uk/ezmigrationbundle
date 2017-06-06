@@ -119,6 +119,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     {
         $roleCollection = $this->matchRoles('delete', $step);
 
+        $this->setReferences($roleCollection, $step);
+
         $roleService = $this->repository->getRoleService();
 
         foreach ($roleCollection as $role) {

@@ -304,9 +304,11 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     protected function delete($step)
     {
-        $contentService = $this->repository->getContentService();
-
         $contentCollection = $this->matchContents('delete', $step);
+
+        $this->setReferences($contentCollection, $step);
+
+        $contentService = $this->repository->getContentService();
 
         foreach ($contentCollection as $content) {
             try {

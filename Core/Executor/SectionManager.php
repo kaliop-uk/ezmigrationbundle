@@ -82,6 +82,8 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $sectionCollection = $this->matchSections('delete', $step);
 
+        $this->setReferences($sectionCollection, $step);
+
         $sectionService = $this->repository->getSectionService();
 
         foreach ($sectionCollection as $section) {

@@ -85,6 +85,8 @@ class TagManager extends RepositoryExecutor
 
         $tagsCollection = $this->matchTags('delete', $step);
 
+        $this->setReferences($tagsCollection, $step);
+
         foreach ($tagsCollection as $tag) {
             $this->tagService->deleteTag($tag);
         }

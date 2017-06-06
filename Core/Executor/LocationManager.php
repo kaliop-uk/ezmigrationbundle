@@ -203,9 +203,11 @@ class LocationManager extends RepositoryExecutor
      */
     protected function delete($step)
     {
-        $locationService = $this->repository->getLocationService();
-
         $locationCollection = $this->matchLocations('delete', $step);
+
+        $this->setReferences($locationCollection, $step);
+
+        $locationService = $this->repository->getLocationService();
 
         foreach ($locationCollection as $location) {
             $locationService->deleteLocation($location);
