@@ -15,7 +15,7 @@ Version 4.0 RC-4 (unreleased)
 
 * New: allow to set references when deleting any entity from the repository
 
-* New: allow to install along newer with Nikic/php- parser
+* New: allow to install along newer with Nikic/php-parser
 
 * Fix the Migration/Cancel step
 
