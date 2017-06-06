@@ -1,12 +1,14 @@
 Version 4.0 RC-4 (unreleased)
 =============================
 
-* Added 'append' action to 'file' executor
+* New: added 'append' action to 'file' executor
 
-* It is now possible to set a reference to a Content State by using a syntax similar to f.e. `object_state.ez_lock` to
+* New: it is now possible to set a reference to a Content State by using a syntax similar to f.e. `object_state.ez_lock` to
     specify the desired State Group
 
-* Allow to use a reference for Migration/Suspend when comparing to a date 
+* New: allow to use a reference for Migration/Suspend when comparing to a date 
+
+* New: it is now possible to match contents based on what other contents they relate to/from
 
 * Fix the Migration/Cancel step
 

@@ -10,6 +10,9 @@ class ContentMatcher extends QueryBasedMatcher
 {
     use FlexibleKeyMatcherTrait;
 
+    const MATCH_RELATES_TO = 'relates_to';
+    const MATCH_RELATED_FROM = 'related_from';
+
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
@@ -18,7 +21,9 @@ class ContentMatcher extends QueryBasedMatcher
         self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_SECTION, self::MATCH_SUBTREE,
         self::MATCH_VISIBILITY,
         // aliases
-        'content_type', 'content_type_id', 'content_type_identifier'
+        'content_type', 'content_type_id', 'content_type_identifier',
+        // content-only
+        self::MATCH_RELATES_TO, self::MATCH_RELATED_FROM
     );
     protected $returns = 'Content';
 
@@ -41,38 +46,68 @@ class ContentMatcher extends QueryBasedMatcher
 
         foreach ($conditions as $key => $values) {
 
-            // BC support
-            if ($key == 'content_type') {
-                if (is_int($values[0]) || ctype_digit($values[0])) {
-                    $key = self::MATCH_CONTENT_TYPE_ID;
-                } else {
-                    $key = self::MATCH_CONTENT_TYPE_IDENTIFIER;
-                }
-            }
+            switch($key) {
 
-            $query = new Query();
-            $query->limit = PHP_INT_MAX;
-            $query->filter = $this->getQueryCriterion($key, $values);
-            switch ($key) {
-                case 'content_type_id':
-                case self::MATCH_CONTENT_TYPE_ID:
-                case 'content_type_identifier':
-                case self::MATCH_CONTENT_TYPE_IDENTIFIER:
-                    // sort objects by depth, lower to higher, so that deleting them has less chances of failure
-                    // NB: we only do this in eZP versions that allow depth sorting on content queries
-                    if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
-                        $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+                case self::MATCH_RELATES_TO:
+                    $contentService = $this->repository->getContentService();
+                    $contents = array();
+                    // allow to specify the objects to relate to using different ways
+                    $relatedContents = $this->match($values);
+                    foreach($relatedContents as $relatedContent) {
+                        foreach($contentService->loadReverseRelations($relatedContent->contentInfo) as $relatingContent) {
+                            $contents[$relatingContent->contentInfo->id] = $relatingContent;
+                        }
                     }
-            }
-            $results = $this->repository->getSearchService()->findContent($query);
+                    break;
 
-            $contents = [];
-            foreach ($results->searchHits as $result) {
-                // make sure we return every object only once
-                $contents[$result->valueObject->contentInfo->id] = $result->valueObject;
+                case self::MATCH_RELATED_FROM:
+                    $contentService = $this->repository->getContentService();
+                    $contents = array();
+                    // allow to specify the objects we relate to using different ways
+                    $relatingContents = $this->match($values);
+                    foreach($relatingContents as $relatingContent) {
+                        foreach($contentService->loadRelations($relatingContent->contentInfo) as $relatedContent) {
+                            $contents[$relatedContent->contentInfo->id] = $relatedContent;
+                        }
+                    }
+                    break;
+
+                default:
+
+                    // BC support
+                    if ($key == 'content_type') {
+                        if (is_int($values[0]) || ctype_digit($values[0])) {
+                            $key = self::MATCH_CONTENT_TYPE_ID;
+                        } else {
+                            $key = self::MATCH_CONTENT_TYPE_IDENTIFIER;
+                        }
+                    }
+
+                    $query = new Query();
+                    $query->limit = PHP_INT_MAX;
+                    $query->filter = $this->getQueryCriterion($key, $values);
+                    switch ($key) {
+                        case 'content_type_id':
+                        case self::MATCH_CONTENT_TYPE_ID:
+                        case 'content_type_identifier':
+                        case self::MATCH_CONTENT_TYPE_IDENTIFIER:
+                            // sort objects by depth, lower to higher, so that deleting them has less chances of failure
+                            // NB: we only do this in eZP versions that allow depth sorting on content queries
+                            if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
+                                $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+                            }
+                    }
+                    $results = $this->repository->getSearchService()->findContent($query);
+
+                    $contents = [];
+                    foreach ($results->searchHits as $result) {
+                        // make sure we return every object only once
+                        $contents[$result->valueObject->contentInfo->id] = $result->valueObject;
+                    }
             }
 
             return new ContentCollection($contents);
+
         }
     }
 
