@@ -253,3 +253,8 @@
             disable-translation: false
             category: meta
             position: 130
+
+-
+    type: content_type
+    mode: load
+    match: # See docs above for update and delete
