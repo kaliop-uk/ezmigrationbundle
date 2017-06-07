@@ -230,7 +230,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         foreach ($contentCollection as $key => $content) {
             $contentInfo = $content->contentInfo;
 
-            if ($contentType[$contentInfo->contentTypeId] == null) {
+            if (!isset($contentType[$contentInfo->contentTypeId])) {
                 $contentType[$contentInfo->contentTypeId] = $contentTypeService->loadContentType($contentInfo->contentTypeId);
             }
 
