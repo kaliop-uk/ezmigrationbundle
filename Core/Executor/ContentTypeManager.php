@@ -8,6 +8,7 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
@@ -26,14 +27,17 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     // This resolver is used to resolve references in content-type settings definitions
     protected $extendedReferenceResolver;
     protected $fieldHandlerManager;
+    protected $sortConverter;
 
     public function __construct(ContentTypeMatcher $matcher, ContentTypeGroupMatcher $contentTypeGroupMatcher,
-                                ReferenceResolverInterface $extendedReferenceResolver, FieldHandlerManager $fieldHandlerManager)
+                                ReferenceResolverInterface $extendedReferenceResolver, FieldHandlerManager $fieldHandlerManager,
+                                SortConverter $sortConverter)
     {
         $this->contentTypeMatcher = $matcher;
         $this->contentTypeGroupMatcher = $contentTypeGroupMatcher;
         $this->extendedReferenceResolver = $extendedReferenceResolver;
         $this->fieldHandlerManager = $fieldHandlerManager;
+        $this->sortConverter = $sortConverter;
     }
 
     /**
@@ -81,6 +85,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
         if (isset($step->dsl['default_always_available'])) {
             $contentTypeCreateStruct->defaultAlwaysAvailable = $step->dsl['default_always_available'];
+        }
+
+        if (isset($step->dsl['default_sort_field'])) {
+            $contentTypeCreateStruct->defaultSortField = $this->sortConverter->hash2SortField($step->dsl['default_sort_field']);
+        }
+
+        if (isset($step->dsl['default_sort_order'])) {
+            $contentTypeCreateStruct->defaultSortOrder = $this->sortConverter->hash2SortOrder($step->dsl['default_sort_order']);
         }
 
         // Add attributes

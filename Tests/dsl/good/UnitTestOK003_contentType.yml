@@ -9,6 +9,8 @@
     description: Kaliop Migration Bundle Test Class 1
     name_pattern: <title>
     default_always_available: true
+    default_sort_field: priority
+    default_sort_order: asc
     attributes:
         -
             type: ezstring
