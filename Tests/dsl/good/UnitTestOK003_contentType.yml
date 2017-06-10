@@ -225,6 +225,14 @@
 
 -
     type: content_type
+    mode: update
+    match:
+        identifier: 'reference:kmb_test_1_1'
+    default_sort_field: name
+    default_sort_order: desc
+
+-
+    type: content_type
     mode: load
     match:
         contenttype_identifier: kmb_test_1_1

@@ -186,6 +186,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $contentTypeUpdateStruct->isContainer = $step->dsl['is_container'];
             }
 
+            if (isset($step->dsl['default_sort_field'])) {
+                $contentTypeUpdateStruct->defaultSortField = $this->sortConverter->hash2SortField($step->dsl['default_sort_field']);
+            }
+
+            if (isset($step->dsl['default_sort_order'])) {
+                $contentTypeUpdateStruct->defaultSortOrder = $this->sortConverter->hash2SortOrder($step->dsl['default_sort_order']);
+            }
+
             // Add/edit attributes
             if (isset($step->dsl['attributes'])) {
                 // NB: seems like eZ gets mixed up if we pass some attributes with a position and some without...
