@@ -1,3 +1,9 @@
+Version 4.0
+===========
+
+* New: allow to set default sort field/order on content type creation and update
+
+
 Version 4.0 RC-4
 ================
 

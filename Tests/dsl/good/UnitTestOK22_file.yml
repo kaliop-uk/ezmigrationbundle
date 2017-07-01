@@ -41,10 +41,82 @@
             identifier: aaa4
 
 -
+    type: assert
+    target: reference
+    identifier: reference:aaa1
+    test:
+        equals: "hello world"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa1
+    test:
+        equals: 11
+
+-
+    type: file
+    mode: append
+    file: reference:kmb_test_22_x
+    body: "wide"
+
+-
+    type: file
+    mode: load
+    file: reference:kmb_test_22_x
+    references:
+        -
+            attribute: body
+            identifier: aaa5
+        -
+            attribute: size
+            identifier: aaa6
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa5
+    test:
+        equals: "hello worldwide"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa6
+    test:
+        equals: 15
+
+-
     type: file
     mode: copy
     from: reference:kmb_test_22_x
     to: reference:kmb_test_22_y
+
+-
+    type: file
+    mode: load
+    file: reference:kmb_test_22_y
+    references:
+        -
+            attribute: body
+            identifier: aaa7
+        -
+            attribute: size
+            identifier: aaa8
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa7
+    test:
+        equals: "hello worldwide"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa8
+    test:
+        equals: 15
 
 -
     type: file
@@ -56,6 +128,32 @@
     mode: move
     from: reference:kmb_test_22_x
     to: reference:kmb_test_22_y
+
+-
+    type: file
+    mode: load
+    file: reference:kmb_test_22_y
+    references:
+        -
+            attribute: body
+            identifier: aaa9
+        -
+            attribute: size
+            identifier: aaa10
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa9
+    test:
+        equals: "hello worldwide"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa10
+    test:
+        equals: 15
 
 -
     type: file
