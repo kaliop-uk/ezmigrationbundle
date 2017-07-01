@@ -47,3 +47,23 @@
     mode: save
     file: Tests/dsl/good/references/test_refs_generated.yml
     overwrite: true
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: 'will be reset when reloading refs from file'
+    overwrite: true
+
+-
+    type: reference
+    mode: load
+    file: Tests/dsl/good/references/test_refs_generated.yml
+    overwrite: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref
+    test:
+        equals: def
