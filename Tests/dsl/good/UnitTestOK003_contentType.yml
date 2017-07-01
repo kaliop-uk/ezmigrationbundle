@@ -9,6 +9,8 @@
     description: Kaliop Migration Bundle Test Class 1
     name_pattern: <title>
     default_always_available: true
+    default_sort_field: priority
+    default_sort_order: asc
     attributes:
         -
             type: ezstring
@@ -220,6 +222,14 @@
         -
             identifier: kmb_test_1_1
             attribute: identifier
+
+-
+    type: content_type
+    mode: update
+    match:
+        identifier: 'reference:kmb_test_1_1'
+    default_sort_field: name
+    default_sort_order: desc
 
 -
     type: content_type
