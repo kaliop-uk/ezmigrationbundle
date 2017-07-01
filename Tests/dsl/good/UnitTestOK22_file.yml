@@ -50,7 +50,7 @@
 -
     type: assert
     target: reference
-    identifier: reference:aaa1
+    identifier: reference:aaa2
     test:
         equals: 11
 

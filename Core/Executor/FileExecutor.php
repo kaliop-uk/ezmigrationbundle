@@ -216,6 +216,7 @@ class FileExecutor extends AbstractExecutor
             return false;
         }
 
+        clearstatcache(true, $fileName);
         $stats = stat($fileName);
 
         if (!$stats) {
