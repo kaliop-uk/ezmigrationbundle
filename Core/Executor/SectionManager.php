@@ -125,11 +125,10 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             return false;
         }
 
-        $this->setReferencesCommon($section, $step);
-        $section = $this->insureSingleEntity($section, $step);
+        $references = $this->setReferencesCommon($section, $step->dsl['references']);
+        $section = $this->insureSingleEntity($section, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
-
+        foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'section_id':
                 case 'id':

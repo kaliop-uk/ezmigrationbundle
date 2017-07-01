@@ -223,10 +223,11 @@ class UserManager extends RepositoryExecutor
             return false;
         }
 
-        $this->setReferencesCommon($user, $step);
-        $user = $this->insureSingleEntity($user, $step);
+        $references = $this->setReferencesCommon($user, $step->dsl['references']);
+        $user = $this->insureSingleEntity($user, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
+
             switch ($reference['attribute']) {
                 case 'user_id':
                 case 'id':

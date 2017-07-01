@@ -196,11 +196,10 @@ class UserGroupManager extends RepositoryExecutor
             return false;
         }
 
-        $this->setReferencesCommon($userGroup, $step);
-        $userGroup = $this->insureSingleEntity($userGroup, $step);
+        $references = $this->setReferencesCommon($userGroup, $step->dsl['references']);
+        $userGroup = $this->insureSingleEntity($userGroup, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
-
+        foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'object_id':
                 case 'content_id':

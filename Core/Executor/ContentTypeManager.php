@@ -323,10 +323,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             return false;
         }
 
-        $this->setReferencesCommon($contentType, $step);
-        $contentType = $this->insureSingleEntity($contentType, $step);
+        $references = $this->setReferencesCommon($contentType, $step->dsl['references']);
+        $contentType = $this->insureSingleEntity($contentType, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'content_type_id':
                 case 'id':

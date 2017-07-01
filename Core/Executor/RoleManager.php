@@ -169,10 +169,10 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             return false;
         }
 
-        $this->setReferencesCommon($role, $step);
-        $role = $this->insureSingleEntity($role, $step);
+        $references = $this->setReferencesCommon($role, $step->dsl['references']);
+        $role = $this->insureSingleEntity($role, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'role_id':
                 case 'id':

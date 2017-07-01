@@ -255,10 +255,10 @@ class LocationManager extends RepositoryExecutor
             return false;
         }
 
-        $this->setReferencesCommon($location, $step);
-        $location = $this->insureSingleEntity($location, $step);
+        $references = $this->setReferencesCommon($location, $step->dsl['references']);
+        $location = $this->insureSingleEntity($location, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'location_id':
                 case 'id':

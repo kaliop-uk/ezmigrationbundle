@@ -151,10 +151,10 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
             return false;
         }
 
-        $this->setReferencesCommon($objectStateGroup, $step);
-        $objectStateGroup = $this->insureSingleEntity($objectStateGroup, $step);
+        $references = $this->setReferencesCommon($objectStateGroup, $step->dsl['references']);
+        $objectStateGroup = $this->insureSingleEntity($objectStateGroup, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'object_state_group_id':
                 case 'id':

@@ -321,6 +321,17 @@
     type: content
     mode: delete
     object_id: [ 'reference:kmb_test_2_2', 'reference:kmb_test_2_3' ]
+    references:
+        -
+            identifier: kmb_test_2_5
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_2_5
+    test:
+        equals: 2
 
 -
     type: content
@@ -332,3 +343,14 @@
     type: content_type
     mode: delete
     identifier: 'reference:kmb_test_2'
+    references:
+        -
+            identifier: kmb_test_2_6
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_2_6
+    test:
+        equals: 1

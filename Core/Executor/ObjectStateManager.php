@@ -167,10 +167,10 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
             return false;
         }
 
-        $this->setReferencesCommon($objectState, $step);
-        $objectState = $this->insureSingleEntity($objectState, $step);
+        $references = $this->setReferencesCommon($objectState, $step->dsl['references']);
+        $objectState = $this->insureSingleEntity($objectState, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'object_state_id':
                 case 'id':

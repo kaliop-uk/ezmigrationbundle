@@ -88,10 +88,10 @@ class LanguageManager extends RepositoryExecutor
             return false;
         }
 
-        $this->setReferencesCommon($language, $step);
-        $language = $this->insureSingleEntity($language, $step);
+        $references = $this->setReferencesCommon($language, $step->dsl['references']);
+        $language = $this->insureSingleEntity($language, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
 
             switch ($reference['attribute']) {
                 case 'language_id':

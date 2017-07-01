@@ -366,10 +366,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             return false;
         }
 
-        $this->setReferencesCommon($content, $step);
-        $content = $this->insureSingleEntity($content, $step);
+        $references = $this->setReferencesCommon($content, $step->dsl['references']);
+        $content = $this->insureSingleEntity($content, $references);
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($references as $reference) {
 
             switch ($reference['attribute']) {
                 case 'object_id':
