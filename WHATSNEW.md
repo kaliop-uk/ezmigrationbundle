@@ -1,7 +1,9 @@
-Version 4.0
-===========
+Version 4.0 RC-5
+================
 
 * New: allow to set default sort field/order on content type creation and update
+
+* Fix: allow setting references to the number of items affected for update and delete steps
 
 
 Version 4.0 RC-4
