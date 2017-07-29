@@ -4,7 +4,7 @@
     type: content_type
     mode: create
     content_type_group: 1
-    identifier: kmb_test_3
+    identifier: kmb_test_005
     name: Kaliop Migration Bundle Test Class 3
     name_pattern: '<ezstring>'
     is_container: true
@@ -15,144 +15,290 @@
             identifier: ezstring
     references:
         -
-            identifier: kmb_test_3
+            identifier: kmb_test_005
             attribute: identifier
         -
-            identifier: kmb_test_3_0
+            identifier: kmb_test_005_0
             attribute: id
 
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_3
+    content_type: reference:kmb_test_005
     parent_location: 2
     attributes:
         - ezstring: hello world 1
     references:
         -
-            identifier: kmb_test_3_1_loc
+            identifier: kmb_test_005_1_loc
             attribute: location_id
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_3
+    content_type: reference:kmb_test_005
     parent_location: 2
     attributes:
         - ezstring: hello world 2
     references:
         -
-            identifier: kmb_test_3_2_loc
+            identifier: kmb_test_005_2_loc
             attribute: location_id
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_3
+    content_type: reference:kmb_test_005
     parent_location: 2
     attributes:
         - ezstring: hello world 3
     references:
         -
-            identifier: kmb_test_3_3
+            identifier: kmb_test_005_3
             attribute: object_id
         -
-            identifier: kmb_test_3_3_loc
+            identifier: kmb_test_005_3_loc
             attribute: location_id
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_3
+    content_type: reference:kmb_test_005
     parent_location: 2
     attributes:
         - ezstring: hello world 4
     references:
         -
-            identifier: kmb_test_3_4
+            identifier: kmb_test_005_4
             attribute: object_id
         -
-            identifier: kmb_test_3_4_loc
+            identifier: kmb_test_005_4_loc
             attribute: location_id
         -
-            identifier: kmb_test_3_4_rid
+            identifier: kmb_test_005_4_rid
             attribute: remote_id
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_3
+    content_type: reference:kmb_test_005
     parent_location: 2
     location_remote_id: one_more_random_remoteid_location
     attributes:
         - ezstring: hello world 5
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_3
+    content_type: reference:kmb_test_005
     parent_location: one_more_random_remoteid_location
     remote_id: one_more_random_remoteid_content
     attributes:
         - ezstring: hello world 6
+
 -
     type: location
     mode: create
-    parent_location: [ reference:kmb_test_3_1_loc, one_more_random_remoteid_location ]
+    parent_location: [ reference:kmb_test_005_1_loc, one_more_random_remoteid_location ]
     match:
-        content_id: reference:kmb_test_3_3
+        content_id: reference:kmb_test_005_3
+
 -
     type: location
     mode: create
     # deprecated
-    parent_location_id: reference:kmb_test_3_2_loc
+    parent_location_id: reference:kmb_test_005_2_loc
     priority: 1999
     is_hidden: true
     sort_field: path
     sort_order: DESC
     match:
-        location_id: reference:kmb_test_3_3_loc
+        location_id: reference:kmb_test_005_3_loc
     references:
         -
-            identifier: kmb_test_3_3_loc_3
+            identifier: kmb_test_005_3_loc_3
             attribute: location_id
         -
-            identifier: kmb_test_3_3_loc_3_rid
+            identifier: kmb_test_005_3_loc_3_rid
             attribute: remote_id
+        -
+            identifier: kmb_test_005_3_loc_3_id
+            attribute: id
+        -
+            identifier: kmb_test_005_3_loc_3_lrid
+            attribute: location_remote_id
+        -
+            identifier: kmb_test_005_3_loc_3_always_available
+            attribute: always_available
+        -
+            identifier: kmb_test_005_3_loc_3_content_id
+            attribute: content_id
+        -
+            identifier: kmb_test_005_3_loc_3_content_type_id
+            attribute: content_type_id
+        -
+            identifier: kmb_test_005_3_loc_3_content_type_identifier
+            attribute: content_type_identifier
+        -
+            identifier: kmb_test_005_3_loc_3_current_version
+            attribute: current_version
+        -
+            identifier: kmb_test_005_3_loc_3_current_version_no
+            attribute: current_version_no
+        -
+            identifier: kmb_test_005_3_loc_3_depth
+            attribute: depth
+        -
+            identifier: kmb_test_005_3_loc_3_is_hidden
+            attribute: is_hidden
+        -
+            identifier: kmb_test_005_3_loc_3_main_location_id
+            attribute: main_location_id
+        -
+            identifier: kmb_test_005_3_loc_3_main_language_code
+            attribute: main_language_code
+        -
+            identifier: kmb_test_005_3_loc_3_modification_date
+            attribute: modification_date
+        -
+            identifier: kmb_test_005_3_loc_3_name
+            attribute: name
+        -
+            identifier: kmb_test_005_3_loc_3_owner_id
+            attribute: owner_id
+        -
+            identifier: kmb_test_005_3_loc_3_parent_location_id
+            attribute: parent_location_id
+        -
+            identifier: kmb_test_005_3_loc_3_path
+            attribute: path
+        -
+            identifier: kmb_test_005_3_loc_3_priority
+            attribute: priority
+        -
+            identifier: kmb_test_005_3_loc_3_publication_date
+            attribute: publication_date
+        -
+            identifier: kmb_test_005_3_loc_3_section_id
+            attribute: section_id
+        -
+            identifier: kmb_test_005_3_loc_3_section_identifier
+            attribute: section_identifier
+        -
+            identifier: kmb_test_005_3_loc_3_sort_field
+            attribute: sort_field
+        -
+            identifier: kmb_test_005_3_loc_3_sort_order
+            attribute: sort_order
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3
+    test:
+        equals: reference:kmb_test_005_3_loc_3_id
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3_rid
+    test:
+        equals: reference:kmb_test_005_3_loc_3_lrid
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3_content_type_identifier
+    test:
+        equals: kmb_test_005
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3_current_version
+    test:
+        equals: 1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3_current_version_no
+    test:
+        equals: 1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3_is_hidden
+    test:
+        equals: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3_section_id
+    test:
+        equals: 1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_3_loc_3_section_identifier
+    test:
+        equals: standard
+
 -
     type: location
     mode: update
     # deprecated
-    location_id: reference:kmb_test_3_3_loc_3
-    parent_location: reference:kmb_test_3_4_loc
+    location_id: reference:kmb_test_005_3_loc_3
+    parent_location: reference:kmb_test_005_4_loc
     priority: 1998
     is_hidden: false
     sort_order: ASC
+    references:
+        -
+            identifier: kmb_test_005_4_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_4_count
+    test:
+        equals: 1
+
 -
     type: location
     mode: update
     match:
-        location_id: reference:kmb_test_3_3_loc_3
+        location_id: reference:kmb_test_005_3_loc_3
     is_hidden: true
+
 -
     type: location
     mode: update
     match:
-        location_remote_id: reference:kmb_test_3_3_loc_3_rid
+        location_remote_id: reference:kmb_test_005_3_loc_3_rid
     is_hidden: false
 
 # BUG in EZP 2014.03! https://jira.ez.no/browse/EZP-26199 - reintroduce another test specifically for this when fixed...
 #-
 #    type: location
 #    mode: update
-#    location_id: reference:kmb_test_3_3_loc_3
-#    swap_with_location: reference:kmb_test_3_2_loc
+#    location_id: reference:kmb_test_005_3_loc_3
+#    swap_with_location: reference:kmb_test_005_2_loc
 
 -
     type: location
     mode: load
     match:
         and:
-            - content_id: reference:kmb_test_3_3
-            - location_id: reference:kmb_test_3_3_loc_3
-            - location_remote_id: reference:kmb_test_3_3_loc_3_rid
-            - content_type_id: reference:kmb_test_3_0
-            - content_type_identifier: reference:kmb_test_3
+            - content_id: reference:kmb_test_005_3
+            - location_id: reference:kmb_test_005_3_loc_3
+            - location_remote_id: reference:kmb_test_005_3_loc_3_rid
+            - content_type_id: reference:kmb_test_005_0
+            - content_type_identifier: reference:kmb_test_005
             - section: 1
             - depth:
                 gt: 1
@@ -167,22 +313,34 @@
                 visibility: false
     references:
         -
-            identifier: kmb_test_3_5
+            identifier: kmb_test_005_5
             attribute: location_id
 
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_3_5
+    identifier: reference:kmb_test_005_5
     test:
-        equals: reference:kmb_test_3_3_loc_3
+        equals: reference:kmb_test_005_3_loc_3
 
 -
     type: content
     mode: delete
     match:
-        content_type: reference:kmb_test_3
+        content_type: reference:kmb_test_005
+    references:
+        -
+            identifier: kmb_test_005_6_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_005_6_count
+    test:
+        equals: 6
+
 -
     type: content_type
     mode: delete
-    identifier: 'reference:kmb_test_3'
+    identifier: 'reference:kmb_test_005'
