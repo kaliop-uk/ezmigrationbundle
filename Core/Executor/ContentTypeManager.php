@@ -339,6 +339,18 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 case 'creation_date':
                     $value = $contentType->creationDate->getTimestamp();
                     break;
+                case 'default_always_available':
+                    $value = $contentType->defaultAlwaysAvailable;
+                    break;
+                case 'default_sort_field':
+                    $value = $contentType->defaultSortField;
+                    break;
+                case 'default_sort_order':
+                    $value = $contentType->defaultSortOrder;
+                    break;
+                case 'is_container':
+                    $value = $contentType->isContainer;
+                    break;
                 case 'modification_date':
                     $value = $contentType->modificationDate->getTimestamp();
                     break;

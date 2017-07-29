@@ -21,14 +21,81 @@
             searchable: true
     references:
         -
-            identifier: kmb_test_1
+            identifier: kmb_test_003_1_identifier
             attribute: identifier
+        -
+            identifier: kmb_test_003_1_content_type_id
+            attribute: content_type_id
+        -
+            identifier: kmb_test_003_1_creation_date
+            attribute: creation_date
+        -
+            identifier: kmb_test_003_1_default_always_available
+            attribute: is_container
+        -
+            identifier: kmb_test_003_1_default_sort_field
+            attribute: is_container
+        -
+            identifier: kmb_test_003_1_default_sort_order
+            attribute: is_container
+        -
+            identifier: kmb_test_003_1_is_container
+            attribute: is_container
+        -
+            identifier: kmb_test_003_1_modification_date
+            attribute: modification_date
+        -
+            identifier: kmb_test_003_1_name_pattern
+            attribute: name_pattern
+        -
+            identifier: kmb_test_003_1_remote_id
+            attribute: remote_id
+        -
+            identifier: kmb_test_003_1_status
+            attribute: status
+        -
+            identifier: kmb_test_003_1_url_name_pattern
+            attribute: url_name_pattern
+        -
+            identifier: kmb_test_003_1_content_type_identifier
+            attribute: content_type_identifier
+        -
+            identifier: kmb_test_003_1_id
+            attribute: id
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_1_identifier
+    test:
+        equals: kmb_test_1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_1_content_type_identifier
+    test:
+        equals: kmb_test_1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_1_content_type_id
+    test:
+        equals: reference:kmb_test_003_1_id
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_1_name_pattern
+    test:
+        equals: '<title>'
 
 -
     type: content_type
     mode: update
     match:
-        identifier: reference:kmb_test_1
+        identifier: reference:kmb_test_003_1_identifier
     attributes:
         -
             type: ezstring
@@ -186,12 +253,23 @@
         #    type: ezxmltext
         #    name: ezxmltext
         #    identifier: ezxmltext
+    references:
+        -
+            identifier: kmb_test_003_6_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_6_count
+    test:
+        equals: 1
 
 -
     type: content_type
     mode: update
     match:
-        identifier: 'reference:kmb_test_1'
+        identifier: kmb_test_1
     attributes:
         -
             name: The Subtitle
@@ -202,34 +280,84 @@
             description: An Image Field
             identifier: ezimage
             new_identifier: image
+    references:
+        -
+            identifier: kmb_test_003_8_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_8_count
+    test:
+        equals: 1
 
 -
     type: content_type
     mode: update
     match:
-        identifier: 'reference:kmb_test_1'
+        identifier: 'reference:kmb_test_003_1_identifier'
     remove_attributes:
         - subtitle
         - image
+    references:
+        -
+            identifier: kmb_test_003_10_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_10_count
+    test:
+        equals: 1
 
 -
     type: content_type
     mode: update
     match:
-        identifier: 'reference:kmb_test_1'
+        identifier: 'reference:kmb_test_003_1_identifier'
     new_identifier: kmb_test_1_1
     references:
         -
-            identifier: kmb_test_1_1
+            identifier: kmb_test_003_12_identifier
             attribute: identifier
+        -
+            identifier: kmb_test_003_12_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_12_identifier
+    test:
+        equals: kmb_test_1_1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_12_count
+    test:
+        equals: 1
 
 -
     type: content_type
     mode: update
     match:
-        identifier: 'reference:kmb_test_1_1'
+        identifier: 'reference:kmb_test_003_12_identifier'
     default_sort_field: name
     default_sort_order: desc
+    references:
+        -
+            identifier: kmb_test_003_15_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_15_count
+    test:
+        equals: 1
 
 -
     type: content_type
@@ -262,4 +390,15 @@
     type: content_type
     mode: delete
     match:
-        identifier: 'reference:kmb_test_1_1'
+        identifier: 'reference:kmb_test_003_12_identifier'
+    references:
+        -
+            identifier: kmb_test_003_20_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_003_20_count
+    test:
+        equals: 1

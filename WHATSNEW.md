@@ -1,3 +1,9 @@
+Version 4.0
+===========
+
+* New: allow to set references to contentType default_always_available, default_sort_field, default_sort_order, is_container
+
+
 Version 4.0 RC-5
 ================
 
