@@ -4,7 +4,7 @@
     type: content_type
     mode: create
     content_type_group: 1
-    identifier: kmb_test_2
+    identifier: kmb_test_004
     name: Kaliop Migration Bundle Test Class 2
     name_pattern: '<ezstring>'
     is_container: true
@@ -117,15 +117,15 @@
             identifier: ezxmltext
     references:
         -
-            identifier: kmb_test_2
+            identifier: kmb_test_004
             attribute: identifier
         -
-            identifier: kmb_test_2_0
+            identifier: kmb_test_004_0
             attribute: id
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_2
+    content_type: reference:kmb_test_004
     parent_location: 2
     section: 3
     owner: admin
@@ -135,48 +135,145 @@
         - locked
     references:
         -
-            identifier: kmb_test_2_1
+            identifier: kmb_test_004_1
             attribute: object_id
         -
-            identifier: kmb_test_2_1_loc
+            identifier: kmb_test_004_1_loc
             attribute: location_id
         -
-            identifier: kmb_test_2_1_path
+            identifier: kmb_test_004_1_path
             attribute: path
         -
-            identifier: kmb_test_2_1_rid
+            identifier: kmb_test_004_1_crid
             attribute: content_remote_id
+        -
+            identifier: kmb_test_004_1_rid
+            attribute: remote_id
+        -
+            identifier: kmb_test_004_1_always_available
+            attribute: always_available
+        -
+            identifier: kmb_test_004_1_content_id
+            attribute: content_id
+        -
+            identifier: kmb_test_004_1_content_type_id
+            attribute: content_type_id
+        -
+            identifier: kmb_test_004_1_content_type_identifier
+            attribute: content_type_identifier
+        -
+            identifier: kmb_test_004_1_current_version
+            attribute: current_version
+        -
+            identifier: kmb_test_004_1_current_version_no
+            attribute: current_version_no
+        -
+            identifier: kmb_test_004_1_main_location_id
+            attribute: main_location_id
+        -
+            identifier: kmb_test_004_1_main_language_code
+            attribute: main_language_code
+        -
+            identifier: kmb_test_004_1_modification_date
+            attribute: modification_date
+        -
+            identifier: kmb_test_004_1_name
+            attribute: name
+        -
+            identifier: kmb_test_004_1_owner_id
+            attribute: owner_id
+        -
+            identifier: kmb_test_004_1_publication_date
+            attribute: publication_date
+        -
+            identifier: kmb_test_004_1_section_id
+            attribute: section_id
+        -
+            identifier: kmb_test_004_1_section_identifier
+            attribute: section_identifier
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_1
+    test:
+        equals: reference:kmb_test_004_1_content_id
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_1_crid
+    test:
+        equals: reference:kmb_test_004_1_rid
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_1_content_type_identifier
+    test:
+        equals: kmb_test_004
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_1_current_version
+    test:
+        equals: 1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_1_current_version_no
+    test:
+        equals: 1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_1_section_id
+    test:
+        equals: 3
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_1_section_identifier
+    test:
+        equals: media
+
 -
     type: content_type
     mode: update
     match:
-        identifier: kmb_test_2
+        identifier: kmb_test_004
     attributes:
         -
             type: ezobjectrelationlist
             name: ezobjectrelationlist
             identifier: ezobjectrelationlist
             field-settings:
-                selectionDefaultLocation: reference:kmb_test_2_1_loc
+                selectionDefaultLocation: reference:kmb_test_004_1_loc
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_2
+    content_type: reference:kmb_test_004
     main_location: 2
     attributes:
         - ezstring: hello world 2
-        - ezobjectrelation: 'reference:kmb_test_2_1'
-        - ezobjectrelationlist: [ 'reference:kmb_test_2_1' ]
+        - ezobjectrelation: 'reference:kmb_test_004_1'
+        - ezobjectrelationlist: [ 'reference:kmb_test_004_1' ]
     references:
         -
-            identifier: kmb_test_2_2
+            identifier: kmb_test_004_2
             attribute: object_id
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_2
-    parent_location: reference:kmb_test_2_1_loc
-    location_remote_id: kmb_test_2_3_location_remote_id
+    content_type: reference:kmb_test_004
+    parent_location: reference:kmb_test_004_1_loc
+    location_remote_id: kmb_test_004_3_location_remote_id
     priority: 1999
     is_hidden: true
     sort_field: path
@@ -188,24 +285,26 @@
         ezstring: hello world 3
     references:
         -
-            identifier: kmb_test_2_3
+            identifier: kmb_test_004_3
             attribute: object_id
+
 -
     type: content_type
     mode: update
     match:
-        identifier: kmb_test_2
+        identifier: kmb_test_004
     attributes:
         -
             type: ezobjectrelationlist
             name: ezobjectrelationlist
             identifier: ezobjectrelationlist
             field-settings:
-                selectionDefaultLocation: location:kmb_test_2_3_location_remote_id
+                selectionDefaultLocation: location:kmb_test_004_3_location_remote_id
+
 -
     type: content
     mode: create
-    content_type: reference:kmb_test_2
+    content_type: reference:kmb_test_004
     parent_location: 2
     priority: 1999
     remote_id: this_is_a_test_remoteid
@@ -223,9 +322,9 @@
             path: small.flv
             filename: lol3.flv
         - ezxmltext:
-            content: '<section><paragraph>Hello there! Here is an embedded object: <embed view="embed" size="medium" object_id="[reference:kmb_test_2_1]" /></paragraph></section>'
+            content: '<section><paragraph>Hello there! Here is an embedded object: <embed view="embed" size="medium" object_id="[reference:kmb_test_004_1]" /></paragraph></section>'
         - ezrichtext:
-            content: '<?xml version="1.0" encoding="UTF-8"?><section xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ezxhtml="http://ez.no/xmlns/ezpublish/docbook/xhtml" xmlns:ezcustom="http://ez.no/xmlns/ezpublish/docbook/custom" version="5.0-variant ezpublish-1.0"><para><link xlink:href="ezcontent://[reference:kmb_test_2_1]">Content link</link></para></section>'
+            content: '<?xml version="1.0" encoding="UTF-8"?><section xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ezxhtml="http://ez.no/xmlns/ezpublish/docbook/xhtml" xmlns:ezcustom="http://ez.no/xmlns/ezpublish/docbook/custom" version="5.0-variant ezpublish-1.0"><para><link xlink:href="ezcontent://[reference:kmb_test_004_1]">Content link</link></para></section>'
         - ezauthor:
             -
                 name: Author 1
@@ -238,13 +337,14 @@
             - AX
             - ALB
         - ezobjectrelation:
-            destinationContentId: 'reference:kmb_test_2_1'
+            destinationContentId: 'reference:kmb_test_004_1'
         - ezobjectrelationlist:
-            destinationContentIds: [ 'reference:kmb_test_2_1', 'reference:kmb_test_2_2' ]
+            destinationContentIds: [ 'reference:kmb_test_004_1', 'reference:kmb_test_004_2' ]
+
 -
     type: content
     mode: create
-    content_type: kmb_test_2
+    content_type: kmb_test_004
     parent_location: 2
     attributes:
         ezstring: null
@@ -269,11 +369,12 @@
         ezurl: null
         ezuser: null
         ezxmltext: null
+
 -
     type: content
     mode: update
     match:
-        content_id: reference:kmb_test_2_1
+        content_id: reference:kmb_test_004_1
     attributes:
         - ezimage: blank.jpg
         - ezbinaryfile: emptyfile.txt
@@ -283,16 +384,66 @@
     new_remote_id: is_this_a_very_unlikely_remoteid
     modification_date: "2008:07:06 18:11:31"
     publication_date: "2007:08:09 18:11:31"
+    references:
+        -
+            identifier: kmb_test_004_8_current_version
+            attribute: current_version
+        -
+            identifier: kmb_test_004_8_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_8_count
+    test:
+        equals: 1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_8_current_version
+    test:
+        equals: 2
+
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_004_1
+    new_remote_id: this_is_a_very_unlikely_remoteid
+    references:
+        -
+            identifier: kmb_test_004_9_current_version
+            attribute: current_version
+        -
+            identifier: kmb_test_004_9_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_9_count
+    test:
+        equals: 1
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_9_current_version
+    test:
+        equals: 2
+
 -
     type: content
     mode: load
     match:
         and:
-            - content_id: reference:kmb_test_2_1
-            - location_id: reference:kmb_test_2_1_loc
-            - content_remote_id: is_this_a_very_unlikely_remoteid
-            - content_type_id: reference:kmb_test_2_0
-            - content_type_identifier: reference:kmb_test_2
+            - content_id: reference:kmb_test_004_1
+            - location_id: reference:kmb_test_004_1_loc
+            - content_remote_id: this_is_a_very_unlikely_remoteid
+            - content_type_id: reference:kmb_test_004_0
+            - content_type_identifier: reference:kmb_test_004
             - section: 2
             - creation_date:
                 gt: 1234567
@@ -304,44 +455,61 @@
                 visibility: false
     references:
         -
-            identifier: kmb_test_2_4
+            identifier: kmb_test_004_4
             attribute: object_id
+
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_2_1
+    identifier: reference:kmb_test_004_1
     test:
-        equals: reference:kmb_test_2_4
+        equals: reference:kmb_test_004_4
+
 -
     type: content
     mode: delete
-    object_id: [ 'reference:kmb_test_2_2', 'reference:kmb_test_2_3' ]
+    object_id: [ 'reference:kmb_test_004_2', 'reference:kmb_test_004_3' ]
     references:
         -
-            identifier: kmb_test_2_5
+            identifier: kmb_test_004_5
             attribute: count
+
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_2_5
+    identifier: reference:kmb_test_004_5
     test:
         equals: 2
+
 -
     type: content
     mode: delete
     match:
-        content_type: reference:kmb_test_2
--
-    type: content_type
-    mode: delete
-    identifier: 'reference:kmb_test_2'
+        content_type: reference:kmb_test_004
     references:
         -
-            identifier: kmb_test_2_6
+            identifier: kmb_test_004_6_count
             attribute: count
+
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_2_6
+    identifier: reference:kmb_test_004_6_count
+    test:
+        equals: 3
+
+-
+    type: content_type
+    mode: delete
+    identifier: 'reference:kmb_test_004'
+    references:
+        -
+            identifier: kmb_test_004_7_count
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_7_count
     test:
         equals: 1
