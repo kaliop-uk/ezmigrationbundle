@@ -56,8 +56,9 @@ class ReferenceExecutor extends AbstractExecutor
             throw new \Exception("Invalid step definition: miss 'value' for setting reference");
         }
         $value = $dsl['value'];
-        if (preg_match('/%.+%$/', $value)) {
-            $value = $this->container->getParameter(trim($value, '%'));
+        if (preg_match('/.*%.+%.*$/', $value)) {
+            // we use the same parameter resolving rule as symfony, even though this means abusing the ContainerInterface
+            $value = $this->container->getParameterBag()->resolveString($value);
         }
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
         $this->referenceResolver->addReference($dsl['identifier'], $value, $overwrite);

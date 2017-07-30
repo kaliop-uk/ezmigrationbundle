@@ -23,3 +23,7 @@ services:
         class: Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
         tags:
             - { name: ez_migration_bundle.reference_resolver.customreference }
+    ez_migration_bundle.test.swiftmailer_message_logger:
+        class: Kaliop\eZMigrationBundle\Tests\helper\MailMessageLogger
+        tags:
+            - { name: swiftmailer.default.plugin }

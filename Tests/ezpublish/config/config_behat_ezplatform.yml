@@ -46,6 +46,7 @@ stash:
             registerDoctrineAdapter: false
 
 swiftmailer:
+    disable_delivery: false
     spool:
         type: file
         path: '%kernel.root_dir%/spool'

@@ -1,0 +1,83 @@
+-
+     type: reference
+     mode: set
+     identifier: kmb_test_023_subject
+     value: testing
+
+-
+     type: reference
+     mode: set
+     identifier: kmb_test_023_body
+     value: migrations
+
+-
+    type: mail
+    mode: send
+    from: test@test.me
+    to: test@test.you
+    cc: test@test.him
+    bcc:
+        - test@test.her
+        - test@test.they
+    subject: "this is an email subject about [reference:kmb_test_023_subject] etc..."
+    body: "this is an email body about [reference:kmb_test_023_body] etc..."
+    attach: files/emptyfile.txt
+
+# NB: this file is made available by a custom swiftmailer listener
+-
+    type: file
+    mode: load
+    file: /tmp/mail.txt
+    references:
+        -
+            attribute: body
+            identifier: kmb_test_023_mailmessage
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_023_mailmessage
+    test:
+        contains: "From: test@test.me"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_023_mailmessage
+    test:
+        contains: "To: test@test.you"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_023_mailmessage
+    test:
+        contains: "Cc: test@test.him"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_023_mailmessage
+    test:
+        contains: "Bcc: test@test.her, test@test.they"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_023_mailmessage
+    test:
+        contains: "Content-Type: multipart/mixed;"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_023_mailmessage
+    test:
+        contains: "this is an email body about migrations etc..."
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_023_mailmessage
+    test:
+        contains: "Subject: this is an email subject about testing etc..."

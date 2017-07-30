@@ -74,8 +74,14 @@ class MailExecutor extends AbstractExecutor
         if (isset($dsl['body'])) {
             $message->setBody($this->resolveReferencesInText($dsl['body']));
         }
-        if (isset($dsl['attach'])) { /// @todo
-            $message->attach(Swift_Attachment::fromPath($this->resolveReferencesRecursively($dsl['attach'])));
+        if (isset($dsl['attach'])) {
+            $path = $this->resolveReferencesRecursively($dsl['attach']);
+            // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
+            $attachment = dirname($context['path']) . '/' . $path;
+            if (!is_file($attachment)) {
+                $attachment = $path;
+            }
+            $message->attach(Swift_Attachment::fromPath($attachment));
         }
 
         if (isset($dsl['priority'])) {

@@ -3,6 +3,10 @@ Version 4.0
 
 * New: allow to set references to contentType default_always_available, default_sort_field, default_sort_order, is_container
 
+* Improved: parameter resolving in migration steps reference/set now works even when the parameter is not the full value of the string, eg: '%kernel.root_dir%/spool'
+
+* Improved: path to attachment files can be specified relative to the migration file for migration steps mail/send
+
 
 Version 4.0 RC-5
 ================
