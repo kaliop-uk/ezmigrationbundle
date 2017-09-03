@@ -37,11 +37,7 @@
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "php-http/mock-client": "*",
         "phpunit/phpunit": "~4.0 || ~5.0",
-        "codeclimate/php-test-reporter": "~0.4",
-        "ezsystems/ezplatform": "~1.7.0",
-        "ezsystems/ezplatform-xmltext-fieldtype": "^1.1",
-        "ezsystems/behatbundle": "^6.3",
-        "netgen/tagsbundle": "~2.0"
+        "codeclimate/php-test-reporter": "~0.4"
     },
     "suggest": {
         "php-http/httplug-bundle": "Required for usage of HTTP/CALL migration steps"
