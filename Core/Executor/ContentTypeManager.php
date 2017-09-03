@@ -676,7 +676,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
         // then handle the conversion of the settings from Hash to Repo representation
         if ($this->fieldHandlerManager->managesFieldDefinition($fieldTypeIdentifier, $contentTypeIdentifier)) {
-            $ret = $this->fieldHandlerManager->hashToFieldSettings($fieldTypeIdentifier, $contentTypeIdentifier, $value);
+            $ret = $this->fieldHandlerManager->hashToFieldSettings($fieldTypeIdentifier, $contentTypeIdentifier, $ret);
         }
 
         return $ret;
