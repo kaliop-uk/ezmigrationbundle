@@ -60,7 +60,8 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/gggeek/BehatBundle"
+            "url": "https://github.com/gggeek/BehatBundle",
+            "no-api": true
         }
     ]
 }
