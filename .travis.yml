@@ -37,7 +37,7 @@ matrix:
     - php: 7.1
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.4 ezsystems/ezplatform-xmltext-fieldtype:^1.2 ezsystems/behatbundle:^6.4 netgen/tagsbundle:~2.2' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
     - php: 7.2
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.11.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.11.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
   #allow_failures:
     # this currently fails because of the refactoring of location matcher
