@@ -59,7 +59,7 @@ class TagsTest extends CommandTest
     {
         $dslDir = $this->dslDir.'/eztags';
 
-        $tagsFieldType = $this->container->get('ezpublish.fieldType.eztags');
+        $tagsFieldType = $this->getContainer()->get('ezpublish.fieldType.eztags');
         $validatorConfiguration = $tagsFieldType->getValidatorConfigurationSchema();
         if (isset($validatorConfiguration['TagsValueValidator']['subTreeLimit'])) {
             $dslDir .= '/v3';
