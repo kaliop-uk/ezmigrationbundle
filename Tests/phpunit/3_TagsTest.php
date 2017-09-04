@@ -59,7 +59,9 @@ class TagsTest extends CommandTest
     {
         $dslDir = $this->dslDir.'/eztags';
 
-        $tagsFieldType = $this->getContainer()->get('ezpublish.fieldType.eztags');
+        // try to make this work across phpunit versions
+        $container = $this->container == null ? $this->getContainer() : $this->container;
+        $tagsFieldType = $container->get('ezpublish.fieldType.eztags');
         $validatorConfiguration = $tagsFieldType->getValidatorConfigurationSchema();
         if (isset($validatorConfiguration['TagsValueValidator']['subTreeLimit'])) {
             $dslDir .= '/v3';
