@@ -23,7 +23,7 @@
     always_available: true
     remote_id: article_tag_remote_id
     keywords:
-      eng-GB: Article Subject
+        eng-GB: Article Subject
     references:
         -
             identifier: article_tag_id

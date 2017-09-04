@@ -58,6 +58,15 @@ class TagsTest extends CommandTest
     public function goodDSLProvider()
     {
         $dslDir = $this->dslDir.'/eztags';
+
+        $tagsFieldType = $this->container->get('ezpublish.fieldType.eztags');
+        $validatorConfiguration = $tagsFieldType->getValidatorConfigurationSchema();
+        if (isset($validatorConfiguration['TagsValueValidator']['subTreeLimit'])) {
+            $dslDir .= '/v3';
+        } else {
+            $dslDir .= '/v2';
+        }
+
         if (!is_dir($dslDir)) {
             return array();
         }
