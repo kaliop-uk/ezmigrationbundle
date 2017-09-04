@@ -95,7 +95,7 @@ before_script:
 script:
   # Finally! :-D
   # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
-  - if [ "$CODE_COVERAGE" = "1" ]; then ./bin/phpunit --colors --coverage-clover=coverage.clover Tests/phpunit; else phpunit --colors Tests/phpunit; fi
+  - if [ "$CODE_COVERAGE" = "1" ]; then ./vendor/phpunit/phpunit/phpunit --colors --coverage-clover=coverage.clover Tests/phpunit; else ./vendor/phpunit/phpunit/phpunit --colors Tests/phpunit; fi
 
 after_failure:
   # Display as much info as we can to help developers
