@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
@@ -112,13 +113,20 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             $contentTypeCreateStruct->addFieldDefinition($fieldDefinition);
         }
 
-        // Publish new class
-        $contentTypeDraft = $contentTypeService->createContentType($contentTypeCreateStruct, array($contentTypeGroup));
-        $contentTypeService->publishContentTypeDraft($contentTypeDraft);
+        try {
+            // Publish new class
+            $contentTypeDraft = $contentTypeService->createContentType($contentTypeCreateStruct, array($contentTypeGroup));
+            $contentTypeService->publishContentTypeDraft($contentTypeDraft);
 
-        // Set references
-        $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeDraft->identifier);
-        $this->setReferences($contentType, $step);
+            // Set references
+            $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeDraft->identifier);
+            $this->setReferences($contentType, $step);
+        } catch (InvalidArgumentException $e) {
+            if (empty($step->dsl['update_if_exists'])) {
+                throw $e;
+            }
+            $contentType = $this->update($step);
+        }
 
         return $contentType;
     }
