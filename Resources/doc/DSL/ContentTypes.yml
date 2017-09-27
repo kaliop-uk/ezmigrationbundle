@@ -107,6 +107,7 @@
     url_name_pattern: pattern # Optional
     default_sort_field: x # Optional. See ManageLocation.yml for details
     default_sort_order: ASC|DESC # Optional
+    update_if_exists: true|false # Optional, update the content type if it exists
     # The list in references tells the manager to store specific values for later use by other steps in the current
     # migration.
     references: # Optional
