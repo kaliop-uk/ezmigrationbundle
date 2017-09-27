@@ -44,6 +44,86 @@
         eng-GB:  Kaliop Migration Bundle Test Object State 2
 
 -
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_12_ct
+    name: Kaliop Migration Bundle Test Class 12
+    name_pattern: '<ezstring>'
+    attributes:
+        -
+            type: ezstring
+            name: ezstring
+            identifier: ezstring
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_12_ct
+    parent_location: 2
+    attributes:
+        - ezstring: hello world
+    references:
+        -
+            identifier: kmb_test_12_obj
+            attribute: object_id
+    object_states:
+        - an_object_state_group_updated/another_object_state
+
+-
+    type: content
+    mode: load
+    match:
+        content_id: "reference:kmb_test_12_obj"
+    references:
+        -
+            identifier: kmb_test_12_obj_state1
+            attribute: object_state.an_object_state_group_updated
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_12_obj_state1
+    test:
+        equals: "an_object_state_group_updated/another_object_state"
+
+-
+    type: content
+    mode: update
+    match:
+        content_id: "reference:kmb_test_12_obj"
+    object_states:
+        - "an_object_state_group_updated/an_object_state"
+
+-
+    type: content
+    mode: load
+    match:
+        content_id: "reference:kmb_test_12_obj"
+    references:
+        -
+            identifier: kmb_test_12_obj_state2
+            attribute: object_state.an_object_state_group_updated
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_12_obj_state2
+    test:
+        equals: "an_object_state_group_updated/an_object_state"
+
+-
+    type: content
+    mode: delete
+    match:
+        content_type: kmb_test_12_ct
+
+-
+    type: content_type
+    mode: delete
+    identifier: kmb_test_12_ct
+
+-
     type: object_state
     mode: update
     match:
