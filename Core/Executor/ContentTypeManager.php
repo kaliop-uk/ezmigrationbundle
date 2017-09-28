@@ -3,9 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
-use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
@@ -20,7 +20,7 @@ use JmesPath\Env as JmesPath;
  */
 class ContentTypeManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
-    protected $supportedActions = array('create', 'load', 'update', 'delete');
+    protected $supportedActions = array('create', 'load', 'update', 'delete', 'upsert');
     protected $supportedStepTypes = array('content_type');
 
     protected $contentTypeMatcher;
@@ -318,6 +318,29 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         }
 
         return $contentTypeCollection;
+    }
+
+    /**
+     * Method that create a content type if it doesn't already exist, or update it if it do.
+     */
+    protected function upsert($step)
+    {
+        if (!isset($step->dsl['identifier'])) {
+            throw new \Exception("The 'identifier' key is missing in a content type upsert definition");
+        }
+        if (isset($step->dsl['match'])) {
+            throw new \Exception("The 'match' key is not supported in a content type upsert definition");
+        }
+
+        $contentTypeService = $this->repository->getContentTypeService();
+
+        try {
+            $contentTypeService->loadContentTypeByIdentifier($step->dsl['identifier']);
+
+            return $this->update($step);
+        } catch (NotFoundException $e) {
+            return $this->create($step);
+        }
     }
 
     /**
