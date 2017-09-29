@@ -42,22 +42,6 @@
             validator-configuration:
                 TagsValueValidator:
                     subTreeLimit: reference:article_tag_id
-
--
-    type: content_type
-    mode: update
-    identifier: kmb_test_11
-    attributes:
-        -
-            identifier: tags
-            type: eztags
-            name: Subject
-            field-settings:
-                hideRootTag: true
-            validator-configuration:
-                TagsValueValidator:
-                    subTreeLimit: 'tag:Article Subject'
-
 -
     type: content
     mode: create
