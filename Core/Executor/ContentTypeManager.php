@@ -700,17 +700,17 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * Helper for handling multilinugal values
+     * Helper for handling multilinugal values - merges user input with existing data
      *
-     * @param mixed $value
-     * @param string $lang
-     * @param array $oldValue
-     * @return array
+     * @param string|array $newValue if passed a string, we will use $lang as its language. If passed an array, it will be used as is - expected format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
+     * @param string $lang ex: eng-GB. Not used when $newValue is an array
+     * @param array $currentValue current set of values in all known languages. Will be merged with $newValue, $newValue taking precedence
+     * @return array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
      */
-    protected function getMultilingualValue($value, $lang, $oldValue = array())
+    protected function getMultilingualValue($newValue, $lang, $currentValue = array())
     {
-        $value = is_array($value) ? $value : array($lang => $value);
-        $value += $oldValue;
+        $value = is_array($newValue) ? $newValue : array($lang => $newValue);
+        $value += $currentValue;
 
         return $value;
     }

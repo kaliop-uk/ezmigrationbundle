@@ -1,3 +1,11 @@
+Version 4.1 (unreleased)
+===========
+
+* New: allow to set the 'name' and 'description' in many languages in a single 'create' operation for ContentType
+
+* Fix: when updating a ContentType defined in many languages, do not loose 'name' and 'description' set in other languages
+
+
 Version 4.0
 ===========
 
