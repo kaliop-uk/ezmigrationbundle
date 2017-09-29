@@ -344,11 +344,17 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 case 'default_sort_order':
                     $value = $contentType->defaultSortOrder;
                     break;
+                case 'description':
+                    $value = $contentType->getDescription($this->getLanguageCode($step));
+                    break;
                 case 'is_container':
                     $value = $contentType->isContainer;
                     break;
                 case 'modification_date':
                     $value = $contentType->modificationDate->getTimestamp();
+                    break;
+                case 'name':
+                    $value = $contentType->getName($this->getLanguageCode($step));
                     break;
                 case 'name_pattern':
                     $value = $contentType->nameSchema;
@@ -365,6 +371,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 default:
                     // allow to get the value of fields as well as their sub-parts
                     if (strpos($reference['attribute'], 'attributes.') === 0) {
+                        // BC handling of references to attributes names/descriptions
+                        if (preg_match('/^attributes\\.[^.]+\\.(name|description)$/', $reference['attribute'])) {
+                            $reference['attribute'] .= '."' . $this->getLanguageCode($step) . '"';
+                        }
                         $parts = explode('.', $reference['attribute']);
                         // totally not sure if this list of special chars is correct for what could follow a jmespath identifier...
                         // also what about quoted strings?

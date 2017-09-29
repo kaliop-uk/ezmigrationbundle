@@ -84,9 +84,9 @@
     attributes:
         -
             type: xyz # Attribute type (See list https://doc.ez.no/display/EZP/FieldTypes+reference)
-            name: xyz
+            name: xyz # Name of new attribute. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
             identifier: xyz
-            description: # Optional
+            description: # Optional. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
             required: true|false # Optional
             searchable: true|false # Optional
             info-collector: true|false # Optional
@@ -113,10 +113,11 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
-                                   # Supports: content_type_id, content_type_identifier, creation_date, modification_date,
-                                   #           name_pattern, remote_id, status and url_name_pattern
+                                   # Supports: content_type_id, content_type_identifier, creation_date, description,
+                                   #           modification_date, name, name_pattern, remote_id, status and url_name_pattern
                                    # The shorthand 'id' can be used instead of 'content_type_id'
                                    # The shorthand 'identifier' can be used instead of 'content_type_identifier'
+                                   # For name and description, the language used will correspond to the 'lang' tag
                                    # It also supports attributes.$identifier.$field and complex expressions, such as f.e.
                                    # attributes.title.required (boolean value)
                                    # attributes.ezobjectrelationlist."field-settings".selectionContentTypes.length(@) (nr. of cotent-types allowed in an object-relations field)
@@ -156,8 +157,8 @@
             identifier: xyz # Identifier of the attribute to update or identifier of the new attribute to add
             new_identifier: xyz # Optional, will update the identifier if set. Not used if adding a new attribute
             type: xyz # Mandatory if adding a new attribute. Not used otherwise
-            name: # Optional, will be updated if set
-            description: # Optional, will be updated if set
+            name: # Optional, will be updated if set. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
+            description: # Optional, will be updated if set. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
             required: true|false # Optional, will be updated if set
             searchable: true|false # Optional, will be updated if set
             info-collector: true|false # Optional, will be updated if set
@@ -262,3 +263,4 @@
     type: content_type
     mode: load
     match: # See docs above for update and delete
+    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)

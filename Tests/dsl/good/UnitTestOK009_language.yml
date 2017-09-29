@@ -12,18 +12,96 @@
     mode: create
     content_type_group: 1
     identifier: kmb_test_9
-    name: Kaliop Migration Bundle Test Class 9
+    name:
+        eng-GB: Kaliop Migration Bundle Test Class 9
+        abc-DE: Kaliop Migration Bundle Test Class 999
+    description:
+        abc-DE: Ceci Est Kaliop Migration Bundle Test Class 9
     name_pattern: '<ezstring>'
     lang: abc-DE
     attributes:
         -
             type: ezstring
-            name: ezstring
             identifier: ezstring
+            name:
+                eng-GB: eZStringA
+                abc-DE: eZStringB
+            description:
+                eng-GB: eZStringC
+                abc-DE: eZStringD
     references:
         -
             identifier: kmb_test_9
             attribute: identifier
+        -
+            identifier: kmb_test_9_name
+            attribute: name
+        -
+            identifier: kmb_test_9_attr_name
+            attribute: attributes.ezstring.name
+        -
+            identifier: kmb_test_9_attr_desc
+            attribute: attributes.ezstring.description
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_9_name
+    test:
+        equals: Kaliop Migration Bundle Test Class 999
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_9_attr_name
+    test:
+        equals: eZStringB
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_9_attr_desc
+    test:
+        equals: eZStringD
+
+-
+    type: content_type
+    mode: update
+    match:
+        identifier: kmb_test_9
+    name:
+        eng-GB: Kaliop Migration Bundle Test Class 9b
+    description:
+        eng-GB: This is Kaliop Migration Bundle Test Class 9b
+        abc-DE: Ceci Est Kaliop Migration Bundle Test Class 9b
+
+-
+    type: content_type
+    mode: load
+    match:
+        identifier: reference:kmb_test_9
+    references:
+        -
+            identifier: kmb_test_9_desc2
+            attribute: description
+        -
+            identifier: kmb_test_9_name2
+            attribute: name
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_9_name2
+    test:
+        equals: Kaliop Migration Bundle Test Class 9b
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_9_desc2
+    test:
+        equals: This is Kaliop Migration Bundle Test Class 9b
+
 -
     type: content
     mode: create
