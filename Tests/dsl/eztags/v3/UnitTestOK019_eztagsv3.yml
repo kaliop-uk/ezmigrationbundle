@@ -41,7 +41,7 @@
                 hideRootTag: true
             validator-configuration:
                 TagsValueValidator:
-                    subTreeLimit: reference:article_tag_id
+                    subTreeLimit: 1
 -
     type: content
     mode: create
