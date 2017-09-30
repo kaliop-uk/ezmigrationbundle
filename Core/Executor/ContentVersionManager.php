@@ -39,7 +39,7 @@ class ContentVersionManager extends ContentManager
                             $sortedVersions[$versionInfo->versionNo] = $versionInfo;
                         }
                         ksort($sortedVersions);
-                        $sortedVersions = array_slice($sortedVersions, $versionId * -1);
+                        $sortedVersions = array_slice($sortedVersions, 0, $versionId);
                         foreach($sortedVersions as $versionInfo) {
                             $contentService->deleteVersion($versionInfo);
                         }
