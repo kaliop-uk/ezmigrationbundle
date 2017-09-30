@@ -70,6 +70,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
             throw new \Exception("Invalid step definition: missing 'mode'");
         }
 
+        // q: should we convert snake_case to camelCase ?
         $action = $step->dsl['mode'];
 
         if (!in_array($action, $this->supportedActions)) {

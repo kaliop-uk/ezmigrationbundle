@@ -48,6 +48,7 @@ parameters:
     ez_migration_bundle.executor.repository.class: Kaliop\eZMigrationBundle\Core\Executor\RepositoryExecutor
 
     ez_migration_bundle.executor.content_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentManager
+    ez_migration_bundle.executor.content_version_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentVersionManager
     ez_migration_bundle.executor.content_type_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeManager
     ez_migration_bundle.executor.content_type_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\ContentTypeGroupManager
     ez_migration_bundle.executor.language_manager.class: Kaliop\eZMigrationBundle\Core\Executor\LanguageManager
@@ -269,6 +270,12 @@ services:
             - '@ez_migration_bundle.complex_field_manager'
             - '@ez_migration_bundle.executor.location_manager'
             - '@ez_migration_bundle.helper.sort_converter'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.content_version_manager:
+        parent: ez_migration_bundle.executor.content_manager
+        class: '%ez_migration_bundle.executor.content_version_manager.class%'
         tags:
             - { name: ez_migration_bundle.executor }
 

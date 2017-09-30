@@ -1,0 +1,6 @@
+-
+    type: content_version
+    mode: delete
+    match: # Same as for Content update/delete/load actions
+    versions: xxx # If an integer or array of integers: remove those specific versions
+                  # If a negative integer -X: remove *all* versions except the last X (ie: -1 = leave only the last version)

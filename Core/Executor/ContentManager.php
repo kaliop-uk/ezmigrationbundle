@@ -330,7 +330,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function matchContents($action, $step)
     {
         if (!isset($step->dsl['object_id']) && !isset($step->dsl['remote_id']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The id or remote id of an object or a match condition is required to $action a location");
+            throw new \Exception("The id or remote id of an object or a match condition is required to $action a content");
         }
 
         // Backwards compat
@@ -424,6 +424,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 case 'section_identifier':
                     $sectionService = $this->repository->getSectionService();
                     $value = $sectionService->loadSection($content->contentInfo->sectionId)->identifier;
+                    break;
+                case 'version_count':
+                    $contentService = $this->repository->getContentService();
+                    $value = count($contentService->loadVersions($content->contentInfo));
                     break;
                 default:
                     if (strpos($reference['attribute'], 'object_state.') === 0) {

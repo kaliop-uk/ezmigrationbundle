@@ -8,6 +8,10 @@ Version 4.1 (unreleased)
 
 * New: allow to set references to the 'name' and 'description' of a ContentType
 
+* New: it is now possible to remove specific versions of content objects
+
+* New: allow to set references to the 'version_count' of a Content
+
 
 Version 4.0
 ===========
