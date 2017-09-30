@@ -33,8 +33,14 @@ class ContentVersionManager extends ContentManager
                 try {
                     if ($versionId < 0) {
                         $contentVersions = $contentService->loadVersions($content->contentInfo);
-                        $contentVersions = array_slice($contentVersions, $versionId * -1);
+                        // different eZ kernels apparently sort versions in different order...
+                        $sortedVersions = array();
                         foreach($contentVersions as $versionInfo) {
+                            $sortedVersions[$versionInfo->versionNo] = $versionInfo;
+                        }
+                        ksort($sortedVersions);
+                        $sortedVersions = array_slice($sortedVersions, $versionId * -1);
+                        foreach($sortedVersions as $versionInfo) {
                             $contentService->deleteVersion($versionInfo);
                         }
                     } else {
