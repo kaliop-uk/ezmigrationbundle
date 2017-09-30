@@ -11,7 +11,7 @@ use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 class TagManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('tag');
-    protected $supportedActions = array('create', 'delete');
+    protected $supportedActions = array('create', 'load', 'delete');
 
     protected $tagService;
     /**
@@ -73,6 +73,22 @@ class TagManager extends RepositoryExecutor
         return $tag;
     }
 
+    protected function load($step)
+    {
+        $this->checkTagsBundleInstall();
+
+        $tagsCollection = $this->matchTags('load', $step);
+
+        // This check is already done in setReferences
+        /*if (count($contentTypeCollection) > 1 && isset($step->dsl['references'])) {
+            throw new \Exception("Can not execute Content Type load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
+        }*/
+
+        $this->setReferences($tagsCollection, $step);
+
+        return $tagsCollection;
+    }
+
     protected function update($step)
     {
         $this->checkTagsBundleInstall();
@@ -114,6 +130,8 @@ class TagManager extends RepositoryExecutor
     /**
      * @param $object
      * @return bool
+     *
+     * @todo add support for keyword (with language),
      */
     protected function setReferences($object, $step)
     {
@@ -122,12 +140,38 @@ class TagManager extends RepositoryExecutor
         }
 
         $references = $this->setReferencesCommon($object, $step->dsl['references']);
+        /** @var \Netgen\TagsBundle\API\Repository\Values\Tags\Tag $object */
         $object = $this->insureSingleEntity($object, $references);
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'id':
+                case 'tag_id':
                     $value = $object->id;
+                    break;
+                case 'always_available':
+                    $value = $object->alwaysAvailable;
+                    break;
+                case 'depth':
+                    $value = $object->depth;
+                    break;
+                case 'main_language_code':
+                    $value = $object->mainLanguageCode;
+                    break;
+                case 'main_tag_id':
+                    $value = $object->mainTagId;
+                    break;
+                case 'modification_date':
+                    $value = $object->modificationDate->getTimestamp();
+                    break;
+                case 'path':
+                    $value = $object->pathString;
+                    break;
+                case 'parent_tag_id':
+                    $value = $object->parentTagId;
+                    break;
+                case 'remote_id':
+                    $value = $object->remoteId;
                     break;
                 default:
                     throw new \InvalidArgumentException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);

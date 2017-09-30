@@ -18,7 +18,7 @@
 -
     type: tag
     mode: create
-    #parent_tag_id: 1
+    #parent_tag_id: 0
     main_language_code: eng-GB
     always_available: true
     remote_id: article_tag_remote_id
@@ -28,6 +28,69 @@
         -
             identifier: article_tag_id
             attribute: id
+-
+    type: tag
+    mode: load
+    match:
+        id: reference:article_tag_id
+    references:
+        -
+            identifier: article_tag_id_2
+            attribute: id
+        -
+            identifier: article_tag_always_available
+            attribute: always_available
+        -
+            identifier: article_tag_depth
+            attribute: depth
+        -
+            identifier: article_tag_main_language_code
+            attribute: main_language_code
+        -
+            identifier: article_tag_main_tag_id
+            attribute: main_tag_id
+        -
+            identifier: article_tag_modification_date
+            attribute: modification_date
+        -
+            identifier: article_tag_path
+            attribute: path
+        -
+            identifier: article_tag_parent_tag_id
+            attribute: parent_tag_id
+        -
+            identifier: article_tag_remote_id
+            attribute: remote_id
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_always_available
+    test:
+        equals: true
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_depth
+    test:
+        equals: 1
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_main_language_code
+    test:
+        equals: eng-GB
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_parent_tag_id
+    test:
+        equals: 0
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_remote_id
+    test:
+        equals: article_tag_remote_id
 -
     type: content_type
     mode: update
