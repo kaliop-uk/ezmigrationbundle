@@ -4,9 +4,10 @@ namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use eZ\Publish\Core\FieldType\Selection\Value as SelectionValue;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
+use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 use \eZ\Publish\API\Repository\Repository;
 
-class EzSelection extends AbstractFieldHandler implements FieldValueImporterInterface
+class EzSelection extends AbstractFieldHandler implements FieldValueImporterInterface, FieldDefinitionConverterInterface
 {
     protected $repository;
 
@@ -67,5 +68,20 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
         $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
         return $fieldDefinition->fieldSettings;
+    }
+
+    public function fieldSettingsToHash($settingsValue, array $context = array())
+    {
+        return $settingsValue;
+    }
+
+    public function hashToFieldSettings($settingsHash, array $context = array())
+    {
+        foreach ($settingsHash['options'] as $key => $value) {
+            if (!ctype_digit($key)) {
+                throw new \Exception("The list of values allowed for an eZSelection field can only use integer keys, found: '$key'");
+            }
+        }
+        return $settingsHash;
     }
 }
