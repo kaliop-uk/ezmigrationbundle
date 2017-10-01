@@ -1,4 +1,4 @@
-Version 4.1 (unreleased)
+Version 4.1
 ===========
 
 * New: allow to set the 'name' and 'description' in many languages in a single 'create' or 'update' operation for ContentType.
@@ -17,6 +17,8 @@ Version 4.1 (unreleased)
 * New: operation 'load' 'tag' can be used to set references to existing tags properties
 
 * New: operation 'update' 'tag' is supported 
+
+* Improved: better validation of the definition of fields of type eZSelection for ContentType creation/update
 
 
 Version 4.0
