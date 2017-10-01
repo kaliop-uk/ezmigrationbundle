@@ -35,7 +35,7 @@
         id: reference:article_tag_id
     references:
         -
-            identifier: article_tag_id_2
+            identifier: article_tag_id_b
             attribute: id
         -
             identifier: article_tag_always_available
@@ -92,6 +92,79 @@
     test:
         equals: article_tag_remote_id
 -
+    type: tag
+    mode: update
+    match:
+        id: reference:article_tag_id
+    always_available: false
+    remote_id: article_tag_remote_id2
+    keywords:
+        eng-GB: Article Subject2
+    references:
+        -
+            identifier: article_tag_id2
+            attribute: id
+        -
+            identifier: article_tag_always_available2
+            attribute: always_available
+        -
+            identifier: article_tag_depth2
+            attribute: depth
+        -
+            identifier: article_tag_main_language_code2
+            attribute: main_language_code
+        -
+            identifier: article_tag_main_tag_id2
+            attribute: main_tag_id
+        -
+            identifier: article_tag_modification_date2
+            attribute: modification_date
+        -
+            identifier: article_tag_path2
+            attribute: path
+        -
+            identifier: article_tag_parent_tag_id2
+            attribute: parent_tag_id
+        -
+            identifier: article_tag_remote_id2
+            attribute: remote_id
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_id2
+    test:
+        equals: reference:article_tag_id
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_always_available2
+    test:
+        equals: false
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_depth2
+    test:
+        equals: 1
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_main_language_code2
+    test:
+        equals: eng-GB
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_parent_tag_id2
+    test:
+        equals: 0
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_remote_id2
+    test:
+        equals: article_tag_remote_id2
+-
     type: content_type
     mode: update
     identifier: kmb_test_11
@@ -113,7 +186,7 @@
             type: eztags
             name: Subject
             field-settings:
-                subTreeLimit: 'tag:Article Subject'
+                subTreeLimit: 'tag:Article Subject2'
                 hideRootTag: true
 -
     type: content

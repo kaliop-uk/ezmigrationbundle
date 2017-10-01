@@ -7,11 +7,45 @@
     lang: eng-GB
     keywords:
         language_code: "Keyword" # ex : eng-GB: "Test keyword"
+    references: # Optional
+        identifier: referenceId # A string used to identify the reference
+        attribute: attributeId # The attribute to get the value of for the reference
+                               # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
+                               # path, parent_tag_id, remote_id
+
+-
+    type: tag
+    mode: update
+    always_available: true|false # Optional (false by default)
+    remote_id: custom_remote_id # Optional, will set a custom remote id
+    lang: eng-GB
+    keywords:
+        language_code: "Keyword" # ex : eng-GB: "Test keyword"
+    match: # The tag(s) to update
+        # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
+        id: # the id(s) of the tag(s) we want to delete
+        remote_id: # the remote id(s) of the tag(s) we want to delete
+        keyword: # the keyword(s) of the tag(s) we want to delete
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional
+        identifier: referenceId # A string used to identify the reference
+        attribute: attributeId # The attribute to get the value of for the reference
+                               # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
+                               # path, parent_tag_id, remote_id
 
 -
     type: tag
     mode: delete
-    match: # The tags to delete
+    match: # The tag(s) to delete
         # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
         id: # the id(s) of the tag(s) we want to delete
         remote_id: # the remote id(s) of the tag(s) we want to delete
@@ -35,7 +69,7 @@
 -
     type: tag
     mode: load
-    match: # The tag(s) to load
+    match: # The tag(s) to load; See above the description in the tag/delete operation for valid values
     references: # Optional
         identifier: referenceId # A string used to identify the reference
         attribute: attributeId # The attribute to get the value of for the reference

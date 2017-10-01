@@ -8,13 +8,16 @@ Version 4.1 (unreleased)
 
 * New: allow to set references to the 'name' and 'description' of a ContentType
 
-* New: it is now possible to remove specific versions of content objects
+* New: it is now possible to remove specific versions of contents
 
 * New: allow to set references to the 'version_count' of a Content
 
 * New: allow to set references to the properties of a Tag: always_available, depth, main_language_code, main_tag_id, modification_date, path, parent_tag_id, remote_id
 
 * New: operation 'load' 'tag' can be used to set references to existing tags properties
+
+* New: operation 'update' 'tag' is supported 
+
 
 Version 4.0
 ===========

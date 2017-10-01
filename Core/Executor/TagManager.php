@@ -11,17 +11,16 @@ use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 class TagManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('tag');
-    protected $supportedActions = array('create', 'load', 'delete');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
+    /** @var \Netgen\TagsBundle\API\Repository\TagsService $tagService */
     protected $tagService;
-    /**
-     * @var TagMatcher
-     */
+    /** @var TagMatcher $tagMatcher */
     protected $tagMatcher;
 
     /**
      * @param TagMatcher $tagMatcher
-     * @param \Netgen\TagsBundle\Core\SignalSlot\TagsService $tagService
+     * @param \Netgen\TagsBundle\API\Repository\TagsService $tagService
      */
     public function __construct(TagMatcher $tagMatcher, $tagService = null)
     {
@@ -30,7 +29,7 @@ class TagManager extends RepositoryExecutor
     }
 
     /**
-     * @return mixed
+     * @return \Netgen\TagsBundle\API\Repository\Values\Tags\Tag
      * @throws \Exception
      */
     protected function create($step)
@@ -79,11 +78,6 @@ class TagManager extends RepositoryExecutor
 
         $tagsCollection = $this->matchTags('load', $step);
 
-        // This check is already done in setReferences
-        /*if (count($contentTypeCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Content Type load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
-        }*/
-
         $this->setReferences($tagsCollection, $step);
 
         return $tagsCollection;
@@ -92,7 +86,48 @@ class TagManager extends RepositoryExecutor
     protected function update($step)
     {
         $this->checkTagsBundleInstall();
-        throw new \Exception('Tag update is not implemented yet');
+
+        $tagsCollection = $this->matchTags('update', $step);
+
+        if (count($tagsCollection) > 1 && array_key_exists('references', $step->dsl)) {
+            throw new \Exception("Can not execute Tag update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 matches");
+        }
+
+        foreach ($tagsCollection as $key => $tag) {
+
+            $alwaysAvail = isset($step->dsl['always_available']) ? $step->dsl['always_available'] : true;
+
+            $remoteId = isset($step->dsl['remote_id']) ? $step->dsl['remote_id'] : null;
+
+            if (isset($step->dsl['lang'])) {
+                $lang = $step->dsl['lang'];
+            } elseif (isset($step->dsl['main_language_code'])) {
+                // deprecated tag
+                $lang = $step->dsl['main_language_code'];
+            } else {
+                $lang = null;
+            }
+
+            $tagUpdateArray = array(
+                'mainLanguageCode' => $lang,
+                'alwaysAvailable' => $alwaysAvail,
+                'remoteId' => $remoteId
+            );
+            $tagUpdateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagUpdateStruct($tagUpdateArray);
+
+            foreach ($step->dsl['keywords'] as $langCode => $keyword)
+            {
+                $tagUpdateStruct->setKeyword($keyword, $langCode);
+            }
+
+            $tag = $this->tagService->updateTag($tag, $tagUpdateStruct);
+
+            $tagsCollection[$key] = $tag;
+        }
+
+        $this->setReferences($tagsCollection, $step);
+
+        return $tagsCollection;
     }
 
     protected function delete($step)
