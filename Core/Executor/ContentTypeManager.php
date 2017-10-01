@@ -124,11 +124,6 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     {
         $contentTypeCollection = $this->matchContentTypes('load', $step);
 
-        // This check is already done in setReferences
-        /*if (count($contentTypeCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Content Type load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
-        }*/
-
         $this->setReferences($contentTypeCollection, $step);
 
         return $contentTypeCollection;

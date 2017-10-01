@@ -199,11 +199,6 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $contentCollection = $this->matchContents('load', $step);
 
-        // This check is already done in setReferences
-        /*if (count($contentCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Content load because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
-        }*/
-
         $this->setReferences($contentCollection, $step);
 
         return $contentCollection;

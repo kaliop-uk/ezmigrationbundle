@@ -96,11 +96,6 @@ class LocationManager extends RepositoryExecutor
     {
         $locationCollection = $this->matchLocations('load', $step);
 
-        // This check is already done in setReferences
-        /*if (count($locationCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Location load because multiple locations match, and a references section is specified in the dsl. References can be set when only 1 location matches");
-        }*/
-
         $this->setReferences($locationCollection, $step);
 
         return $locationCollection;
