@@ -78,7 +78,7 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
     public function hashToFieldSettings($settingsHash, array $context = array())
     {
         foreach ($settingsHash['options'] as $key => $value) {
-            if (!ctype_digit($key)) {
+            if (!is_int($key) && !ctype_digit($key)) {
                 throw new \Exception("The list of values allowed for an eZSelection field can only use integer keys, found: '$key'");
             }
         }
