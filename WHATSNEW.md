@@ -1,3 +1,14 @@
+Version 4.1.1
+=============
+
+* Fix: allow usage with Solr as default search engine for migration steps matching contents or locations
+
+* Fix: allow usage of phpunit 6 for migrations using 'assert' migration steps
+
+* Improved: do not ask the search engine for the total number of hits for migration steps matching contents or locations.
+    This should result in a minor speed improvement
+
+
 Version 4.1
 ===========
 

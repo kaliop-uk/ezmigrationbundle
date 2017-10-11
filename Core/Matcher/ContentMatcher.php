@@ -84,7 +84,8 @@ class ContentMatcher extends QueryBasedMatcher
                     }
 
                     $query = new Query();
-                    $query->limit = PHP_INT_MAX;
+                    $query->limit = self::INT_MAX_16BIT;
+                    if (isset($query->performCount)) $query->performCount = false;
                     $query->filter = $this->getQueryCriterion($key, $values);
                     switch ($key) {
                         case 'content_type_id':
@@ -204,7 +205,8 @@ class ContentMatcher extends QueryBasedMatcher
     protected function findContentsByParentLocationIds($parentLocationIds)
     {
         $query = new Query();
-        $query->limit = PHP_INT_MAX;
+        $query->limit = self::INT_MAX_16BIT;
+        if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
         $results = $this->repository->getSearchService()->findContent($query);
 
@@ -243,7 +245,8 @@ class ContentMatcher extends QueryBasedMatcher
     protected function findContentsByContentTypeIdentifiers(array $contentTypeIdentifiers)
     {
         $query = new Query();
-        $query->limit = PHP_INT_MAX;
+        $query->limit = self::INT_MAX_16BIT;
+        if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
         // NB: we only do this in eZP versions that allow depth sorting on content queries
@@ -270,7 +273,8 @@ class ContentMatcher extends QueryBasedMatcher
     protected function findContentsByContentTypeIds(array $contentTypeIds)
     {
         $query = new Query();
-        $query->limit = PHP_INT_MAX;
+        $query->limit = self::INT_MAX_16BIT;
+        if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ContentTypeId($contentTypeIds);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
         // NB: we only do this in eZP versions that allow depth sorting on content queries

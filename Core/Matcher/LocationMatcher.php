@@ -49,7 +49,8 @@ class LocationMatcher extends QueryBasedMatcher
         foreach ($conditions as $key => $values) {
 
             $query = new LocationQuery();
-            $query->limit = PHP_INT_MAX;
+            $query->limit = self::INT_MAX_16BIT;
+            if (isset($query->performCount)) $query->performCount = false;
             $query->filter = $this->getQueryCriterion($key, $values);
             $results = $this->repository->getSearchService()->findLocations($query);
 
@@ -194,7 +195,8 @@ class LocationMatcher extends QueryBasedMatcher
     protected function findLocationsByParentLocationIds($parentLocationIds)
     {
         $query = new LocationQuery();
-        $query->limit = PHP_INT_MAX;
+        $query->limit = self::INT_MAX_16BIT;
+        if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
 
         $results = $this->repository->getSearchService()->findLocations($query);

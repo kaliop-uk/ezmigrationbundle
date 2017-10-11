@@ -30,6 +30,9 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_SUBTREE = 'subtree';
     const MATCH_VISIBILITY = 'visibility';
 
+    // useful f.e. when talking to Solr, which defaults to java integers for max nr of items for queries
+    const INT_MAX_16BIT = 2147483647;
+
     static protected $operatorsMap = array(
         'eq' => Operator::EQ,
         'gt' => Operator::GT,
