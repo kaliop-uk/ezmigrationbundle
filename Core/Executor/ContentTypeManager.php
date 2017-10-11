@@ -584,7 +584,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinition->position = (int)$value;
                     break;
                 case 'validator-configuration':
-                    $fieldDefinition->validatorConfiguration = $value;
+                    $fieldDefinition->validatorConfiguration = $this->resolveReferencesRecursively($value);
                     break;
             }
         }
@@ -649,7 +649,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $fieldDefinitionUpdateStruct->position = (int)$value;
                     break;
                 case 'validator-configuration':
-                    $fieldDefinitionUpdateStruct->validatorConfiguration = $value;
+                    $fieldDefinitionUpdateStruct->validatorConfiguration = $this->resolveReferencesRecursively($value);
                     break;
             }
         }
