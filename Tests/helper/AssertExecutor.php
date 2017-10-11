@@ -72,10 +72,22 @@ class AssertExecutor extends  AbstractExecutor
         $targetValue = $this->referenceResolver->resolveReference($targetValue);
         $testCondition = key($condition);
         $testMethod = 'assert' . ucfirst($testCondition);
-        if (! is_callable(array('PHPUnit_Framework_Assert', $testMethod))) {
+
+        switch (true) {
+            case method_exists('PHPUnit_Runner_Version','id'):
+                $assertClass = 'PHPUnit_Framework_Assert';
+                break;
+            case method_exists('PHPUnit\Runner\Version','id'):
+                $assertClass = 'PHPUnit\Framework\Assert';
+                break;
+            default:
+                throw new \Exception("Unable to find PHPUnit");
+        }
+
+        if (!is_callable(array($assertClass, $testMethod))) {
             throw new \Exception("Invalid step definition: invalid test condition '$testCondition'");
         }
 
-        call_user_func(array('PHPUnit_Framework_Assert', $testMethod), $targetValue, $value);
+        call_user_func(array($assertClass, $testMethod), $targetValue, $value);
     }
 }
