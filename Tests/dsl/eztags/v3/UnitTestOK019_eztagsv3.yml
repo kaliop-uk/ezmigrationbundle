@@ -198,6 +198,33 @@
     match:
         identifier: kmb_test_11
 -
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_12
+    name: Kaliop Migration Bundle Test Class 12
+    name_pattern: '<title>'
+    is_container: true
+    attributes:
+        -
+            type: ezstring
+            name: title
+            identifier: title
+        -
+            identifier: tags
+            type: eztags
+            name: Subject
+            field-settings:
+                hideRootTag: true
+            validator-configuration:
+                TagsValueValidator:
+                    subTreeLimit: reference:article_tag_id
+-
+    type: content_type
+    mode: delete
+    match:
+        identifier: kmb_test_12
+-
     type: tag
     mode: delete
     match:
