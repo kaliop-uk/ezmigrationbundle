@@ -110,6 +110,7 @@
     parent_location_id: reference:kmb_test_005_2_loc
     priority: 1999
     is_hidden: true
+    is_main: true
     sort_field: path
     sort_order: DESC
     match:
@@ -192,6 +193,13 @@
             attribute: sort_order
 
 -
+    type: content
+    mode: update
+    match:
+        location_id: reference:kmb_test_005_3_loc
+    main_location: reference:kmb_test_005_3_loc_3
+
+-
     type: assert
     target: reference
     identifier: reference:kmb_test_005_3_loc_3
@@ -255,6 +263,7 @@
     parent_location: reference:kmb_test_005_4_loc
     priority: 1998
     is_hidden: false
+    is_main: true
     sort_order: ASC
     references:
         -

@@ -92,6 +92,7 @@ class LocationMatcher extends QueryBasedMatcher
                 return new Query\Criterion\Location\Depth(self::$operatorsMap[$operator], $match);
 
             case self::MATCH_IS_MAIN_LOCATION:
+            case 'is_main':
                 /// @todo error/warning if there is more than 1 value...
                 $value = reset($values);
                 if ($value) {

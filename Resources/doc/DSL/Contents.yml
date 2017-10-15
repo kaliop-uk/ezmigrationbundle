@@ -81,6 +81,7 @@
     priority: 0 # Optional. Set the priority of the main location
     publication_date: zzz # Optional, set content publication date (if integer: timstamp is assumed. if string, see: http://php.net/manual/en/datetime.formats.php)
     remote_id: custom_remote_id # Optional, will set a custom remote id
+    main_location: int|string # Optional, will set the main location. If passed a string, the location remote_id is assumed
     section: x # string|int Optional section id or identifier
     sort_field: x # Optional. See ManageLocation.yml for details
     sort_order: ASC|DESC # Optional

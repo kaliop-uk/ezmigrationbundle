@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
+use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
@@ -220,6 +221,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             throw new \Exception("Can not execute Content update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
         }
 
+        if (count($contentCollection) > 1 && isset($step->dsl['main_location'])) {
+            throw new \Exception("Can not execute Content update because multiple contents match, and a main_location section is specified in the dsl. References can be set when only 1 content matches");
+        }
+
         $contentType = array();
 
         foreach ($contentCollection as $key => $content) {
@@ -286,6 +291,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $this->setObjectStates($content, $step->dsl['object_states']);
             }
 
+            if (isset($step->dsl['main_location'])) {
+                $this->setMainLocation($content, $step->dsl['main_location']);
+
+            }
             $contentCollection[$key] = $content;
         }
 
@@ -646,6 +655,25 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             $stateService = $this->repository->getObjectStateService();
             $stateService->setContentState($content->contentInfo, $state->getObjectStateGroup(), $state);
         }
+    }
+
+    protected function setMainLocation(Content $content, $locationId)
+    {
+        $locationId = $this->referenceResolver->resolveReference($locationId);
+        if (is_int($locationId) || ctype_digit($locationId)) {
+            $location = $this->repository->getLocationService()->loadLocation($locationId);
+        } else {
+            $location = $this->repository->getLocationService()->loadLocationByRemoteId($locationId);
+        }
+
+        if ($location->contentInfo->id != $content->id) {
+            throw new \Exception("Can not set main location {$location->id} to content {$content->id} as it belongs to another object");
+        }
+
+        $contentService = $this->repository->getContentService();
+        $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
+        $contentMetaDataUpdateStruct->mainLocationId = $location->id;
+        $contentService->updateContentMetadata($location->contentInfo, $contentMetaDataUpdateStruct);
     }
 
     /**

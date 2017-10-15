@@ -50,6 +50,10 @@ class LocationManager extends RepositoryExecutor
             $parentLocationIds = array($parentLocationIds);
         }
 
+        if (isset($step->dsl['is_main']) && count($parentLocationIds) > 1) {
+            throw new \Exception('Can not set more than one new location as main.');
+        }
+
         // resolve references and remote ids
         foreach ($parentLocationIds as $id => $parentLocationId) {
             $parentLocationId = $this->referenceResolver->resolveReference($parentLocationId);
@@ -81,7 +85,13 @@ class LocationManager extends RepositoryExecutor
                     $locationCreateStruct->sortField = $this->getSortField($step->dsl['sort_field']);
                 }
 
-                $locations[] = $locationService->createLocation($contentInfo, $locationCreateStruct);
+                $location = $locationService->createLocation($contentInfo, $locationCreateStruct);
+
+                if (isset($step->dsl['is_main'])) {
+                    $this->setMainLocation($location);
+                }
+
+                $locations[] = $location;
             }
         }
 
@@ -181,6 +191,11 @@ class LocationManager extends RepositoryExecutor
                 $locationToSwap = $this->matchLocationByKey($swapLocationId);
 
                 $locationService->swapLocation($location, $locationToSwap);
+            }
+
+            // make the location the main one
+            if (isset($step->dsl['is_main'])) {
+                $this->setMainLocation($location);
             }
 
             $locationCollection[$key] = $location;
@@ -385,6 +400,14 @@ class LocationManager extends RepositoryExecutor
         }
 
         return $this->contentMatcher->matchContent($match);
+    }
+
+    protected function setMainLocation(Location $location)
+    {
+        $contentService = $this->repository->getContentService();
+        $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
+        $contentMetaDataUpdateStruct->mainLocationId = $location->id;
+        $contentService->updateContentMetadata($location->contentInfo, $contentMetaDataUpdateStruct);
     }
 
     /**

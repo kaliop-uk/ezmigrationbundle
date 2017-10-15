@@ -12,6 +12,7 @@
         parent_location_remote_id: # the remote location id(s) of the parent(s) of contents we want to add a location to
     parent_location: y # The Location ID of the parent where the new location should be placed. When a non numeric string is used, it is assumed to be a location remote id
     is_hidden: true|false # Optional
+    is_main: true # Optional: make this the main location. NB: will *not* unset this location from being main if set to false
     priority: x # Optional
     sort_field: x # Optional. Possible values for sort_field are:
                   # - published
@@ -96,6 +97,7 @@
     parent_location: x # Optional The parent location to move the subtree to. Cannot be set at the same time than swap_with_location
                        # When a non numeric string is used, it is assumed to be a location remote id
     is_hidden: true|false # Optional, Set the visibility of the location
+    is_main: true # Optional: make this the main location. NB: will *not* unset this location from being main if set to false
     priority: x # Optional, will be updated if set
     sort_field: x # Optional
     sort_order: ASC|DESC # Optional
