@@ -1,3 +1,10 @@
+Version 4.2
+=============
+
+* New: references are now resolved in `validator-configuration` settings for content type definitions. This is useful
+    eg. when using the eZTags v3 bundle
+
+
 Version 4.1.1
 =============
 
