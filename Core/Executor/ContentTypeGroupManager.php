@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
@@ -12,6 +13,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
  */
 class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
+    protected $supportedActions = array('create', 'update', 'delete', 'upsert');
     protected $supportedStepTypes = array('content_type_group');
 
     /** @var ContentTypeGroupMatcher $contentTypeGroupMatcher */
@@ -99,18 +101,47 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     }
 
     /**
+     * Method that create a content type group if it doesn't already exist, or update it if it do.
+     */
+    protected function upsert($step)
+    {
+        if (!isset($step->dsl['identifier'])) {
+            throw new \Exception("The 'identifier' key is missing in a content type group upsert definition");
+        }
+        if (isset($step->dsl['match'])) {
+            throw new \Exception("The 'match' key is not supported in a content type group upsert definition");
+        }
+
+        $contentTypeService = $this->repository->getContentTypeService();
+
+        try {
+            $contentTypeService->loadContentTypeGroupByIdentifier($step->dsl['identifier']);
+
+            return $this->update($step);
+        } catch (NotFoundException $e) {
+            return $this->create($step);
+        }
+    }
+
+    /**
      * @param string $action
      * @return ContentTypeGroupCollection
      * @throws \Exception
      */
     protected function matchContentTypeGroups($action, $step)
     {
-        if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action an object state group");
+        if (!isset($step->dsl['identifier']) && !isset($step->dsl['match'])) {
+            throw new \Exception("The identifier of a content type group or a match condition is required to $action it");
+        }
+
+        if (isset($step->dsl['match'])) {
+            $match = $step->dsl['match'];
+        } else {
+            $match = array('identifier' => $step->dsl['identifier']);
         }
 
         // convert the references passed in the match
-        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+        $match = $this->resolveReferencesRecursively($match);
 
         return $this->contentTypeGroupMatcher->match($match);
     }
