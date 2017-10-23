@@ -2,8 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\Content\Language;
-use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 
 /**
  * Handles language migrations.
@@ -11,24 +11,22 @@ use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 class LanguageManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('language');
-    protected $supportedActions = array('create', 'delete');
+    protected $supportedActions = array('create', 'update', 'delete', 'upsert');
 
     /**
      * Handles the language create migration action
      */
     protected function create($step)
     {
-        $languageService = $this->repository->getContentLanguageService();
-
-        if (!isset($step->dsl['lang'])) {
-            throw new \Exception("The 'lang' key is required to create a new language.");
+        foreach (array('lang', 'name') as $key) {
+            if (!isset($step->dsl[$key])) {
+                throw new \Exception("The '$key' key is missing in a language creation definition");
+            }
         }
-
+        $languageService = $this->repository->getContentLanguageService();
         $languageCreateStruct = $languageService->newLanguageCreateStruct();
         $languageCreateStruct->languageCode = $step->dsl['lang'];
-        if (isset($step->dsl['name'])) {
-            $languageCreateStruct->name = $step->dsl['name'];
-        }
+        $languageCreateStruct->name = $step->dsl['name'];
         if (isset($step->dsl['enabled'])) {
             $languageCreateStruct->enabled = (bool)$step->dsl['enabled'];
         }
@@ -46,15 +44,27 @@ class LanguageManager extends RepositoryExecutor
      */
     protected function update($step)
     {
-        throw new \Exception('Language update is not implemented yet');
-
-        /*$languageService = $this->repository->getContentLanguageService();
-
         if (!isset($step->dsl['lang'])) {
             throw new \Exception("The 'lang' key is required to update a language.");
         }
 
-        $this->setReferences($language, $step);*/
+        $languageService = $this->repository->getContentLanguageService();
+        $language = $languageService->loadLanguage($step->dsl['lang']);
+
+        if (isset($step->dsl['name'])) {
+            $languageService->updateLanguageName($language, $step->dsl['name']);
+        }
+        if (isset($step->dsl['enabled'])) {
+            if ((bool)$step->dsl['enabled']) {
+                $languageService->enableLanguage($language);
+            } else {
+                $languageService->disableLanguage($language);
+            }
+        }
+
+        $this->setReferences($language, $step);
+
+        return $language;
     }
 
     /**
@@ -74,6 +84,28 @@ class LanguageManager extends RepositoryExecutor
         $languageService->deleteLanguage($language);
 
         return $language;
+    }
+
+    /**
+     * Method that create a language if it doesn't already exist.
+     */
+    protected function upsert($step)
+    {
+        foreach (array('lang', 'name') as $key) {
+            if (!isset($step->dsl[$key])) {
+                throw new \Exception("The '$key' key is missing in a language upsert definition");
+            }
+        }
+
+        $languageService = $this->repository->getContentLanguageService();
+
+        try {
+            $languageService->loadLanguage($step->dsl['lang']);
+
+            return $this->update($step);
+        } catch (NotFoundException $e) {
+            return $this->create($step);
+        }
     }
 
     /**
