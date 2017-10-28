@@ -10,8 +10,9 @@ Version 4.3
     back to the previous one by altering the value for parameters `ez_migration_bundle.content_matcher.class` and
     `ez_migration_bundle.location_matcher.class` 
 
+* New: migration step: `migration/sleep` to delay execution of a migration for a fixed number of seconds
 
-* New: migration step: `migration` / `sleep` to delay execution of a migration for a fixed number of seconds
+* New: migration steps: `location/trash`, `trash/purge`, `trash/recover` and `trash/delete`
 
 
 Version 4.2

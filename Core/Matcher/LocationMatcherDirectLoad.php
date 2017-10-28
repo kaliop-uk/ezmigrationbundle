@@ -18,17 +18,21 @@ class LocationMatcherDirectLoad extends LocationMatcher
     {
         $match = reset($conditions);
         if (count($conditions) === 1 && in_array(($key = key($conditions)), array(self::MATCH_LOCATION_ID, self::MATCH_LOCATION_REMOTE_ID))) {
+//var_dump($match);
             $match = (array)$match;
+//var_dump($match);
             $locations = array();
             switch ($key) {
                 case self::MATCH_LOCATION_ID:
                     foreach($match as $locationId) {
-                        $locations[] = $this->repository->getLocationService()->loadLocation($locationId);
+                        $location = $this->repository->getLocationService()->loadLocation($locationId);
+                        $locations[$location->id] = $location;
                     }
                     break;
                 case self::MATCH_LOCATION_REMOTE_ID:
                     foreach($match as $locationRemoteId) {
-                        $locations[] = $this->repository->getLocationService()->loadLocationByRemoteId($locationRemoteId);
+                        $location = $this->repository->getLocationService()->loadLocationByRemoteId($locationRemoteId);
+                        $locations[$location->id] = $location;
                     }
                     break;
             }

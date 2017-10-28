@@ -1,0 +1,32 @@
+-
+    type: trash
+    mode: purge
+
+-
+    type: trash
+    mode: recover
+    match:
+        xxx
+    parent_location: [x, y, z] # Optional: the new parent location for the recovered trashed item. Multiple locations can be added in a single step using an array
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: ...
+
+-
+    type: trash
+    mode: delete
+    match:
+        xxx
+
+#-
+#    type: trash
+#    mode: load
+#    match:
+#        xxx
+#    references: # Optional
+#         -
+#            identifier: referenceId # A string used to identify the reference
+#            attribute: attribute # An attribute to get the value of for the reference.
+#                                 # Supports: ...

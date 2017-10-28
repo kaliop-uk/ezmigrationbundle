@@ -15,7 +15,7 @@ use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 class LocationManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('location');
-    protected $supportedActions = array('create', 'load', 'update', 'delete');
+    protected $supportedActions = array('create', 'load', 'update', 'delete', 'trash');
 
     protected $contentMatcher;
     protected $locationMatcher;
@@ -115,8 +115,6 @@ class LocationManager extends RepositoryExecutor
      * Updates information for a location like priority, sort field and sort order.
      * Updates the visibility of the location when needed.
      * Can move a location and its children to a new parent location or swap two locations.
-     *
-     * @todo add support for flexible matchers
      */
     protected function update($step)
     {
@@ -208,8 +206,6 @@ class LocationManager extends RepositoryExecutor
 
     /**
      * Delete locations
-     *
-     * @todo add support for flexible matchers
      */
     protected function delete($step)
     {
@@ -221,6 +217,24 @@ class LocationManager extends RepositoryExecutor
 
         foreach ($locationCollection as $location) {
             $locationService->deleteLocation($location);
+        }
+
+        return $locationCollection;
+    }
+
+    /**
+     * Delete locations sending them to the trash
+     */
+    protected function trash($step)
+    {
+        $locationCollection = $this->matchLocations('delete', $step);
+
+        $this->setReferences($locationCollection, $step);
+
+        $trashService = $this->repository->getTrashService();
+
+        foreach ($locationCollection as $location) {
+            $trashService->trash($location);
         }
 
         return $locationCollection;

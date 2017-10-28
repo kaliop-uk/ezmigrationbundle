@@ -58,6 +58,7 @@ parameters:
     ez_migration_bundle.executor.role_manager.class: Kaliop\eZMigrationBundle\Core\Executor\RoleManager
     ez_migration_bundle.executor.section_manager.class: Kaliop\eZMigrationBundle\Core\Executor\SectionManager
     ez_migration_bundle.executor.tag_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TagManager
+    ez_migration_bundle.executor.trash_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TrashManager
     ez_migration_bundle.executor.user_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserManager
     ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
 
@@ -71,6 +72,7 @@ parameters:
     ez_migration_bundle.role_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher
     ez_migration_bundle.section_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher
     ez_migration_bundle.tag_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher
+    ez_migration_bundle.trash_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\TrashMatcher
     ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
     ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
 
@@ -358,6 +360,14 @@ services:
         tags:
             - { name: ez_migration_bundle.executor }
 
+    ez_migration_bundle.executor.trash_manager:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.trash_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.trash_matcher'
+        tags:
+            - { name: ez_migration_bundle.executor }
+
     ez_migration_bundle.executor.user_manager:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.user_manager.class%'
@@ -438,6 +448,11 @@ services:
         arguments:
             - '@ezpublish.translation_helper'
             - '@?ezpublish.api.service.tags'
+
+    ez_migration_bundle.trash_matcher:
+        class: '%ez_migration_bundle.trash_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
 
     ez_migration_bundle.user_matcher:
         class: '%ez_migration_bundle.user_matcher.class%'

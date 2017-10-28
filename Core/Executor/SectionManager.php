@@ -104,8 +104,6 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             throw new \Exception("A match condition is required to $action a section");
         }
 
-        $match = $step->dsl['match'];
-
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($step->dsl['match']);
 

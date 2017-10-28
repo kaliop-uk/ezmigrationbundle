@@ -1,0 +1,4 @@
+-
+    type: migration
+    mode: sleep
+    seconds: 2

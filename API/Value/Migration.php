@@ -34,6 +34,7 @@ class Migration extends AbstractValue
      * @param string $path
      * @param int $executionDate timestamp
      * @param int $status
+     * @param $executionError
      */
     public function __construct($name, $md5, $path, $executionDate = null, $status = 0, $executionError = null)
     {

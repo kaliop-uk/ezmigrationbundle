@@ -160,6 +160,25 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # The attribute to get the value of for the reference (supports: location_id, location_remote_id,
+                                   # always_available, content_id, content_type_id, content_type_identifier, current_version_no,
+                                   # depth, is_hidden, main_language_code, main_location_id, main_language_code,
+                                   # modification_date, name, owner_id, parent_location_id, path, priority,
+                                   # publication_date, section_id, sort_field, sort_order)
+                                   # 'count' can be used to set a reference to the number of items matched
+
+# Same as location delete, but send to the trash instead
+-
+    type: location
+    mode: trash
+    match: ... # The locations to delete. See location/delete for the description
+    references: ... # Optional. See location/delete for the description
+
 -
     type: location
     mode: load

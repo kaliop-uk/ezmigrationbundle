@@ -21,14 +21,16 @@ class ContentMatcherDirectLoad extends ContentMatcher
             $match = (array)$match;
             $contents = array();
             switch ($key) {
-                case self::MATCH_LOCATION_ID:
+                case self::MATCH_CONTENT_ID:
                     foreach($match as $contentId) {
-                        $contents[] = $this->repository->getContentService()->loadContent($contentId);
+                        $content = $this->repository->getContentService()->loadContent($contentId);
+                        $contents[$content->id] = $content;
                     }
                     break;
-                case self::MATCH_LOCATION_REMOTE_ID:
+                case self::MATCH_CONTENT_REMOTE_ID:
                     foreach($match as $contentRemoteId) {
-                        $contents[] = $this->repository->getContentService()->loadContentByRemoteId($contentRemoteId);
+                        $content = $this->repository->getContentService()->loadContentByRemoteId($contentRemoteId);
+                        $contents[$content->id] = $content;
                     }
                     break;
             }
