@@ -41,8 +41,8 @@ class TrashMatcher extends ContentMatcher
             $results = $this->repository->getTrashService()->findTrashItems($query);
 
             $items = [];
-            foreach ($results->searchHits as $result) {
-                $items[$result->valueObject->id] = $result->valueObject;
+            foreach ($results->items as $result) {
+                $items[$result->id] = $result;
             }
 
             return new TrashedItemCollection($items);

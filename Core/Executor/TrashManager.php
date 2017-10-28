@@ -39,7 +39,7 @@ class TrashManager extends RepositoryExecutor
     /**
      * Handles the trash-restore migration action
      */
-    protected function restore($step)
+    protected function recover($step)
     {
         $itemsCollection = $this->matchItems('restore', $step);
 

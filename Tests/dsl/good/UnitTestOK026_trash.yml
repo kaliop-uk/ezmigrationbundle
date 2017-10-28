@@ -1,3 +1,147 @@
 -
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_026
+    name: Kaliop Migration Bundle Test Class 25
+    name_pattern: '<ezstring>'
+    is_container: true
+    attributes:
+        -
+            type: ezstring
+            name: ezstring
+            identifier: ezstring
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_026
+    parent_location: 2
+    attributes:
+        - ezstring: hello world 1
+    references:
+        -
+            identifier: kmb_test_026_1_loc
+            attribute: location_id
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_026
+    parent_location: reference:kmb_test_026_1_loc
+    attributes:
+        - ezstring: hello world 2
+    references:
+        -
+            identifier: kmb_test_026_2_loc
+            attribute: location_id
+        -
+            identifier: kmb_test_026_2
+            attribute: content_id
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_026
+    parent_location: reference:kmb_test_026_2_loc
+    attributes:
+        - ezstring: hello world 3
+    references:
+        -
+            identifier: kmb_test_026_3_loc
+            attribute: location_id
+        -
+            identifier: kmb_test_026_3
+            attribute: content_id
+
+-
+    type: location
+    mode: create
+    parent_location: reference:kmb_test_026_1_loc
+    match:
+        content_id: reference:kmb_test_026_3
+
+# check that obj 3 has 2 locations
+
+-
+    type: location
+    mode: load
+    match:
+        content_id: reference:kmb_test_026_3
+    references:
+        -
+            identifier: kmb_test_026_3_locnum
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_026_3_locnum
+    test:
+        equals: 2
+
+-
+    type: location
+    mode: trash
+    match:
+        location_id: reference:kmb_test_026_2_loc
+
+# check that obj 3 now has 1 locations
+
+-
+    type: location
+    mode: load
+    match:
+        content_id: reference:kmb_test_026_3
+    references:
+        -
+            identifier: kmb_test_026_3_locnum
+            attribute: count
+            overwrite: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_026_3_locnum
+    test:
+        equals: 1
+
+-
+    type: trash
+    mode: recover
+    match:
+        location_id: reference:kmb_test_026_2_loc
+
+# check that obj 2 has again 1 locations
+
+-
+    type: location
+    mode: load
+    match:
+        content_id: reference:kmb_test_026_2
+    references:
+        -
+            identifier: kmb_test_026_2_locnum
+            attribute: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_026_2_locnum
+    test:
+        equals: 1
+
+-
     type: trash
     mode: purge
+
+-
+    type: content
+    mode: delete
+    match:
+        content_type: 'kmb_test_026'
+
+-
+    type: content_type
+    mode: delete
+    identifier: 'kmb_test_026'
