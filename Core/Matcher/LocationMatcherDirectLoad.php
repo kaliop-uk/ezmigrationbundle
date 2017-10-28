@@ -18,9 +18,7 @@ class LocationMatcherDirectLoad extends LocationMatcher
     {
         $match = reset($conditions);
         if (count($conditions) === 1 && in_array(($key = key($conditions)), array(self::MATCH_LOCATION_ID, self::MATCH_LOCATION_REMOTE_ID))) {
-//var_dump($match);
             $match = (array)$match;
-//var_dump($match);
             $locations = array();
             switch ($key) {
                 case self::MATCH_LOCATION_ID:
