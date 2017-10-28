@@ -1,0 +1,102 @@
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_24_type
+    name: Kaliop Migration Bundle Test Class 24
+    name_pattern: '<ezstring>'
+    attributes:
+        -
+            type: ezstring
+            identifier: ezstring
+-
+    type: content
+    mode: create
+    content_type: kmb_test_24_type
+    parent_location: 2
+    attributes:
+        - ezstring: hello world again
+    references:
+        -
+            identifier: kmb_test_24_content
+            attribute: id
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_24_content
+    attributes:
+        - ezstring: hello world 2
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_24_content
+    attributes:
+        - ezstring: hello world 3
+-
+    type: content
+    mode: load
+    match:
+        content_id: reference:kmb_test_24_content
+    references:
+        -
+            identifier: kmb_test_24_versions
+            attribute: version_count
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_24_versions
+    test:
+        equals: 3
+-
+    type: content_version
+    mode: delete
+    match:
+        content_id: reference:kmb_test_24_content
+    versions: [ 2 ]
+-
+    type: content
+    mode: load
+    match:
+        content_id: reference:kmb_test_24_content
+    references:
+        -
+            identifier: kmb_test_24_versions_b
+            attribute: version_count
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_24_versions_b
+    test:
+        equals: 2
+-
+    type: content_version
+    mode: delete
+    match:
+        content_id: reference:kmb_test_24_content
+    versions: -1
+-
+    type: content
+    mode: load
+    match:
+        content_id: reference:kmb_test_24_content
+    references:
+        -
+            identifier: kmb_test_24_versions_c
+            attribute: version_count
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_24_versions_c
+    test:
+        equals: 1
+-
+    type: content
+    mode: delete
+    match:
+        content_id: reference:kmb_test_24_content
+-
+    type: content_type
+    mode: delete
+    identifier: kmb_test_24_type

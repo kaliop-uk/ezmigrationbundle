@@ -44,21 +44,6 @@ class ContentMatcher extends QueryBasedMatcher
     {
         $this->validateConditions($conditions);
 
-        if (count($conditions) === 1) {
-            $key = array_keys($conditions)[0];
-            switch ($key) {
-                case self::MATCH_CONTENT_ID:
-                    $location = $this->repository->getContentService()->loadContent($conditions[$key]);
-                    return new ContentCollection(array($location));
-                    break;
-
-                case self::MATCH_CONTENT_REMOTE_ID:
-                    $location = $this->repository->getContentService()->loadContentByRemoteId($conditions[$key]);
-                    return new ContentCollection(array($location));
-                    break;
-            }
-        }
-
         foreach ($conditions as $key => $values) {
 
             switch($key) {

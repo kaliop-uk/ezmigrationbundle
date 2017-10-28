@@ -46,21 +46,6 @@ class LocationMatcher extends QueryBasedMatcher
     {
         $this->validateConditions($conditions);
 
-        if (count($conditions) === 1) {
-            $key = array_keys($conditions)[0];
-            switch ($key) {
-                case self::MATCH_LOCATION_ID:
-                    $location = $this->repository->getLocationService()->loadLocation($conditions[$key]);
-                    return new LocationCollection(array($location));
-                    break;
-
-                case self::MATCH_LOCATION_REMOTE_ID:
-                    $location = $this->repository->getLocationService()->loadLocationByRemoteId($conditions[$key]);
-                    return new LocationCollection(array($location));
-                    break;
-            }
-        }
-
         foreach ($conditions as $key => $values) {
 
             $query = new LocationQuery();

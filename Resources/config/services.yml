@@ -61,10 +61,10 @@ parameters:
     ez_migration_bundle.executor.user_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserManager
     ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
 
-    ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher
+    ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcherDirectLoad
     ez_migration_bundle.content_type_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher
     ez_migration_bundle.content_type_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher
-    ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher
+    ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcherDirectLoad
     ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
     ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
     ez_migration_bundle.reference_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ReferenceMatcher

@@ -273,6 +273,15 @@ and the corresponding php class:
     fail with a fatal error.
     The simplest workaround is to disable usage of transactions by passing the `-u` flag to the `migrate` command.
 
+* similar symptoms can manifest themselves when you are using the Solr Search Engine Bundle.
+    In this case the problem is compounded the fact that, even if an node or object is sent to Solr from within a database
+    transaction, the Solr search index might be configured to only commit received data within a short time delay.
+    A known workaround involve:
+    - separate your migration steps into separate migrations
+    - running the migrations each in its own transaction (and process) by using the `-p` flag to the `migrate` command
+    - adding `sleep` migration steps to migrations 2 .. N
+    - and/or configuring Solr to always commit changes to the index immediately (eg. disable `commitwithin`)
+
 * if you get fatal errors without any error message when running a migration which involves a lot of content changes,
     such as f.e. altering a contentType with many contents, it might be that you are running out of memory for your
     php process.

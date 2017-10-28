@@ -1,3 +1,19 @@
+Version 4.3
+=============
+
+* Improved: do not use the Repository Search Service when matching Contents or Locations using only their Id or Location Id.
+    This has the advantage that those items will always be loaded from the database, even in the case of Solr Search
+    Engine Bundle being enabled, which in turn means that you should get fewer problems related to usage of database
+    transactions and delays Solr in indexation.
+    This fixes issue #134.
+    *BC note*: if you use Solr Search Engine Bundle and the find the new behaviour undesireable, you can easily switch
+    back to the previous one by altering the value for parameters `ez_migration_bundle.content_matcher.class` and
+    `ez_migration_bundle.location_matcher.class` 
+
+
+* New: migration step: `migration` / `sleep` to delay execution of a migration for a fixed number of seconds
+
+
 Version 4.2
 =============
 

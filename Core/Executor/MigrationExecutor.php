@@ -11,7 +11,7 @@ use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 class MigrationExecutor extends AbstractExecutor
 {
     protected $supportedStepTypes = array('migration');
-    protected $supportedActions = array('cancel', 'suspend');
+    protected $supportedActions = array('cancel', 'suspend', 'sleep');
 
     protected $referenceMatcher;
     protected $referenceResolver;
@@ -95,6 +95,16 @@ class MigrationExecutor extends AbstractExecutor
         }
 
         throw new MigrationSuspendedException($message);
+    }
+
+    protected function sleep($dsl, $context)
+    {
+        if (!isset($dsl['seconds'])) {
+            throw new \Exception("A 'seconds' element is required when putting a migration to sleep");
+        }
+
+        sleep($dsl['seconds']);
+        return true;
     }
 
     protected function loadEntity($dsl, $context) {

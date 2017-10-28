@@ -8,6 +8,11 @@
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
+-
+    # Suspends a migration for a given number of seconds
+    type: migration
+    mode: sleep
+    seconds: xxx # integer
 
 -
     # Suspend execution of a migration: 'freeze" execution at the current step.
@@ -15,6 +20,9 @@
     # at which point the migration will either keep executing or be re-suspended.
     # Note that the values of all references existing at the time of migration suspension will be preserved and restored
     # upon resuming.
+    # Two types of suspension are supported:
+    # - suspend until date
+    # - suspend until a specific condition is met. The condition must involve checking the value of a reference
     type: migration
     mode: suspend
     message: string # Optional. Will be part of the migration status stored in the database
