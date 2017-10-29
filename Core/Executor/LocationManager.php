@@ -62,7 +62,7 @@ class LocationManager extends RepositoryExecutor
 
         $contentCollection = $this->matchContents('create', $step);
 
-        $locations = null;
+        $locations = array();
         foreach ($contentCollection as $content) {
             $contentInfo = $content->contentInfo;
 

@@ -85,6 +85,7 @@ class LimitationConverter
      * @param $limitationIdentifier
      * @param array $values
      * @return array
+     * @throws \Exception
      */
     public function resolveLimitationValue($limitationIdentifier, array $values)
     {

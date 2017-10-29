@@ -143,7 +143,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
     /**
      * {@inheritdoc}
-     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup $objectStateGroup
+     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup|ObjectStateGroupCollection $objectStateGroup
      */
     protected function setReferences($objectStateGroup, $step)
     {

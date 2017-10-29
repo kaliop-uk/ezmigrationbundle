@@ -159,7 +159,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
 
     /**
      * {@inheritdoc}
-     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $objectState
+     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectState|ObjectStateCollection $objectState
      */
     protected function setReferences($objectState, $step)
     {
