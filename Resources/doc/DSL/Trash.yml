@@ -13,7 +13,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
-                                 # Supports: ...
+                                 # Supports: see location/create
 
 # Deletes definitively a Location that is already in the trash
 -
@@ -21,3 +21,8 @@
     mode: delete
     match:
         xxx # See the conditions for content/update
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports: see location/create
