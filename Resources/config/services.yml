@@ -365,6 +365,7 @@ services:
         class: '%ez_migration_bundle.executor.trash_manager.class%'
         arguments:
             - '@ez_migration_bundle.trash_matcher'
+            - '@ez_migration_bundle.helper.sort_converter'
         tags:
             - { name: ez_migration_bundle.executor }
 

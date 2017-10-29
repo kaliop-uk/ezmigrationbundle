@@ -60,6 +60,10 @@
     parent_location: reference:kmb_test_026_1_loc
     match:
         content_id: reference:kmb_test_026_3
+    references:
+        -
+            identifier: kmb_test_026_3_loc2
+            attribute: location_id
 
 # check that obj 3 has 2 locations
 
@@ -111,6 +115,10 @@
     mode: recover
     match:
         location_id: reference:kmb_test_026_2_loc
+    references:
+        -
+            identifier: kmb_test_026_2_recovered_loc
+            attribute: location_id
 
 # check that obj 2 has again 1 locations
 
@@ -130,6 +138,20 @@
     identifier: reference:kmb_test_026_2_locnum
     test:
         equals: 1
+
+# trash then delete an item
+
+-
+    type: location
+    mode: trash
+    match:
+        location_id: reference:kmb_test_026_2_recovered_loc
+
+-
+    type: trash
+    mode: delete
+    match:
+        location_id: reference:kmb_test_026_2_recovered_loc
 
 -
     type: trash

@@ -5,10 +5,21 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use Kaliop\eZMigrationBundle\API\Collection\TrashedItemCollection;
 use \eZ\Publish\API\Repository\Values\Content\Query;
 
-/// q: is it better to extends Content or Location Matcher ?
+/// q: is it better to extend Content or Location Matcher ?
 class TrashMatcher extends ContentMatcher
 {
     const MATCH_ITEM_ID = 'item_id';
+
+    protected $allowedConditions = array(
+        self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
+        self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
+        self::MATCH_ATTRIBUTE, self::MATCH_CONTENT_TYPE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER, self::MATCH_GROUP,
+        self::MATCH_CREATION_DATE, self::MATCH_MODIFICATION_DATE, self::MATCH_OBJECT_STATE, self::MATCH_OWNER,
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_SECTION, self::MATCH_SUBTREE,
+        self::MATCH_VISIBILITY,
+        // aliases
+        'content_type', 'content_type_id', 'content_type_identifier',
+    );
 
     protected $returns = 'Trashed-Item';
 

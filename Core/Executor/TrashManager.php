@@ -2,8 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use Kaliop\eZMigrationBundle\API\Collection\TrashedItemCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\TrashMatcher;
+use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 
 /**
  * Handles trash migrations.
@@ -16,12 +18,15 @@ class TrashManager extends RepositoryExecutor
     /** @var TrashMatcher $trashMatcher */
     protected $trashMatcher;
 
+    protected $sortConverter;
+
     /**
      * @param TrashMatcher $trashMatcher
      */
-    public function __construct(TrashMatcher $trashMatcher)
+    public function __construct(TrashMatcher $trashMatcher, SortConverter $sortConverter)
     {
         $this->trashMatcher = $trashMatcher;
+        $this->sortConverter = $sortConverter;
     }
 
     /**
@@ -38,6 +43,8 @@ class TrashManager extends RepositoryExecutor
 
     /**
      * Handles the trash-restore migration action
+     *
+     * @todo support handling of restoration to custom locations
      */
     protected function recover($step)
     {
@@ -47,19 +54,19 @@ class TrashManager extends RepositoryExecutor
             throw new \Exception("Can not execute Trash restore because multiple types match, and a references section is specified in the dsl. References can be set when only 1 section matches");
         }
 
+        $locations = array();
         $trashService = $this->repository->getTrashService();
         foreach ($itemsCollection as $key => $item) {
-            /// @todo support handling of custom restoration locations
-            $trashService->recover($item);
+            $locations[] = $trashService->recover($item);
         }
 
-        $this->setReferences($itemsCollection, $step);
+        $this->setReferences(new LocationCollection($locations), $step);
 
         return $itemsCollection;
     }
 
     /**
-     * Handles the trash-restore migration action
+     * Handles the trash-delete migration action
      */
     protected function delete($step)
     {
@@ -101,7 +108,7 @@ class TrashManager extends RepositoryExecutor
     /**
      * Sets references to certain trashed-item attributes.
      *
-     * @param \eZ\Publish\API\Repository\Values\Content\TrashItem|TrashedItemCollection $item
+     * @param \eZ\Publish\API\Repository\Values\Content\TrashItem|TrashedItemCollection|\eZ\Publish\API\Repository\Values\Content\Location|LocationCollection $item
      * @param $step
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
@@ -117,19 +124,78 @@ class TrashManager extends RepositoryExecutor
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
-                /// @todo a trashed item extends a location, so in theory everything 'location' here should work
-                /*case 'section_id':
+                // a trashed item extends a location, so in theory everything 'location' here should work
+                case 'location_id':
                 case 'id':
-                    $value = $section->id;
+                    $value = $item->id;
+                    break;
+                case 'remote_id':
+                case 'location_remote_id':
+                    $value = $item->remoteId;
+                    break;
+                case 'always_available':
+                    $value = $item->contentInfo->alwaysAvailable;
+                    break;
+                case 'content_id':
+                    $value = $item->contentId;
+                    break;
+                case 'content_type_id':
+                    $value = $item->contentInfo->contentTypeId;
+                    break;
+                case 'content_type_identifier':
+                    $contentTypeService = $this->repository->getContentTypeService();
+                    $value = $contentTypeService->loadContentType($item->contentInfo->contentTypeId)->identifier;
+                    break;
+                case 'current_version':
+                case 'current_version_no':
+                    $value = $item->contentInfo->currentVersionNo;
+                    break;
+                case 'depth':
+                    $value = $item->depth;
+                    break;
+                case 'is_hidden':
+                    $value = $item->hidden;
+                    break;
+                case 'main_location_id':
+                    $value = $item->contentInfo->mainLocationId;
+                    break;
+                case 'main_language_code':
+                    $value = $item->contentInfo->mainLanguageCode;
+                    break;
+                case 'modification_date':
+                    $value = $item->contentInfo->modificationDate->getTimestamp();
+                    break;
+                case 'name':
+                    $value = $item->contentInfo->name;
+                    break;
+                case 'owner_id':
+                    $value = $item->contentInfo->ownerId;
+                    break;
+                case 'parent_location_id':
+                    $value = $item->parentLocationId;
+                    break;
+                case 'path':
+                    $value = $item->pathString;
+                    break;
+                case 'priority':
+                    $value = $item->priority;
+                    break;
+                case 'publication_date':
+                    $value = $item->contentInfo->publishedDate->getTimestamp();
+                    break;
+                case 'section_id':
+                    $value = $item->contentInfo->sectionId;
                     break;
                 case 'section_identifier':
-                case 'identifier':
-                    $value = $section->identifier;
+                    $sectionService = $this->repository->getSectionService();
+                    $value = $sectionService->loadSection($item->contentInfo->sectionId)->identifier;
                     break;
-                case 'section_name':
-                case 'name':
-                    $value = $section->name;
-                    break;*/
+                case 'sort_field':
+                    $value = $this->sortConverter->sortField2Hash($item->sortField);
+                    break;
+                case 'sort_order':
+                    $value = $this->sortConverter->sortOrder2Hash($item->sortOrder);
+                    break;
                 default:
                     throw new \InvalidArgumentException('Trash Manager does not support setting references for attribute ' . $reference['attribute']);
             }
