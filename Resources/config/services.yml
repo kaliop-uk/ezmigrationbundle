@@ -25,6 +25,7 @@ parameters:
     ez_migration_bundle.migration_service.class: Kaliop\eZMigrationBundle\Core\MigrationService
 
     ez_migration_bundle.loader.filesystem.class: Kaliop\eZMigrationBundle\Core\Loader\Filesystem
+    ez_migration_bundle.loader.filesystem_recursive.class: Kaliop\eZMigrationBundle\Core\Loader\FilesystemRecursive
 
     ez_migration_bundle.definition_parser.yaml.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\YamlDefinitionParser
     ez_migration_bundle.definition_parser.json.class: Kaliop\eZMigrationBundle\Core\DefinitionParser\JsonDefinitionParser
@@ -125,6 +126,12 @@ services:
 
     ez_migration_bundle.loader.filesystem:
         class: '%ez_migration_bundle.loader.filesystem.class%'
+        arguments:
+            - '@kernel'
+            - '%kaliop_bundle_migration.version_directory%'
+
+    ez_migration_bundle.loader.filesystem_recursive:
+        class: '%ez_migration_bundle.loader.filesystem_recursive.class%'
         arguments:
             - '@kernel'
             - '%kaliop_bundle_migration.version_directory%'

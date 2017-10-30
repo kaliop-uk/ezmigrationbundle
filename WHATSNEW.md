@@ -1,5 +1,16 @@
+Version 4.4 (unreleased)
+========================
+
+* Added a new loader class to allow scanning the Migrations folders recursively for migrations files. Useful when you
+    have a massive number of migration files and keeping them in a single folder hits the filesystem limits.
+    At the moment, the only way to enable this is to redefine the alias in your app configuration, ie:
+    
+            ez_migration_bundle.loader:
+                alias: ez_migration_bundle.loader.filesystem_recursive
+
+
 Version 4.3
-=============
+===========
 
 * Improved: do not use the Repository Search Service when matching Contents or Locations using only their Id or Location Id.
     This has the advantage that those items will always be loaded from the database, even in the case of Solr Search
@@ -16,7 +27,7 @@ Version 4.3
 
 
 Version 4.2
-=============
+===========
 
 * New: references are now resolved in `validator-configuration` settings for content type definitions. This is useful
     eg. when using the eZTags v3 bundle
