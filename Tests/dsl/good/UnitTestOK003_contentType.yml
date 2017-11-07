@@ -393,7 +393,13 @@
         identifier: 'reference:kmb_test_003_12_identifier'
     # remove all attributes except the title
     attributes:
-        - title
+        -
+            type: ezstring
+            name: Title
+            identifier: title
+            description: Title
+            required: true
+            searchable: true
     remove_attributes: '*'
 
 -
