@@ -59,6 +59,17 @@ To get the latest version, you can update the bundle to the latest available ver
 
     composer update kaliop/ezmigrationbundle
 
+### Upgrading from version 3.x to version 4
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md) 
+
+* Nothing else is required, unless you have one of the following:
+
+    - code which extends the migration bundle code/apis
+    - code which depends on parsing the output of the `migrate` command and relies on its exact format
+
+    For both cases, the fix is to apply manual changes to your code.
+
 ### Upgrading from version 2.x to version 3
 
 * Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md) 
@@ -141,17 +152,24 @@ A simple example of a migration to create a 'folder' content is:
 
 In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of Contents
-- creation, update and deletion of Locations
-- creation, update and deletion of Users
-- creation, update and deletion of UserGroups
-- creation, update and deletion of Roles
 - creation, update and deletion of ContentTypes
-- creation and deletion of ContentTypeGroups
+- creation, update and  deletion of ContentTypeGroups
+- deletion of Content Versions
+- creation and deletion of Languages
+- creation, update and deletion of Locations
 - creation, update and deletion of ObjectStates
 - creation, update and deletion of ObjectStateGroups
+- creation, update and deletion of Roles
 - creation, update and deletion of Sections
-- creation and deletion of Languages
 - creation and deletion of of Tags (from the Netgen Tags Bundle)
+- creation, update and deletion of Users
+- creation, update and deletion of UserGroups
+- purging and recovering Contents from the Trash
+- creation, appending, copy, renaming and deletion of files
+- execution of command-line scripts
+- execution of http calls
+- sending of email
+- canceling, snoozing or suspending the migration itself
 
 The docs describing all supported parameters are in the [DSL Language description](Resources/doc/DSL/README.md)
 
@@ -304,7 +322,7 @@ and the corresponding php class:
 
 * take care when creating content types: the eZPublish API, used internally by the migration bundle, will let you use dash
     characters in the content type identifiers, even if the resulting content types will then be unusable, eg.
-    
+
     Example of an invalid definition:
 
             type: ezstring
