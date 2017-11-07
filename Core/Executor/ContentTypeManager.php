@@ -230,6 +230,20 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
             // Remove attributes
             if (isset($step->dsl['remove_attributes'])) {
+                if ($step->dsl['remove_attributes'] === '*') {
+                    $step->dsl['remove_attributes'] = array();
+                    $existingAttributeIdentifiers = array();
+
+                    foreach ($step->dsl['attributes'] as $attribute) {
+                        $existingAttributeIdentifiers[] = $attribute['identifier'];
+                    }
+
+                    foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
+                        if (!in_array($fieldDefinition->identifier, $existingAttributeIdentifiers)) {
+                            $step->dsl['remove_attributes'][] = $fieldDefinition->identifier;
+                        }
+                    }
+                }
                 foreach ($step->dsl['remove_attributes'] as $attribute) {
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute);
                     if ($existingFieldDefinition) {
