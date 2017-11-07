@@ -109,7 +109,7 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
         foreach ($stateIdentifiers as $stateIdentifier) {
             if (!isset($statesList[$stateIdentifier])) {
                 // a quick and dirty way of letting the user know that he/she might be using a non-unique identifier
-                throw new NotFoundException("ObjectState", $stateIdentifier . ' missing or non unique');
+                throw new NotFoundException("ObjectState", $stateIdentifier . "' (either missing or non unique)");
             }
             $states[$statesList[$stateIdentifier]->id] = $statesList[$stateIdentifier];
         }
