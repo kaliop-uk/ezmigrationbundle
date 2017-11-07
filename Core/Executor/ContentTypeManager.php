@@ -230,24 +230,27 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
             // Remove attributes
             if (isset($step->dsl['remove_attributes'])) {
-                if ($step->dsl['remove_attributes'] === '*') {
-                    $step->dsl['remove_attributes'] = array();
-                    $existingAttributeIdentifiers = array();
 
+                // allow the '*' string to mean 'all attributes excepts the ones specified in this step'
+                if ($step->dsl['remove_attributes'] === '*') {
+                    $modifiedAttributeIdentifiers = array();
                     foreach ($step->dsl['attributes'] as $attribute) {
-                        $existingAttributeIdentifiers[] = $attribute['identifier'];
+                        $modifiedAttributeIdentifiers[] = $attribute['identifier'];
                     }
 
-                    foreach ($contentType->getFieldDefinitions() as $fieldDefinition) {
-                        if (!in_array($fieldDefinition->identifier, $existingAttributeIdentifiers)) {
-                            $step->dsl['remove_attributes'][] = $fieldDefinition->identifier;
+                    foreach ($contentType->getFieldDefinitions() as $existingFieldDefinition) {
+                        if (!in_array($existingFieldDefinition->identifier, $modifiedAttributeIdentifiers)) {
+                            $contentTypeService->removeFieldDefinition($contentTypeDraft, $existingFieldDefinition);
                         }
                     }
-                }
-                foreach ($step->dsl['remove_attributes'] as $attribute) {
-                    $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute);
-                    if ($existingFieldDefinition) {
-                        $contentTypeService->removeFieldDefinition($contentTypeDraft, $existingFieldDefinition);
+                } else {
+                    // we assume that $step->dsl['remove_attributes'] is an array of field identifiers
+                    foreach ($step->dsl['remove_attributes'] as $attribute) {
+                        $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute);
+                        if ($existingFieldDefinition) {
+                            $contentTypeService->removeFieldDefinition($contentTypeDraft, $existingFieldDefinition);
+                        }
+                        /// @todo log a warning if the specified field is not present
                     }
                 }
             }

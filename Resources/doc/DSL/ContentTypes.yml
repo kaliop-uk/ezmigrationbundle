@@ -171,7 +171,9 @@
                       # NB: the eZ4 Admin Interface does *not* display the actual field position, and shows 10,20,30 instead...
                       # In order to see the _real_ position number that fields currently have it is recommended to generate
                       # a ContentType `create` migration and find it there
-    remove_attributes: [identifier1, identifier2, identifier3] # Optional, remove all attributes that have their identifiers listed here
+    remove_attributes: [identifier1, identifier2, identifier3] # Optional, remove all attributes that have their identifiers listed here.
+                                                               # As an alternative, use the string '*' to mean: remove all existing attributes
+                                                               # except the ones specified in the 'attributes' element above
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

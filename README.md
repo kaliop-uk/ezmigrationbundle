@@ -19,7 +19,7 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 In either `require` or `require-dev` at the end of the bundle list in the composer.json file add:
 
-    "kaliop/ezmigrationbundle": "^3.0"
+    "kaliop/ezmigrationbundle": "^4.0"
 
 Save it and run
 

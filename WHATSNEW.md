@@ -8,6 +8,9 @@ Version 4.4 (unreleased)
             ez_migration_bundle.loader:
                 alias: ez_migration_bundle.loader.filesystem_recursive
 
+* Support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all the
+    attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter
+
 
 Version 4.3
 ===========
