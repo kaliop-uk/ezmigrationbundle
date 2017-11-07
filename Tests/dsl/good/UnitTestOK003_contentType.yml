@@ -388,6 +388,16 @@
 
 -
     type: content_type
+    mode: update
+    match:
+        identifier: 'reference:kmb_test_003_12_identifier'
+    # remove all attributes except the title
+    attributes:
+        - title
+    remove_attributes: '*'
+
+-
+    type: content_type
     mode: delete
     match:
         identifier: 'reference:kmb_test_003_12_identifier'
