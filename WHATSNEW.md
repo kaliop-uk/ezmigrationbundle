@@ -13,6 +13,9 @@ Version 4.4 (unreleased)
 * New: support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all
     the attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter
 
+* Improved: better error message when trying to generate a migration for the creation of a Role which has Policies with
+    limitations that can not be exported
+
 
 Version 4.3
 ===========

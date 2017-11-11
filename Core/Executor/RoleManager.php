@@ -246,6 +246,9 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     $limitations = array();
 
                     foreach ($policy->getLimitations() as $limitation) {
+                        if ($limitation === null) {
+                            throw new \Exception("The role contains NULL as limitation for policy {$policy->module}/{$policy->function}, we can not reliably generate its definition.");
+                        }
                         $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
                     }
 

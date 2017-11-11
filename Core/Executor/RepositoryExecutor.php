@@ -135,13 +135,17 @@ abstract class RepositoryExecutor extends AbstractExecutor
         return isset($step->dsl['user_content_type']) ? $step->dsl['user_content_type'] : $this->getUserContentTypeFromContext($step->context);
     }
 
+    /**
+     * @param array $context
+     * @return string
+     */
     protected function getUserContentTypeFromContext($context)
     {
         return isset($context['userContentType']) ? $context['userContentType'] : self::USER_CONTENT_TYPE;
     }
 
     /**
-     * @param $context we have to return FALSE if that is set as adminUserLogin, whereas if NULL is set, we return the default admin
+     * @param array $context we have to return FALSE if that is set as adminUserLogin, whereas if NULL is set, we return the default admin
      * @return int|string|false
      */
     protected function getAdminUserIdentifierFromContext($context)
