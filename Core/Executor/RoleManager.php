@@ -9,6 +9,7 @@ use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
+use eZ\Publish\API\Repository\Values\User\Limitation;
 
 /**
  * Handles role migrations.
@@ -246,8 +247,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     $limitations = array();
 
                     foreach ($policy->getLimitations() as $limitation) {
-                        if ($limitation === null) {
-                            throw new \Exception("The role contains NULL as limitation for policy {$policy->module}/{$policy->function}, we can not reliably generate its definition.");
+                        if (!($limitation instanceof Limitation)) {
+                            throw new \Exception("The role contains an invalid limitation for policy {$policy->module}/{$policy->function}, we can not reliably generate its definition.");
                         }
                         $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
                     }
@@ -286,7 +287,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      *
      * @param \eZ\Publish\API\Repository\RoleService $roleService
      * @param array $limitation
-     * @return \eZ\Publish\API\Repository\Values\User\Limitation
+     * @return Limitation
      */
     protected function createLimitation(RoleService $roleService, array $limitation)
     {
