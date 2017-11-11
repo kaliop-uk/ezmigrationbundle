@@ -7,6 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Symfony\Component\Console\Helper\Table;
 
 /**
  * Command to display the status of migrations.
@@ -182,10 +183,10 @@ EOT
             $headers = array('#', 'Migration', 'Status', 'Executed on', 'Notes');
         }
 
-        $table = $this->getHelperSet()->get('table');
+        $table = new Table($output);
         $table
             ->setHeaders($headers)
             ->setRows($data);
-        $table->render($output);
+        $table->render();
     }
 }

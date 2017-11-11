@@ -6,8 +6,7 @@ use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 /**
  * Command to resume suspended migrations.
  *
@@ -78,11 +77,11 @@ EOT
 
         // ask user for confirmation to make changes
         if ($input->isInteractive() && !$input->getOption('no-interaction')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation(
+            $dialog = $this->getHelperSet()->get('question');
+            if (!$dialog->ask(
+                $input,
                 $output,
-                '<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>',
-                false
+                new ConfirmationQuestion('<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>', false)
             )
             ) {
                 $output->writeln('<error>Migration resuming cancelled!</error>');

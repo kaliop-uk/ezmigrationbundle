@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Command to execute the available migration definitions.
@@ -139,11 +140,11 @@ EOT
 
         // ask user for confirmation to make changes
         if ($input->isInteractive() && !$input->getOption('no-interaction')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation(
+            $dialog = $this->getHelperSet()->get('question');
+            if (!$dialog->ask(
+                $input,
                 $output,
-                '<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>',
-                false
+                new ConfirmationQuestion('<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>', false)
             )
             ) {
                 $output->writeln('<error>Migration change cancelled!</error>');

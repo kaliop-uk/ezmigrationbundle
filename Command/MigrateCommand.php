@@ -11,6 +11,8 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\PhpExecutableFinder;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Command to execute the available migration definitions.
@@ -295,11 +297,11 @@ EOT
         }
 
         if (!$input->getOption('child')) {
-            $table = $this->getHelperSet()->get('table');
+            $table = new Table($output);
             $table
                 ->setHeaders(array('#', 'Migration', 'Notes'))
                 ->setRows($data);
-            $table->render($output);
+            $table->render();
         }
 
         $this->writeln('');
@@ -308,11 +310,11 @@ EOT
     protected function askForConfirmation(InputInterface $input, OutputInterface $output)
     {
         if ($input->isInteractive() && !$input->getOption('no-interaction')) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            if (!$dialog->askConfirmation(
+            $dialog = $this->getHelperSet()->get('question');
+            if (!$dialog->ask(
+                $input,
                 $output,
-                '<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>',
-                false
+                new ConfirmationQuestion('<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>', false)
             )
             ) {
                 $output->writeln('<error>Migration execution cancelled!</error>');

@@ -1,15 +1,17 @@
 Version 4.4 (unreleased)
 ========================
 
-* Added a new loader class to allow scanning the Migrations folders recursively for migrations files. Useful when you
-    have a massive number of migration files and keeping them in a single folder hits the filesystem limits.
+* Fixed: make the cli commands compatible with Symfony 3.0 and later
+
+* New: dded a new loader class to allow scanning the Migrations folders recursively for migrations files. Useful when
+    you have a massive number of migration files and keeping them in a single folder hits the filesystem limits.
     At the moment, the only way to enable this is to redefine the alias in your app configuration, ie:
     
             ez_migration_bundle.loader:
                 alias: ez_migration_bundle.loader.filesystem_recursive
 
-* Support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all the
-    attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter
+* New: support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all
+    the attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter
 
 
 Version 4.3
