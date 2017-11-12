@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
@@ -147,6 +148,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $contentTypeService = $this->repository->getContentTypeService();
         $lang = $this->getLanguageCode($step);
         foreach ($contentTypeCollection as $key => $contentType) {
+
+            if (isset($step->dsl['remove_drafts']) && $step->dsl['remove_drafts']) {
+                try {
+                    $draft = $contentTypeService->loadContentTypeDraft($contentType->id);
+                    $contentTypeService->deleteContentType($draft);
+                } catch (NotFoundException $e) {
+                }
+            }
 
             $contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
 

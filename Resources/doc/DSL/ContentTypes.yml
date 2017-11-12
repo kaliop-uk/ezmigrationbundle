@@ -174,6 +174,7 @@
     remove_attributes: [identifier1, identifier2, identifier3] # Optional, remove all attributes that have their identifiers listed here.
                                                                # As an alternative, use the string '*' to mean: remove all existing attributes
                                                                # except the ones specified in the 'attributes' element above
+    remove_drafts: false # Optional, if true will remove any existing Drafts for this Content Type
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

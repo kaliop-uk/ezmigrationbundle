@@ -1,7 +1,14 @@
-Version 4.4 (unreleased)
-========================
+Version 4.4
+===========
 
 * Fixed: make the cli commands compatible with Symfony 3.0 and later
+
+* New: the element `remove_drafts` can be used for migration steps of type ContentType/update to make sure that any
+    existing drafts of the given ContentType are removed
+
+
+* New: support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all
+    the attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter
 
 * New: added a new loader class to allow scanning the Migrations folders recursively for migrations files. Useful when
     you have a massive number of migration files and keeping them in a single folder hits the filesystem limits.
@@ -13,9 +20,6 @@ Version 4.4 (unreleased)
 * New: a new command `kaliop:migration:mass_migrate` is available to execute the migrations found in a directory, including
      all its subdirs, using a specified number of parallel processes.
      This is a somewhat efficient way to achieve f.e. mass import of contents via migrations
-
-* New: support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all
-    the attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter
 
 * Improved: when using the `separate-process` option to the `migrate` command, pass on to the child process the
     `no-debug` and `siteacess` options, if they have been specified by the user

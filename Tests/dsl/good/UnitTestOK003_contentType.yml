@@ -347,6 +347,7 @@
         identifier: 'reference:kmb_test_003_12_identifier'
     default_sort_field: name
     default_sort_order: desc
+    remove_drafts: true
     references:
         -
             identifier: kmb_test_003_15_count
