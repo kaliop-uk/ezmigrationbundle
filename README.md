@@ -380,7 +380,7 @@ To run the tests:
     export KERNEL_DIR=ezpublish (or 'app' for ezplatform setups)
     export SYMFONY_ENV=behat (or whatever your environment is)
 
-    bin/phpunit -c vendor/kaliop/ezmigrationbundle/phpunit.xml
+    bin/phpunit --stderr -c vendor/kaliop/ezmigrationbundle/phpunit.xml
 
 *NB* the tests do *not* mock interaction with the database, but create/modify/delete many types of data in it.
 As such, there are good chances that running tests will leave stale/broken data.
