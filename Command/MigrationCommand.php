@@ -26,7 +26,7 @@ class MigrationCommand extends AbstractCommand
 
         $this
             ->setName('kaliop:migration:migration')
-            ->setDescription('Manually delete migrations from the database table.')
+            ->setDescription('Manually modify or get info about migrations in the database table.')
             ->addOption('delete', null, InputOption::VALUE_NONE, "Delete the specified migration.")
             ->addOption('info', null, InputOption::VALUE_NONE, "Get info about the specified migration.")
             ->addOption('add', null, InputOption::VALUE_NONE, "Add the specified migration definition.")

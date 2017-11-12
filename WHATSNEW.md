@@ -3,15 +3,22 @@ Version 4.4 (unreleased)
 
 * Fixed: make the cli commands compatible with Symfony 3.0 and later
 
-* New: dded a new loader class to allow scanning the Migrations folders recursively for migrations files. Useful when
+* New: added a new loader class to allow scanning the Migrations folders recursively for migrations files. Useful when
     you have a massive number of migration files and keeping them in a single folder hits the filesystem limits.
     At the moment, the only way to enable this is to redefine the alias in your app configuration, ie:
     
             ez_migration_bundle.loader:
                 alias: ez_migration_bundle.loader.filesystem_recursive
 
+* New: a new command `kaliop:migration:mass_migrate` is available to execute the migrations found in a directory, including
+     all its subdirs, using a specified number of parallel processes.
+     This is a somewhat efficient way to achieve f.e. mass import of contents via migrations
+
 * New: support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all
     the attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter
+
+* Improved: when using the `separate-process` option to the `migrate` command, pass on to the child process the
+    `no-debug` and `siteacess` options, if they have been specified by the user
 
 * Improved: better error message when trying to generate a migration for the creation of a Role which has Policies with
     limitations that can not be exported

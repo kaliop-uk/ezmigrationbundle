@@ -104,6 +104,11 @@ class MigrationService implements ContextProviderInterface
         return array_keys($this->executors);
     }
 
+    public function setLoader(LoaderInterface $loader)
+    {
+        $this->loader = $loader;
+    }
+
     /**
      * NB: returns UNPARSED definitions
      *
