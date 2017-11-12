@@ -99,6 +99,7 @@ EOT
         }
 
         if ($input->getOption('separate-process')) {
+            $kernel = $this->getContainer()->get('kernel');
             $builder = new ProcessBuilder();
             $executableFinder = new PhpExecutableFinder();
             if (false !== $php = $executableFinder->find()) {
@@ -108,16 +109,22 @@ EOT
             $builderArgs = array(
                 $_SERVER['argv'][0], // sf console
                 self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
-                '--env=' . $this->getContainer()->get('kernel')->getEnvironment(), // sf env
+                '--env=' . $kernel->getEnvironment(), // sf env
                 '--child'
             );
             // 'optional' options
             // note: options 'clear-cache', 'ignore-failures' and 'no-transactions' we never propagate
+            if (!$kernel->isDebug()) {
+                $builderArgs[] = '--no-debug';
+            }
             if ($input->getOption('default-language')) {
                 $builderArgs[] = '--default-language=' . $input->getOption('default-language');
             }
             if ($input->getOption('no-transactions')) {
                 $builderArgs[] = '--no-transactions';
+            }
+            if ($input->getOption('siteaccess')) {
+                $builderArgs[]='--siteaccess='.$input->getOption('siteaccess');
             }
         }
 
