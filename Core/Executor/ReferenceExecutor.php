@@ -60,6 +60,7 @@ class ReferenceExecutor extends AbstractExecutor
             // we use the same parameter resolving rule as symfony, even though this means abusing the ContainerInterface
             $value = $this->container->getParameterBag()->resolveString($value);
         }
+
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
         $this->referenceResolver->addReference($dsl['identifier'], $value, $overwrite);
 
@@ -71,11 +72,10 @@ class ReferenceExecutor extends AbstractExecutor
         if (!isset($dsl['file'])) {
             throw new \Exception("Invalid step definition: miss 'file' for loading references");
         }
-        $fileName = $dsl['file'];
+        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
-
-        $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
         if (!is_file($fileName) && is_file(dirname($context['path']) . '/references/' . $fileName)) {
             $fileName = dirname($context['path']) . '/references/' . $fileName;
@@ -86,7 +86,7 @@ class ReferenceExecutor extends AbstractExecutor
         }
         $data = file_get_contents($fileName);
 
-        $ext = pathinfo($dsl['file'], PATHINFO_EXTENSION);
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
         switch ($ext) {
             case 'json':
                 $data = json_decode($data, true);
@@ -96,7 +96,7 @@ class ReferenceExecutor extends AbstractExecutor
                 $data = Yaml::parse($data);
                 break;
             default:
-                throw new \Exception("Invalid step definition: unsupported file extension for loading references from");
+                throw new \Exception("Invalid step definition: unsupported file extension '$ext' for loading references from");
         }
 
         if (!is_array($data)) {
@@ -124,11 +124,10 @@ class ReferenceExecutor extends AbstractExecutor
         if (!isset($dsl['file'])) {
             throw new \Exception("Invalid step definition: miss 'file' for saving references");
         }
-        $fileName = $dsl['file'];
+        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
-
-        $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
         if (is_file($fileName) && !$overwrite) {
             throw new \Exception("Invalid step definition: file '$fileName' for saving references already exists");
@@ -150,7 +149,7 @@ class ReferenceExecutor extends AbstractExecutor
                 $data = Yaml::dump($data);
                 break;
             default:
-                throw new \Exception("Invalid step definition: unsupported file extension for saving references to");
+                throw new \Exception("Invalid step definition: unsupported file extension '$ext' for saving references to");
         }
 
         file_put_contents($fileName, $data);

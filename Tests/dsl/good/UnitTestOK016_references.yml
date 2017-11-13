@@ -19,6 +19,13 @@
     overwrite: true
 
 -
+    type: reference
+    mode: set
+    identifier: kmb_test_refsfile
+    value: '%kernel.cache_dir%/test_refs_generated.yml'
+    overwrite: true
+
+-
     type: assert
     target: reference
     identifier: reference:kmb_test_ref
@@ -45,7 +52,7 @@
 -
     type: reference
     mode: save
-    file: Tests/dsl/good/references/test_refs_generated.yml
+    file: reference:kmb_test_refsfile
     overwrite: true
 
 -
@@ -58,7 +65,7 @@
 -
     type: reference
     mode: load
-    file: Tests/dsl/good/references/test_refs_generated.yml
+    file: reference:kmb_test_refsfile
     overwrite: true
 
 -

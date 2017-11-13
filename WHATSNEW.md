@@ -1,3 +1,9 @@
+Version 4.5 (unreleased)
+========================
+
+* New: allow resolving references for the `filename` element of steps reference/load and reference/save
+
+
 Version 4.4
 ===========
 
