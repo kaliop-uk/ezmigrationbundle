@@ -1,5 +1,6 @@
 
-# These services have to be loaded for the test suite to work. They should not be loaded for normal bundle operation
+# NB: These services have to be loaded for the test suite to work. They should not be loaded for normal bundle operation
+# The EzMigrationExtension class will take care of loading them automatically as long as the bootstrap.php file is run
 
 parameters:
     test.param.for.custom.refs: def

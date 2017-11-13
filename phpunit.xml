@@ -23,7 +23,7 @@
     </filter>
 
     <testsuites>
-        <testsuite name="Kaliop Bundle Migration Test Suite">
+        <testsuite name="Kaliop Migration Bundle Test Suite">
             <directory>./Tests/phpunit/</directory>
         </testsuite>
     </testsuites>
