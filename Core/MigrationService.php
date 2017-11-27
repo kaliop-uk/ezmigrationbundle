@@ -574,6 +574,7 @@ class MigrationService implements ContextProviderInterface
 
     protected function getEntityName($migration)
     {
-        return strtolower(preg_replace('/Definition$/', '', end(explode('\\', get_class($migration)))));
+        $array = explode('\\', get_class($migration));
+        return strtolower(preg_replace('/Definition$/', '', end($array)));
     }
 }
