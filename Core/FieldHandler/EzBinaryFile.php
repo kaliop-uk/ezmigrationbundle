@@ -54,7 +54,7 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
      * @param array $context
      * @return array
      *
-     * @todo check out if this works in ezplatform
+     * @todo check if this works in ezplatform
      */
     public function fieldValueToHash($fieldValue, array $context = array())
     {

@@ -19,6 +19,7 @@
             alt_text: xyz # Optional, only used for images
             filename: abc # Optional, taken from the actual file if not specified
             mime_type: def # Optional. For ezbinaryfile and ezmedia only. If not specified, the actual file is analyzed using the php function mime_content_type()
+                           # NB: this seems to work only with eZPublish < 5.4 / 2014.11; see bug https://github.com/kaliop-uk/ezmigrationbundle/issues/147
             has_controller: false # Optional. For ezmedia only
             autoplay: false # Optional. For ezmedia only
             loop: false # Optional. For ezmedia only
