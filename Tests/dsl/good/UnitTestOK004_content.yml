@@ -317,7 +317,7 @@
         - ezbinaryfile:
             path: emptyfile.txt
             filename: lol2.txt
-            mime_type: something/else
+            #mime_type: something/else
         - ezmedia:
             path: small.flv
             filename: lol3.flv
