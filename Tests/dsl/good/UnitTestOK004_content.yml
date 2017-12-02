@@ -317,7 +317,7 @@
         - ezbinaryfile:
             path: emptyfile.txt
             filename: lol2.txt
-            #mime_type: something/else
+            mime_type: something/else
         - ezmedia:
             path: small.flv
             filename: lol3.flv
@@ -340,10 +340,10 @@
             destinationContentId: 'reference:kmb_test_004_1'
         - ezobjectrelationlist:
             destinationContentIds: [ 'reference:kmb_test_004_1', 'reference:kmb_test_004_2' ]
-    references:
-        -
-            identifier: kmb_test_004_10_mimetype
-            attribute: attributes.ezbinaryfile.mimeType
+#    references:
+#        -
+#            identifier: kmb_test_004_10_mimetype
+#            attribute: attributes.ezbinaryfile.mimeType
 
 # Currently fails... See: https://github.com/kaliop-uk/ezmigrationbundle/issues/147
 #-
