@@ -44,6 +44,7 @@
 #    field-settings:
 #        selectionMethod: 0 # 1=drop-down list
 #        selectionRoot: null # location id
+#        selectionContentTypes: [ ] # array of ContentType identifiers; works since eZ Platform v1.11.0
 #
 # ezobjectrelationlist
 #    field-settings:
