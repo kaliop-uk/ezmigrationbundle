@@ -34,7 +34,13 @@ class EzTags extends AbstractFieldHandler implements FieldValueImporterInterface
             $identifier = reset($def);
             $type = key($def);
 
-            $identifier = $this->referenceResolver->resolveReference($identifier);
+            if(is_array($identifier)) {
+                foreach($identifier as $key => $id) {
+                    $identifier[$key] = $this->referenceResolver->resolveReference($id);
+                }
+            } else {
+                $identifier = $this->referenceResolver->resolveReference($identifier);
+            }
 
             foreach ($this->tagMatcher->match(array($type => $identifier)) as $id => $tag) {
                 $tags[$id] = $tag;
