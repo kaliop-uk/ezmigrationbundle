@@ -28,3 +28,5 @@ services:
         class: Kaliop\eZMigrationBundle\Tests\helper\MailMessageLogger
         tags:
             - { name: swiftmailer.default.plugin }
+    ez_migration_bundle.test.just_a_service:
+        class: Kaliop\eZMigrationBundle\Tests\helper\JustAService

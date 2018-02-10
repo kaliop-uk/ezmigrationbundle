@@ -47,7 +47,7 @@ class ServiceExecutor extends AbstractExecutor
     /**
      * @param $dsl
      * @param $context
-     * @return \Symfony\Component\Process\Process
+     * @return mixed
      * @throws \Exception
      */
     protected function call($dsl, $context)
@@ -79,14 +79,31 @@ class ServiceExecutor extends AbstractExecutor
         }
 
         $exception = null;
+        $result = null;
         try {
             $result = call_user_func_array($callable, $args);
         } catch (\Exception $exception) {
+            $catch = false;
+
+            // allow to specify a set of exceptions to tolerate
             if (isset($dsl['catch'])) {
-                // @todo allow to specify a set of exceptions to tolerate
+                if (is_array($dsl['catch'])) {
+                    $caught = $dsl['catch'];
+                } else {
+                    $caught = array($dsl['catch']);
+                }
+
+                foreach ($caught as $baseException) {
+                    if (is_subclass_of($exception, $baseException)) {
+                        $catch = true;
+                        break;
+                    }
+                }
             }
 
-            throw $exception;
+            if (!$catch) {
+                throw $exception;
+            }
         }
 
         $this->setReferences($result, $exception, $dsl);
