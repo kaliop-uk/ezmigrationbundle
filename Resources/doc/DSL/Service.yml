@@ -1,10 +1,10 @@
-# Executing symfony Service method as migration step
+# Executing symfony Services methods as migration step
 
 -
     type: service
     mode: call
-    service: logger # a string, or a reference
-    method: debug # a string, or a reference
+    service: app.message_generator # a string, or a reference
+    method: getHappyMessage # a string, or a reference
     arguments: # an array of arguments
         - 'hello world'
         - reference:someref # references will be resolved (if they occupy the whole argument; not if they part of of a bunch of text)
