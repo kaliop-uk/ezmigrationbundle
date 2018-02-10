@@ -62,40 +62,39 @@ class ServiceExecutor extends AbstractExecutor
             throw new \Exception("Can not call service method: 'arguments' is not an array");
         }
 
-        $service = $this->container->get($dsl['service']);
-        $method = $dsl['method'];
+        $service = $this->container->get($this->referenceResolver->resolveReference($dsl['service']));
+        $method = $this->referenceResolver->resolveReference($dsl['method']);
         $callable = array($service, $method);
+        if (!is_callable($callable)) {
+            throw new \Exception("Can not call service method: $method is not a method of " . get_class($service));
+        }
+
         if (isset($dsl['arguments'])) {
             $args = $dsl['arguments'];
         } else {
             $args = array();
         }
-
-        if (!is_callable($callable)) {
-            throw new \Exception("Can not call service method: $method is not a method of " . get_class($service));
-        }
-
         foreach($args as &$val) {
             $val = $this->resolveReferencesRecursively($val);
         }
 
+        $exception = null;
         try {
             $result = call_user_func_array($callable, $args);
-        } catch (\Exception $e) {
-            // @todo allow to specify a set of exceptions to tolerate
+        } catch (\Exception $exception) {
             if (isset($dsl['catch'])) {
-
+                // @todo allow to specify a set of exceptions to tolerate
             }
 
-            throw $e;
+            throw $exception;
         }
 
-        $this->setReferences($result, $dsl);
+        $this->setReferences($result, $exception, $dsl);
 
-        return $output;
+        return $result;
     }
 
-    protected function setReferences($result, $dsl)
+    protected function setReferences($result, \Exception $exception = null, $dsl)
     {
         if (!array_key_exists('references', $dsl)) {
             return false;
@@ -106,6 +105,19 @@ class ServiceExecutor extends AbstractExecutor
                 case 'result':
                     $value = $result;
                     break;
+                case 'exception_code':
+                    $value = $exception ? $exception->getCode() : null;
+                    break;
+                case 'exception_message':
+                    $value = $exception ? $exception->getMessage() : null;
+                    break;
+                case 'exception_file':
+                    $value = $exception ? $exception->getFile() : null;
+                    break;
+                case 'exception_line':
+                    $value = $exception ? $exception->getLine() : null;
+                    break;
+
                 default:
                     throw new \InvalidArgumentException('Service executor does not support setting references for attribute ' . $reference['attribute']);
             }
