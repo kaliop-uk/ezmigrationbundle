@@ -1,7 +1,10 @@
-Version 4.5 (unreleased)
-========================
+Version 4.5
+===========
 
-* New: allow resolving references for the `filename` element of steps reference/load and reference/save
+* New: allow resolving references for the `filename` element of steps `reference/load` and `reference/save`
+
+* New: migration step `service/call` allows to call a method on any existing Symfony Service, and set a reference to the
+    result
 
 
 Version 4.4
@@ -11,7 +14,6 @@ Version 4.4
 
 * New: the element `remove_drafts` can be used for migration steps of type ContentType/update to make sure that any
     existing drafts of the given ContentType are removed
-
 
 * New: support the value '*' for the `remove_attributes` parameter in ContentType definitions. This allows to remove all
     the attributes which already exist in the ContentType, except for the ones defined in the `attributes` parameter

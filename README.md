@@ -167,6 +167,7 @@ In a Yaml migration, you can define the following types of actions:
 - purging and recovering Contents from the Trash
 - creation, appending, copy, renaming and deletion of files
 - execution of command-line scripts
+- execution of methods of symfony services
 - execution of http calls
 - sending of email
 - canceling, snoozing or suspending the migration itself
@@ -217,6 +218,9 @@ For a more detailed example of a migration definition done in PHP, look in the M
 *NB* if you rename the php file, keep in mind that the filename and the name of the class it contains are tied - the
 standard autoloading mechanism of the application does not apply when loading the migration definition. This is also
 the reason why the php classes used as migrations should not use namespaces. 
+
+*NB* since version 4.5, it is also possible to run any method of any existing Symfony service just by declaring it as
+migration step in a yaml migration. See the [relevant DSL](Resources/doc/DSL/Service.yml) for details.
 
 ### Re-executing failed migrations
 
