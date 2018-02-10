@@ -9,7 +9,7 @@
     mode: call
     service: ez_migration_bundle.test.just_a_service
     method: echoBack
-    arguments
+    arguments:
         - 'reference:kmb_test_ref_027'
     references:
          -
@@ -20,5 +20,26 @@
     type: assert
     target: reference
     identifier: reference:result_ref
+    test:
+        equals: abc
+
+-
+    type: service
+    mode: call
+    service: ez_migration_bundle.test.just_a_service
+    method: throwMigrationAbortedException
+    arguments:
+        - 'abc'
+    catch:
+        - '\Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException'
+    references:
+         -
+            identifier: result_ref2
+            attribute: exception_text
+
+-
+    type: assert
+    target: reference
+    identifier: reference:result_ref2
     test:
         equals: abc
