@@ -80,14 +80,14 @@
     mode: create
     content_type_group: x # Id or identifier of the group we want to put the new content class into
     identifier: xyz # Class identifier
-    name: xyz # Name of new class. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
+    name: xyz # Name of new class. Either a string, or an array in the format { "eng-GB": "Name", "fre-FR": "Nom", ... }
     name_pattern: pattern # Pattern to use for the name of the contents (ex: <title>)
     attributes:
         -
             type: xyz # Attribute type (See list https://doc.ez.no/display/EZP/FieldTypes+reference)
-            name: xyz # Name of new attribute. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
+            name: xyz # Name of new attribute. Either a string, or an array in the format { "eng-GB": "Name", "fre-FR": "Nom", ... }
             identifier: xyz
-            description: # Optional. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
+            description: # Optional. Either a string, or an array in the format { "eng-GB": "Name", "fre-FR": "Nom", ... }
             required: true|false # Optional
             searchable: true|false # Optional
             info-collector: true|false # Optional
@@ -102,7 +102,7 @@
                       # NB: unlike in the eZ4 Admin Interface, fields without specified positions will be counted 1,2,3...
                       # NB: mixing attributes with a position field and some without it might give unexpected results
     default_always_available: true|false # Optional, defaults to true
-    description: xyz # Optional. Either a sting, or an array in the format [ "eng-GB": "This", "fre-FR": "Ceci", ... ]
+    description: xyz # Optional. Either a string, or an array in the format { "eng-GB": "This", "fre-FR": "Ceci", ... }
     is_container: true|false # Optional, defaults to false
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     url_name_pattern: pattern # Optional
@@ -144,10 +144,10 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
-    description: xyz # Optional, will be updated if set. Either a sting, or an array in the format [ "eng-GB": "This", "fre-FR": "ceci", ... ]
+    description: xyz # Optional, will be updated if set. Either a string, or an array in the format { "eng-GB": "This", "fre-FR": "ceci", ... }
     is_container: true|false # Optional, will be updated if set
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
-    name: xyz # Optional, will be updated if set. Either a sting, or an array in the format [ "eng-GB": "name", "fre-FR": "Nom", ... ]
+    name: xyz # Optional, will be updated if set. Either a string, or an array in the format { "eng-GB": "name", "fre-FR": "Nom", ... }
     name_pattern: xyz # Optional, will be updated if set
     new_identifier: xyz # Optional, will update the identifier if set
     url_name_pattern: xyz # Optional, will be updated if set
@@ -158,8 +158,8 @@
             identifier: xyz # Identifier of the attribute to update or identifier of the new attribute to add
             new_identifier: xyz # Optional, will update the identifier if set. Not used if adding a new attribute
             type: xyz # Mandatory if adding a new attribute. Not used otherwise
-            name: # Optional, will be updated if set. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
-            description: # Optional, will be updated if set. Either a sting, or an array in the format [ "eng-GB": "Name", "fre-FR": "Nom", ... ]
+            name: # Optional, will be updated if set. Either a string, or an array in the format { "eng-GB": "Name", "fre-FR": "Nom", ... }
+            description: # Optional, will be updated if set. Either a string, or an array in the format { "eng-GB": "Name", "fre-FR": "Nom", ... }
             required: true|false # Optional, will be updated if set
             searchable: true|false # Optional, will be updated if set
             info-collector: true|false # Optional, will be updated if set
