@@ -197,7 +197,7 @@ EOT
                         continue;
                     }
                     $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
-                    return 1;
+                    return $e;
                 }
 
             } else {
@@ -217,7 +217,7 @@ EOT
                         continue;
                     }
                     $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
-                    return 1;
+                    return $e;
                 }
 
             }

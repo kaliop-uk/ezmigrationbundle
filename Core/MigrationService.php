@@ -404,7 +404,7 @@ class MigrationService implements ContextProviderInterface
                 true
             );
 
-            throw new MigrationStepExecutionException($errorMessage, $i, $e);
+            throw $e;
         }
     }
 
