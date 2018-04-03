@@ -59,7 +59,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $contentTypeGroupId = $this->referenceResolver->resolveReference($contentTypeGroupId);
         $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
 
-        $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($step->dsl['identifier']);
+        $contentTypeIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($contentTypeIdentifier);
         $contentTypeCreateStruct->mainLanguageCode = $lang;
 
         // Object Name pattern
@@ -99,7 +100,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $maxFieldDefinitionPos = 0;
         $fieldDefinitions = array();
         foreach ($step->dsl['attributes'] as $position => $attribute) {
-            $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $step->dsl['identifier'], $lang);
+            $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $contentTypeIdentifier, $lang);
             $maxFieldDefinitionPos = $fieldDefinition->position > $maxFieldDefinitionPos ? $fieldDefinition->position : $maxFieldDefinitionPos;
             $fieldDefinitions[] = $fieldDefinition;
         }
@@ -162,8 +163,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             $contentTypeUpdateStruct = $contentTypeService->newContentTypeUpdateStruct();
             $contentTypeUpdateStruct->mainLanguageCode = $lang;
 
+            $newIdentifier = null;
             if (isset($step->dsl['new_identifier'])) {
-                $contentTypeUpdateStruct->identifier = $step->dsl['new_identifier'];
+                $newIdentifier = $this->referenceResolver->resolveReference($step->dsl['new_identifier']);
+                $contentTypeUpdateStruct->identifier = $newIdentifier;
             }
 
             if (isset($step->dsl['name'])) {
@@ -268,8 +271,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
             $contentTypeService->publishContentTypeDraft($contentTypeDraft);
 
             // Set references
-            if (isset($step->dsl['new_identifier'])) {
-                $contentType = $contentTypeService->loadContentTypeByIdentifier($step->dsl['new_identifier']);
+            if ($newIdentifier !== null) {
+                $contentType = $contentTypeService->loadContentTypeByIdentifier($newIdentifier);
             } else {
                 $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeDraft->identifier);
             }

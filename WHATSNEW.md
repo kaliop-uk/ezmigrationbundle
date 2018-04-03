@@ -1,3 +1,10 @@
+Version 4.6
+===========
+
+* New: allow resolving references for the `identifier` element of steps `create` and `update` for ContentType,
+    ContentTypeGroup, ObjectState, ObjectStateGroup and Section
+
+
 Version 4.5
 ===========
 

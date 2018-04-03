@@ -3,7 +3,7 @@
     mode: create
     identifier: xyz  # Identifier/name of new content type group
     creation_date: 123 # Optional, custom creation date for the content type group (timestamp)
-    references: #Optional
+    references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
@@ -31,7 +31,7 @@
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     identifier: xyz  # Identifier/name of new content type group
     modification_date: 123 # Optional, custom modification date for the content type group (timestamp)
-    references: #Optional
+    references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.

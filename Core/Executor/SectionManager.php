@@ -29,11 +29,18 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     protected function create($step)
     {
+        foreach (array('name', 'identifier') as $key) {
+            if (!isset($step->dsl[$key])) {
+                throw new \Exception("The '$key' key is missing in a section creation definition");
+            }
+        }
+
         $sectionService = $this->repository->getSectionService();
 
         $sectionCreateStruct = $sectionService->newSectionCreateStruct();
 
-        $sectionCreateStruct->identifier = $step->dsl['identifier'];
+        $sectionIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $sectionCreateStruct->identifier = $sectionIdentifier;
         $sectionCreateStruct->name = $step->dsl['name'];
 
         $section = $sectionService->createSection($sectionCreateStruct);
@@ -59,7 +66,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             $sectionUpdateStruct = $sectionService->newSectionUpdateStruct();
 
             if (isset($step->dsl['identifier'])) {
-                $sectionUpdateStruct->identifier = $step->dsl['identifier'];
+                $sectionUpdateStruct->identifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
             }
             if (isset($step->dsl['name'])) {
                 $sectionUpdateStruct->name = $step->dsl['name'];

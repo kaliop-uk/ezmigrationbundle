@@ -44,7 +44,8 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
         $objectStateService = $this->repository->getObjectStateService();
 
-        $objectStateGroupCreateStruct = $objectStateService->newObjectStateGroupCreateStruct($step->dsl['identifier']);
+        $objectStateGroupIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $objectStateGroupCreateStruct = $objectStateService->newObjectStateGroupCreateStruct($objectStateGroupIdentifier);
         $objectStateGroupCreateStruct->defaultLanguageCode = self::DEFAULT_LANGUAGE_CODE;
 
         foreach ($step->dsl['names'] as $languageCode => $name) {
@@ -86,7 +87,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
             $objectStateGroupUpdateStruct = $objectStateService->newObjectStateGroupUpdateStruct();
 
             if (isset($step->dsl['identifier'])) {
-                $objectStateGroupUpdateStruct->identifier = $step->dsl['identifier'];
+                $objectStateGroupUpdateStruct->identifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
             }
             if (isset($step->dsl['names'])) {
                 foreach ($step->dsl['names'] as $languageCode => $name) {

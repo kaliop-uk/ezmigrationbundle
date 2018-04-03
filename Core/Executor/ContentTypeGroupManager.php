@@ -38,7 +38,8 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
 
         $contentTypeService = $this->repository->getContentTypeService();
 
-        $createStruct = $contentTypeService->newContentTypeGroupCreateStruct($step->dsl['identifier']);
+        $contentTypeGroupIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $createStruct = $contentTypeService->newContentTypeGroupCreateStruct($contentTypeGroupIdentifier);
 
         if (isset($step->dsl['creation_date'])) {
             $createStruct->creationDate = $this->toDateTime($step->dsl['creation_date']);
@@ -65,7 +66,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
             $updateStruct = $contentTypeService->newContentTypeGroupUpdateStruct();
 
             if (isset($step->dsl['identifier'])) {
-                $updateStruct->identifier = $step->dsl['identifier'];
+                $updateStruct->identifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
             }
             if (isset($step->dsl['modification_date'])) {
                 $updateStruct->modificationDate = $this->toDateTime($step->dsl['modification_date']);
