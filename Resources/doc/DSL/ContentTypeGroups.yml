@@ -59,3 +59,4 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional. See above for allowed values

@@ -3,8 +3,8 @@
     mode: create
     name: xyz
     identifier: xyz
-    # The list in references tells the manager to store specific values for later use
-    # by other steps in the current migration.
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
@@ -62,3 +62,4 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional. See above for allowed values
