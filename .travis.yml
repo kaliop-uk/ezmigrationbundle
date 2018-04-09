@@ -69,9 +69,8 @@ install:
   # TODO is this still needed?
   - 'if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
-  - composer require --prefer-source --dev ${EZ_PACKAGES}
-  # Q: is this needed at all ???
-  #- composer update
+  - composer require --prefer-source --dev --no-update ${EZ_PACKAGES}
+  - composer update
 
   # Re-enable xdebug for when we need to generate code coverage
   - if [ "$CODE_COVERAGE" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
