@@ -69,11 +69,13 @@ install:
   # TODO is this still needed?
   - 'if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
-  # show memory usage
+  # debugging
   - sudo free -m -t
-  # show actions of the OOM killer
-  - sudo dmesg
+  #- sudo dmesg
+  - sudo service postgresql stop
+  - sudo service memcached stop
   - sudo service --status-all
+  - php -i
 
   - composer require --prefer-source --dev --no-update ${EZ_PACKAGES}
   - composer update
