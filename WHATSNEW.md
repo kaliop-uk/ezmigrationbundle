@@ -1,3 +1,9 @@
+Version 4.7
+===========
+
+* New: migration step `file/prepend`, works just like `file/append` but adds content at beginning instead of end
+
+
 Version 4.6
 ===========
 

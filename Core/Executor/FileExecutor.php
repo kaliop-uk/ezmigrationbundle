@@ -8,7 +8,7 @@ use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface
 class FileExecutor extends AbstractExecutor
 {
     protected $supportedStepTypes = array('file');
-    protected $supportedActions = array('load', 'save', 'copy', 'move', 'delete', 'append');
+    protected $supportedActions = array('load', 'save', 'copy', 'move', 'delete', 'append', 'prepend');
 
     /** @var PrefixBasedResolverInterface $referenceResolver */
     protected $referenceResolver;
@@ -114,6 +114,35 @@ class FileExecutor extends AbstractExecutor
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
 
         $return = file_put_contents($fileName, $contents, FILE_APPEND);
+
+        $this->setReferences($fileName, $dsl);
+
+        return $return;
+    }
+
+    /**
+     * @param array $dsl
+     * @param array $context
+     * @return int
+     * @throws \Exception
+     */
+    protected function prepend($dsl, $context)
+    {
+        if (!isset($dsl['file']) || !isset($dsl['body'])) {
+            throw new \Exception("Can not prepend to file: name or body missing");
+        }
+
+        if (is_string($dsl['body'])) {
+            $contents = $this->resolveReferencesInText($dsl['body']);
+        } else {
+            throw new \Exception("Can not append to file: body tag must be a string");
+        }
+
+        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+
+        $contents .= file_get_contents($fileName);
+
+        $return = file_put_contents($fileName, $contents);
 
         $this->setReferences($fileName, $dsl);
 
