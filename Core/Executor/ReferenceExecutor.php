@@ -12,6 +12,8 @@ use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 
 class ReferenceExecutor extends AbstractExecutor
 {
+    use IgnorableStepExecutorTrait;
+
     protected $supportedStepTypes = array('reference');
     protected $supportedActions = array('set', 'load', 'save', 'dump');
 
@@ -43,6 +45,8 @@ class ReferenceExecutor extends AbstractExecutor
         if (!in_array($action, $this->supportedActions)) {
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
+
+        $this->skipStepIfNeeded($step);
 
         return $this->$action($step->dsl, $step->context);
     }

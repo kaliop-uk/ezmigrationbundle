@@ -7,6 +7,8 @@ use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface
 
 class FileExecutor extends AbstractExecutor
 {
+    use IgnorableStepExecutorTrait;
+
     protected $supportedStepTypes = array('file');
     protected $supportedActions = array('load', 'save', 'copy', 'move', 'delete', 'append', 'prepend');
 
@@ -36,6 +38,8 @@ class FileExecutor extends AbstractExecutor
         if (!in_array($action, $this->supportedActions)) {
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
+
+        $this->skipStepIfNeeded($step);
 
         return $this->$action($step->dsl, $step->context);
     }
@@ -69,14 +73,16 @@ class FileExecutor extends AbstractExecutor
      */
     protected function save($dsl, $context)
     {
-        if (!isset($dsl['file']) || !isset($dsl['body'])) {
-            throw new \Exception("Can not save file: name or body missing");
+        if (!isset($dsl['file']) || (!isset($dsl['body']) && !isset($dsl['template']))) {
+            throw new \Exception("Can not save file: name or body or template missing");
         }
 
         if (is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
+        } elseif (is_string($dsl['template'])) {
+            $contents = $this->resolveReferencesInText(file_get_contents($this->resolveReferences($dsl['template'])));
         } else {
-            throw new \Exception("Can not save file: body tag must be a string");
+            throw new \Exception("Can not save file: either body or template tag must be a string");
         }
 
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
@@ -101,14 +107,16 @@ class FileExecutor extends AbstractExecutor
      */
     protected function append($dsl, $context)
     {
-        if (!isset($dsl['file']) || !isset($dsl['body'])) {
-            throw new \Exception("Can not append to file: name or body missing");
+        if (!isset($dsl['file']) || (!isset($dsl['body']) && !isset($dsl['template']))) {
+            throw new \Exception("Can not append to file: name or body or template missing");
         }
 
         if (is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
+        } elseif (is_string($dsl['template'])) {
+            $contents = $this->resolveReferencesInText(file_get_contents($this->resolveReferences($dsl['template'])));
         } else {
-            throw new \Exception("Can not append to file: body tag must be a string");
+            throw new \Exception("Can not append to file: either body or template tag must be a string");
         }
 
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
@@ -128,19 +136,23 @@ class FileExecutor extends AbstractExecutor
      */
     protected function prepend($dsl, $context)
     {
-        if (!isset($dsl['file']) || !isset($dsl['body'])) {
-            throw new \Exception("Can not prepend to file: name or body missing");
+        if (!isset($dsl['file']) || (!isset($dsl['body']) && !isset($dsl['template']))) {
+            throw new \Exception("Can not prepend to file: name or body or template missing");
         }
 
         if (is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
+        } elseif (is_string($dsl['template'])) {
+            $contents = $this->resolveReferencesInText(file_get_contents($this->resolveReferences($dsl['template'])));
         } else {
-            throw new \Exception("Can not append to file: body tag must be a string");
+            throw new \Exception("Can not append to file: either body or template tag must be a string");
         }
 
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
 
-        $contents .= file_get_contents($fileName);
+        if (file_exists($fileName)) {
+            $contents .= file_get_contents($fileName);
+        }
 
         $return = file_put_contents($fileName, $contents);
 

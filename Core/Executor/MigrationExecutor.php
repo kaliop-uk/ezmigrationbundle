@@ -107,7 +107,8 @@ class MigrationExecutor extends AbstractExecutor
         return true;
     }
 
-    protected function loadEntity($dsl, $context) {
+    protected function loadEntity($dsl, $context)
+    {
         if (!isset($dsl['type']) || !isset($dsl['match'])) {
             throw new \Exception("A 'type' and a 'match' are required to load entities when suspending a migration");
         }

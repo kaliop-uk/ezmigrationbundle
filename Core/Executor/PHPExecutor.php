@@ -7,6 +7,8 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 class PHPExecutor extends AbstractExecutor
 {
+    use IgnorableStepExecutorTrait;
+
     protected $supportedStepTypes = array('php');
     protected $mandatoryInterface = 'Kaliop\eZMigrationBundle\API\MigrationInterface';
     protected $container;
@@ -31,6 +33,8 @@ class PHPExecutor extends AbstractExecutor
             throw new \Exception("Missing 'class' for php migration step");
         }
         $class = $dsl['class'];
+
+        $this->skipStepIfNeeded($step);
 
         if (!class_exists($class) && isset($step->context['path']))
         {

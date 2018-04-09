@@ -1,8 +1,20 @@
 Version 4.7
 ===========
 
-* New: migration step `file/prepend`, works just like `file/append` but adds content at beginning instead of end
+* New: migration step `file/prepend`, works just like `file/append` but adds content at beginning instead of end of file
 
+* New: migration steps `file/append`, `file/prepend` and `file/save` can load the file contents from a template file on
+    disk besides having it inline in the migration definition 
+
+* New: all migration steps that deal with the content repository, as well as sql, php class, sf services, files, mail,
+    http calls, process execution have gained support for being skipped via an `if` tag. The semantics are the same
+    as for the existing step `migration/cancel`:
+
+    ```
+    if: # Optional. If set, the migration step will be skipped when the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+    ```
 
 Version 4.6
 ===========

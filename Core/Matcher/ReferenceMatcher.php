@@ -8,7 +8,7 @@ use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
 /**
  * We abuse a bit the 'matcher' framework to set up a 'constraint' matcher which is used to tell whether a reference
- *  matches a given condition
+ * matches a given condition
  */
 class ReferenceMatcher extends AbstractMatcher
 {

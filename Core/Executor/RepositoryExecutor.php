@@ -14,6 +14,7 @@ use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
 abstract class RepositoryExecutor extends AbstractExecutor
 {
     use RepositoryUserSetterTrait;
+    use IgnorableStepExecutorTrait;
 
     /**
      * Constant defining the default language code (used if not specified by the migration or on the command line)
@@ -78,6 +79,8 @@ abstract class RepositoryExecutor extends AbstractExecutor
         }
 
         if (method_exists($this, $action)) {
+
+            $this->skipStepIfNeeded($step);
 
             $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
 

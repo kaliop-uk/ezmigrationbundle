@@ -10,6 +10,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class HTTPExecutor extends AbstractExecutor
 {
+    use IgnorableStepExecutorTrait;
+
     protected $supportedStepTypes = array('http');
     protected $supportedActions = array('call');
 
@@ -42,6 +44,8 @@ class HTTPExecutor extends AbstractExecutor
         if (!in_array($action, $this->supportedActions)) {
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
+
+        $this->skipStepIfNeeded($step);
 
         return $this->$action($step->dsl, $step->context);
     }

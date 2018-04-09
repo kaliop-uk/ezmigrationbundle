@@ -17,6 +17,8 @@
     file: xxx # string. Filename including path. References will be resolved
     body: "file contents" # string. References will be replaced as long as they are within square brackets
                           # eg. to save to a file the value of reference 'abc', write: body: "[reference:abc]"
+    template: path/to/file # optional. Alternative to using the "body" tag: load body from the template file
+                           # References will be resolved in the file path
     overwrite: true|false # Optional, default false. If not set, and the file already exists, an exception is thrown
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
@@ -32,6 +34,8 @@
     file: xxx # string. Filename including path. References will be resolved
     body: "file contents" # string. References will be replaced as long as they are within square brackets
                           # eg. to save to a file the value of reference 'abc', write: body: "[reference:abc]"
+    template: path/to/file # optional. Alternative to using the "body" tag: load body from the template file.
+                           # References will be resolved in the file path
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
@@ -46,6 +50,8 @@
     file: xxx # string. Filename including path. References will be resolved
     body: "file contents" # string. References will be replaced as long as they are within square brackets
                           # eg. to save to a file the value of reference 'abc', write: body: "[reference:abc]"
+    template: path/to/file # optional. Alternative to using the "body" tag: load body from the template file
+                           # References will be resolved in the file path
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

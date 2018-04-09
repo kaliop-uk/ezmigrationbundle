@@ -16,6 +16,7 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
@@ -314,9 +315,13 @@ class MigrationService implements ContextProviderInterface
                     $executor = $beforeStepExecutionEvent->getExecutor();
                     $step = $beforeStepExecutionEvent->getStep();
 
-                    $result = $executor->execute($step);
+                    try {
+                        $result = $executor->execute($step);
 
-                    $this->dispatcher->dispatch($this->eventPrefix . 'step_executed', new StepExecutedEvent($step, $result));
+                        $this->dispatcher->dispatch($this->eventPrefix . 'step_executed', new StepExecutedEvent($step, $result));
+                    } catch (MigrationStepSkippedException $e) {
+                        continue;
+                    }
 
                     $i++;
                 }

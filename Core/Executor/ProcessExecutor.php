@@ -9,6 +9,8 @@ use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface
 
 class ProcessExecutor extends AbstractExecutor
 {
+    use IgnorableStepExecutorTrait;
+
     protected $supportedStepTypes = array('process');
     protected $supportedActions = array('run');
 
@@ -40,6 +42,8 @@ class ProcessExecutor extends AbstractExecutor
         if (!in_array($action, $this->supportedActions)) {
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
+
+        $this->skipStepIfNeeded($step);
 
         return $this->$action($step->dsl, $step->context);
     }

@@ -8,6 +8,8 @@ use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface
 
 class ServiceExecutor extends AbstractExecutor
 {
+    use IgnorableStepExecutorTrait;
+
     protected $supportedStepTypes = array('service');
     protected $supportedActions = array('call');
 
@@ -40,6 +42,8 @@ class ServiceExecutor extends AbstractExecutor
         if (!in_array($action, $this->supportedActions)) {
             throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
+
+        $this->skipStepIfNeeded($step);
 
         return $this->$action($step->dsl, $step->context);
     }

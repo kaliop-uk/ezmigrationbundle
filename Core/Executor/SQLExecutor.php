@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
@@ -9,6 +8,8 @@ use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 
 class SQLExecutor extends AbstractExecutor
 {
+    use IgnorableStepExecutorTrait;
+
     /**
      * @var DatabaseHandler $connection
      */
@@ -37,6 +38,8 @@ class SQLExecutor extends AbstractExecutor
     public function execute(MigrationStep $step)
     {
         parent::execute($step);
+
+        $this->skipStepIfNeeded($step);
 
         $conn = $this->dbHandler->getConnection();
         // @see http://doctrine-orm.readthedocs.io/projects/doctrine-dbal/en/latest/reference/platforms.html
