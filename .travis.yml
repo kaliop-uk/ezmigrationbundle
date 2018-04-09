@@ -3,7 +3,7 @@
 language: php
 
 # use the docker-based Travis images for a tiny speed boost
-sudo: false
+sudo: true
 
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
@@ -100,6 +100,11 @@ after_failure:
   # Display as much info as we can to help developers
   - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php -i; fi
   #- cat composer.lock
+  # show memory usage
+  - sudo free -m -t
+  # show actions of the OOM killer
+  - sudo dmesg
+  - sudo service --status-all
 
 after_script:
   # Upload code-coverage to Scrutinizer
