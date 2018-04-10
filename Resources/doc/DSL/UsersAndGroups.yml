@@ -17,6 +17,9 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports user_id, email, enabled, login
                                  # The shorthand 'id' can be used instead of 'user_id'
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: user
@@ -50,6 +53,9 @@
                                  # Supports user_id, email, enabled, login
                                  # The shorthand 'id' can be used instead of 'user_id'
                                  # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: user
@@ -68,6 +74,9 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: user_group
@@ -86,6 +95,9 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: user_group_id
                                  # The shorthand 'id' can be used instead of 'user_group_id'
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: user_group
@@ -118,6 +130,9 @@
                                  # Supports: user_group_id
                                  # The shorthand 'id' can be used instead of 'user_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     # Note: The users which are not assigned to other groups will be deleted.
@@ -136,3 +151,6 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

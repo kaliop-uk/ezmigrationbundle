@@ -16,6 +16,9 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     mode: update
@@ -52,6 +55,9 @@
                                  # Supports: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     # The users which are not assigned to other groups will be deleted.
@@ -74,6 +80,9 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     mode: create
@@ -94,6 +103,9 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports object_state_id, priority
                                  # The shorthand 'id' can be used instead of 'object_state_id'
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     mode: update
@@ -130,6 +142,9 @@
                                  # Supports object_state_id, priority
                                  # The shorthand 'id' can be used instead of 'object_state_id'
                                  # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     mode: delete
@@ -151,3 +166,6 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

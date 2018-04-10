@@ -2,6 +2,9 @@
 -
     type: trash
     mode: purge
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 # Restores a Location that is in the trash
 -
@@ -14,6 +17,9 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: see location/create
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 # Deletes definitively a Location that is already in the trash
 -
@@ -26,3 +32,6 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: see location/create
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

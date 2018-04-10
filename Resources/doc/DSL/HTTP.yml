@@ -21,6 +21,9 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports: status_code, reason_phrase, protocol_version, body, body_size
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 # *** Setting it up: ***
 #

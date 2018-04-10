@@ -13,6 +13,9 @@
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: tag
@@ -43,6 +46,9 @@
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: tag
@@ -68,6 +74,9 @@
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: tag
@@ -79,3 +88,6 @@
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

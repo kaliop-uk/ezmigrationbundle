@@ -101,6 +101,9 @@
                                    # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
                                    # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
                                    # (for the full syntax supported, see jmespath)
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: content
@@ -172,6 +175,9 @@
                                    # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
                                    # (for the full syntax supported, see jmespath)
                                    # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: content
@@ -211,6 +217,9 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: content
@@ -264,3 +273,6 @@
                                    # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
                                    # (for the full syntax supported, see jmespath)
                                    # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

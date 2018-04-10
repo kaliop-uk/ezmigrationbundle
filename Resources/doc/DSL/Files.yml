@@ -10,6 +10,9 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     # Check file existence and save the information into a reference
@@ -22,6 +25,9 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: exists # only one type of attribute is supported: exists
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: file
@@ -39,6 +45,9 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: file
@@ -55,6 +64,9 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: file
@@ -71,6 +83,9 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: file
@@ -83,6 +98,9 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: file
@@ -97,6 +115,10 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference *taken from the source file*.
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+
 -
     type: file
     mode: move
@@ -110,3 +132,6 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference *taken from the source file*.
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

@@ -9,6 +9,9 @@
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports content type group id and identifier
                                    # The shorthand 'id' can be used instead of 'content_type_group_id'
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: content_type_group
@@ -38,6 +41,9 @@
                                    # Supports content type group id and identifier
                                    # The shorthand 'id' can be used instead of 'content_type_group_id'
                                    # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     # Delete one (or more) content type group
@@ -60,3 +66,6 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

@@ -123,6 +123,9 @@
                                    # attributes.title.required (boolean value)
                                    # attributes.ezobjectrelationlist."field-settings".selectionContentTypes.length(@) (nr. of cotent-types allowed in an object-relations field)
                                    # (for the full syntax supported, see jmespath)
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     type: content_type
@@ -186,6 +189,9 @@
                                        # The shorthand 'id' can be used instead of 'content_type_id'
                                        # The shorthand 'identifier' can be used instead of 'content_type_identifier'
                                        # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 -
     # Delete one or more content type(s)
@@ -209,6 +215,9 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
 
 # Attribute examples.
 
@@ -269,3 +278,6 @@
     mode: load
     match: # See docs above for update and delete
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
