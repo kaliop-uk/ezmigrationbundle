@@ -1,4 +1,4 @@
-sudo# A Travis configuration file for a bundle which aims to be compatible with both eZPublish 5 and eZPlatform
+# A Travis configuration file for a bundle which aims to be compatible with both eZPublish 5 and eZPlatform
 
 language: php
 
