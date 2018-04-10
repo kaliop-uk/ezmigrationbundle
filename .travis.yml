@@ -1,9 +1,9 @@
-# A Travis configuration file for a bundle which aims to be compatible with both eZPublish 5 and eZPlatform
+sudo# A Travis configuration file for a bundle which aims to be compatible with both eZPublish 5 and eZPlatform
 
 language: php
 
 # use the docker-based Travis images for a tiny speed boost
-sudo: true
+sudo: false
 
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
@@ -40,7 +40,7 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.11.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
   allow_failures:
-    # this currently fails because of... composer dying ?
+    # this is failing because of composer running out of memory :-(
     - php: 5.6
 
 before_install:
@@ -69,13 +69,14 @@ install:
   # TODO is this still needed?
   - 'if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
-  # debugging
-  - sudo free -m -t
-  #- sudo dmesg
-  - sudo service postgresql stop
-  - sudo service memcached stop
-  - sudo service --status-all
-  - php -i
+  # debugging memory problems with composer
+  #- sudo free -m -t
+  #- sudo service postgresql stop
+  #- sudo service memcached stop
+  #- sudo service --status-all
+  #- php -i
+
+  # TODO try enabling swap manually
 
   - composer require --prefer-source --dev --no-update ${EZ_PACKAGES}
   - composer update

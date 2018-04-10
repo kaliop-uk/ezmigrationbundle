@@ -10,7 +10,7 @@ class FileExecutor extends AbstractExecutor
     use IgnorableStepExecutorTrait;
 
     protected $supportedStepTypes = array('file');
-    protected $supportedActions = array('load', 'save', 'copy', 'move', 'delete', 'append', 'prepend');
+    protected $supportedActions = array('load', 'save', 'copy', 'move', 'delete', 'append', 'prepend', 'exists');
 
     /** @var PrefixBasedResolverInterface $referenceResolver */
     protected $referenceResolver;
@@ -57,12 +57,44 @@ class FileExecutor extends AbstractExecutor
         }
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         if (!file_exists($fileName)) {
-            throw new \Exception("Can not move load '$fileName': file missing");
+            throw new \Exception("Can not load '$fileName': file missing");
         }
 
         $this->setReferences($fileName, $dsl);
 
         return file_get_contents($fileName);
+    }
+
+    /**
+     * @param array $dsl
+     * @param array $context
+     * @return string
+     * @throws \Exception
+     */
+    protected function exists($dsl, $context)
+    {
+        if (!isset($dsl['file'])) {
+            throw new \Exception("Can not check for existence of file: name missing");
+        }
+        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+
+        $exists = file_exists($fileName);
+
+        if (array_key_exists('references', $dsl)) {
+            foreach ($dsl['references'] as $reference) {
+                switch ($reference['attribute']) {
+                    case 'exists':
+                        $overwrite = false;
+                        if (isset($reference['overwrite'])) {
+                            $overwrite = $reference['overwrite'];
+                        }
+                        $this->referenceResolver->addReference($reference['identifier'], $exists, $overwrite);
+                        break;
+                }
+            }
+        }
+
+        return $exists;
     }
 
     /**
@@ -304,7 +336,7 @@ class FileExecutor extends AbstractExecutor
     /**
      * Replaces any references inside a string
      *
-     * @param string
+     * @param string $text
      * @return string
      */
     protected function resolveReferencesInText($text)
