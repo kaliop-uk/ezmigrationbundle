@@ -157,5 +157,38 @@
 
 -
     type: file
+    mode: exists
+    file: reference:kmb_test_22_y
+    references:
+        -
+            attribute: exists
+            identifier: aaa11
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa11
+    test:
+        equals: true
+
+-
+    type: file
     mode: delete
     file: reference:kmb_test_22_y
+
+-
+    type: file
+    mode: exists
+    file: reference:kmb_test_22_y
+    references:
+        -
+            attribute: exists
+            identifier: aaa11
+            overwrite: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa11
+    test:
+        equals: false
