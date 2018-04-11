@@ -132,7 +132,7 @@ just generated is invalid, do not worry - that is by design. Head on to the next
 
 To apply a single migration run the migrate command passing it the path to its definition, as follows:
 
-    php ezpublish/console kaliop:migration:migrate --path=src/MyNamespace/MyBundle/MigrationsVersions/20160803193400_a_migration.yml
+    php ezpublish/console kaliop:migration:migrate --path=src/MyNamespace/MyBundle/MigrationVersions/20160803193400_a_migration.yml
 
 ### Editing migration files
 

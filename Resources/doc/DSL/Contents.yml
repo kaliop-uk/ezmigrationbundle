@@ -15,7 +15,7 @@
                     lines, but new line is not preserved on parsing
         # ezimage/ezbinaryfile/ezmedia  file attribute example
         attribute5:
-            path: 'path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/, MigrationsVersions/media/ or absolute path
+            path: 'path/to/image' # Relative path from MigrationVersions/images/ or MigrationVersions/files/, MigrationVersions/media/ or absolute path
             alt_text: xyz # Optional, only used for images
             filename: abc # Optional, taken from the actual file if not specified
             mime_type: def # Optional. For ezbinaryfile and ezmedia only. If not specified, the actual file is analyzed using the php function mime_content_type()
@@ -27,7 +27,7 @@
             width: 123 # Optional. For ezmedia only
             height: 456 # Optional. For ezmedia only
         # ezimage/ezbinaryfile/ezmedia file attribute example, using simplified form
-        attribute5b: '/path/to/image' # Relative path from MigrationsVersions/images/ or MigrationsVersions/files/ or MigrationsVersions/media/, or absolute path
+        attribute5b: '/path/to/image' # Relative path from MigrationVersions/images/ or MigrationVersions/files/ or MigrationVersions/media/, or absolute path
         # ezxmltext, showing an example of using references
         attribute6: '<section><paragraph><embed view="embed" size="medium" object_id="[reference:example_reference]" /></paragraph></section>'
         # Adding values to an ezauthor field
