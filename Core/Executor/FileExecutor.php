@@ -112,7 +112,7 @@ class FileExecutor extends AbstractExecutor
         if (is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
         } elseif (is_string($dsl['template'])) {
-            $path = $this->resolveReferences($dsl['template']);
+            $path = $this->referenceResolver->resolveReferences($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
             $template = dirname($context['path']) . '/' . $path;
             if (!is_file($template)) {
