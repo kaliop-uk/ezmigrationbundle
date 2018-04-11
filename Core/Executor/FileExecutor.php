@@ -112,7 +112,7 @@ class FileExecutor extends AbstractExecutor
         if (is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
         } elseif (is_string($dsl['template'])) {
-            $path = $this->referenceResolver->resolveReferences($dsl['template']);
+            $path = $this->referenceResolver->resolveReference($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
             $template = dirname($context['path']) . '/' . $path;
             if (!is_file($template)) {
@@ -152,7 +152,13 @@ class FileExecutor extends AbstractExecutor
         if (is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
         } elseif (is_string($dsl['template'])) {
-            $contents = $this->resolveReferencesInText(file_get_contents($this->resolveReferences($dsl['template'])));
+            $path = $this->referenceResolver->resolveReference($dsl['template']);
+            // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
+            $template = dirname($context['path']) . '/' . $path;
+            if (!is_file($template)) {
+                $template = $path;
+            }
+            $contents = $this->resolveReferencesInText(file_get_contents($template));
         } else {
             throw new \Exception("Can not append to file: either body or template tag must be a string");
         }
@@ -181,7 +187,13 @@ class FileExecutor extends AbstractExecutor
         if (is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
         } elseif (is_string($dsl['template'])) {
-            $contents = $this->resolveReferencesInText(file_get_contents($this->resolveReferences($dsl['template'])));
+            $path = $this->referenceResolver->resolveReference($dsl['template']);
+            // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
+            $template = dirname($context['path']) . '/' . $path;
+            if (!is_file($template)) {
+                $template = $path;
+            }
+            $contents = $this->resolveReferencesInText(file_get_contents($template));
         } else {
             throw new \Exception("Can not append to file: either body or template tag must be a string");
         }
