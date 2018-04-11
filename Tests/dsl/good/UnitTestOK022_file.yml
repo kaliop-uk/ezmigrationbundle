@@ -120,6 +120,28 @@
 
 -
     type: file
+    mode: save
+    file: '/tmp/z.txt'
+    template: 'helloworld.txt'
+
+-
+    type: file
+    mode: load
+    file: '/tmp/z.txt'
+    references:
+        -
+            attribute: body
+            identifier: aaa9
+
+-
+    type: assert
+    target: reference
+    identifier: reference:aaa9
+    test:
+        equals: "hello world"
+
+-
+    type: file
     mode: delete
     file: reference:kmb_test_22_y
 
