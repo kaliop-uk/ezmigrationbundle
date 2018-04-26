@@ -723,4 +723,4 @@ services:
         class: '%ez_migration_bundle.helper.config.resolver%'
         arguments:
             - '@ezpublish.config.resolver'
-            - '@container'
+            - '@service_container'
