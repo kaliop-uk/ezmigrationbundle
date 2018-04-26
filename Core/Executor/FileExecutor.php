@@ -109,12 +109,12 @@ class FileExecutor extends AbstractExecutor
             throw new \Exception("Can not save file: name or body or template missing");
         }
 
-        if (is_string($dsl['body'])) {
+        if (isset($dsl['body']) && is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
-        } elseif (is_string($dsl['template'])) {
+        } elseif (isset($dsl['template']) && is_string($dsl['template'])) {
             $path = $this->referenceResolver->resolveReference($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
-            $template = dirname($context['path']) . '/' . $path;
+            $template = dirname($context['path']) . '/templates/' . $path;
             if (!is_file($template)) {
                 $template = $path;
             }
@@ -149,12 +149,12 @@ class FileExecutor extends AbstractExecutor
             throw new \Exception("Can not append to file: name or body or template missing");
         }
 
-        if (is_string($dsl['body'])) {
+        if (isset($dsl['body']) && is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
-        } elseif (is_string($dsl['template'])) {
+        } elseif (isset($dsl['template']) && is_string($dsl['template'])) {
             $path = $this->referenceResolver->resolveReference($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
-            $template = dirname($context['path']) . '/' . $path;
+            $template = dirname($context['path']) . '/templates/' . $path;
             if (!is_file($template)) {
                 $template = $path;
             }
@@ -184,12 +184,12 @@ class FileExecutor extends AbstractExecutor
             throw new \Exception("Can not prepend to file: name or body or template missing");
         }
 
-        if (is_string($dsl['body'])) {
+        if (isset($dsl['body']) && is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
-        } elseif (is_string($dsl['template'])) {
+        } elseif (isset($dsl['template']) && is_string($dsl['template'])) {
             $path = $this->referenceResolver->resolveReference($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
-            $template = dirname($context['path']) . '/' . $path;
+            $template = dirname($context['path']) . '/templates/' . $path;
             if (!is_file($template)) {
                 $template = $path;
             }
