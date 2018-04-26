@@ -354,6 +354,10 @@ to store a different value for each Symfony environment. For example:
             content_id: "reference:content_id_ref"
         etc: ...
 
+### When dumping a Content into a yml migration via the `generate` command, the list of attributes is empty
+
+A: this is most likely due to using a bad language configuration
+
 
 ## Extending the bundle
 
