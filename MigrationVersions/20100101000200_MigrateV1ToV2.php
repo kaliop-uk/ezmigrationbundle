@@ -29,7 +29,7 @@ class MigrateV1ToV2 implements MigrationInterface
     private function goForIt()
     {
         $this->legacyTableName = $this->container->getParameter('kaliop_bundle_migration.table_name');
-        $this->legacyMigrationsDir = $this->container->getParameter('kaliop_bundle_migration.version_directory');
+        $this->legacyMigrationsDir = $this->container->get('ez_migration_bundle.helper.config.resolver')->getParameter('kaliop_bundle_migration.version_directory');
 
         $migrationStorageService = $this->container->get('ez_migration_bundle.storage_handler');
         $this->dbHandler = $this->container->get('ezpublish.connection');

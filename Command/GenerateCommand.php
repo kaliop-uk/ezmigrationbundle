@@ -294,7 +294,7 @@ EOT
         }
 
         $bundle = $this->getApplication()->getKernel()->getBundle($bundleName);
-        $migrationDirectory = $bundle->getPath() . '/' . $this->getContainer()->getParameter('kaliop_bundle_migration.version_directory');
+        $migrationDirectory = $bundle->getPath() . '/' . $this->getContainer()->get('ez_migration_bundle.helper.config.resolver')->getParameter('kaliop_bundle_migration.version_directory');
 
         return $migrationDirectory;
     }

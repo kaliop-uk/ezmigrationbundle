@@ -4,7 +4,7 @@ Version 4.7
 * New: migration step `file/prepend`, works just like `file/append` but adds content at beginning instead of end of file
 
 * New: migration steps `file/append`, `file/prepend` and `file/save` can load the file contents from a template file on
-    disk besides having it inline in the migration definition 
+    disk besides having it inline in the migration definition
 
 * New: all migration steps that deal with the content repository, as well as sql, php class, sf services, files, mail,
     http calls, process execution have gained support for being skipped via an `if` tag. The semantics are the same
@@ -15,6 +15,16 @@ Version 4.7
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
     ```
+
+* New: it is now possible to define the following parameters using siteaccess-aware configuration:
+
+    `kaliop_bundle_migration.version_directory`, `ez_migration_bundle.table_name`, `ez_migration_bundle.context_table_name`
+    
+    This is useful when you have multi-site eZPlatform installations which do not share a single Repository database, and
+    as such might need to execute different sets of migrations for each site.
+
+    As an example, just use this parameter format: `kaliop_bundle_migration.my_siteaccess_group.version_directory`
+
 
 Version 4.6
 ===========

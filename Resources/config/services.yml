@@ -1,10 +1,20 @@
 parameters:
+    # Set to false to disable completely the debug output of executed migration steps in verbose mode
+    ez_migration_bundle.enable_debug_output: true
+
     # The directory (inside each bundle) where to look for migrations definitions
     # NB: this parameter will be renamed in the future
+    # NB: supports per-siteaccess configuration as an override of global configuration. For that, just define parameters:
+    #     kaliop_bundle_migration.<siteaccess_group>.version_directory
     kaliop_bundle_migration.version_directory: 'MigrationVersions'
     # The database tables used to store migration information. Will be created automatically
+    # NB: supports per-siteaccess configuration as an override of global configuration. For that, just define parameters:
+    #     ez_migration_bundle.<siteaccess_group>.table_name
     ez_migration_bundle.table_name: 'kaliop_migrations'
+    # NB: supports per-siteaccess configuration as an override of global configuration. For that, just define parameters:
+    #     ez_migration_bundle.<siteaccess_group>.context_table_name
     ez_migration_bundle.context_table_name: 'kaliop_migrations_contexts'
+
     # Used to discriminate valid migration definitions
     ez_migration_bundle.valid_databases:
         # names have to correspond to doctrine 'platform', short of version numbers and lowercase
@@ -16,8 +26,6 @@ parameters:
         - 'drizzle'
         - 'sqlserver'
         - 'sqlanywhere'
-    # Set to false to disable completely the debug output of executed migration steps in verbose mode
-    ez_migration_bundle.enable_debug_output: true
 
     # Deprecated parameter. Left in for the v1-to-v2 migration to work.
     kaliop_bundle_migration.table_name: 'kaliop_versions'
@@ -104,6 +112,7 @@ parameters:
     ez_migration_bundle.helper.limitation_converter.class: Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter
     ez_migration_bundle.helper.sort_converter.class: Kaliop\eZMigrationBundle\Core\Helper\SortConverter
     ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
+    ez_migration_bundle.helper.config.resolver: Kaliop\eZMigrationBundle\Core\Helper\ConfigResolver
 
     ez_migration_bundle.step_executed_listener.tracing.class: Kaliop\eZMigrationBundle\Core\EventListener\TracingStepExecutedListener
 
@@ -129,13 +138,15 @@ services:
         class: '%ez_migration_bundle.loader.filesystem.class%'
         arguments:
             - '@kernel'
-            - '%kaliop_bundle_migration.version_directory%'
+            - 'kaliop_bundle_migration.version_directory'
+            - '@ez_migration_bundle.helper.config.resolver'
 
     ez_migration_bundle.loader.filesystem_recursive:
         class: '%ez_migration_bundle.loader.filesystem_recursive.class%'
         arguments:
             - '@kernel'
-            - '%kaliop_bundle_migration.version_directory%'
+            - 'kaliop_bundle_migration.version_directory'
+            - '@ez_migration_bundle.helper.config.resolver'
 
     ### parsers
 
@@ -173,7 +184,8 @@ services:
         class: '%ez_migration_bundle.storage_handler.database.class%'
         arguments:
             - '@ezpublish.connection'
-            - '%ez_migration_bundle.table_name%'
+            - 'ez_migration_bundle.table_name'
+            - '@ez_migration_bundle.helper.config.resolver'
 
     ez_migration_bundle.context_storage_handler:
         alias: ez_migration_bundle.context_storage_handler.database
@@ -182,7 +194,8 @@ services:
         class: '%ez_migration_bundle.context_storage_handler.database.class%'
         arguments:
             - '@ezpublish.connection'
-            - '%ez_migration_bundle.context_table_name%'
+            - 'ez_migration_bundle.context_table_name'
+            - '@ez_migration_bundle.helper.config.resolver'
 
     ### executors
 
@@ -705,3 +718,9 @@ services:
         class: '%ez_migration_bundle.helper.console_io.class%'
         tags:
             - { name: kernel.event_listener, event: console.command }
+
+    ez_migration_bundle.helper.config.resolver:
+        class: '%ez_migration_bundle.helper.config.resolver%'
+        arguments:
+            - '@ezpublish.config.resolver'
+            - '@container'

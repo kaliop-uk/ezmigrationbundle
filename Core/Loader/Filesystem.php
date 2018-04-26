@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Loader;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
+use Kaliop\eZMigrationBundle\API\ConfigResolverInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -19,10 +20,17 @@ class Filesystem implements LoaderInterface
     protected $versionDirectory;
     protected $kernel;
 
-    public function __construct(KernelInterface $kernel, $versionDirectory = 'Migrations')
+    /**
+     * Filesystem constructor.
+     * @param KernelInterface $kernel
+     * @param string $versionDirectoryParameter name of folder when $configResolver is null; name of parameter when it is not
+     * @param ConfigResolverInterface $configResolver
+     * @throws \Exception
+     */
+    public function __construct(KernelInterface $kernel, $versionDirectoryParameter = 'Migrations', ConfigResolverInterface $configResolver = null)
     {
-        $this->versionDirectory = $versionDirectory;
         $this->kernel = $kernel;
+        $this->versionDirectory = $configResolver ? $configResolver->getParameter($versionDirectoryParameter) : $versionDirectoryParameter;
     }
 
     /**

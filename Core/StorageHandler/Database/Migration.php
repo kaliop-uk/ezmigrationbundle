@@ -2,14 +2,16 @@
 
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Schema\Schema;
+use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
+use eZ\Publish\Core\Persistence\Database\SelectQuery;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationCollection;
-use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
-use Doctrine\DBAL\Schema\Schema;
-use eZ\Publish\Core\Persistence\Database\SelectQuery;
 use Kaliop\eZMigrationBundle\API\Value\Migration as APIMigration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+
+use Kaliop\eZMigrationBundle\API\ConfigResolverInterface;
 
 /**
  * Database-backed storage for info on executed migrations
@@ -22,11 +24,13 @@ class Migration extends TableStorage implements StorageHandlerInterface
 
     /**
      * @param DatabaseHandler $dbHandler
-     * @param string $tableName
+     * @param string $tableNameParameter
+     * @param ConfigResolverInterface $configResolver
+     * @throws \Exception
      */
-    public function __construct(DatabaseHandler $dbHandler, $tableName = 'kaliop_migrations')
+    public function __construct(DatabaseHandler $dbHandler, $tableNameParameter = 'kaliop_migrations', ConfigResolverInterface $configResolver = null)
     {
-        parent::__construct($dbHandler, $tableName);
+        parent::__construct($dbHandler, $tableNameParameter, $configResolver);
     }
 
     /**

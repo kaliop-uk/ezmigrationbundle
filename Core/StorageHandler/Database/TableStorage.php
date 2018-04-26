@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
+use Kaliop\eZMigrationBundle\API\ConfigResolverInterface;
 
 abstract class TableStorage
 {
@@ -28,12 +29,14 @@ abstract class TableStorage
 
     /**
      * @param DatabaseHandler $dbHandler
-     * @param string $tableName
+     * @param string $tableNameParameter name of table when $configResolver is null, name of parameter otherwise
+     * @param ConfigResolverInterface $configResolver
+     * @throws \Exception
      */
-    public function __construct(DatabaseHandler $dbHandler, $tableName)
+    public function __construct(DatabaseHandler $dbHandler, $tableNameParameter, ConfigResolverInterface $configResolver = null)
     {
         $this->dbHandler = $dbHandler;
-        $this->tableName = $tableName;
+        $this->tableName = $configResolver ? $configResolver->getParameter($tableNameParameter) : $tableNameParameter;
     }
 
     abstract function createTable();
