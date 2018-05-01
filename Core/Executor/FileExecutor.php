@@ -366,7 +366,7 @@ class FileExecutor extends AbstractExecutor
     protected function resolveReferencesInText($text)
     {
         if (!$this->referenceResolver instanceof EmbeddedReferenceResolverInterface) {
-            throw new \Exception("Reference resolver passed to HTTPExecutor should implement EmbeddedReferenceResolverInterface");
+            throw new \Exception("Reference resolver passed to FileExecutor should implement EmbeddedReferenceResolverInterface");
         }
 
         return $this->referenceResolver->ResolveEmbeddedReferences($text);

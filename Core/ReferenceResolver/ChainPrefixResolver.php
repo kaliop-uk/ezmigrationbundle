@@ -22,6 +22,7 @@ class ChainPrefixResolver extends ChainResolver implements PrefixBasedResolverIn
     public function getRegexp()
     {
         $regexps = array();
+        /** @var PrefixBasedResolverInterface $resolver */
         foreach ($this->resolvers as $resolver) {
             $regexp = preg_replace('/^\^/', '', substr($resolver->getRegexp(), 1, -1));
             if ($regexp !== '') {

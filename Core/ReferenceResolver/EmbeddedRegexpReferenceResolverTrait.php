@@ -43,6 +43,8 @@ trait EmbeddedRegexpReferenceResolverTrait
     }
 
     /**
+     * NB: here we assume that all regexp resolvers give us a regexp with a very specific format, notably using '/' as
+     * delimiter......
      * @return string
      * @todo make the start and end tokens flexible (it probably wont work well if we use eg. '}}' as end token)
      */
@@ -50,7 +52,6 @@ trait EmbeddedRegexpReferenceResolverTrait
     {
         // we need to alter the regexp we usr for std ref resolving, as it will be used to match parts of text, not the whole string
         $regexp = substr($this->getRegexp(), 1, -1);
-        // NB: here we assume that all regexp resolvers give us a regexp with a very specific format...
         return '/' . preg_quote($this->beginToken). preg_replace(array('/^\^/'), array(''), $regexp) . '[^' . $this->endToken . ']+' . preg_quote($this->endToken) . '/';
     }
 

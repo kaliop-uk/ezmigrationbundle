@@ -22,6 +22,7 @@ class ChainRegexpResolver extends ChainResolver implements RegexpBasedResolverIn
     public function getRegexp()
     {
         $regexps = array();
+        /** @var RegexpBasedResolverInterface $resolver */
         foreach ($this->resolvers as $resolver) {
             $regexp = substr($resolver->getRegexp(), 1, -1);
             if ($regexp !== '') {

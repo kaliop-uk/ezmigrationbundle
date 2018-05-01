@@ -6,8 +6,9 @@ use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
 
-class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenceResolverInterface
+class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenceResolverInterface, EmbeddedReferenceResolverInterface
 {
     /** @var ReferenceResolverInterface[] $resolvers */
     protected $resolvers = array();
@@ -107,5 +108,46 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
         }
 
         return $refs;
+    }
+
+    /**
+     * @param string $string
+     * @return bool true if the given $stringIdentifier contains at least one occurrence of the reference(s)
+     * @throws \Exception if any resolver in the chain is not an EmbeddedReferenceResolverInterface
+     */
+    public function hasEmbeddedReferences($string)
+    {
+        foreach ($this->resolvers as $resolver) {
+            if ($resolver instanceof EmbeddedReferenceResolverInterface) {
+                if ($resolver->hasEmbeddedReferences($string)) {
+                    return true;
+                }
+            } else {
+                throw new \Exception("Could not verify embedded references because of chained resolver of type: " . get_class($resolver));
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns the $string with eventual refs resolved.
+     * Q: SHALL WE GUARANTEE THAT ALL RESOLVERS IN THE CHAIN CAN TAKE PART IN THIS?
+     *
+     * @param string $string
+     * @return string
+     * @throws \Exception if any resolver in the chain is not an EmbeddedReferenceResolverInterface
+     */
+    public function resolveEmbeddedReferences($string)
+    {
+        foreach ($this->resolvers as $resolver) {
+            if ($resolver instanceof EmbeddedReferenceResolverInterface) {
+                $string = $resolver->resolveEmbeddedReferences($string);
+            } else {
+                throw new \Exception("Could not resolve embedded references because of chained resolver of type: " . get_class($resolver));
+            }
+        }
+
+        return $string;
     }
 }
