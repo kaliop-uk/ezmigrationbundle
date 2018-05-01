@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -20,6 +21,10 @@ class HTTPExecutor extends AbstractExecutor
 
     protected $container;
 
+    /**
+     * @param ContainerInterface $container
+     * @param PrefixBasedResolverInterface $referenceResolver has to implement EmbeddedReferenceResolverInterface as well!
+     */
     public function __construct(ContainerInterface $container, PrefixBasedResolverInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
@@ -148,24 +153,15 @@ class HTTPExecutor extends AbstractExecutor
      *
      * @param string
      * @return string
+     * @throws \Exception
      */
     protected function resolveReferencesInText($text)
     {
-        // we need to alter the regexp we get from the resolver, as it will be used to match parts of text, not the whole string
-        $regexp = substr($this->referenceResolver->getRegexp(), 1, -1);
-        // NB: here we assume that all regexp resolvers give us a regexp with a very specific format...
-        $regexp = '/\[' . preg_replace(array('/^\^/'), array('', ''), $regexp) . '[^]]+\]/';
-
-        $count = preg_match_all($regexp, $text, $matches);
-        // $matches[0][] will have the matched full string eg.: [reference:example_reference]
-        if ($count) {
-            foreach ($matches[0] as $referenceIdentifier) {
-                $reference = $this->referenceResolver->getReferenceValue(substr($referenceIdentifier, 1, -1));
-                $text = str_replace($referenceIdentifier, $reference, $text);
-            }
+        if (!$this->referenceResolver instanceof EmbeddedReferenceResolverInterface) {
+            throw new \Exception("Reference resolver passed to HTTPExecutor should implement EmbeddedReferenceResolverInterface");
         }
 
-        return $text;
+        return $this->referenceResolver->ResolveEmbeddedReferences($text);
     }
 
     protected function resolveReferencesInTextRecursively($textOrArray)

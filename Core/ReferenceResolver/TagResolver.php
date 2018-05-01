@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
+
 /**
  * Handles references to tags
  *

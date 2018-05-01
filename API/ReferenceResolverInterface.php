@@ -3,19 +3,20 @@
 namespace Kaliop\eZMigrationBundle\API;
 
 /**
- * Used to resolve references
+ * Used to resolve references.
+ * References can be variables (or functions) whose value is used to replace completely strings
  */
 interface ReferenceResolverInterface
 {
     /**
      * @param string $stringIdentifier
-     * @return bool
+     * @return bool true if the given $stringIdentifier identifies a reference
      */
     public function isReference($stringIdentifier);
 
     /**
      * @param string $stringIdentifier
-     * @return mixed
+     * @return mixed the value of the reference identified by $stringIdentifier
      * @throws \Exception if the given Identifier is not a reference
      */
     public function getReferenceValue($stringIdentifier);

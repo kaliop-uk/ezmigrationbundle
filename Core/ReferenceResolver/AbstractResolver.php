@@ -2,9 +2,9 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
-/**
- * Kept around for BC
- */
-abstract class AbstractResolver extends PrefixBasedResolver
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
+
+abstract class AbstractResolver extends PrefixBasedResolver implements EmbeddedReferenceResolverInterface
 {
+    use EmbeddedRegexpReferenceResolverTrait;
 }
