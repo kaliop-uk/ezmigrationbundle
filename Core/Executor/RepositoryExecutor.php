@@ -235,7 +235,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
     /**
      * Courtesy code to avoid reimplementing it in every subclass
-     * @deprecated will be moved into the reference resolver classes
+     * @todo will be moved into the reference resolver classes
      */
     protected function resolveReferencesRecursively($match)
     {

@@ -4,12 +4,12 @@ namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
-use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\Exception\ReferenceUnresolvedException;
 
-class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenceResolverInterface, EmbeddedReferenceResolverInterface
+class ChainResolver implements EmbeddedReferenceResolverBagInterface, EnumerableReferenceResolverInterface
 {
     /** @var ReferenceResolverInterface[] $resolvers */
     protected $resolvers = array();

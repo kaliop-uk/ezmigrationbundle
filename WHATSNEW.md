@@ -18,8 +18,20 @@ Version 4.8
     
     ```
     match:
-        remote_content_id: "something [reference:myref] different"
-    # we get remote_content_id = "something 99 different"
+        remote_content_id: "something [reference:myref] times different"
+    # we get remote_content_id = "something 99 times different"
+     ```
+
+* New: when creating and updating ContentType definitions, it is possible to use a reference to define each field. The
+    value of the reference must be an array with all the usual keys: 'name', 'searchable', etc...
+    This makes it easy to define multiple ContentTypes sharing fields with the same definition such as f.e. the 'title' 
+
+    ```
+    attributes:
+        title: "reference:title_field_definition"
+        body:
+            name: Body
+            ...
      ```
 
 

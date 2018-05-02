@@ -100,6 +100,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $maxFieldDefinitionPos = 0;
         $fieldDefinitions = array();
         foreach ($step->dsl['attributes'] as $position => $attribute) {
+            // allow easy reuse of attribute defs by storing them in references
+            if (is_string($attribute)) {
+                $attribute = $this->referenceResolver->resolveReference($attribute);
+            }
             $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $contentTypeIdentifier, $lang);
             $maxFieldDefinitionPos = $fieldDefinition->position > $maxFieldDefinitionPos ? $fieldDefinition->position : $maxFieldDefinitionPos;
             $fieldDefinitions[] = $fieldDefinition;
@@ -204,6 +208,11 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $maxFieldDefinitionPos = count($contentType->fieldDefinitions);
                 $newFieldDefinitions = array();
                 foreach ($step->dsl['attributes'] as $attribute) {
+
+                    // allow easy reuse of attribute defs by storing them in references
+                    if (is_string($attribute)) {
+                        $attribute = $this->referenceResolver->resolveReference($attribute);
+                    }
 
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
 
