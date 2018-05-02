@@ -7,18 +7,23 @@ use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\Exception\ReferenceUnresolvedException;
 
 class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenceResolverInterface, EmbeddedReferenceResolverInterface
 {
     /** @var ReferenceResolverInterface[] $resolvers */
     protected $resolvers = array();
+    /** @var bool $doResolveEmbeddedReferences */
+    protected $doResolveEmbeddedReferences;
 
     /**
      * @param ReferenceResolverInterface[] $resolvers
+     * @param bool $resolveEmbeddedReferences decides wheter partial/embedded refs are resolved by default or not
      */
-    public function __construct(array $resolvers)
+    public function __construct(array $resolvers, $resolveEmbeddedReferences = true)
     {
         $this->resolvers = $resolvers;
+        $this->doResolveEmbeddedReferences = $resolveEmbeddedReferences;
     }
 
     public function addResolver(ReferenceResolverInterface $resolver)
@@ -27,6 +32,7 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
     }
 
     /**
+     * NB: does *not* check for embedded refs, even when $this->>doResolveEmbeddedReferences is true
      * @param string $stringIdentifier
      * @return bool
      */
@@ -44,7 +50,7 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
     /**
      * @param string $stringIdentifier
      * @return mixed
-     * @throws \Exception
+     * @throws ReferenceUnresolvedException
      */
     public function getReferenceValue($stringIdentifier)
     {
@@ -53,13 +59,13 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
         foreach ($this->resolvers as $resolver) {
             if ($resolver->isReference($stringIdentifier)) {
                 $stringIdentifier = $resolver->getReferenceValue($stringIdentifier);
-                // In case of many resolvers resolving the same ref, the last one wins. Should we default to the 1st winning ?
+                // In case of many resolvers resolving the same ref, the first one wins, but we allow recursive resolving
                 $resolvedOnce = true;
             }
         }
 
         if (!$resolvedOnce) {
-            throw new \Exception("Could not resolve reference with identifier: '$stringIdentifier'");
+            throw new ReferenceUnresolvedException("Could not resolve reference with identifier: '$stringIdentifier'");
         }
 
         return $stringIdentifier;
@@ -67,10 +73,16 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
 
     public function resolveReference($stringIdentifier)
     {
-        if ($this->isReference($stringIdentifier)) {
-            return $this->getReferenceValue($stringIdentifier);
+        if ($this->doResolveEmbeddedReferences) {
+            $stringIdentifier = $this->resolveEmbeddedReferences($stringIdentifier);
         }
-        return $stringIdentifier;
+
+        // for speed, we avoid calling isReference() and call directly getReferenceValue()
+        try {
+            return $this->getReferenceValue($stringIdentifier);
+        } catch (ReferenceUnresolvedException $e) {
+            return $stringIdentifier;
+        }
     }
 
     /**
@@ -123,7 +135,8 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
                     return true;
                 }
             } else {
-                throw new \Exception("Could not verify embedded references because of chained resolver of type: " . get_class($resolver));
+                // NB: BC break for 4.8... should be enabled for 5.0 ?
+                //throw new \Exception("Could not verify embedded references because of chained resolver of type: " . get_class($resolver));
             }
         }
 
@@ -132,7 +145,6 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
 
     /**
      * Returns the $string with eventual refs resolved.
-     * Q: SHALL WE GUARANTEE THAT ALL RESOLVERS IN THE CHAIN CAN TAKE PART IN THIS?
      *
      * @param string $string
      * @return string
@@ -144,7 +156,8 @@ class ChainResolver implements ReferenceResolverBagInterface, EnumerableReferenc
             if ($resolver instanceof EmbeddedReferenceResolverInterface) {
                 $string = $resolver->resolveEmbeddedReferences($string);
             } else {
-                throw new \Exception("Could not resolve embedded references because of chained resolver of type: " . get_class($resolver));
+                // NB: BC break for 4.8... should be enabled for 5.0 ?
+                //throw new \Exception("Could not resolve embedded references because of chained resolver of type: " . get_class($resolver));
             }
         }
 

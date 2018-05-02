@@ -5,7 +5,6 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\Process;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
 class ProcessExecutor extends AbstractExecutor
@@ -22,7 +21,7 @@ class ProcessExecutor extends AbstractExecutor
 
     /**
      * ProcessExecutor constructor.
-     * @param PrefixBasedResolverInterface $referenceResolver must implement EmbeddedReferenceResolverInterface too
+     * @param PrefixBasedResolverInterface $referenceResolver
      */
     public function __construct(PrefixBasedResolverInterface $referenceResolver)
     {
@@ -113,7 +112,6 @@ class ProcessExecutor extends AbstractExecutor
             return false;
         }
 
-
         foreach ($dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'error_output':
@@ -137,21 +135,5 @@ class ProcessExecutor extends AbstractExecutor
         }
 
         return true;
-    }
-
-    /**
-     * Replaces any references inside a string
-     *
-     * @param string
-     * @return string
-     * @throws \Exception
-     */
-    protected function resolveReferencesInText($text)
-    {
-        if (!$this->referenceResolver instanceof EmbeddedReferenceResolverInterface) {
-            throw new \Exception("Reference resolver passed to ProcessExecutor should implement EmbeddedReferenceResolverInterface");
-        }
-
-        return $this->referenceResolver->ResolveEmbeddedReferences($text);
     }
 }

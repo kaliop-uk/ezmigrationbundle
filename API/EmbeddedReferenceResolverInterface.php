@@ -9,12 +9,12 @@ interface EmbeddedReferenceResolverInterface
 {
     /**
      * @param string $string
-     * @return bool true if the given $stringIdentifier contains at least one occurrence of the reference(s)
+     * @return bool true if the given string contains at least one occurrence of the reference(s)
      */
     public function hasEmbeddedReferences($string);
 
     /**
-     * Returns the $string with eventual refs resolved
+     * Returns the string with eventual refs resolved
      *
      * @param string $string
      * @return string

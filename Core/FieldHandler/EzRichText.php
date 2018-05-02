@@ -3,13 +3,17 @@
 namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
 
-/// @todo unify $this->resolver and $this->referenceResolver
+/// @todo unify $this->resolver and $this->referenceResolver (are they the same already ???)
 class EzRichText extends AbstractFieldHandler implements FieldValueImporterInterface
 {
     protected $resolver;
 
+    /**
+     * @param PrefixBasedResolverInterface $resolver must implement EmbeddedReferenceResolverInterface, really
+     */
     public function __construct(PrefixBasedResolverInterface $resolver)
     {
         $this->resolver = $resolver;
@@ -33,21 +37,11 @@ class EzRichText extends AbstractFieldHandler implements FieldValueImporterInter
         }
 
         // Check if there are any references in the xml text and replace them.
-
-        // we need to alter the regexp we get from the resolver, as it will be used to match parts of text, not the whole string
-        $regexp = substr($this->resolver->getRegexp(), 1, -1);
-        // NB: here we assume that all regexp resolvers give us a regexp with a very specific format...
-        $regexp = '/\[' . preg_replace(array('/^\^/'), array('', ''), $regexp) . '[^]]+\]/';
-
-        $count = preg_match_all($regexp, $xmlText, $matches);
-        // $matches[0][] will have the matched full string eg.: [reference:example_reference]
-        if ($count) {
-            foreach ($matches[0] as $referenceIdentifier) {
-                $reference = $this->resolver->getReferenceValue(substr($referenceIdentifier, 1, -1));
-                $xmlText = str_replace($referenceIdentifier, $reference, $xmlText);
-            }
+        // Check if there are any references in the xml text and replace them.
+        if (!$this->resolver instanceof EmbeddedReferenceResolverInterface) {
+            throw new \Exception("Reference resolver passed to HTTPExecutor should implement EmbeddedReferenceResolverInterface");
         }
 
-        return $xmlText;
+        return $this->resolver->ResolveEmbeddedReferences($xmlText);
     }
 }

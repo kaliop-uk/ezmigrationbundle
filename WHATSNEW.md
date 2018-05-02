@@ -1,3 +1,28 @@
+Version 4.8
+===========
+
+* New: everywhere references are accepted, text strings can now be used as well, which embed the reference within square
+    brackets. This will lead to the substitution of the text within brackets with the value of the reference. 
+    
+    Example: assuming that the 'myref' reference has a value of 99
+
+    Possible before:
+        
+    ```
+    match:
+        content_id: "reference:myref"
+    # we get content_id = 99
+     ```
+
+    Possible now:
+    
+    ```
+    match:
+        remote_content_id: "something [reference:myref] different"
+    # we get remote_content_id = "something 99 different"
+     ```
+
+
 Version 4.7
 ===========
 
