@@ -4,9 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class HTTPExecutor extends AbstractExecutor
@@ -16,16 +14,16 @@ class HTTPExecutor extends AbstractExecutor
     protected $supportedStepTypes = array('http');
     protected $supportedActions = array('call');
 
-    /** @var ReferenceResolverInterface $referenceResolver */
+    /** @var EmbeddedReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
     protected $container;
 
     /**
      * @param ContainerInterface $container
-     * @param PrefixBasedResolverInterface $referenceResolver has to implement EmbeddedReferenceResolverInterface as well!
+     * @param EmbeddedReferenceResolverBagInterface $referenceResolver has to implement EmbeddedReferenceResolverInterface as well!
      */
-    public function __construct(ContainerInterface $container, PrefixBasedResolverInterface $referenceResolver)
+    public function __construct(ContainerInterface $container, EmbeddedReferenceResolverBagInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
         $this->container = $container;
@@ -134,7 +132,7 @@ class HTTPExecutor extends AbstractExecutor
     }
 
     /**
-     * @deprecated should be moved into the reference resolver classes
+     * @todo should be moved into the reference resolver classes
      */
     protected function resolveReferencesRecursively($match)
     {
@@ -157,10 +155,6 @@ class HTTPExecutor extends AbstractExecutor
      */
     protected function resolveReferencesInText($text)
     {
-        if (!$this->referenceResolver instanceof EmbeddedReferenceResolverInterface) {
-            throw new \Exception("Reference resolver passed to HTTPExecutor should implement EmbeddedReferenceResolverInterface");
-        }
-
         return $this->referenceResolver->ResolveEmbeddedReferences($text);
     }
 

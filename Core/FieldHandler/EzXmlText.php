@@ -5,19 +5,16 @@ namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
-/// @todo unify $this->resolver and $this->referenceResolver (are they the same already ???)
 class EzXmlText extends AbstractFieldHandler implements FieldValueImporterInterface, FieldDefinitionConverterInterface
 {
-    protected $resolver;
-
-    /**
-     * @param PrefixBasedResolverInterface $resolver must implement EmbeddedReferenceResolverInterface, really
-     */
-    public function __construct(PrefixBasedResolverInterface $resolver)
+    public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
     {
-        $this->resolver = $resolver;
+        if (! $referenceResolver instanceof EmbeddedReferenceResolverInterface) {
+            throw new \Exception("Reference resolver injected into EzXmlText field handler should implement EmbeddedReferenceResolverInterface");
+        }
+        parent::setReferenceResolver($referenceResolver);
     }
 
     /**
@@ -40,12 +37,10 @@ class EzXmlText extends AbstractFieldHandler implements FieldValueImporterInterf
             $xmlText = $fieldValue['content'];
         }
 
-        // Check if there are any references in the xml text and replace them.
-        if (!$this->resolver instanceof EmbeddedReferenceResolverInterface) {
-            throw new \Exception("Reference resolver passed to HTTPExecutor should implement EmbeddedReferenceResolverInterface");
-        }
-
-        return $this->resolver->ResolveEmbeddedReferences($xmlText);
+        // Check if there are any references in the xml text and replace them. Please phpstorm.
+        $resolver = $this->referenceResolver;
+        /** @var EmbeddedReferenceResolverInterface $resolver */
+        return $resolver->resolveEmbeddedReferences($xmlText);
     }
 
     public function fieldSettingsToHash($settingsValue, array $context = array())

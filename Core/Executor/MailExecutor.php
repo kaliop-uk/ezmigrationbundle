@@ -4,8 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
 use Swift_Message;
 use Swift_Attachment;
 
@@ -23,9 +22,9 @@ class MailExecutor extends AbstractExecutor
     /**
      * MailExecutor constructor.
      * @param $mailService
-     * @param PrefixBasedResolverInterface $referenceResolver must implement EmbeddedReferenceResolverInterface too
+     * @param EmbeddedReferenceResolverBagInterface $referenceResolver must implement EmbeddedReferenceResolverInterface too
      */
-    public function __construct($mailService, PrefixBasedResolverInterface $referenceResolver)
+    public function __construct($mailService, EmbeddedReferenceResolverBagInterface $referenceResolver)
     {
         $this->mailService = $mailService;
         $this->referenceResolver = $referenceResolver;
@@ -119,7 +118,7 @@ class MailExecutor extends AbstractExecutor
     }
 
     /**
-     * @deprecated should be moved into the reference resolver classes
+     * @todo should be moved into the reference resolver classes
      */
     protected function resolveReferencesRecursively($match)
     {
@@ -142,10 +141,6 @@ class MailExecutor extends AbstractExecutor
      */
     protected function resolveReferencesInText($text)
     {
-        if (!$this->referenceResolver instanceof EmbeddedReferenceResolverInterface) {
-            throw new \Exception("Reference resolver passed to MailExecutor should implement EmbeddedReferenceResolverInterface");
-        }
-
-        return $this->referenceResolver->ResolveEmbeddedReferences($text);
+        return $this->referenceResolver->resolveEmbeddedReferences($text);
     }
 }

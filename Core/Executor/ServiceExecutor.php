@@ -4,7 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 
 class ServiceExecutor extends AbstractExecutor
 {
@@ -13,12 +13,12 @@ class ServiceExecutor extends AbstractExecutor
     protected $supportedStepTypes = array('service');
     protected $supportedActions = array('call');
 
-    /** @var PrefixBasedResolverInterface $referenceResolver */
+    /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
     protected $container;
 
-    public function __construct(ContainerInterface $container, PrefixBasedResolverInterface $referenceResolver)
+    public function __construct(ContainerInterface $container, ReferenceResolverBagInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
         $this->container = $container;
@@ -153,6 +153,9 @@ class ServiceExecutor extends AbstractExecutor
         return true;
     }
 
+    /**
+     * @todo should be moved into the reference resolver classes
+     */
     protected function resolveReferencesRecursively($match)
     {
         if (is_array($match)) {

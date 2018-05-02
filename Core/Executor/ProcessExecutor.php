@@ -5,7 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\Process;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 
 class ProcessExecutor extends AbstractExecutor
 {
@@ -16,14 +16,13 @@ class ProcessExecutor extends AbstractExecutor
 
     protected $defaultTimeout = 86400;
 
-    /** @var PrefixBasedResolverInterface $referenceResolver */
+    /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
     /**
-     * ProcessExecutor constructor.
-     * @param PrefixBasedResolverInterface $referenceResolver
+     * @param ReferenceResolverBagInterface $referenceResolver
      */
-    public function __construct(PrefixBasedResolverInterface $referenceResolver)
+    public function __construct(ReferenceResolverBagInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
     }

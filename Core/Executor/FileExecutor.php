@@ -3,8 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\Core\ReferenceResolver\PrefixBasedResolverInterface;
+use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
 
 class FileExecutor extends AbstractExecutor
 {
@@ -13,14 +12,13 @@ class FileExecutor extends AbstractExecutor
     protected $supportedStepTypes = array('file');
     protected $supportedActions = array('load', 'save', 'copy', 'move', 'delete', 'append', 'prepend', 'exists');
 
-    /** @var PrefixBasedResolverInterface $referenceResolver */
+    /** @var EmbeddedReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
     /**
-     * FileExecutor constructor.
-     * @param PrefixBasedResolverInterface $referenceResolver must implement EmbeddedReferenceResolverInterface too
+     * @param EmbeddedReferenceResolverBagInterface $referenceResolver
      */
-    public function __construct(PrefixBasedResolverInterface $referenceResolver)
+    public function __construct(EmbeddedReferenceResolverBagInterface $referenceResolver)
     {
         $this->referenceResolver = $referenceResolver;
     }
@@ -365,10 +363,6 @@ class FileExecutor extends AbstractExecutor
      */
     protected function resolveReferencesInText($text)
     {
-        if (!$this->referenceResolver instanceof EmbeddedReferenceResolverInterface) {
-            throw new \Exception("Reference resolver passed to FileExecutor should implement EmbeddedReferenceResolverInterface");
-        }
-
         return $this->referenceResolver->ResolveEmbeddedReferences($text);
     }
 }
