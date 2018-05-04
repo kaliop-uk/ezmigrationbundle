@@ -60,7 +60,7 @@ install:
   # Q: are all of these scripts ok here, or shall they be moved to the before_script step, when we add matrix combinations ???
 
   # Disable xdebug for speed (executing composer), but allow us to e-enable it later
-  - then export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
+  - export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
   - export XDEBUG_INI=${XDEBUG_INI/,/}
   - if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 
