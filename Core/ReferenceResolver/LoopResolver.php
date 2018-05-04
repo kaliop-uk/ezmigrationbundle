@@ -2,7 +2,9 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
-class LoopResolver extends AbstractResolver
+use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
+
+class LoopResolver extends AbstractResolver implements EnumerableReferenceResolverInterface
 {
     protected $referencePrefixes = array('loop:');
 
@@ -41,4 +43,13 @@ class LoopResolver extends AbstractResolver
         }
     }
 
+    /**
+     * We implement this method (interface) purely for convenience, as it allows this resolver to be added to the
+     * 'custom-reference-resolver' chain and not break migration suspend/resume
+     * @return array
+     */
+    public function listReferences()
+    {
+        return array();
+    }
 }

@@ -1,0 +1,26 @@
+-
+    type: loop
+    repeat: 2
+    steps:
+        -
+            type: reference
+            mode: set
+            identifier: loopindex
+            value: "[loop:iteration]"
+            overwrite: true
+        -
+            type: loop
+            repeat: 2
+            steps:
+                -
+                    type: reference
+                    mode: set
+                    identifier: loopindex2
+                    value: "[reference:loopindex].[loop:iteration]"
+                    overwrite: true
+-
+    type: assert
+    target: reference
+    identifier: reference:loopindex2
+    test:
+        equals: "2.2"
