@@ -18,9 +18,10 @@ if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
     sed -i 's/OneupFlysystemBundle(),\?/OneupFlysystemBundle(), new Netgen\\TagsBundle\\NetgenTagsBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
 fi
 # And optionally the EzCoreExtraBundle bundle
-if grep -q 'lolautruche/ez-core-extra-bundle' composer.lock; then
-    sed -i 's/OneupFlysystemBundle(),\?/OneupFlysystemBundle(), new Lolautruche\\EzCoreExtraBundle\\EzCoreExtraBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
-fi
+#if grep -q 'lolautruche/ez-core-extra-bundle' composer.lock; then
+#    sed -i 's/OneupFlysystemBundle(),\?/OneupFlysystemBundle(), new Lolautruche\\EzCoreExtraBundle\\EzCoreExtraBundle(),/' vendor/ezsystems/${EZ_VERSION}/${EZ_APP_DIR}/${EZ_KERNEL}.php
+#fi
+
 # For eZPlatform, load the xmltext bundle
 if [ "$EZ_VERSION" = "ezplatform" ]; then
     # we have to load netgen tags bundle after the Kernel bundles... hopefully OneupFlysystemBundle will stay there :-)
