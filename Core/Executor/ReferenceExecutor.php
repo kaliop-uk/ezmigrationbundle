@@ -59,7 +59,9 @@ class ReferenceExecutor extends AbstractExecutor
         if (!isset($dsl['value'])) {
             throw new \Exception("Invalid step definition: miss 'value' for setting reference");
         }
-        $value = $dsl['value'];
+        // this makes sense since we started supporting embedded refs...
+        $value = $this->referenceResolver->resolveReference($dsl['value']);
+        /// @todo add support for eZ dynamic parameters too
         if (preg_match('/.*%.+%.*$/', $value)) {
             // we use the same parameter resolving rule as symfony, even though this means abusing the ContainerInterface
             $value = $this->container->getParameterBag()->resolveString($value);

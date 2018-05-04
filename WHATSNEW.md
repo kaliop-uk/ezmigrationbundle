@@ -22,6 +22,16 @@ Version 4.8
     # we get remote_content_id = "something 99 times different"
      ```
 
+* New: it is now possible to create references with values that are generated from other references, such as:
+
+    ```
+    type: reference
+    mode: set
+    identifier: three
+    value: "[reference:one].[loop:two]"
+
+    ```
+
 * New: when creating and updating ContentType definitions, it is possible to use a reference to define each field. The
     value of the reference must be an array with all the usual keys: 'name', 'searchable', etc...
     This makes it easy to define multiple ContentTypes sharing fields with the same definition such as f.e. the 'title' 
