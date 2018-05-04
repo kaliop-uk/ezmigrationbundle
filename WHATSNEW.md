@@ -1,5 +1,5 @@
-Version 4.8
-===========
+Version 5.0 (unreleased)
+========================
 
 * New: everywhere references are accepted, text strings can now be used as well, which embed the reference within square
     brackets. This will lead to the substitution of the text within brackets with the value of the reference. 
