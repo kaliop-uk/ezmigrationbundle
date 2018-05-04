@@ -1,0 +1,51 @@
+# Loop steps allow to execute maultiple times in a row (a sequence of) other steps.
+# Nested loops are supported.
+# NB: step execution events are triggered only for the outhermost loop step
+
+-
+    type: loop
+    repeat: int # number of times to repeat execution of the sequence of sub-steps
+    steps: # the migration steps that you want to be executed repeatedly
+        -
+            type: ...
+            mode: ...
+            etc: ... # New references that can be resolved anywhere inside the nested step definitions are `loop:index`
+                     # and `loop:depth`.
+                     # loop:iteration is the counter of the current loop iteration, starting at 1
+                     # loop:depth is used to tell apart nested loops. I starts at depth 1
+                     # f.e. you could use the following to create contents with different names: "Article [loop:depth].[loop:iteration]"
+        -
+            type: ...
+            mode: ...
+            etc: ...
+
+    if: # Optional. If set, the loop will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+
+# Example: how to create a reference that holds a composite index of the current step in nested loops:
+
+-
+    type: loop
+    repeat: 2
+    steps:
+        -
+            type: reference
+            mode: set
+            identifier: loopindex1
+            value: "[loop:iteration]"
+            overwrite: true
+        -
+            type: loop
+            repeat: 2
+            steps:
+                -
+                    type: reference
+                    mode: set
+                    identifier: loopindex2
+                    value: "[reference:loopindex1].[loop:iteration]"
+                    overwrite: true
+                -
+                    type: reference
+                    mode: dump
+                    identifier: reference:loopindex2

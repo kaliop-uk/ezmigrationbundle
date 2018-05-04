@@ -28,7 +28,7 @@ Version 4.8
     type: reference
     mode: set
     identifier: three
-    value: "[reference:one].[loop:two]"
+    value: "both [reference:one] and [reference:two]"
 
     ```
 
@@ -43,6 +43,8 @@ Version 4.8
             name: Body
             ...
      ```
+
+* New: added migration step `loop`. More details in [Resources/doc/DSL/Loops.yml](Resources/doc/DSL/Loops.yml)
 
 
 Version 4.7
@@ -230,7 +232,7 @@ Version 4.0 RC-3
 * New: allow to run migrations without changing into an admin user (only for developers, not yet from the command line)
 
 * New: it is now possible to execute external processes as migration steps.
-    More details in [Resources/doc/DSL/Processes.yml](Resources/doc/DSL/Mails.yml)
+    More details in [Resources/doc/DSL/Processes.yml](Resources/doc/DSL/Processes.yml)
 
 
 Version 4.0 RC-2
