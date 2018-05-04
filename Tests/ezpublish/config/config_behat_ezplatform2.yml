@@ -38,8 +38,15 @@ ezpublish:
             languages: [eng-GB]
             var_dir: var/behat_site
 
+jms_translation:
+    configs:
+        admin:
+            dirs:
+                - '%kernel.root_dir%/../../ezplatform-admin-ui/src'
+
 swiftmailer:
     disable_delivery: false
     spool:
         type: file
         path: '%kernel.root_dir%/spool'
+
