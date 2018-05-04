@@ -25,8 +25,9 @@ if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
 fi
 # And optionally the EzCoreExtraBundle bundle - not needed any more ?
 #if grep -q 'lolautruche/ez-core-extra-bundle' composer.lock; then
-#    sed -i 's/OneupFlysystemBundle(),\?/OneupFlysystemBundle(), new Lolautruche\\EzCoreExtraBundle\\EzCoreExtraBundle(),/' ${APP_DIR}/${EZ_KERNEL}.php
-#fi
+if [ "$EZ_VERSION" = "ezplatform2" ]; then
+    sed -i 's/OneupFlysystemBundle(),\?/OneupFlysystemBundle(), new Lolautruche\\EzCoreExtraBundle\\EzCoreExtraBundle(),/' ${APP_DIR}/${EZ_KERNEL}.php
+fi
 
 # For eZPlatform, load the xmltext bundle
 if [ "$EZ_VERSION" = "ezplatform" -o "$EZ_VERSION" = "ezplatform2" ]; then
