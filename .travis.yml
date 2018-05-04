@@ -38,14 +38,13 @@ matrix:
     - php: 7.1
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.0 ezsystems/ezplatform-xmltext-fieldtype:^1.2 ezsystems/behatbundle:^6.4 netgen/tagsbundle:~2.2' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
     # latest version currently available of eZPlatform 2
+    # sensio/generator-bundle is only needed because we run the tests using 'behat' sf env
     - php: 7.2
-      env: EZ_PACKAGES='ezsystems/ezplatform:^2.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0 sensio/generator-bundle' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:^2.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0 sensio/generator-bundle' EZ_VERSION=ezplatform2 EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
   allow_failures:
     # this is failing because of composer running out of memory :-(
     - php: 5.6
-    # @todo to be investigated further... fails with "Error: Class 'Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle' not found". Are we not installing dev packages ?
-    - php: 7.2
 
 before_install:
   # No need for a web server, until we start testing using Selenium
@@ -67,9 +66,10 @@ install:
   - if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 
   # We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix
+
   # For the moment, to install eZPlatform, a set of DEV packages have to be allowed; really ugly sed expression to alter composer.json follows
   # TODO is this still needed?
-  - 'if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
+  - 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
   # debugging memory problems with composer
   #- sudo free -m -t
@@ -80,6 +80,7 @@ install:
 
   # TODO try enabling swap manually
 
+  # try to reduce mem usage by running composer in two steps
   - composer require --dev --no-update ${EZ_PACKAGES}
   - composer update --dev
 
@@ -100,7 +101,7 @@ before_script:
   #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat cache:clear --no-debug
 
   # TODO for eZPlatform, do we need to set up SOLR as well ?
-  #- if [ "$EZ_VERSION" = "ezplatform" ]; then ./vendor/ezsystems/ezplatform-solr-search-engine:bin/.travis/init_solr.sh; fi
+  #- if [ "$EZ_VERSION" != "ezpublish" ]; then ./vendor/ezsystems/ezplatform-solr-search-engine && bin/.travis/init_solr.sh; fi
 
 script:
   # Finally! :-D
@@ -110,7 +111,7 @@ script:
 after_failure:
   # Display as much info as we can to help developers
   - php -i
-  #- cat composer.lock
+  - cat composer.lock
 
 after_script:
   # Upload code-coverage to Scrutinizer
