@@ -227,6 +227,8 @@ services:
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
         tags:
             - { name: ez_migration_bundle.executor }
+        # avoid 'ServiceCircularReferenceException' errors by making this lazy
+        lazy: true
 
     ez_migration_bundle.executor.mail:
         class: '%ez_migration_bundle.executor.mail.class%'
