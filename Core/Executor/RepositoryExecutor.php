@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Repository;
+use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
@@ -44,6 +45,8 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     protected $repository;
 
+    protected $configResolver;
+
     /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
@@ -55,6 +58,11 @@ abstract class RepositoryExecutor extends AbstractExecutor
     public function setRepository(Repository $repository)
     {
         $this->repository = $repository;
+    }
+
+    public function setConfigResolver(ConfigResolverInterface $configResolver)
+    {
+        $this->configResolver = $configResolver;
     }
 
     public function setReferenceResolver(ReferenceResolverBagInterface $referenceResolver)
@@ -121,12 +129,21 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * @param array $context
+     * @param array|null $context
      * @return string
      */
     protected function getLanguageCodeFromContext($context)
     {
-        return isset($context['defaultLanguageCode']) ? $context['defaultLanguageCode'] : self::DEFAULT_LANGUAGE_CODE;
+        if (is_array($context) && isset($context['defaultLanguageCode'])) {
+            return $context['defaultLanguageCode'];
+        }
+
+        if ($this->configResolver) {
+            $locales = $this->configResolver->getParameter('languages');
+            return reset($locales);
+        }
+
+        return self::DEFAULT_LANGUAGE_CODE;
     }
 
     /**

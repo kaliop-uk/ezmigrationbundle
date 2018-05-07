@@ -31,8 +31,6 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
     /**
      * Handles the create step of object state group migrations
-     *
-     * @todo add support for flexible defaultLanguageCode
      */
     protected function create($step)
     {
@@ -46,7 +44,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
         $objectStateGroupIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
         $objectStateGroupCreateStruct = $objectStateService->newObjectStateGroupCreateStruct($objectStateGroupIdentifier);
-        $objectStateGroupCreateStruct->defaultLanguageCode = self::DEFAULT_LANGUAGE_CODE;
+        $objectStateGroupCreateStruct->defaultLanguageCode = $this->getLanguageCode($step); // was: self::DEFAULT_LANGUAGE_CODE;
 
         foreach ($step->dsl['names'] as $languageCode => $name) {
             $objectStateGroupCreateStruct->names[$languageCode] = $name;

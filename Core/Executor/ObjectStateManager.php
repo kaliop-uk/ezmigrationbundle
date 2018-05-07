@@ -62,7 +62,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
 
         $objectStateIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
         $objectStateCreateStruct = $objectStateService->newObjectStateCreateStruct($objectStateIdentifier);
-        $objectStateCreateStruct->defaultLanguageCode = self::DEFAULT_LANGUAGE_CODE;
+        $objectStateCreateStruct->defaultLanguageCode = $this->getLanguageCode($step); // was: self::DEFAULT_LANGUAGE_CODE;
 
         foreach ($step->dsl['names'] as $languageCode => $name) {
             $objectStateCreateStruct->names[$languageCode] = $name;

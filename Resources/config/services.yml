@@ -317,6 +317,7 @@ services:
             - ['setRepository', ['@ezpublish.api.repository']]
             - ['setReferenceResolver', ['@ez_migration_bundle.reference_resolver.customreference']]
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
+            - ['setConfigResolver', ['@ezpublish.config.resolver']]
 
     ez_migration_bundle.executor.content_manager:
         parent: ez_migration_bundle.executor.repository
