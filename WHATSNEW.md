@@ -46,6 +46,10 @@ Version 5.0 (unreleased)
 
 * New: added migration step `loop`. More details in [Resources/doc/DSL/Loops.yml](Resources/doc/DSL/Loops.yml)
 
+* New: when no language is specified on the command line or in a specific migration step dsl, instead of defaulting to
+    `eng-GB` we will default to the first language in the list of languages set up for the current siteaccess (this is
+    usually found in the `ezpublish.yml` config file)
+
 
 Version 4.7
 ===========
