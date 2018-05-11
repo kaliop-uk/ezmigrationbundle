@@ -18,7 +18,7 @@ cat Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml >> ${APP_DIR}/config/c
 
 # Load the migration bundle in the Sf kernel
 sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${APP_DIR}/${EZ_KERNEL}.php
-sed -i 's/$bundles = [/$bundles = [new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${APP_DIR}/${EZ_KERNEL}.php
+sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${APP_DIR}/${EZ_KERNEL}.php
 # And optionally the Netgen tags bundle
 if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
     # we have to load netgen tags bundle after the Kernel bundles... hopefully OneupFlysystemBundle will stay there :-)
