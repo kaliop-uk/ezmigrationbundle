@@ -66,7 +66,7 @@ class MailExecutor extends AbstractExecutor
         if (is_callable(array('Swift_Message', 'newInstance'))) {
             $message = Swift_Message::newInstance();
         } else {
-            $message =  new Swift_Message();
+            $message = new Swift_Message();
         }
 
         if (isset($dsl['from'])) {
