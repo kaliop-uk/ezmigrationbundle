@@ -62,8 +62,12 @@ class MailExecutor extends AbstractExecutor
      */
     protected function send($dsl, $context)
     {
-
-        $message = Swift_Message::newInstance();
+        // cater to Swiftmailer 5 and 6
+        if (is_callable(array('Swift_Message', 'newInstance'))) {
+            $message = Swift_Message::newInstance();
+        } else {
+            $message =  new Swift_Message();
+        }
 
         if (isset($dsl['from'])) {
             $message->setFrom($this->resolveReferencesRecursively($dsl['from']));
