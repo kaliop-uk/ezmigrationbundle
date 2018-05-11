@@ -1,5 +1,5 @@
-Version 5.0 (unreleased)
-========================
+Version 5.0
+===========
 
 * New: everywhere references are accepted, text strings can now be used as well, which embed the reference within square
     brackets. This will lead to the substitution of the text within brackets with the value of the reference. 
@@ -46,11 +46,17 @@ Version 5.0 (unreleased)
 
 * New: added migration step `loop`. More details in [Resources/doc/DSL/Loops.yml](Resources/doc/DSL/Loops.yml)
 
-* New: when no language is specified on the command line or in a specific migration step dsl, instead of defaulting to
+* Changed: when no language is specified on the command line or in a specific migration step dsl, instead of defaulting to
     `eng-GB` we will default to the first language in the list of languages set up for the current siteaccess (this is
     usually found in the `ezpublish.yml` config file)
 
-* New: the bundle is now tested with eZPlatform 2 besides eZPlatform 1 and eZPublish 5 
+* New: the bundle is now tested on Travis with eZPlatform 2 besides eZPlatform 1 and eZPublish 5 
+
+* BC changes:
+
+    - two new interfaces have been added: EmbeddedReferenceResolverBagInterface, EmbeddedReferenceResolverInterface.
+      Those replace the expected types in the constructors of most Executors. If you have subclassed Executors, be
+      prepared for some porting work
 
 
 Version 4.7
