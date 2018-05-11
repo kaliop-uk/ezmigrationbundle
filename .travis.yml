@@ -111,7 +111,9 @@ script:
 after_failure:
   # Display as much info as we can to help developers
   - php -i
-  - cat composer.lock
+  #- cat composer.lock
+  - cat vendor/ezsystems/ezplatform/app/config/config_behat.yml
+  - cat vendor/ezsystems/ezplatform/app/config/config.yml
 
 after_script:
   # Upload code-coverage to Scrutinizer
