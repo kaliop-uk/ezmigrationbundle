@@ -50,6 +50,8 @@ Version 5.0 (unreleased)
     `eng-GB` we will default to the first language in the list of languages set up for the current siteaccess (this is
     usually found in the `ezpublish.yml` config file)
 
+* New: the bundle is now tested with eZPlatform 2 besides eZPlatform 1 and eZPublish 5 
+
 
 Version 4.7
 ===========
