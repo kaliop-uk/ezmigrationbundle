@@ -36,6 +36,8 @@ if [ "$EZ_VERSION" = "ezplatform" -o "$EZ_VERSION" = "ezplatform2" ]; then
 fi
 # Fix the eZ5 autoload configuration for the unexpected directory layout
 sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" ${APP_DIR}/autoload.php
+# as well as the config for jms_translation
+sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kernel.root_dir%/../../ezplatform-admin-ui/src#" ${APP_DIR}/config.yml
 
 # Generate legacy autoloads
 if [ "$EZ_VERSION" = "ezpublish-community" ]; then cat Tests/ezpublish-legacy/config.php > vendor/ezsystems/ezpublish-legacy/config.php; fi
