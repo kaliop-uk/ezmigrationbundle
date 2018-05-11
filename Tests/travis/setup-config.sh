@@ -35,7 +35,7 @@ if [ "$EZ_VERSION" = "ezplatform" -o "$EZ_VERSION" = "ezplatform2" ]; then
     sed -i 's/AppBundle(),\?/AppBundle(), new EzSystems\\EzPlatformXmlTextFieldTypeBundle\\EzSystemsEzPlatformXmlTextFieldTypeBundle (),/' ${APP_DIR}/${EZ_KERNEL}.php
 fi
 # Fix the eZ5 autoload configuration for the unexpected directory layout
-if [ -f "${APP_DIR}/autoload.php" ]; then sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" ${APP_DIR}/autoload.php fi
+if [ -f "${APP_DIR}/autoload.php" ]; then sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" ${APP_DIR}/autoload.php; fi
 # as well as the config for jms_translation
 sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kernel.root_dir%/../../ezplatform-admin-ui/src#" ${APP_DIR}/config/config.yml
 
