@@ -356,23 +356,14 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Sets references to certain content attributes.
-     *
-     * @param \eZ\Publish\API\Repository\Values\Content\Content|ContentCollection $content
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
-     * @return boolean
-     *
-     * @todo add support for other attributes... ?
+     * @param Content $content
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($content, $step)
+    protected function getReferencesValues(Content $content, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($content, $step->dsl['references']);
-        $content = $this->insureSingleEntity($content, $references);
-
+        $refs = array();
         foreach ($references as $reference) {
 
             switch ($reference['attribute']) {
@@ -456,7 +447,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                         $hashValue = $this->fieldHandlerManager->fieldValueToHash(
                             $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
                         );
-                        if (is_array($hashValue) ) {
+                        if (is_array($hashValue)) {
                             if (count($parts) == 2 && $fieldIdentifier === $parts[1]) {
                                 throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has an array value');
                             }
@@ -473,14 +464,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     /**

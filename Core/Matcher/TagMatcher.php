@@ -15,10 +15,11 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     const MATCH_TAG_ID = 'tag_id';
     const MATCH_TAG_REMOTE_ID = 'tag_remote_id';
     const MATCH_TAG_KEYWORD = 'tag_keyword';
+    const MATCH_PARENT_TAG_ID = 'parent_tag_id';
 
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR,
-        self::MATCH_TAG_ID, self::MATCH_TAG_REMOTE_ID, self::MATCH_TAG_KEYWORD,
+        self::MATCH_TAG_ID, self::MATCH_TAG_REMOTE_ID, self::MATCH_TAG_KEYWORD, self::MATCH_PARENT_TAG_ID,
         // aliases
         'id', 'remote_id', 'keyword'
     );
@@ -78,6 +79,9 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
                 case self::MATCH_TAG_KEYWORD:
                     return new TagCollection($this->findTagsByKeywords($values));
 
+                case self::MATCH_PARENT_TAG_ID:
+                    return new TagCollection($this->findTagsByParentTagIds($values));
+
                 case self::MATCH_AND:
                     return $this->matchAnd($values);
 
@@ -108,6 +112,21 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
             // return unique contents
             $tag = $this->tagService->loadTag($tagId);
             $tags[$tag->id] = $tag;
+        }
+
+        return $tags;
+    }
+
+    protected function findTagsByParentTagIds(array $tagIds)
+    {
+        $tags = [];
+
+        foreach ($tagIds as $tagId) {
+            // return unique contents
+            $tag = $this->tagService->loadTag($tagId);
+            foreach ($this->tagService->loadTagChildren($tag) as $childTag) {
+                $tags[$childTag->id] = $childTag;
+            }
         }
 
         return $tags;

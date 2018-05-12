@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\ObjectState\ObjectState;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
@@ -159,17 +160,14 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * {@inheritdoc}
-     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectState|ObjectStateCollection $objectState
+     * @param ObjectState $objectState
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($objectState, $step)
+    protected function getReferencesValues(ObjectState $objectState, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($objectState, $step->dsl['references']);
-        $objectState = $this->insureSingleEntity($objectState, $references);
+        $refs = array();
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
@@ -184,14 +182,10 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
                     throw new \InvalidArgumentException('Object State Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     /**

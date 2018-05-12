@@ -106,21 +106,14 @@ class TrashManager extends RepositoryExecutor
     }
 
     /**
-     * Sets references to certain trashed-item attributes.
-     *
-     * @param \eZ\Publish\API\Repository\Values\Content\TrashItem|TrashedItemCollection|\eZ\Publish\API\Repository\Values\Content\Location|LocationCollection $item
-     * @param $step
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
-     * @return boolean
+     * @param \eZ\Publish\API\Repository\Values\Content\TrashItem|\eZ\Publish\API\Repository\Values\Content\Location $item
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($item, $step)
+    protected function getReferencesValues($item, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($item, $step->dsl['references']);
-        $item = $this->insureSingleEntity($item, $references);
+        $refs = array();
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
@@ -200,13 +193,9 @@ class TrashManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Trash Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 }

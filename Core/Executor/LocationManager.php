@@ -281,7 +281,17 @@ class LocationManager extends RepositoryExecutor
 
         $references = $this->setReferencesCommon($location, $step->dsl['references']);
         $location = $this->insureSingleEntity($location, $references);
+    }
 
+    /**
+     * @param Location $location
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
+     */
+    protected function getReferencesValues(Location $location, array $references)
+    {
+        $refs = array();
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'location_id':
@@ -359,14 +369,10 @@ class LocationManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Location Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     /**

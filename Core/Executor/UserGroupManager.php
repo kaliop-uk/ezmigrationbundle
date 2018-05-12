@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Content;
+use eZ\Publish\API\Repository\Values\User\UserGroup;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
@@ -184,20 +185,14 @@ class UserGroupManager extends RepositoryExecutor
     }
 
     /**
-     * Set references defined in the DSL for use in another step during the migrations.
-     *
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
-     * @param \eZ\Publish\API\Repository\Values\User\UserGroup|UserGroupCollection $userGroup
-     * @return boolean
+     * @param UserGroup $userGroup
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($userGroup, $step)
+    protected function getReferencesValues(UserGroup $userGroup, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($userGroup, $step->dsl['references']);
-        $userGroup = $this->insureSingleEntity($userGroup, $references);
+        $refs = array();
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
@@ -211,14 +206,10 @@ class UserGroupManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('User Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     protected function setSection(Content $content, $sectionKey)

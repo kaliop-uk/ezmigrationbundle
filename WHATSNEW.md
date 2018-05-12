@@ -1,3 +1,26 @@
+Version 5.1 (unreleased)
+========================
+
+* New: references are now resolved for in the `keyword` element for `tag/create` and `tag/update`. This makes it
+    easier to mass-create eztag tags in conjunction with the eZLoremIpsum bundle
+
+* New: tags can now be matched by their parent tag id
+
+* New: it is now possible to set references when a migration step results in a list of items, and not just in a single
+     item. The resulting reference will have a value which is an array instead of a scalar value.
+     This has to be specifically enabled for each migration step where references are expected to be multi-valued:
+     
+        references:
+            multivalued: enabled
+            -
+                attribute: some_id
+                identifier: my_array_ref
+
+* BC changes:
+
+    - the RepositoryExecutor class now expects subclasses to implement method `getReferencesValues` and not `setReferences`
+        any more
+
 Version 5.0
 ===========
 

@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\Content\Section;
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
@@ -132,6 +133,17 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         $references = $this->setReferencesCommon($section, $step->dsl['references']);
         $section = $this->insureSingleEntity($section, $references);
+    }
+
+    /**
+     * @param Section $section
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
+     */
+    protected function getReferencesValues(Section $section, array $references)
+    {
+        $refs = array();
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
@@ -151,14 +163,10 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
                     throw new \InvalidArgumentException('Section Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     /**

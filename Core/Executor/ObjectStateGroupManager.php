@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
@@ -152,6 +153,17 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
         $references = $this->setReferencesCommon($objectStateGroup, $step->dsl['references']);
         $objectStateGroup = $this->insureSingleEntity($objectStateGroup, $references);
+    }
+
+    /**
+     * @param ObjectStateGroup $objectStateGroup
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
+     */
+    protected function getReferencesValues(ObjectStateGroup $objectStateGroup, array $references)
+    {
+        $refs = array();
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
@@ -167,14 +179,10 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
                     throw new \InvalidArgumentException('Object State Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     /**

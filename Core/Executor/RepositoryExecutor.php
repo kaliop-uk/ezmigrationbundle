@@ -111,13 +111,14 @@ abstract class RepositoryExecutor extends AbstractExecutor
     /**
      * Method that each executor (subclass) has to implement.
      *
-     * It is used to set references based on the DSL instructions executed in the current step, for later steps to reuse.
+     * It is used to get values for references based on the DSL instructions executed in the current step, for later steps to reuse.
      *
      * @throws \InvalidArgumentException when trying to set a reference to an unsupported attribute.
-     * @param $object
-     * @return boolean
+     * @param $object a sinle element to extract reference values from
+     * @param array $referencesDefinitionsthe definitions of the references to extract
+     * @return array key: the reference name (taken from $referencesDefinitions[n]['identifier'], value: the ref. value
      */
-    abstract protected function setReferences($object, $step);
+    abstract protected function getReferencesValues($object, $referencesDefinitions);
 
     /**
      * @param MigrationStep $step
@@ -178,6 +179,65 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
+     * Sets references to certain content attributes.
+     *
+     * @param \Object|AbstractCollectionCollection $item
+     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
+     * @return boolean
+     *
+     * @todo add support for other attributes... ?
+     */
+    protected function setReferences($item, $step)
+    {
+        if (!array_key_exists('references', $step->dsl)) {
+            return false;
+        }
+
+        $referencesDefs = $this->setReferencesCommon($content, $step->dsl['references']);
+
+        $this->insureEntityCountCompatibilty($content, $referencesDefs);
+
+        $multivalued = $this->areReferencesMultivalued($referencesDefs);
+
+        if ($item instanceof AbstractCollection) {
+            $items = $item;
+        } else {
+            $items = array($item);
+        }
+
+        if (isset($referencesDefs['multivalued'])) {
+            unset($referencesDefs['multivalued']);
+        }
+
+        $referencesValues = array();
+        foreach ($items as $item) {
+            $itemReferencesValues = $this->getReferencesValues($item, $referencesDefs);
+            if (!$multivalued) {
+                $referencesValues = $itemReferencesValues;
+            } else {
+                foreach ($itemReferencesValues as $refName => $refValue) {
+                    if (!isset($referencesValues[$refName])) {
+                        $referencesValues[$refName] = array($refValue);
+                    } else {
+                        $referencesValues[$refName][] = $refValue;
+                    }
+                }
+            }
+        }
+
+        foreach($referencesDefs as $reference) {
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $referencesValues[$reference['identifier']], $overwrite);
+        }
+
+
+        return true;
+    }
+
+    /**
      * @param mixed $entity
      * @param array $referencesDefinition
      * @return array the same as $referencesDefinition, with the references already treated having been removed
@@ -207,29 +267,51 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
+     * Verifies compatibility between the definition of the refences to be set and the data set to extarct them from,
+     * and returns a single entity
+     *
      * @param AbstractCollection|mixed $entity
      * @param array $referencesDefinition
      * @return AbstractCollection|mixed
      */
     protected function insureSingleEntity($entity, $referencesDefinition)
     {
+        $this->insureEntityCountCompatibilty($entity, $referencesDefinition);
+
         if ($entity instanceof AbstractCollection) {
-
-            $needSingleRef = (count($referencesDefinition) > 0);
-
-            if ($needSingleRef) {
-                if (count($entity) > 1) {
-                    throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for multiple ' . $this->getCollectionName($entity) . 's');
-                }
-                if (count($entity) == 0) {
-                    throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for no ' . $this->getCollectionName($entity). 's');
-                }
-            }
-
-            $entity = reset($entity);
+            return reset($entity);
         }
 
         return $entity;
+    }
+
+    /**
+     * Verifies compatibility between the definition of the refences to be set and the data set to extract them from.
+     * Nb: for multivalued refs, we assume that the users always expect at least one value
+     * @param AbstractCollection|mixed $entity
+     * @param array $referencesDefinition
+     * @return void throws when incompatibiliy is found
+     * @todo should we allow to be passed in plain arrays as well ?
+     */
+    protected function insureEntityCountCompatibilty($entity, $referencesDefinition)
+    {
+        if ($entity instanceof AbstractCollection) {
+
+            $minOneRef = count($referencesDefinition) > 0;
+            $maxOneRef = count($referencesDefinition) > 0 && ! $this->areReferencesMultivalued($referencesDefinition);
+
+            if ($maxOneRef && count($entity) > 1) {
+                throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for multiple ' . $this->getCollectionName($entity) . 's');
+            }
+            if ($minOneRef && count($entity) == 0) {
+                throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for no ' . $this->getCollectionName($entity) . 's');
+            }
+        }
+    }
+
+    protected function areReferencesMultivalued($referencesDefinition)
+    {
+        return isset($referencesDefinition['multivalued']) && $referenceDefinition['multivalued'] == 'enabled';
     }
 
     protected function getSelfName()

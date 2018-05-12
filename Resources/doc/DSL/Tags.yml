@@ -30,6 +30,7 @@
         id: # the id(s) of the tag(s) we want to update
         remote_id: # the remote id(s) of the tag(s) we want to update
         keyword: # the keyword(s) of the tag(s) we want to update
+        parent_tag_id: # the id of the parent tag
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -58,6 +59,7 @@
         id: # the id(s) of the tag(s) we want to delete
         remote_id: # the remote id(s) of the tag(s) we want to delete
         keyword: # the keyword(s) of the tag(s) we want to delete
+        parent_tag_id: # the id of the parent tag
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

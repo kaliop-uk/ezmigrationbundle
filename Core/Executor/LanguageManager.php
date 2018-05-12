@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\Content\Language;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 
 /**
@@ -76,20 +77,14 @@ class LanguageManager extends RepositoryExecutor
     }
 
     /**
-     * Sets references to certain language attributes.
-     *
-     * @param \eZ\Publish\API\Repository\Values\Content\Language|LanguageCollection $language
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
-     * @return boolean
+     * @param Language $language
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($language, $step)
+    protected function getReferencesValues(Language $language, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($language, $step->dsl['references']);
-        $language = $this->insureSingleEntity($language, $references);
+        $refs = array();
 
         foreach ($references as $reference) {
 
@@ -112,13 +107,9 @@ class LanguageManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Language Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 }

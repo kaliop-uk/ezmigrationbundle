@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\User\User;
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
@@ -209,23 +210,13 @@ class UserManager extends RepositoryExecutor
     }
 
     /**
-     * Sets references to object attributes.
-     *
-     * The User manager currently only supports setting references to user_id.
-     *
-     * @param \eZ\Publish\API\Repository\Values\User\User|UserCollection $user
-     * @throws \InvalidArgumentException when trying to set references to unsupported attributes
-     * @return boolean
+     * @param User $user
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($user, $step)
+    protected function getReferencesValues(User $user, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($user, $step->dsl['references']);
-        $user = $this->insureSingleEntity($user, $references);
-
         foreach ($references as $reference) {
 
             switch ($reference['attribute']) {
@@ -246,13 +237,9 @@ class UserManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('User Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 }

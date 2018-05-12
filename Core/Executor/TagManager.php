@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Netgen\TagsBundle\API\Repository\Values\Tags\Tag;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 
@@ -63,6 +64,7 @@ class TagManager extends RepositoryExecutor
 
         foreach ($step->dsl['keywords'] as $langCode => $keyword)
         {
+            $keyword = $this->referenceResolver->resolveEmbeddedReferences($keyword);
             $tagCreateStruct->setKeyword($keyword, $langCode);
         }
 
@@ -117,6 +119,7 @@ class TagManager extends RepositoryExecutor
 
             foreach ($step->dsl['keywords'] as $langCode => $keyword)
             {
+                $keyword = $this->referenceResolver->resolveEmbeddedReferences($keyword);
                 $tagUpdateStruct->setKeyword($keyword, $langCode);
             }
 
@@ -177,6 +180,17 @@ class TagManager extends RepositoryExecutor
         $references = $this->setReferencesCommon($object, $step->dsl['references']);
         /** @var \Netgen\TagsBundle\API\Repository\Values\Tags\Tag $object */
         $object = $this->insureSingleEntity($object, $references);
+    }
+
+    /**
+     * @param Tag $object
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
+     */
+    protected function getReferencesValues(Tag $object, array $references)
+    {
+        $refs = array();
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
@@ -212,14 +226,10 @@ class TagManager extends RepositoryExecutor
                     throw new \InvalidArgumentException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     protected function checkTagsBundleInstall()

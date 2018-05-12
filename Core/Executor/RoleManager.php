@@ -156,23 +156,14 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     }
 
     /**
-     * Set references to object attributes to be retrieved later.
-     *
-     * The Role Manager currently support setting references to role_ids.
-     *
-     * @param \eZ\Publish\API\Repository\Values\User\Role|RoleCollection $role
+     * @param Role $role
+     * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
-     * @return boolean
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($role, $step)
+    protected function getReferencesValues(Role $role, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($role, $step->dsl['references']);
-        $role = $this->insureSingleEntity($role, $references);
-
+        $refs = array();
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'role_id':
@@ -187,14 +178,10 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     throw new \InvalidArgumentException('Role Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     /**

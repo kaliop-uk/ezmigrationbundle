@@ -116,17 +116,14 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     }
 
     /**
-     * @param ContentTypeGroup|ContentTypeGroupCollection $object
-     * @return bool
+     * @param ContentTypeGroup $object
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($object, $step)
+    protected function getReferencesValues(ContentTypeGroup $object, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($object, $step->dsl['references']);
-        $object = $this->insureSingleEntity($object, $references);
+        $refs = array();
 
         foreach ($references as $reference) {
 
@@ -143,14 +140,10 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
                     throw new \InvalidArgumentException('Content Type Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
     /**
