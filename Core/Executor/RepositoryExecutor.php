@@ -118,7 +118,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @param array $referencesDefinitionsthe definitions of the references to extract
      * @return array key: the reference name (taken from $referencesDefinitions[n]['identifier'], value: the ref. value
      */
-    abstract protected function getReferencesValues($object, $referencesDefinitions);
+    abstract protected function getReferencesValues($object, array $referencesDefinitions);
 
     /**
      * @param MigrationStep $step

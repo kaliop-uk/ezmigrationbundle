@@ -141,7 +141,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues(Section $section, array $references)
+    protected function getReferencesValues($section, array $references)
     {
         $refs = array();
 

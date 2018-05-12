@@ -215,7 +215,7 @@ class UserManager extends RepositoryExecutor
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues(User $user, array $references)
+    protected function getReferencesValues($user, array $references)
     {
         foreach ($references as $reference) {
 

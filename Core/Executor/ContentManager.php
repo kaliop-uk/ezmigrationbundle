@@ -361,7 +361,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues(Content $content, array $references)
+    protected function getReferencesValues($content, array $references)
     {
         $refs = array();
         foreach ($references as $reference) {

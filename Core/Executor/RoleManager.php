@@ -161,7 +161,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues(Role $role, array $references)
+    protected function getReferencesValues($role, array $references)
     {
         $refs = array();
         foreach ($references as $reference) {

@@ -289,7 +289,7 @@ class LocationManager extends RepositoryExecutor
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues(Location $location, array $references)
+    protected function getReferencesValues($location, array $references)
     {
         $refs = array();
         foreach ($references as $reference) {
