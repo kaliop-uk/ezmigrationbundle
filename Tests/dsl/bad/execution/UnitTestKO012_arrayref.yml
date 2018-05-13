@@ -1,0 +1,11 @@
+# should fail as it is not allowed to set a ref when matching more than one item
+
+-
+    type: content
+    mode: load
+    match:
+        content_type_identifier: folder
+    references:
+        -
+            identifier: hello
+            attribute: id

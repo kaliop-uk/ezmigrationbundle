@@ -165,7 +165,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues($objectState, array $references)
+    protected function getReferencesValues($objectState, array $references, $lang)
     {
         $refs = array();
 

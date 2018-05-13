@@ -342,7 +342,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues($contentType, array $references)
+    protected function getReferencesValues($contentType, array $references, $lang)
     {
         $refs = array();
 
@@ -369,7 +369,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $value = $contentType->defaultSortOrder;
                     break;
                 case 'description':
-                    $value = $contentType->getDescription($this->getLanguageCode($step));
+                    $value = $contentType->getDescription($lang);
                     break;
                 case 'is_container':
                     $value = $contentType->isContainer;
@@ -378,7 +378,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $value = $contentType->modificationDate->getTimestamp();
                     break;
                 case 'name':
-                    $value = $contentType->getName($this->getLanguageCode($step));
+                    $value = $contentType->getName($lang);
                     break;
                 case 'name_pattern':
                     $value = $contentType->nameSchema;

@@ -115,10 +115,11 @@ abstract class RepositoryExecutor extends AbstractExecutor
      *
      * @throws \InvalidArgumentException when trying to set a reference to an unsupported attribute.
      * @param $object a sinle element to extract reference values from
-     * @param array $referencesDefinitionsthe definitions of the references to extract
+     * @param array $referencesDefinitions the definitions of the references to extract
+     * @param string $lang
      * @return array key: the reference name (taken from $referencesDefinitions[n]['identifier'], value: the ref. value
      */
-    abstract protected function getReferencesValues($object, array $referencesDefinitions);
+    abstract protected function getReferencesValues($object, array $referencesDefinitions, $lang);
 
     /**
      * @param MigrationStep $step
@@ -198,6 +199,8 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $multivalued = $this->areReferencesMultivalued($referencesDefs);
 
+        $lang = $this->getLanguageCode($step);
+
         if ($item instanceof AbstractCollection) {
             $items = $item;
         } else {
@@ -210,7 +213,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $referencesValues = array();
         foreach ($items as $item) {
-            $itemReferencesValues = $this->getReferencesValues($item, $referencesDefs);
+            $itemReferencesValues = $this->getReferencesValues($item, $referencesDefs, $lang);
             if (!$multivalued) {
                 $referencesValues = $itemReferencesValues;
             } else {

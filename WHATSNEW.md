@@ -6,6 +6,10 @@ Version 5.1 (unreleased)
 
 * New: tags can now be matched by their parent tag id
 
+* New: its is now possible to set references to a tag `keyword`
+
+* New: it is easier to create/update tags in a single language (the main language of current siteaccess is used if unspecified) 
+
 * New: it is now possible to set references when a migration step results in a list of items, and not just in a single
      item. The resulting reference will have a value which is an array instead of a scalar value.
      This has to be specifically enabled for each migration step where references are expected to be multi-valued:
@@ -20,6 +24,7 @@ Version 5.1 (unreleased)
 
     - the RepositoryExecutor class now expects subclasses to implement method `getReferencesValues` and not `setReferences`
         any more
+
 
 Version 5.0
 ===========

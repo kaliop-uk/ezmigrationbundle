@@ -32,6 +32,7 @@ class TagManager extends RepositoryExecutor
     /**
      * @return \Netgen\TagsBundle\API\Repository\Values\Tags\Tag
      * @throws \Exception
+     * @todo if lang is not specified, use current language
      */
     protected function create($step)
     {
@@ -51,7 +52,7 @@ class TagManager extends RepositoryExecutor
             // deprecated tag
             $lang = $step->dsl['main_language_code'];
         } else {
-            throw new \Exception("The 'lang' key is required to create a tag.");
+            $lang = $this->getLanguageCode($step);
         }
 
         $tagCreateArray = array(
@@ -62,10 +63,15 @@ class TagManager extends RepositoryExecutor
         );
         $tagCreateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct($tagCreateArray);
 
-        foreach ($step->dsl['keywords'] as $langCode => $keyword)
-        {
-            $keyword = $this->referenceResolver->resolveEmbeddedReferences($keyword);
-            $tagCreateStruct->setKeyword($keyword, $langCode);
+        if (is_string($step->dsl['keywords'])) {
+            $keyword = $this->referenceResolver->resolveReference($step->dsl['keywords']);
+            $tagCreateStruct->setKeyword($keyword);
+        } else {
+            foreach ($step->dsl['keywords'] as $langCode => $keyword)
+            {
+                $keyword = $this->referenceResolver->resolveReference($keyword);
+                $tagCreateStruct->setKeyword($keyword, $langCode);
+            }
         }
 
         $tag = $this->tagService->createTag($tagCreateStruct);
@@ -107,7 +113,7 @@ class TagManager extends RepositoryExecutor
                 // deprecated tag
                 $lang = $step->dsl['main_language_code'];
             } else {
-                $lang = null;
+                $lang = $this->getLanguageCode($step);
             }
 
             $tagUpdateArray = array(
@@ -117,10 +123,14 @@ class TagManager extends RepositoryExecutor
             );
             $tagUpdateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagUpdateStruct($tagUpdateArray);
 
-            foreach ($step->dsl['keywords'] as $langCode => $keyword)
-            {
-                $keyword = $this->referenceResolver->resolveEmbeddedReferences($keyword);
-                $tagUpdateStruct->setKeyword($keyword, $langCode);
+            if (is_string($step->dsl['keywords'])) {
+                $keyword = $this->referenceResolver->resolveReference($step->dsl['keywords']);
+                $tagUpdateStruct->setKeyword($keyword);
+            } else {
+                foreach ($step->dsl['keywords'] as $langCode => $keyword) {
+                    $keyword = $this->referenceResolver->resolveReference($keyword);
+                    $tagUpdateStruct->setKeyword($keyword, $langCode);
+                }
             }
 
             $tag = $this->tagService->updateTag($tag, $tagUpdateStruct);
@@ -166,12 +176,12 @@ class TagManager extends RepositoryExecutor
     }
 
     /**
-     * @param Tag $object
+     * @param Tag $tag
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues($object, array $references)
+    protected function getReferencesValues($tag, array $references, $lang)
     {
         $refs = array();
 
@@ -179,32 +189,36 @@ class TagManager extends RepositoryExecutor
             switch ($reference['attribute']) {
                 case 'id':
                 case 'tag_id':
-                    $value = $object->id;
+                    $value = $tag->id;
                     break;
                 case 'always_available':
-                    $value = $object->alwaysAvailable;
+                    $value = $tag->alwaysAvailable;
                     break;
                 case 'depth':
-                    $value = $object->depth;
+                    $value = $tag->depth;
+                    break;
+                case 'keyword':
+                    $value = $tag->getKeyword($lang);
                     break;
                 case 'main_language_code':
-                    $value = $object->mainLanguageCode;
+                    $value = $tag->mainLanguageCode;
                     break;
                 case 'main_tag_id':
-                    $value = $object->mainTagId;
+                    $value = $tag->mainTagId;
                     break;
                 case 'modification_date':
-                    $value = $object->modificationDate->getTimestamp();
+                    $value = $tag->modificationDate->getTimestamp();
                     break;
                 case 'path':
-                    $value = $object->pathString;
+                    $value = $tag->pathString;
                     break;
                 case 'parent_tag_id':
-                    $value = $object->parentTagId;
+                    $value = $tag->parentTagId;
                     break;
                 case 'remote_id':
-                    $value = $object->remoteId;
+                    $value = $tag->remoteId;
                     break;
+
                 default:
                     throw new \InvalidArgumentException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);
             }

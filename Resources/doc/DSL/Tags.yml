@@ -4,26 +4,32 @@
     always_available: true|false # Optional (false by default)
     parent_tag_id: 0 # Optional. Parent tag id (0 by default)
     remote_id: custom_remote_id # Optional, will set a custom remote id
-    lang: eng-GB
+    lang: eng-GB # Optional
     keywords:
-        language_code: "Keyword" # ex : eng-GB: "Test keyword"
+        _language_code_: "Keyword" # ex : eng-GB: "Test keyword"
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
-                                   # path, parent_tag_id, remote_id
+                                   # path, parent_tag_id, remote_id, keyword
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+
+# alternative: create tag in current siteaccess language:
+-
+    type: tag
+    mode: create
+    keywords: "hello world"
 
 -
     type: tag
     mode: update
     always_available: true|false # Optional (false by default)
     remote_id: custom_remote_id # Optional, will set a custom remote id
-    lang: eng-GB
-    keywords:
+    lang: eng-GB # Optional
+    keywords: # either a string or an array
         language_code: "Keyword" # ex : eng-GB: "Test keyword"
     match: # The tag(s) to update
         # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
@@ -46,7 +52,7 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
-                                   # path, parent_tag_id, remote_id
+                                   # path, parent_tag_id, remote_id, keyword
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -75,7 +81,7 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
-                                   # path, parent_tag_id, remote_id
+                                   # path, parent_tag_id, remote_id, keyword
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -89,7 +95,7 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
-                                   # path, parent_tag_id, remote_id
+                                   # path, parent_tag_id, remote_id, keyword
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

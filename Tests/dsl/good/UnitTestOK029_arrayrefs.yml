@@ -1,0 +1,10 @@
+-
+    type: content
+    mode: load
+    match:
+        content_type_identifier: folder
+    references:
+        multivalued: enabled
+        -
+            identifier: hello
+            attribute: id

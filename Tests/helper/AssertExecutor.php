@@ -88,6 +88,7 @@ class AssertExecutor extends  AbstractExecutor
             throw new \Exception("Invalid step definition: invalid test condition '$testCondition'");
         }
 
+        /// @todo this prints out messages similar to 'Failed asserting that two strings are equal.' but not the strings themselves.  We could catch and decode the exception...
         call_user_func(array($assertClass, $testMethod), $targetValue, $value);
     }
 }
