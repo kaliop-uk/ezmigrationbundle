@@ -337,23 +337,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     }
 
     /**
-     * Sets references to object attributes
-     *
-     * The Content Type Manager currently supports setting references to the content type id and identifier
-     *
-     * @throws \InvalidArgumentException When trying to set
-     *
-     * @param \eZ\Publish\API\Repository\Values\ContentType\ContentType|ContentTypeCollection $contentType
-     * @return bool
+     * @param ContentType $contentType
+     * @param array $references the definitions of the references to set
+     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @return array key: the reference names, values: the reference values
      */
-    protected function setReferences($contentType, $step)
+    protected function getReferencesValues($contentType, array $references)
     {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($contentType, $step->dsl['references']);
-        $contentType = $this->insureSingleEntity($contentType, $references);
+        $refs = array();
 
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
@@ -424,14 +415,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
-            $overwrite = false;
-            if (isset($reference['overwrite'])) {
-                $overwrite = $reference['overwrite'];
-            }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $refs[$reference['identifier']] = $value;
         }
 
-        return true;
+        return $refs;
     }
 
 

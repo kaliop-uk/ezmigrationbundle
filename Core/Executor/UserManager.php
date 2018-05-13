@@ -217,6 +217,8 @@ class UserManager extends RepositoryExecutor
      */
     protected function getReferencesValues($user, array $references)
     {
+        $refs = array();
+
         foreach ($references as $reference) {
 
             switch ($reference['attribute']) {

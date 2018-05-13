@@ -164,6 +164,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     protected function getReferencesValues($role, array $references)
     {
         $refs = array();
+
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'role_id':

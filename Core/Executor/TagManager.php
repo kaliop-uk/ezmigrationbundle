@@ -166,23 +166,6 @@ class TagManager extends RepositoryExecutor
     }
 
     /**
-     * @param $object
-     * @return bool
-     *
-     * @todo add support for keyword (with language),
-     */
-    protected function setReferences($object, $step)
-    {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($object, $step->dsl['references']);
-        /** @var \Netgen\TagsBundle\API\Repository\Values\Tags\Tag $object */
-        $object = $this->insureSingleEntity($object, $references);
-    }
-
-    /**
      * @param Tag $object
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute

@@ -142,20 +142,6 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     }
 
     /**
-     * {@inheritdoc}
-     * @param \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup|ObjectStateGroupCollection $objectStateGroup
-     */
-    protected function setReferences($objectStateGroup, $step)
-    {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($objectStateGroup, $step->dsl['references']);
-        $objectStateGroup = $this->insureSingleEntity($objectStateGroup, $references);
-    }
-
-    /**
      * @param ObjectStateGroup $objectStateGroup
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute

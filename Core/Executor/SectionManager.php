@@ -119,23 +119,6 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * Sets references to certain section attributes.
-     *
-     * @param \eZ\Publish\API\Repository\Values\Content\Section|SectionCollection $section
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
-     * @return boolean
-     */
-    protected function setReferences($section, $step)
-    {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($section, $step->dsl['references']);
-        $section = $this->insureSingleEntity($section, $references);
-    }
-
-    /**
      * @param Section $section
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute

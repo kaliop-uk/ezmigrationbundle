@@ -364,6 +364,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function getReferencesValues($content, array $references)
     {
         $refs = array();
+
         foreach ($references as $reference) {
 
             switch ($reference['attribute']) {

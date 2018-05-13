@@ -265,25 +265,6 @@ class LocationManager extends RepositoryExecutor
     }
 
     /**
-     * Sets references to object attributes
-     *
-     * The Location Manager currently supports setting references to location id.
-     *
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute.
-     * @param \eZ\Publish\API\Repository\Values\Content\Location|LocationCollection $location
-     * @return boolean
-     */
-    protected function setReferences($location, $step)
-    {
-        if (!array_key_exists('references', $step->dsl)) {
-            return false;
-        }
-
-        $references = $this->setReferencesCommon($location, $step->dsl['references']);
-        $location = $this->insureSingleEntity($location, $references);
-    }
-
-    /**
      * @param Location $location
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
@@ -292,6 +273,7 @@ class LocationManager extends RepositoryExecutor
     protected function getReferencesValues($location, array $references)
     {
         $refs = array();
+
         foreach ($references as $reference) {
             switch ($reference['attribute']) {
                 case 'location_id':
