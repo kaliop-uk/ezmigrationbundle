@@ -179,13 +179,12 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * Sets references to certain content attributes.
+     * Sets references to certain attributes of the items returned by steps.
      *
-     * @param \Object|AbstractCollectionCollection $item
+     * @param \Object|AbstractCollection $item
+     * @param MigrationStep $step
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
-     *
-     * @todo add support for other attributes... ?
      */
     protected function setReferences($item, $step)
     {
@@ -193,9 +192,9 @@ abstract class RepositoryExecutor extends AbstractExecutor
             return false;
         }
 
-        $referencesDefs = $this->setReferencesCommon($content, $step->dsl['references']);
+        $referencesDefs = $this->setReferencesCommon($item, $step->dsl['references']);
 
-        $this->insureEntityCountCompatibilty($content, $referencesDefs);
+        $this->insureEntityCountCompatibility($item, $referencesDefs);
 
         $multivalued = $this->areReferencesMultivalued($referencesDefs);
 
@@ -276,7 +275,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     protected function insureSingleEntity($entity, $referencesDefinition)
     {
-        $this->insureEntityCountCompatibilty($entity, $referencesDefinition);
+        $this->insureEntityCountCompatibility($entity, $referencesDefinition);
 
         if ($entity instanceof AbstractCollection) {
             return reset($entity);
@@ -293,7 +292,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @return void throws when incompatibiliy is found
      * @todo should we allow to be passed in plain arrays as well ?
      */
-    protected function insureEntityCountCompatibilty($entity, $referencesDefinition)
+    protected function insureEntityCountCompatibility($entity, $referencesDefinition)
     {
         if ($entity instanceof AbstractCollection) {
 
@@ -311,7 +310,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
     protected function areReferencesMultivalued($referencesDefinition)
     {
-        return isset($referencesDefinition['multivalued']) && $referenceDefinition['multivalued'] == 'enabled';
+        return isset($referencesDefinition['multivalued']) && $referencesDefinition['multivalued'] == 'enabled';
     }
 
     protected function getSelfName()
