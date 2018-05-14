@@ -189,6 +189,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @param MigrationStep $step
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
+     * @todo should we allow to be passed in plain arrays as well as Collections?
      */
     protected function setReferences($item, $step)
     {
@@ -198,7 +199,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $referencesDefs = $this->setReferencesCommon($item, $step->dsl['references']);
 
-        $this->insureEntityCountCompatibility($item, $referencesDefs);
+        $this->insureEntityCountCompatibility($item, $referencesDefs, $step);
 
         $multivalued = ($this->getReferencesType($step) == self::REFERENCE_TYPE_ARRAY);
 
@@ -271,11 +272,13 @@ abstract class RepositoryExecutor extends AbstractExecutor
      *
      * @param AbstractCollection|mixed $entity
      * @param array $referencesDefinition
+     * @param MigrationStep $step
      * @return AbstractCollection|mixed
+     * @deprecated
      */
-    protected function insureSingleEntity($entity, $referencesDefinition)
+    protected function insureSingleEntity($entity, $referencesDefinition, $step)
     {
-        $this->insureEntityCountCompatibility($entity, $referencesDefinition);
+        $this->insureEntityCountCompatibility($entity, $referencesDefinition, $step);
 
         if ($entity instanceof AbstractCollection) {
             return reset($entity);
@@ -285,19 +288,20 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * Verifies compatibility between the definition of the refences to be set and the data set to extract them from.
+     * Verifies compatibility between the definition of the references to be set and the data set to extract them from.
      * Nb: for multivalued refs, we assume that the users always expect at least one value
      * @param AbstractCollection|mixed $entity
      * @param array $referencesDefinition
-     * @return void throws when incompatibiliy is found
-     * @todo should we allow to be passed in plain arrays as well ?
+     * @param MigrationStep $step
+     * @return void throws when incompatibility is found
+     * @todo should we allow to be passed in plain arrays as well as Collections?
      */
-    protected function insureEntityCountCompatibility($entity, $referencesDefinition)
+    protected function insureEntityCountCompatibility($entity, $referencesDefinition, $step)
     {
         if ($entity instanceof AbstractCollection) {
 
             $minOneRef = count($referencesDefinition) > 0;
-            $maxOneRef = count($referencesDefinition) > 0 && ! $this->areReferencesMultivalued($referencesDefinition);
+            $maxOneRef = count($referencesDefinition) > 0 && $this->getReferencesType($step) == self::REFERENCE_TYPE_SCALAR;
 
             if ($maxOneRef && count($entity) > 1) {
                 throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for multiple ' . $this->getCollectionName($entity) . 's');
