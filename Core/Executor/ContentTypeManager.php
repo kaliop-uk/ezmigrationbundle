@@ -397,7 +397,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     if (strpos($reference['attribute'], 'attributes.') === 0) {
                         // BC handling of references to attributes names/descriptions
                         if (preg_match('/^attributes\\.[^.]+\\.(name|description)$/', $reference['attribute'])) {
-                            $reference['attribute'] .= '."' . $this->getLanguageCode($step) . '"';
+                            $reference['attribute'] .= '."' . $lang . '"';
                         }
                         $parts = explode('.', $reference['attribute']);
                         // totally not sure if this list of special chars is correct for what could follow a jmespath identifier...

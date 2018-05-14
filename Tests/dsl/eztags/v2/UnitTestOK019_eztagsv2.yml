@@ -208,33 +208,6 @@
         eng-GB: "Article Subject2 [reference:kmb_test_11]"
     references:
         -
-            identifier: article_tag_id2
-            attribute: id
-        -
-            identifier: article_tag_always_available2
-            attribute: always_available
-        -
-            identifier: article_tag_depth2
-            attribute: depth
-        -
-            identifier: article_tag_main_language_code2
-            attribute: main_language_code
-        -
-            identifier: article_tag_main_tag_id2
-            attribute: main_tag_id
-        -
-            identifier: article_tag_modification_date2
-            attribute: modification_date
-        -
-            identifier: article_tag_path2
-            attribute: path
-        -
-            identifier: article_tag_parent_tag_id2
-            attribute: parent_tag_id
-        -
-            identifier: article_tag_remote_id2
-            attribute: remote_id
-        -
             identifier: article_tag_keyword2
             attribute: keyword
 -
