@@ -114,12 +114,12 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * It is used to get values for references based on the DSL instructions executed in the current step, for later steps to reuse.
      *
      * @throws \InvalidArgumentException when trying to set a reference to an unsupported attribute.
-     * @param $object a sinle element to extract reference values from
+     * @param mixed $object a single element to extract reference values from
      * @param array $referencesDefinitions the definitions of the references to extract
-     * @param string $lang
+     * @param MigrationStep $step
      * @return array key: the reference name (taken from $referencesDefinitions[n]['identifier'], value: the ref. value
      */
-    abstract protected function getReferencesValues($object, array $referencesDefinitions, $lang);
+    abstract protected function getReferencesValues($object, array $referencesDefinitions, $step);
 
     /**
      * @param MigrationStep $step
@@ -199,8 +199,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $multivalued = $this->areReferencesMultivalued($referencesDefs);
 
-        $lang = $this->getLanguageCode($step);
-
         if ($item instanceof AbstractCollection) {
             $items = $item;
         } else {
@@ -213,7 +211,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $referencesValues = array();
         foreach ($items as $item) {
-            $itemReferencesValues = $this->getReferencesValues($item, $referencesDefs, $lang);
+            $itemReferencesValues = $this->getReferencesValues($item, $referencesDefs, $step);
             if (!$multivalued) {
                 $referencesValues = $itemReferencesValues;
             } else {

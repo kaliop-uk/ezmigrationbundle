@@ -342,8 +342,9 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
      */
-    protected function getReferencesValues($contentType, array $references, $lang)
+    protected function getReferencesValues($contentType, array $references, $step)
     {
+        $lang = $this->getLanguageCode($step);
         $refs = array();
 
         foreach ($references as $reference) {
