@@ -1,5 +1,15 @@
-Version 5.1 (unreleased)
-========================
+Version 5.1
+===========
+
+* New: it is now possible to set references when a migration step results in a list of items, and not just in a single
+     item. The resulting reference will have a value which is an array instead of a scalar value.
+     This has to be specifically enabled for each migration step where references are expected to be multi-valued:
+     
+        references_type: array
+        references:            
+            -
+                attribute: some_id
+                identifier: my_array_ref
 
 * New: references are now resolved for in the `keyword` element for `tag/create` and `tag/update`. This makes it
     easier to mass-create eztag tags in conjunction with the eZLoremIpsum bundle
@@ -9,16 +19,6 @@ Version 5.1 (unreleased)
 * New: its is now possible to set references to a tag `keyword`
 
 * New: it is easier to create/update tags in a single language (the main language of current siteaccess is used if unspecified) 
-
-* New: it is now possible to set references when a migration step results in a list of items, and not just in a single
-     item. The resulting reference will have a value which is an array instead of a scalar value.
-     This has to be specifically enabled for each migration step where references are expected to be multi-valued:
-     
-        refernces_type: array
-        references:            
-            -
-                attribute: some_id
-                identifier: my_array_ref
 
 * BC changes:
 

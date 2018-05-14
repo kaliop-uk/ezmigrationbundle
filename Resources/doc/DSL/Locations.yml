@@ -39,6 +39,7 @@
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -119,6 +120,7 @@
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
                                    # 'count' can be used to set a reference to the number of items matched
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -177,6 +179,7 @@
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
                                    # 'count' can be used to set a reference to the number of items matched
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -242,6 +245,7 @@
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
                                    # 'count' can be used to set a reference to the number of items matched
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

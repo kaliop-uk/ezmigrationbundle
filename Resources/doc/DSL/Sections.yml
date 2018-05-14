@@ -45,6 +45,7 @@
                                  # Supports: section_id, section_identifier, section_name
                                  # The shorthand 'id' can be used instead of 'user_id'
                                  # 'count' can be used to set a reference to the number of items matched
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -69,6 +70,7 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

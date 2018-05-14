@@ -123,6 +123,7 @@
                                    # attributes.title.required (boolean value)
                                    # attributes.ezobjectrelationlist."field-settings".selectionContentTypes.length(@) (nr. of cotent-types allowed in an object-relations field)
                                    # (for the full syntax supported, see jmespath)
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -189,6 +190,7 @@
                                        # The shorthand 'id' can be used instead of 'content_type_id'
                                        # The shorthand 'identifier' can be used instead of 'content_type_identifier'
                                        # 'count' can be used to set a reference to the number of items matched
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -215,6 +217,7 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
