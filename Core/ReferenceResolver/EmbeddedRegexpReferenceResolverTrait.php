@@ -36,7 +36,7 @@ trait EmbeddedRegexpReferenceResolverTrait
         if ($count) {
             foreach ($matches[0] as $referenceIdentifier) {
                 $reference = $this->getReferenceValue(substr($referenceIdentifier, 1, -1));
-                if (is_string($reference)) {
+                if (!is_array($reference)) {
                     $string = str_replace($referenceIdentifier, $reference, $string);
                 }
             }
