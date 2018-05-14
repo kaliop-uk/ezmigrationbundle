@@ -49,6 +49,28 @@ class FieldHandlerManager
     }
 
     /**
+     * Returns true when a fieldHandler allows string refs to be pre-resolved for the field value it gets as hash.
+     * "pre-resolved" means: resolved before the field-handler-specific propcessing kicks in
+     *
+     * @param string $fieldTypeIdentifier
+     * @param string $contentTypeIdentifier
+     */
+    public function doPreResolveStringReferences($fieldTypeIdentifier, $contentTypeIdentifier)
+    {
+        if (!$this->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
+            return true;
+        }
+
+        $fieldHandler = $this->getFieldHandler($fieldTypeIdentifier, $contentTypeIdentifier);
+        // BC: not alwys defined
+        if (is_callable(array($fieldHandler, 'doPreResolveStringReferences'))) {
+            return $fieldHandler->doPreResolveStringReferences();
+        }
+
+        return true;
+    }
+
+    /**
      * @param string $fieldTypeIdentifier
      * @param string $contentTypeIdentifier
      * @param mixed $hashValue

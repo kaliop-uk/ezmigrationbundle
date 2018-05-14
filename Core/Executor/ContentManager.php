@@ -677,7 +677,12 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function getFieldValue($value, FieldDefinition $fieldDefinition, $contentTypeIdentifier, array $context = array())
     {
         $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
+
         if (is_array($value) || $this->fieldHandlerManager->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
+            // since we now allow refs to be arrays, let's attempt a 1st pass at resolving them here instead of every single fieldHandler...
+            if (is_string($value) && $this->fieldHandlerManager->doPreResolveStringReferences($fieldTypeIdentifier, $contentTypeIdentifier)) {
+                $value = $this->referenceResolver->resolveReference($value);
+            }
             // inject info about the current content type and field into the context
             $context['contentTypeIdentifier'] = $contentTypeIdentifier;
             $context['fieldIdentifier'] = $fieldDefinition->identifier;

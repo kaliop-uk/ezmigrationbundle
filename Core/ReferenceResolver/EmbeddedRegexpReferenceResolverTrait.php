@@ -26,6 +26,7 @@ trait EmbeddedRegexpReferenceResolverTrait
      *
      * @param string $string
      * @return string
+     * @todo q: if reference is an array, should we recurse on it ?
      */
     public function resolveEmbeddedReferences($string)
     {
@@ -35,7 +36,9 @@ trait EmbeddedRegexpReferenceResolverTrait
         if ($count) {
             foreach ($matches[0] as $referenceIdentifier) {
                 $reference = $this->getReferenceValue(substr($referenceIdentifier, 1, -1));
-                $string = str_replace($referenceIdentifier, $reference, $string);
+                if (is_string($reference)) {
+                    $string = str_replace($referenceIdentifier, $reference, $string);
+                }
             }
         }
 

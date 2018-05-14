@@ -183,6 +183,7 @@ class TagManager extends RepositoryExecutor
      */
     protected function getReferencesValues($tag, array $references, $step)
     {
+        $lang = $this->getLanguageCode($step);
         $refs = array();
 
         foreach ($references as $reference) {
