@@ -30,6 +30,9 @@ abstract class RepositoryExecutor extends AbstractExecutor
     /** Used if not specified by the migration */
     const USER_CONTENT_TYPE = 'user';
 
+    const REFERENCE_TYPE_SCALAR = 'scalar';
+    const REFERENCE_TYPE_ARRAY = 'array';
+
     /**
      * @var array $dsl The parsed DSL instruction array
      */
@@ -197,16 +200,12 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         $this->insureEntityCountCompatibility($item, $referencesDefs);
 
-        $multivalued = $this->areReferencesMultivalued($referencesDefs);
+        $multivalued = ($this->getReferencesType($step) == self::REFERENCE_TYPE_ARRAY);
 
         if ($item instanceof AbstractCollection) {
             $items = $item;
         } else {
             $items = array($item);
-        }
-
-        if (isset($referencesDefs['multivalued'])) {
-            unset($referencesDefs['multivalued']);
         }
 
         $referencesValues = array();
@@ -309,9 +308,9 @@ abstract class RepositoryExecutor extends AbstractExecutor
         }
     }
 
-    protected function areReferencesMultivalued($referencesDefinition)
+    protected function getReferencesType($step)
     {
-        return isset($referencesDefinition['multivalued']) && $referencesDefinition['multivalued'] == 'enabled';
+        return isset($step->dsl['references_type']) ? $step->dsl['references_type'] : self::REFERENCE_TYPE_SCALAR;
     }
 
     protected function getSelfName()

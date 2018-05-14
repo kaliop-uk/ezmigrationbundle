@@ -14,8 +14,8 @@ Version 5.1 (unreleased)
      item. The resulting reference will have a value which is an array instead of a scalar value.
      This has to be specifically enabled for each migration step where references are expected to be multi-valued:
      
-        references:
-            multivalued: enabled
+        refernces_type: array
+        references:            
             -
                 attribute: some_id
                 identifier: my_array_ref
