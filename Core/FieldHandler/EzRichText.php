@@ -30,6 +30,9 @@ class EzRichText extends AbstractFieldHandler implements FieldValueImporterInter
     {
         if (is_string($fieldValue)) {
             $xmlText = $fieldValue;
+        } else if (is_array($fieldValue) && isset($fieldValue['xml'])) {
+            // native export format from eZ
+            $xmlText = $fieldValue['xml'];
         } else {
             $xmlText = $fieldValue['content'];
         }
