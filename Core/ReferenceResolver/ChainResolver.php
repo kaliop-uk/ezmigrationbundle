@@ -73,7 +73,11 @@ class ChainResolver implements EmbeddedReferenceResolverBagInterface, Enumerable
 
     public function resolveReference($stringIdentifier)
     {
-        if ($this->doResolveEmbeddedReferences && is_string($stringIdentifier)) {
+        if (!is_string($stringIdentifier)) {
+            return $stringIdentifier;
+        }
+
+        if ($this->doResolveEmbeddedReferences) {
             $stringIdentifier = $this->resolveEmbeddedReferences($stringIdentifier);
         }
 
