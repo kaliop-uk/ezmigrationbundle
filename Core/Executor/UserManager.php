@@ -57,14 +57,14 @@ class UserManager extends RepositoryExecutor
         $userContentType = $contentTypeService->loadContentTypeByIdentifier($this->getUserContentType($step));
 
         $userCreateStruct = $userService->newUserCreateStruct(
-            $step->dsl['username'],
-            $step->dsl['email'],
-            $step->dsl['password'],
+            $this->referenceResolver->resolveReference($step->dsl['username']),
+            $this->referenceResolver->resolveReference($step->dsl['email']),
+            $this->referenceResolver->resolveReference($step->dsl['password']),
             $this->getLanguageCode($step),
             $userContentType
         );
-        $userCreateStruct->setField('first_name', $step->dsl['first_name']);
-        $userCreateStruct->setField('last_name', $step->dsl['last_name']);
+        $userCreateStruct->setField('first_name', $this->referenceResolver->resolveReference($step->dsl['first_name']));
+        $userCreateStruct->setField('last_name', $this->referenceResolver->resolveReference($step->dsl['last_name']));
 
         // Create the user
         $user = $userService->createUser($userCreateStruct, $userGroups);
@@ -98,13 +98,13 @@ class UserManager extends RepositoryExecutor
             $userUpdateStruct = $userService->newUserUpdateStruct();
 
             if (isset($step->dsl['email'])) {
-                $userUpdateStruct->email = $step->dsl['email'];
+                $userUpdateStruct->email = $this->referenceResolver->resolveReference($step->dsl['email']);
             }
             if (isset($step->dsl['password'])) {
-                $userUpdateStruct->password = (string)$step->dsl['password'];
+                $userUpdateStruct->password = (string)$this->referenceResolver->resolveReference($step->dsl['password']);
             }
             if (isset($step->dsl['enabled'])) {
-                $userUpdateStruct->enabled = $step->dsl['enabled'];
+                $userUpdateStruct->enabled = $this->referenceResolver->resolveReference($step->dsl['enabled']);
             }
 
             $user = $userService->updateUser($user, $userUpdateStruct);

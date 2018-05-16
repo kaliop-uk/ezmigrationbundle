@@ -157,7 +157,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     protected function getUserContentType($step)
     {
-        return isset($step->dsl['user_content_type']) ? $step->dsl['user_content_type'] : $this->getUserContentTypeFromContext($step->context);
+        return isset($step->dsl['user_content_type']) ? $this->referenceResolver->resolveReference($step->dsl['user_content_type']) : $this->getUserContentTypeFromContext($step->context);
     }
 
     /**

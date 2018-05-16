@@ -1,3 +1,13 @@
+Version 5.2
+===========
+
+* New: references are resolved in all fields when creating/updating users
+
+* Fix: one case where array values where tried to be resolved as references (introduced in 5.1)
+
+* Fix: it was impossible to import a content exported via migration generation with an eZPlatform Rich-Text field (ticket #160)
+
+
 Version 5.1.1
 =============
 
