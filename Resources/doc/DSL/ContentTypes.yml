@@ -51,6 +51,9 @@
 #        selectionMethod: 0 # 1=drop-down list
 #        selectionDefaultLocation: 2
 #        selectionContentTypes: [ ] # array of ContentType identifiers
+#    validator-configuration: # since eZ Platform v2.0
+#        RelationListValueValidator:
+#            selectionLimit: 1 # you can specify how many elements can be selected maximum
 #
 # ezselection
 #    field-settings:
