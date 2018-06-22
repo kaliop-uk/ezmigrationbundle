@@ -177,7 +177,7 @@
                 hideRootTag: true
             validator-configuration:
                 TagsValueValidator:
-                    subTreeLimit: 1
+                    subTreeLimit: reference:article_tag_id
 -
     type: content
     mode: create
@@ -187,6 +187,25 @@
         title: test
         tags:
             - { id: reference:article_tag_id }
+-
+    type: tag
+    mode: update
+    match:
+        id: reference:article_tag_id
+    always_available: false
+    remote_id: article_tag_remote_id2
+    keywords:
+        eng-GB: "Article Subject2 [reference:kmb_test_11]"
+    references:
+        -
+            identifier: article_tag_keyword2
+            attribute: keyword
+-
+    type: assert
+    target: reference
+    identifier: reference:article_tag_keyword2
+    test:
+        equals: "Article Subject2 kmb_test_11"
 -
     type: content
     mode: delete

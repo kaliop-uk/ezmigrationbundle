@@ -1,17 +1,24 @@
 Version 5.2
 ===========
 
-* New: references are resolved in all fields when creating/updating users
+* New: references are resolved in all fields when creating/updating users. This makes it easier to mass-create users in
+    conjunction with the eZLoremIpsum bundle
+
+*  New: the `status` command got a `todo` option. When using it, all that is printed is the list of the migrations to
+    execute (full path to each file). This can be useful fe. in shell scripts that want to execute each migration
+    separately 
 
 * Fix: one case where array values where tried to be resolved as references (introduced in 5.1)
 
 * Fix: it was impossible to import a content exported via migration generation with an eZPlatform Rich-Text field (ticket #160)
 
+* Fix: better error reporting for the case where an error happens at the end of a migration (commit phase)
+
 
 Version 5.1.1
 =============
 
-* Fix: a bugs introduced in 5.1 with resolving references in handling tags 
+* Fix: a bug introduced in 5.1 with resolving references in handling tags 
 
 * Fix: do allow to resolution of references for multi-valued Content Fields (eg. a reference that returns an array is ok
     to use for a field of type object-relation)

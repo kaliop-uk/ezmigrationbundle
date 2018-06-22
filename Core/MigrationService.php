@@ -345,6 +345,9 @@ class MigrationService implements ContextProviderInterface
                 $finalMessage = "Suspended in execution of step $i: " . $e->getMessage();
             }
 
+            // in case we have an exception thrown in the commit phase after the last step, make sure we report the correct step
+            $i--;
+
             // set migration as done
             $this->storageHandler->endMigration(new Migration(
                 $migration->name,
@@ -386,7 +389,7 @@ class MigrationService implements ContextProviderInterface
                         // since the migration succeeded and it was committed, no use to mark it as failed...
                         $finalStatus = Migration::STATUS_DONE;
                         $errorMessage = 'Error post ' . $this->getEntityName($migration) . ' execution in file ' .
-                            $e2->getFile() . ' line ' . $e2->getLine() . ': ' . $this->getFullExceptionMessage($e2);
+                            $e->getFile() . ' line ' . $e->getLine() . ': ' . $this->getFullExceptionMessage($e);
                     } else {
                         $errorMessage .= '. In addition, an exception was thrown while rolling back, in file ' .
                             $e2->getFile() . ' line ' . $e2->getLine() . ': ' . $this->getFullExceptionMessage($e2);
