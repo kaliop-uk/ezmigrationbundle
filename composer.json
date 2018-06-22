@@ -58,6 +58,11 @@
             "type": "vcs",
             "url": "https://github.com/gggeek/BehatBundle",
             "no-api": true
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kaliop-uk/SecurityAdvisoriesNoConflicts",
+            "no-api": true
         }
     ]
 }
