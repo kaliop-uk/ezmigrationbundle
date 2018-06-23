@@ -124,6 +124,7 @@ after_script:
 git:
     depth: 5
 
-cache:
-    directories:
-        - $COMPOSER_CACHE_DIR
+# Try to avoid problems with shared composer caches...
+#cache:
+#    directories:
+#        - $COMPOSER_CACHE_DIR
