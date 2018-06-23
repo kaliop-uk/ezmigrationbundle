@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Console\Helper\Table;
@@ -196,7 +197,11 @@ EOT
                         $failed++;
                         continue;
                     }
-                    $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
+                    if ($e instanceof AfterMigrationExecutionException) {
+                        $output->writeln("\n<error>Failure after migration end! Reason: " . $e->getMessage() . "</error>");
+                    } else {
+                        $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
+                    }
                     return 1;
                 }
 

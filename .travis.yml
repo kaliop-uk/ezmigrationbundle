@@ -43,13 +43,15 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezplatform:^2.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0 sensio/generator-bundle' EZ_VERSION=ezplatform2 EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
   allow_failures:
-    # this is failing because of composer running out of memory :-( To test: a) enabling swap, b) pre-calculate deps and only tun composer-installl
-    - php: 5.6
+    # temporary
+    - php: 7.2
 
 before_install:
   # No need for a web server, until we start testing using Selenium
   #- sudo apt-get update -qq
   #- sudo apt-get install -qq -y --force-yes apache2 libapache2-mod-fastcgi
+
+  # For php 5.6, Composer needs humongous amounts of ram - which we don't have. Enable swap as workaround
   - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then sudo fallocate -l 6G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
 
 install:
@@ -68,18 +70,16 @@ install:
 
   # We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix
 
-  # For the moment, to install eZPlatform, a set of DEV packages have to be allowed; really ugly sed expression to alter composer.json follows
+  # For the moment, to install eZPlatform, a set of DEV packages has to be allowed; really ugly sed expression to alter composer.json follows
   # TODO is this still needed?
   - 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
-  # debugging memory problems with composer
+  # Troubleshooting memory problems...
   #- sudo free -m -t
   #- sudo service postgresql stop
   #- sudo service memcached stop
   #- sudo service --status-all
   #- php -i
-
-  # TODO try enabling swap manually
 
   # try to reduce mem usage by running composer in two steps
   - composer require --dev --no-update ${EZ_PACKAGES}

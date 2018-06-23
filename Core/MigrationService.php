@@ -17,6 +17,7 @@ use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
+use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
 use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
@@ -370,6 +371,7 @@ class MigrationService implements ContextProviderInterface
 
             $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
             $finalStatus = Migration::STATUS_FAILED;
+            $exception = null;
 
             if ($useTransaction) {
                 try {
@@ -383,13 +385,15 @@ class MigrationService implements ContextProviderInterface
 
                 } catch (\Exception $e2) {
                     // This check is not rock-solid, but at the moment is all we can do to tell apart 2 cases of
-                    // exceptions originating above: the case where the commit was successful but a commit-queue event
-                    // failed, from the case where something failed beforehand
+                    // exceptions originating above: the case where the commit was successful but handling of a commit-queue
+                    // signal failed, from the case where something failed beforehand.
+                    // Known cases for signals failing at commit time include fe. https://jira.ez.no/browse/EZP-29333
                     if ($previousUserId && $e2->getMessage() == 'There is no active transaction.') {
                         // since the migration succeeded and it was committed, no use to mark it as failed...
                         $finalStatus = Migration::STATUS_DONE;
-                        $errorMessage = 'Error post ' . $this->getEntityName($migration) . ' execution in file ' .
+                        $errorMessage = 'An exception was thrown after committing, in file ' .
                             $e->getFile() . ' line ' . $e->getLine() . ': ' . $this->getFullExceptionMessage($e);
+                        $exception = new AfterMigrationExecutionException($errorMessage, $i, $e);
                     } else {
                         $errorMessage .= '. In addition, an exception was thrown while rolling back, in file ' .
                             $e2->getFile() . ' line ' . $e2->getLine() . ': ' . $this->getFullExceptionMessage($e2);
@@ -412,7 +416,7 @@ class MigrationService implements ContextProviderInterface
                 true
             );
 
-            throw new MigrationStepExecutionException($errorMessage, $i, $e);
+            throw $exception ? $exception : new MigrationStepExecutionException($errorMessage, $i, $e);
         }
     }
 
