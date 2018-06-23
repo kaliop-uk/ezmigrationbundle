@@ -12,14 +12,14 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 * PHP 5.6 or later.
 
-* eZPublish Enterprise 5.4 or Community 2014.11 or later.
+* eZPlatform or eZPublish Enterprise 5.4 or eZPublish Community 2014.11 or later.
 
 
 ## Installation
 
 In either `require` or `require-dev` at the end of the bundle list in the composer.json file add:
 
-    "kaliop/ezmigrationbundle": "^4.0"
+    "kaliop/ezmigrationbundle": "^5.0"
 
 Save it and run
 
@@ -27,7 +27,7 @@ Save it and run
 
 This will install the bundle and all its dependencies.
 
-Please make sure that you have the bundle registered in the kernel as well. Check `ezpublish/EzPublishKernel.php`
+Please make sure that you have the bundle registered in the kernel as well. Check `app/appKernel.php` (for eZPublish `ezpublish/EzPublishKernel.php`)
 
 The `registerBundles` method should look similar to:
 
@@ -41,7 +41,7 @@ The `registerBundles` method should look similar to:
 
 ### Checking that the bundle is installed correctly
 
-If you run `php ezpublish/console` you should see the following new commands in the list:
+If you run `php bin/console` (for eZPublish `php ezpublish/console`) you should see the following new commands in the list:
 
     kaliop
       kaliop:migration:generate
@@ -58,6 +58,18 @@ Note: the command `kaliop:migration:update` is kept around for compatibility, an
 To get the latest version, you can update the bundle to the latest available version by using `composer`
 
     composer update kaliop/ezmigrationbundle
+
+### Upgrading from version 4.x to version 5
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md) 
+
+* Nothing else is required, unless you have one of the following:
+
+    - code which extends the migration bundle code/apis
+    - old migrations, that you want to play again with the updated bundle, which have text values which include the string '[reference:xxx]'
+      where 'xxx' stands for any sequence of characters
+
+    For both cases, the fix is to apply manual changes to your code / migrations.
 
 ### Upgrading from version 3.x to version 4
 
@@ -381,7 +393,7 @@ override, take a look at the [services.yml file](Resources/config/services.yml).
 
 The bundle uses PHPUnit to run functional tests.
 
-#### Running tests in a working eZPublish installation
+#### Running tests in a working eZPublish / eZPlatform installation
 
 To run the tests:
 
