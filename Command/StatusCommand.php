@@ -24,6 +24,7 @@ class StatusCommand extends AbstractCommand
             ->setDescription('View the status of all (or a set of) migrations.')
             ->addOption('path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "The directory or file to load the migration definitions from")
             ->addOption('summary', null, InputOption::VALUE_NONE, "Only print summary information")
+            ->addOption('todo', null, InputOption::VALUE_NONE, "Only print list of migrations to execute (full path to each)")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:status</info> command displays the status of all available migrations:
 
@@ -75,7 +76,7 @@ EOT
         }
         ksort($index);
 
-        if (!$input->getOption('summary')) {
+        if (!$input->getOption('summary') && !$input->getOption('todo')) {
             if (count($index) > 50000) {
                 $output->writeln("WARNING: printing the status table might take a while as it contains many rows. Please wait...");
             }
@@ -105,13 +106,18 @@ EOT
                 } else {
                     $summary[Migration::STATUS_TODO][1]++;
                 }
-                $data[] = array(
-                    $i++,
-                    $name,
-                    '<error>not executed</error>',
-                    '',
-                    $notes
-                );
+                if ($input->getOption('todo')) {
+                    $data[] = $migrationDefinition->path;
+                } else {
+                    $data[] = array(
+                        $i++,
+                        $name,
+                        '<error>not executed</error>',
+                        '',
+                        $notes
+                    );
+
+                }
             } else {
                 $migration = $value['migration'];
 
@@ -120,6 +126,14 @@ EOT
                 }
                 $summary[$migration->status][1]++;
                 if ($input->getOption('summary')) {
+                    continue;
+                }
+
+                if ($input->getOption('todo')) {
+                    if ($migration->status == Migration::STATUS_TODO) {
+                        $data[] = $migration->path;
+                    }
+
                     continue;
                 }
 
@@ -171,6 +185,13 @@ EOT
                     $notes
                 );
             }
+        }
+
+        if ($input->getOption('todo')) {
+            foreach ($data as $migrationData) {
+                echo "$migrationData\n";
+            }
+            return;
         }
 
         if ($input->getOption('summary')) {
