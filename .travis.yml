@@ -120,6 +120,8 @@ after_script:
   - if [ "$CODE_COVERAGE" = "1" -a -f coverage.clover ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
   # Upload code-coverage to CodeClimate. NB: this works only when the CODECLIMATE_REPO_TOKEN env var has been set (we do it in the Travis config via the GUI)
   #- if [ "$CODE_COVERAGE" = "1" -a -f coverage.clover ]; then ./vendor/bin/test-reporter --coverage-report=coverage.clover; fi
+  # Upload code-coverage to CodeCov
+  - if [ "$CODE_COVERAGE" = "1" -a -f coverage.clover ]; then bash <(curl -s https://codecov.io/bash); fi
 
 # reduce depth (history) of git checkout
 git:
