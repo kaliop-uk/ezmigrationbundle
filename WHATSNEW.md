@@ -20,7 +20,7 @@ Version 5.1.1
 
 * Fix: a bug introduced in 5.1 with resolving references in handling tags 
 
-* Fix: do allow to resolution of references for multi-valued Content Fields (eg. a reference that returns an array is ok
+* Fix: do allow resolution of references for multi-valued Content Fields (eg. a reference that returns an array is ok
     to use for a field of type object-relation)
 
 
