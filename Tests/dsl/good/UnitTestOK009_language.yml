@@ -127,6 +127,69 @@
     mode: delete
     match:
         content_id: reference:kmb_test_9_content
+
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_9
+    parent_location: 2
+    lang: abc-DE
+    attributes:
+        - ezstring:
+            eng-GB: hello world 1 eng-GB
+            abc-DE: hello world 1 abc-DE
+    references:
+        -
+            identifier: kmb_test_10_content
+            attribute: id
+
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_10_content
+    lang: eng-GB
+    attributes:
+        - ezstring:
+            eng-GB: hello world 2 eng-GB
+            abc-DE: hello world 2 abc-DE
+-
+    type: content
+    mode: delete
+    match:
+        content_id: reference:kmb_test_10_content
+
+-
+    type: content
+    mode: create
+    content_type: reference:kmb_test_9
+    parent_location: 2
+    lang: abc-DE
+    attributes:
+        ezstring:
+            eng-GB: hello world 3 eng-GB
+            abc-DE: hello world 3 abc-DE
+    references:
+        -
+            identifier: kmb_test_11_content
+            attribute: id
+
+-
+    type: content
+    mode: update
+    match:
+        content_id: reference:kmb_test_11_content
+    lang: eng-GB
+    attributes:
+        ezstring:
+            eng-GB: hello world 4 eng-GB
+            abc-DE: hello world 4 abc-DE
+-
+    type: content
+    mode: delete
+    match:
+        content_id: reference:kmb_test_11_content
+
 -
     type: content_type
     mode: delete

@@ -599,6 +599,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         // the 'easy' yml: key = field name, value = value
         // deprecated: the 'legacy' yml: key = numerical index, value = array ( field name => value )
         foreach ($fields as $key => $field) {
+            $fieldsList = [];
 
             if ($key === $i && is_array($field) && count($field) == 1) {
                 // each $field is one key value pair
@@ -606,22 +607,62 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 reset($field);
                 $fieldIdentifier = key($field);
                 $fieldValue = $field[$fieldIdentifier];
+                if (is_array($fieldValue) && $this->hasLanguageCodesAsKeys($fieldValue)) {
+                    foreach($fieldValue as $languageCode => $value) {
+                        $fieldsList[] = [$fieldIdentifier, $value, $languageCode];
+                    }
+                } else {
+                    $fieldsList[] = [$fieldIdentifier, $fieldValue, $this->getLanguageCode($step)];
+                }
+            } else if (is_array($field) && $this->hasLanguageCodesAsKeys($field)) {
+                foreach($field as $languageCode => $value) {
+                    $fieldsList[] = [$key, $value, $languageCode];
+                }
             } else {
-                $fieldIdentifier = $key;
-                $fieldValue = $field;
+                $fieldsList[] = [$key, $field, $this->getLanguageCode($step)];
             }
 
-            if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
-                throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
+            foreach($fieldsList as list($fieldIdentifier, $fieldValue, $language)) {
+                if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
+                    throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
+                }
+
+                $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
+                $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $step->context);
+                $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $language);
             }
-
-            $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
-            $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $step->context);
-
-            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode($step));
-
             $i++;
         }
+    }
+
+    protected function hasLanguageCodesAsKeys(array $array)
+    {
+        $languages = $this->getContentLanguages();
+        $languageCodes = array_combine($languages, $languages);
+        $hasLanguageCodesAsKeys = true;
+
+        foreach ($array as $key => $value) {
+            if (!array_key_exists($key, $languageCodes)) {
+                $hasLanguageCodesAsKeys = false;
+            }
+        }
+
+        return $hasLanguageCodesAsKeys;
+    }
+
+    protected function getContentLanguages()
+    {
+        return array_map(
+            function($language) {
+                return $language->languageCode;
+            },
+            array_filter(
+                $this->repository->getContentLanguageService()->loadLanguages(),
+                function ($language) {
+                    return $language->enabled;
+                }
+            )
+        );
     }
 
     protected function setSection(Content $content, $sectionKey)
