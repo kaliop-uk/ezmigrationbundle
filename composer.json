@@ -44,7 +44,8 @@
     },
     "conflict": {
         "netgen/tagsbundle": "1.*",
-        "ezsystems/ezpublish-kernel": "6.7.3"
+        "ezsystems/ezpublish-kernel": "6.7.3",
+        "symfony/symfony": "3.4.12"
     },
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }
