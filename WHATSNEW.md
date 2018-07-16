@@ -1,3 +1,11 @@
+Version 5.3 (unreleased)
+========================
+
+* Fix: declare incompatibility with Simfony 3.4.12
+
+* Fix: declare compatibility with nikic/php-parser 4
+
+
 Version 5.2
 ===========
 
