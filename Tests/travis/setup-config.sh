@@ -21,8 +21,8 @@ sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\EzMi
 sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${APP_DIR}/${EZ_KERNEL}.php
 # And optionally the Netgen tags bundle
 if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
-    # we have to load netgen tags bundle after the Kernel bundles... hopefully OneupFlysystemBundle will stay there :-)
-    sed -i 's/OneupFlysystemBundle(),\?/OneupFlysystemBundle(), new Netgen\\TagsBundle\\NetgenTagsBundle(),/' ${APP_DIR}/${EZ_KERNEL}.php
+    # we have to load netgen tags bundle after the Kernel bundles... so we add it before the app bundle :-)
+    sed -i '/AppBundle()/i new Netgen\\TagsBundle\\NetgenTagsBundle(),' ${APP_DIR}/${EZ_KERNEL}.php
 fi
 # And optionally the EzCoreExtraBundle bundle
 #if grep -q 'lolautruche/ez-core-extra-bundle' composer.lock; then
