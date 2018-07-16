@@ -30,17 +30,17 @@ sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\EzMigrationB
 # And optionally the EzCoreExtraBundle bundle
 #if grep -q '"name": "lolautruche/ez-core-extra-bundle",' composer.lock; then
 if [ "$EZ_VERSION" = "ezplatform2" ]; then
-    sed -i "/${LAST_BUNDLE}()/i new Lolautruche\\EzCoreExtraBundle\\EzCoreExtraBundle()," ${APP_DIR}/${EZ_KERNEL}.php
+    sed -i "/${LAST_BUNDLE}()/i new Lolautruche\\\\\EzCoreExtraBundle\\\\\EzCoreExtraBundle()," ${APP_DIR}/${EZ_KERNEL}.php
 fi
 
 # And optionally the Netgen tags bundle
 if [ "$INSTALL_TAGSBUNDLE" = "1" ]; then
-    sed -i "/${LAST_BUNDLE}()/i new Netgen\\TagsBundle\\NetgenTagsBundle()," ${APP_DIR}/${EZ_KERNEL}.php
+    sed -i "/${LAST_BUNDLE}()/i new Netgen\\\\\TagsBundle\\\\\NetgenTagsBundle()," ${APP_DIR}/${EZ_KERNEL}.php
 fi
 
 # For eZPlatform, load the xmltext bundle
 if [ "$EZ_VERSION" = "ezplatform" -o "$EZ_VERSION" = "ezplatform2" ]; then
-    sed -i "/${LAST_BUNDLE}()/i new EzSystems\\EzPlatformXmlTextFieldTypeBundle\\EzSystemsEzPlatformXmlTextFieldTypeBundle()," ${APP_DIR}/${EZ_KERNEL}.php
+    sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformXmlTextFieldTypeBundle\\\\\EzSystemsEzPlatformXmlTextFieldTypeBundle()," ${APP_DIR}/${EZ_KERNEL}.php
 fi
 
 # Fix the eZ5 autoload configuration for the unexpected directory layout
