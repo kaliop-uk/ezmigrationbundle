@@ -298,19 +298,34 @@
 #    location_id: reference:kmb_test_005_3_loc_3
 #    swap_with_location: reference:kmb_test_005_2_loc
 
+
+-
+    type: location
+    mode: load
+    match:
+        location_id: reference:kmb_test_005_3_loc_3_rid
+    references:
+        -
+            identifier: kmb_test_005_3_loc_3_parent_location_rid
+            attribute: location_remote_id
+
+# @todo test as many conditions as possible
 -
     type: location
     mode: load
     match:
         and:
             - content_id: reference:kmb_test_005_3
-            - location_id: reference:kmb_test_005_3_loc_3
-            - location_remote_id: reference:kmb_test_005_3_loc_3_rid
             - content_type_id: reference:kmb_test_005_0
             - content_type_identifier: reference:kmb_test_005
-            - section: 1
             - depth:
                 gt: 1
+            - location_id: reference:kmb_test_005_3_loc_3
+            - location_remote_id: reference:kmb_test_005_3_loc_3_rid
+            - parent_location_id: kmb_test_005_3_loc_3_parent_location_id
+            - parent_location_remote_id: kmb_test_005_3_loc_3_parent_location_rid
+            - section: 1
+            #- subtree: kmb_test_005_3_loc_3_path
             - or:
                 -
                     priority:

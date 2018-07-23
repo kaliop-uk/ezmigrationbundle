@@ -13,6 +13,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 class UserManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('user');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     protected $userMatcher;
 
@@ -72,6 +73,15 @@ class UserManager extends RepositoryExecutor
         $this->setReferences($user, $step);
 
         return $user;
+    }
+
+    protected function load($step)
+    {
+        $userCollection = $this->matchUsers('load', $step);
+
+        $this->setReferences($userCollection, $step);
+
+        return $userCollection;
     }
 
     /**
@@ -234,6 +244,18 @@ class UserManager extends RepositoryExecutor
                     break;
                 case 'login':
                     $value = $user->login;
+                    break;
+                case 'groups_ids':
+                    $value = [];
+                    $userService = $this->repository->getUserService();
+                    $limit = 100;
+                    $offset = 0;
+                    do {
+                        $userGroups = $userService->loadUserGroupsOfUser($user, $offset, $limit);
+                        foreach ($userGroups as $userGroup) {
+                            $value[] = $userGroup->id;
+                        }
+                    } while (count($userService));
                     break;
                 default:
                     throw new \InvalidArgumentException('User Manager does not support setting references for attribute ' . $reference['attribute']);

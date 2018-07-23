@@ -318,6 +318,8 @@
     match:
         identifier: 'reference:kmb_test_003_1_identifier'
     new_identifier: kmb_test_1_1
+    content_type_group: 2
+    remove_type_group: 1
     references:
         -
             identifier: kmb_test_003_12_identifier
@@ -372,6 +374,9 @@
         -
             identifier: world
             attribute: 'attributes.ezobjectrelationlist."field-settings".selectionContentTypes.length(@)'
+        -
+            identifier: goodbye
+            attribute: content_type_groups_ids
 
 -
     type: assert

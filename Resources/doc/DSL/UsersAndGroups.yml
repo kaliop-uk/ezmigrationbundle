@@ -15,7 +15,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
-                                 # Supports user_id, email, enabled, login
+                                 # Supports user_id, email, enabled, login, groups_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_id'
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
@@ -51,7 +51,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
-                                 # Supports user_id, email, enabled, login
+                                 # Supports user_id, email, enabled, login, groups_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_id'
                                  # 'count' can be used to set a reference to the number of items matched
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
@@ -76,6 +76,41 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports user_id, email, enabled, login, groups_ids (the latter returns an array)
+                                 # The shorthand 'id' can be used instead of 'user_id'
+                                 # 'count' can be used to set a reference to the number of items matched
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+
+-
+    type: user
+    mode: load
+    match: # Only one of the following can be specified, to define which users to delete
+        id: x # int|int[]
+        email: xyz # string|string[]
+        login: # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference.
+                                 # Supports user_id, email, enabled, login, groups_ids (the latter returns an array)
+                                 # The shorthand 'id' can be used instead of 'user_id'
+                                 # 'count' can be used to set a reference to the number of items matched
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
@@ -95,7 +130,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
-                                 # Supports: user_group_id
+                                 # Supports: user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
@@ -130,7 +165,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
-                                 # Supports: user_group_id
+                                 # Supports: user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
@@ -155,6 +190,45 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # Supports: user_group_id, users_ids (the latter returns an array)
+                                 # The shorthand 'id' can be used instead of 'user_group_id'
+                                 # 'count' can be used to set a reference to the number of items matched
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+
+-
+    type: user_group
+    mode: load
+    match: # Only one of the following can be specified, to define which groups to delete
+        id: x # int|int[]
+        content_remote_id: yyy # string|string[]
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+         -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attribute # An attribute to get the value of for the reference
+                                 # Supports: user_group_id, users_ids (the latter returns an array)
+                                 # The shorthand 'id' can be used instead of 'user_group_id'
+                                 # 'count' can be used to set a reference to the number of items matched
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test

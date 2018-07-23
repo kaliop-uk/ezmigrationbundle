@@ -201,6 +201,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $contentTypeUpdateStruct->defaultSortOrder = $this->sortConverter->hash2SortOrder($step->dsl['default_sort_order']);
             }
 
+            if (isset($step->dsl['content_type_group'])) {
+                $this->setContentTypeGroup($contentType, $step->dsl['content_type_group']);
+            }
+
+            if (isset($step->dsl['remove_content_type_group'])) {
+                $this->unsetContentTypeGroup($contentType, $step->dsl['remove_content_type_group']);
+            }
+
             // Add/edit attributes
             if (isset($step->dsl['attributes'])) {
                 // NB: seems like eZ gets mixed up if we pass some attributes with a position and some without...
@@ -359,6 +367,12 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     break;
                 case 'creation_date':
                     $value = $contentType->creationDate->getTimestamp();
+                    break;
+                case 'content_type_groups_ids':
+                    $value = [];
+                    foreach($contentType->contentTypeGroups as $existingGroup) {
+                        $value[] = $existingGroup->id;
+                    }
                     break;
                 case 'default_always_available':
                     $value = $contentType->defaultAlwaysAvailable;
@@ -744,5 +758,38 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $value += $currentValue;
 
         return $value;
+    }
+
+    protected function setContentTypeGroup(ContentType $contentType, $contentTypeGroupId)
+    {
+        $contentTypeGroupId = $this->referenceResolver->resolveReference($contentTypeGroupId);
+        $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
+        $contentTypeGroupId = $contentTypeGroup->id;
+
+        foreach($contentType->contentTypeGroups as $existingGroup) {
+            if ($existingGroup->id === $contentTypeGroupId) {
+                return;
+            }
+        }
+
+        $contentTypeService = $this->repository->getContentTypeService();
+        $contentTypeService->assignContentTypeGroup($contentType, $contentTypeGroup);
+    }
+
+    protected function unsetContentTypeGroup(ContentType $contentType, $contentTypeGroupId)
+    {
+        $contentTypeGroupId = $this->referenceResolver->resolveReference($contentTypeGroupId);
+        $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
+        $contentTypeGroupId = $contentTypeGroup->id;
+
+        foreach($contentType->contentTypeGroups as $existingGroup) {
+            if ($existingGroup->id === $contentTypeGroupId) {
+                $contentTypeService = $this->repository->getContentTypeService();
+                $contentTypeService->unassignContentTypeGroup($contentType, $contentTypeGroup);
+                return;
+            }
+        }
+
+        /// @todo log a warning if the conteType is not in the specified group
     }
 }

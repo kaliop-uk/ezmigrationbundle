@@ -20,6 +20,46 @@
 
 -
     type: user_group
+    mode: load
+    match:
+        id: reference:kmb_test_6
+    references:
+         -
+            identifier: kmb_test_6_objectid
+            attribute: object_id
+         -
+            identifier: kmb_test_6_contentid
+            attribute: content_id
+         -
+            identifier: kmb_test_6_usergroupid
+            attribute: user_group_id
+         -
+            identifier: kmb_test_6_usersids
+            attribute: users_ids
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_6_objectid
+    test:
+        equals: reference:kmb_test_6
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_6_contentid
+    test:
+        equals: reference:kmb_test_6
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_6_usergroupid
+    test:
+        equals: reference:kmb_test_6
+
+-
+    type: user_group
     mode: delete
     match:
         id: reference:kmb_test_6

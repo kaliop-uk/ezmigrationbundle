@@ -9,6 +9,11 @@ use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\Exception\ReferenceUnresolvedException;
 
+/**
+ * @todo allow to tweak the algorithm used to resolve references:
+ *       - break out on the 1st match
+ *       - restart the loop on each match
+ */
 class ChainResolver implements EmbeddedReferenceResolverBagInterface, EnumerableReferenceResolverInterface
 {
     /** @var ReferenceResolverInterface[] $resolvers */
@@ -32,12 +37,16 @@ class ChainResolver implements EmbeddedReferenceResolverBagInterface, Enumerable
     }
 
     /**
-     * NB: does *not* check for embedded refs, even when $this->>doResolveEmbeddedReferences is true
+     * NB: does *not* check for embedded refs, even when $this->doResolveEmbeddedReferences is true
      * @param string $stringIdentifier
      * @return bool
      */
     public function isReference($stringIdentifier)
     {
+        if (!is_string($stringIdentifier)) {
+            return false;
+        }
+
         foreach ($this->resolvers as $resolver) {
             if ($resolver->isReference($stringIdentifier)) {
                 return true;
@@ -48,6 +57,11 @@ class ChainResolver implements EmbeddedReferenceResolverBagInterface, Enumerable
     }
 
     /**
+     * Resolves the reference by walking trough the chain of resolvers.
+     * Does *not* return on the first resolution, but allows further resolvers in the chain to resolve further after
+     * the 1st one matching. On the other hand, it does not restart the loop every time a chained resolver matches.
+     * Hence the order of the resolvers in the chain is important.
+     *
      * @param string $stringIdentifier
      * @return mixed
      * @throws ReferenceUnresolvedException
@@ -81,7 +95,9 @@ class ChainResolver implements EmbeddedReferenceResolverBagInterface, Enumerable
             $stringIdentifier = $this->resolveEmbeddedReferences($stringIdentifier);
         }
 
-        // for speed, we avoid calling isReference() and call directly getReferenceValue()
+        /// @todo sould we throw if $stringIdentifier is not a string any more?
+
+        // for speed, we avoid calling $this->isReference(), and call directly getReferenceValue()
         try {
             return $this->getReferenceValue($stringIdentifier);
         } catch (ReferenceUnresolvedException $e) {

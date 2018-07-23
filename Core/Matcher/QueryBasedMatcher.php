@@ -21,6 +21,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
     const MATCH_CREATION_DATE = 'creation_date';
     const MATCH_GROUP = 'group';
+    const MATCH_LANGUAGE_CODE = 'lang';
     const MATCH_MODIFICATION_DATE = 'modification_date';
     const MATCH_OBJECT_STATE = 'object_state';
     const MATCH_OWNER = 'owner';
@@ -137,6 +138,9 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                     }
                 }
                 return new Query\Criterion\UserMetadata(Query\Criterion\UserMetadata::GROUP, Operator::IN, $values);
+
+            case self::MATCH_LANGUAGE_CODE:
+                return new Query\Criterion\LanguageCode($values);
 
             case self::MATCH_MODIFICATION_DATE:
                 $match = reset($values);

@@ -74,6 +74,15 @@ class UserGroupManager extends RepositoryExecutor
         return $userGroup;
     }
 
+    protected function load($step)
+    {
+        $userGroupCollection = $this->matchUserGroups('load', $step);
+
+        $this->setReferences($userGroupCollection, $step);
+
+        return $userGroupCollection;
+    }
+
     /**
      * Method to handle the update operation of the migration instructions
      *
@@ -201,6 +210,18 @@ class UserGroupManager extends RepositoryExecutor
                 case 'user_group_id':
                 case 'id':
                     $value = $userGroup->id;
+                    break;
+                case 'users_ids':
+                    $value = [];
+                    $userService = $this->repository->getUserService();
+                    $limit = 100;
+                    $offset = 0;
+                    do {
+                        $users = $userService->loadUsersOfUserGroup($userGroup, $offset, $limit);
+                        foreach ($users as $user) {
+                            $value[] = $user->id;
+                        }
+                    } while (count($userService));
                     break;
                 default:
                     throw new \InvalidArgumentException('User Group Manager does not support setting references for attribute ' . $reference['attribute']);

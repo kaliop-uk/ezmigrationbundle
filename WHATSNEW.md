@@ -5,6 +5,16 @@ Version 5.3 (unreleased)
 
 * Fix: declare compatibility with nikic/php-parser 4
 
+* New: it is now possible to use the `lang` key for filtering when matching contents
+
+* New: it is now possible to alter the Groups that a ContenType belongs to in `content_type/update` steps 
+
+* New migration steps: `user/load` and `user_group/load`, which can be useful to set references
+
+* New: it is now possible to set references to the users of a group and to the groups of a user
+
+* New: it is now possible to set references to the groups of a content type
+
 
 Version 5.2
 ===========
@@ -26,7 +36,7 @@ Version 5.2
 Version 5.1.1
 =============
 
-* Fix: a bug introduced in 5.1 with resolving references in handling tags 
+* Fix: a bug introduced in 5.1 with resolving references in handling tags
 
 * Fix: do allow resolution of references for multi-valued Content Fields (eg. a reference that returns an array is ok
     to use for a field of type object-relation)
@@ -38,9 +48,9 @@ Version 5.1
 * New: it is now possible to set references when a migration step results in a list of items, and not just in a single
      item. The resulting reference will have a value which is an array instead of a scalar value.
      This has to be specifically enabled for each migration step where references are expected to be multi-valued:
-     
+
         references_type: array
-        references:            
+        references:
             -
                 attribute: some_id
                 identifier: my_array_ref

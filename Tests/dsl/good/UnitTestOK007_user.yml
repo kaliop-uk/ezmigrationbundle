@@ -32,6 +32,29 @@
 
 -
     type: user
+    mode: load
+    match:
+        id: reference:kmb_test_7
+    references:
+         -
+            identifier: kmb_test_7_userid
+            attribute: user_id
+         -
+            identifier: kmb_test_7_email
+            attribute: email
+         -
+            identifier: kmb_test_7_enabled
+            attribute: enabled
+         -
+            identifier: kmb_test_7_login
+            attribute: login
+         -
+            identifier: kmb_test_7_groupsids
+            attribute: groups_ids
+
+
+-
+    type: user
     mode: delete
     match:
         id: reference:kmb_test_7

@@ -121,6 +121,7 @@
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         group: xxx # user id, login or email if unique
+        lang: xxx # language code, eg. eng-GB
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
@@ -194,9 +195,10 @@
         content_type_identifier: yyy # string|string[] a content type identifier
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
+        group: xxx # user id, login or email if unique
+        lang: xxx # language code, eg. eng-GB
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
-        group: xxx # user id, login or email if unique
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
         owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
@@ -204,6 +206,10 @@
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
+        relates_to: # match contents which relate to some other content(s). NB: can not be mixed in AND/OR matches
+            content_id/content_remote_id: # int|int[]|string|string[]
+        related_from: # match contents which are related to by some other content(s). NB: can not be mixed in AND/OR matches
+            content_id/content_remote_id: # int|int[]|string|string[]
         or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -237,6 +243,7 @@
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         group: xxx # user id, login or email if unique
+        lang: xxx # language code, eg. eng-GB
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
@@ -246,6 +253,10 @@
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
+        relates_to: # match contents which relate to some other content(s). NB: can not be mixed in AND/OR matches
+            content_id/content_remote_id: # int|int[]|string|string[]
+        related_from: # match contents which are related to by some other content(s). NB: can not be mixed in AND/OR matches
+            content_id/content_remote_id: # int|int[]|string|string[]
         or: # match any of the conditions below
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

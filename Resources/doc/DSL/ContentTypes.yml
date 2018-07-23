@@ -81,7 +81,7 @@
 -
     type: content_type
     mode: create
-    content_type_group: x # Id or identifier of the group we want to put the new content class into
+    content_type_group: x # Id or identifier of the group we want to put the new content type into
     identifier: xyz # Class identifier
     name: xyz # Name of new class. Either a string, or an array in the format { "eng-GB": "Name", "fre-FR": "Nom", ... }
     name_pattern: pattern # Pattern to use for the name of the contents (ex: <title>)
@@ -118,7 +118,8 @@
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # An attribute to get the value of for the reference.
                                    # Supports: content_type_id, content_type_identifier, creation_date, description,
-                                   #           modification_date, name, name_pattern, remote_id, status and url_name_pattern
+                                   #           modification_date, name, name_pattern, remote_id, status, url_name_pattern
+                                   #           and content_type_groups_ids (the latter returning an array)
                                    # The shorthand 'id' can be used instead of 'content_type_id'
                                    # The shorthand 'identifier' can be used instead of 'content_type_identifier'
                                    # For name and description, the language used will correspond to the 'lang' tag
@@ -151,6 +152,8 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    content_type_group: x # Id or identifier of a new group we want to put the new content type into (this will not remove it from the current group)
+    remove_content_type_group: x # Id or identifier of a group we want to remove this content type from
     description: xyz # Optional, will be updated if set. Either a string, or an array in the format { "eng-GB": "This", "fre-FR": "ceci", ... }
     is_container: true|false # Optional, will be updated if set
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
@@ -189,7 +192,9 @@
             -
                 identifier: referenceId # A string used to identify the reference
                 attribute: attributeId # An attribute to get the value of for the reference
-                                       # Supports: content_type_id, content_type_identifier, creation_date, modification_date, name_pattern, remote_id, status and url_name_pattern
+                                       # Supports: content_type_id, content_type_identifier, creation_date, modification_date,
+                                       # name_pattern, remote_id, status, url_name_pattern
+                                       # and content_type_groups_ids (the latter returning an array)
                                        # The shorthand 'id' can be used instead of 'content_type_id'
                                        # The shorthand 'identifier' can be used instead of 'content_type_identifier'
                                        # 'count' can be used to set a reference to the number of items matched
@@ -283,7 +288,8 @@
     type: content_type
     mode: load
     match: # See docs above for update and delete
-    lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
+    references: # Optional. See above for allowed values
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp

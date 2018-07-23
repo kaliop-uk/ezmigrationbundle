@@ -448,23 +448,27 @@
     test:
         equals: 2
 
+# @todo test as many conditions as possible
 -
     type: content
     mode: load
     match:
         and:
-            - content_id: reference:kmb_test_004_1
-            - location_id: reference:kmb_test_004_1_loc
-            - content_remote_id: this_is_a_very_unlikely_remoteid
-            - content_type_id: reference:kmb_test_004_0
-            - content_type_identifier: reference:kmb_test_004
-            - section: 2
-            - creation_date:
-                gt: 1234567
             - attribute:
                 ezstring:
                     eq: 'hello world 1'
+            - content_id: reference:kmb_test_004_1
+            - content_remote_id: this_is_a_very_unlikely_remoteid
+            - content_type_id: reference:kmb_test_004_0
+            - content_type_identifier: reference:kmb_test_004
+            - creation_date:
+                gt: 1234567
+            #- group:
+            - lang: reference:kmb_test_004_1_main_language_code
+            - location_id: reference:kmb_test_004_1_loc
+            #- object_state:
             - owner: anonymous
+            - section: 2
             - not:
                 visibility: false
     references:
