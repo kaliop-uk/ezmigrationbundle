@@ -131,10 +131,15 @@ class UserGroupManager extends RepositoryExecutor
 
                 // Move group to new parent
                 $userService->moveUserGroup($userGroup, $newParentGroup);
+
+                // reload user group to be able to set refs correctly
+                $userGroup = $userService->loadUserGroup($userGroup->id);
             }
 
             if (isset($step->dsl['section'])) {
                 $this->setSection($userGroup, $step->dsl['section']);
+
+                /// @todo if we allow to set references to the group's section, here we should reload it
             }
 
             $userGroupCollection[$key] = $userGroup;
@@ -199,6 +204,8 @@ class UserGroupManager extends RepositoryExecutor
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
+     *
+     * @todo allow setting refs to all the attributes that can be gotten for Contents
      */
     protected function getReferencesValues($userGroup, array $references, $step)
     {
@@ -211,6 +218,10 @@ class UserGroupManager extends RepositoryExecutor
                 case 'user_group_id':
                 case 'id':
                     $value = $userGroup->id;
+                    break;
+                case 'parent_id':
+                case 'parent_user_group_id':
+                    $value = $userGroup->parentId;
                     break;
                 case 'users_ids':
                     $value = [];

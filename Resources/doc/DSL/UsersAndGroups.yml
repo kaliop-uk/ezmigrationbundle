@@ -130,7 +130,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
-                                 # Supports: user_group_id, users_ids (the latter returns an array)
+                                 # Supports: user_group_id, parent_user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
@@ -165,7 +165,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
-                                 # Supports: user_group_id, users_ids (the latter returns an array)
+                                 # Supports: user_group_id, parent_user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
@@ -196,7 +196,7 @@
          -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference
-                                 # Supports: user_group_id, users_ids (the latter returns an array)
+                                 # Supports: user_group_id, parent_user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays

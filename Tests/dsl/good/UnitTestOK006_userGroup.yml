@@ -36,6 +36,9 @@
          -
             identifier: kmb_test_6_usersids
             attribute: users_ids
+         -
+            identifier: kmb_test_6_parentid
+            attribute: parent_id
 
 -
     type: assert

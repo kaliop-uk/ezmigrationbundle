@@ -16,6 +16,8 @@ Version 5.3 (unreleased)
 
 * New: it is now possible to set references to the users of a group and to the groups of a user
 
+* New: it is now possible to set references to the parent of a user group
+
 * New: it is now possible to set references to the groups of a content type
 
 

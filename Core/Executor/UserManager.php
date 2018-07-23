@@ -224,6 +224,8 @@ class UserManager extends RepositoryExecutor
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values
+     *
+     * @todo allow setting refs to all the attributes that can be gotten for Contents
      */
     protected function getReferencesValues($user, array $references, $step)
     {
