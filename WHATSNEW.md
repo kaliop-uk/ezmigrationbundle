@@ -5,6 +5,9 @@ Version 5.3 (unreleased)
 
 * Fix: declare compatibility with nikic/php-parser 4
 
+* Fix: references set to locations attributes in 'location/update' steps that resulted in a location being moved or swapped
+    would be wrong for path-related data
+
 * New: it is now possible to use the `lang` key for filtering when matching contents
 
 * New: it is now possible to alter the Groups that a ContenType belongs to in `content_type/update` steps 

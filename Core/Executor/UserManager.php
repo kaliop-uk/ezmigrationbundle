@@ -248,14 +248,10 @@ class UserManager extends RepositoryExecutor
                 case 'groups_ids':
                     $value = [];
                     $userService = $this->repository->getUserService();
-                    $limit = 100;
-                    $offset = 0;
-                    do {
-                        $userGroups = $userService->loadUserGroupsOfUser($user, $offset, $limit);
-                        foreach ($userGroups as $userGroup) {
-                            $value[] = $userGroup->id;
-                        }
-                    } while (count($userService));
+                    $userGroups = $userService->loadUserGroupsOfUser($user);
+                    foreach ($userGroups as $userGroup) {
+                        $value[] = $userGroup->id;
+                    }
                     break;
                 default:
                     throw new \InvalidArgumentException('User Manager does not support setting references for attribute ' . $reference['attribute']);

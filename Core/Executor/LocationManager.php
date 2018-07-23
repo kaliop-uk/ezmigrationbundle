@@ -89,6 +89,8 @@ class LocationManager extends RepositoryExecutor
 
                 if (isset($step->dsl['is_main'])) {
                     $this->setMainLocation($location);
+                    // we have to reload the location so that correct data can be set as reference
+                    $location = $locationService->loadLocation($location->id);
                 }
 
                 $locations[] = $location;
@@ -181,6 +183,9 @@ class LocationManager extends RepositoryExecutor
                 $newParentLocation = $locationService->loadLocation($parentLocationId);
 
                 $locationService->moveSubtree($location, $newParentLocation);
+
+                // we have to reload the location to be able to set references to the modified data
+                $location = $locationService->loadLocation($location->id);
             } elseif (isset($step->dsl['swap_with_location'])) {
                 // Swap locations
                 $swapLocationId = $step->dsl['swap_with_location'];
@@ -189,11 +194,17 @@ class LocationManager extends RepositoryExecutor
                 $locationToSwap = $this->matchLocationByKey($swapLocationId);
 
                 $locationService->swapLocation($location, $locationToSwap);
+
+                // we have to reload the location to be able to set references to the modified data
+                $location = $locationService->loadLocation($location->id);
             }
 
             // make the location the main one
             if (isset($step->dsl['is_main'])) {
                 $this->setMainLocation($location);
+
+                //have to reload the location so that correct data can be set as reference
+                $location = $locationService->loadLocation($location->id);
             }
 
             $locationCollection[$key] = $location;

@@ -269,6 +269,14 @@
         -
             identifier: kmb_test_005_4_count
             attribute: count
+        -
+            identifier: kmb_test_005_3_loc_3_parent_location_id
+            attribute: parent_location_id
+            overwrite: true
+        -
+            identifier: kmb_test_005_3_loc_3_path
+            attribute: path
+            overwrite: true
 
 -
     type: assert
@@ -303,11 +311,14 @@
     type: location
     mode: load
     match:
-        location_id: reference:kmb_test_005_3_loc_3_rid
+        location_id: reference:kmb_test_005_3_loc_3_parent_location_id
     references:
         -
             identifier: kmb_test_005_3_loc_3_parent_location_rid
             attribute: location_remote_id
+        -
+            identifier: kmb_test_005_3_loc_3_parent_location_path
+            attribute: path
 
 # @todo test as many conditions as possible
 -
@@ -322,10 +333,10 @@
                 gt: 1
             - location_id: reference:kmb_test_005_3_loc_3
             - location_remote_id: reference:kmb_test_005_3_loc_3_rid
-            - parent_location_id: kmb_test_005_3_loc_3_parent_location_id
-            - parent_location_remote_id: kmb_test_005_3_loc_3_parent_location_rid
+            - parent_location_id: reference:kmb_test_005_3_loc_3_parent_location_id
+            - parent_location_remote_id: reference:kmb_test_005_3_loc_3_parent_location_rid
             - section: 1
-            #- subtree: kmb_test_005_3_loc_3_path
+            - subtree: reference:kmb_test_005_3_loc_3_parent_location_path
             - or:
                 -
                     priority:
@@ -339,6 +350,9 @@
         -
             identifier: kmb_test_005_5
             attribute: location_id
+        -
+            identifier: kmb_test_005_3_loc_3_parent_location_id_2
+            attribute: parent_location_id
 
 -
     type: assert

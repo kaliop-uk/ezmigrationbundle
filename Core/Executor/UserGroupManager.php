@@ -15,6 +15,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 class UserGroupManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('user_group');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     protected $userGroupMatcher;
     protected $roleMatcher;
@@ -221,7 +222,8 @@ class UserGroupManager extends RepositoryExecutor
                         foreach ($users as $user) {
                             $value[] = $user->id;
                         }
-                    } while (count($userService));
+                        $offset += $limit;
+                    } while (count($users));
                     break;
                 default:
                     throw new \InvalidArgumentException('User Group Manager does not support setting references for attribute ' . $reference['attribute']);
