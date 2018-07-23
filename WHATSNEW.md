@@ -1,5 +1,5 @@
-Version 5.3 (unreleased)
-========================
+Version 5.3
+===========
 
 * Fix: declare incompatibility with Simfony 3.4.12
 
@@ -10,7 +10,7 @@ Version 5.3 (unreleased)
 
 * New: it is now possible to use the `lang` key for filtering when matching contents
 
-* New: it is now possible to alter the Groups that a ContenType belongs to in `content_type/update` steps 
+* New: it is now possible to alter the Groups that a ContentType belongs to in `content_type/update` steps 
 
 * New migration steps: `user/load` and `user_group/load`, which can be useful to set references
 
