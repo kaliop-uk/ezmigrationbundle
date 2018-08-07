@@ -6,8 +6,9 @@ EZ_VERSION=$1
 
 export SYMFONY_ENV=behat
 
-if [ "$EZ_VERSION" = "ezplatform" ]; then
-  export KERNEL_DIR=vendor/ezsystems/ezplatform/app
-else
-  export KERNEL_DIR=vendor/ezsystems/ezpublish-community/ezpublish
+if [ "$EZ_VERSION" = "ezpublish-community" ]; then
+    export KERNEL_DIR=vendor/ezsystems/ezpublish-community/ezpublish
+fi
+if [ "$EZ_VERSION" = "ezplatform" -o "$EZ_VERSION" = "ezplatform2" ]; then
+    export KERNEL_DIR=vendor/ezsystems/ezplatform/app
 fi

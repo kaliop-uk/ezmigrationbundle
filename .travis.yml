@@ -3,7 +3,7 @@
 language: php
 
 # use the docker-based Travis images for a tiny speed boost
-sudo: false
+sudo: true
 
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
@@ -29,24 +29,30 @@ matrix:
     - php: 5.6
       env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:~5.4 netgen/tagsbundle:~2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
-    # latest version currently available of eZPlatform aka eZPublish 6
+    # earlest version of eZPlatform aka eZPublish 6
     #- php: 5.6
-    #  env: EZ_PACKAGES='ezsystems/ezplatform:~1.8.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    #  env: EZ_PACKAGES='ezsystems/ezplatform:~1.4.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    # latest version currently available of eZPlatform aka eZPublish 6
     - php: 7.0
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.4 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:~2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     - php: 7.1
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.4 ezsystems/ezplatform-xmltext-fieldtype:^1.2 ezsystems/behatbundle:^6.4 netgen/tagsbundle:~2.2' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.0 ezsystems/ezplatform-xmltext-fieldtype:^1.2 ezsystems/behatbundle:^6.4 netgen/tagsbundle:~2.2' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
+    # latest version currently available of eZPlatform 2
+    # sensio/generator-bundle is only needed because we run the tests using 'behat' sf env
     - php: 7.2
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.11.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.11.0 ezsystems/ezplatform-xmltext-fieldtype:^1.3 ezsystems/behatbundle:^6.5 netgen/tagsbundle:~3.0 sensio/generator-bundle' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
-  allow_failures:
-    # this is failing because of composer running out of memory :-(
-    - php: 5.6
+#  allow_failures:
+#    # this is failing because of composer running out of memory :-(
+#    - php: 5.6
 
 before_install:
   # No need for a web server, until we start testing using Selenium
   #- sudo apt-get update -qq
   #- sudo apt-get install -qq -y --force-yes apache2 libapache2-mod-fastcgi
+
+  # For php 5.6, Composer needs humongous amounts of ram - which we don't have. Enable swap as workaround
+  - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then sudo fallocate -l 6G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
 
 install:
   # Latest version of composer breaks downloading eZ, so we can not run self-update. See https://github.com/composer/composer/issues/4582
@@ -58,28 +64,26 @@ install:
   # Q: are all of these scripts ok here, or shall they be moved to the before_script step, when we add matrix combinations ???
 
   # Disable xdebug for speed (executing composer), but allow us to e-enable it later
-  # NB: 'php -i' does not work on hhvm
-  - if [ "$TRAVIS_PHP_VERSION" = "hhvm" ]; then export XDEBUG_INI=''; fi
-  - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`; fi
+  - export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
   - export XDEBUG_INI=${XDEBUG_INI/,/}
   - if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 
   # We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix
-  # For the moment, to install eZPlatform, a set of DEV packages have to be allowed; really ugly sed expression to alter composer.json follows
-  # TODO is this still needed?
-  - 'if [ "$EZ_VERSION" = "ezplatform" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
-  # debugging memory problems with composer
+  # For the moment, to install eZPlatform, a set of DEV packages has to be allowed; really ugly sed expression to alter composer.json follows
+  # TODO is this still needed?
+  - 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
+
+  # Troubleshooting memory problems...
   #- sudo free -m -t
   #- sudo service postgresql stop
   #- sudo service memcached stop
   #- sudo service --status-all
   #- php -i
 
-  # TODO try enabling swap manually
-
-  - composer require --prefer-source --dev --no-update ${EZ_PACKAGES}
-  - composer update
+  # try to reduce mem usage by running composer in two steps
+  - composer require --dev --no-update ${EZ_PACKAGES}
+  - composer update --dev
 
   # Re-enable xdebug for when we need to generate code coverage
   - if [ "$CODE_COVERAGE" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
@@ -98,7 +102,7 @@ before_script:
   #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat cache:clear --no-debug
 
   # TODO for eZPlatform, do we need to set up SOLR as well ?
-  #- if [ "$EZ_VERSION" = "ezplatform" ]; then ./vendor/ezsystems/ezplatform-solr-search-engine:bin/.travis/init_solr.sh; fi
+  #- if [ "$EZ_VERSION" != "ezpublish" ]; then ./vendor/ezsystems/ezplatform-solr-search-engine:bin/.travis/init_solr.sh; fi
 
 script:
   # Finally! :-D
@@ -107,7 +111,7 @@ script:
 
 after_failure:
   # Display as much info as we can to help developers
-  - if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]; then php -i; fi
+  #- php -i
   #- cat composer.lock
 
 after_script:
