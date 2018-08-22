@@ -1,0 +1,44 @@
+# Fails by attempting creation of content in non-existing language.
+# NB: needs a follow-up migration to remove the created content type
+
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_15
+    name: Kaliop Migration Bundle Test Class 15
+    name_pattern: '<ezstring>'
+    attributes:
+        -
+            type: ezstring
+            name: ezstring
+            identifier: ezstring
+        -
+            type: ezstring
+            name: ezstring 2
+            identifier: ezstring_2
+
+-
+    type: language
+    mode: create
+    lang: abe-TA
+    name: Kaliop Migration Bundle Language abe-TA
+
+-
+    type: language
+    mode: create
+    lang: abe-TB
+    name: Kaliop Migration Bundle Language abe-TB
+
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_9
+    parent_location: 2
+    attributes:
+        ezstring:
+            abe-TA: hello world 4 abe-TA
+            abe-TB: hello world 4 abe-TB
+        ezstring_2:
+            abe-TB: hello world 4 abe-TB

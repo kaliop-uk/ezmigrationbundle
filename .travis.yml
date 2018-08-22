@@ -52,7 +52,7 @@ before_install:
   #- sudo apt-get install -qq -y --force-yes apache2 libapache2-mod-fastcgi
 
   # For php 5.6, Composer needs humongous amounts of ram - which we don't have. Enable swap as workaround
-  - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then sudo fallocate -l 6G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
+  - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
 
 install:
   # Latest version of composer breaks downloading eZ, so we can not run self-update. See https://github.com/composer/composer/issues/4582
