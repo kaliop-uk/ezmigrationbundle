@@ -201,14 +201,6 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $contentTypeUpdateStruct->defaultSortOrder = $this->sortConverter->hash2SortOrder($step->dsl['default_sort_order']);
             }
 
-            if (isset($step->dsl['content_type_group'])) {
-                $this->setContentTypeGroup($contentType, $step->dsl['content_type_group']);
-            }
-
-            if (isset($step->dsl['remove_content_type_group'])) {
-                $this->unsetContentTypeGroup($contentType, $step->dsl['remove_content_type_group']);
-            }
-
             // Add/edit attributes
             if (isset($step->dsl['attributes'])) {
                 // NB: seems like eZ gets mixed up if we pass some attributes with a position and some without...
@@ -286,6 +278,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
             $contentTypeService->updateContentTypeDraft($contentTypeDraft, $contentTypeUpdateStruct);
             $contentTypeService->publishContentTypeDraft($contentTypeDraft);
+
+            if (isset($step->dsl['content_type_group'])) {
+                $this->setContentTypeGroup($contentType, $step->dsl['content_type_group']);
+            }
+
+            if (isset($step->dsl['remove_content_type_group'])) {
+                $this->unsetContentTypeGroup($contentType, $step->dsl['remove_content_type_group']);
+            }
 
             // Set references
             if ($newIdentifier !== null) {
