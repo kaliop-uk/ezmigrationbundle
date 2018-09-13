@@ -595,33 +595,137 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     protected function setFields($createOrUpdateStruct, array $fields, ContentType $contentType, $step)
     {
-        $i = 0;
-        // the 'easy' yml: key = field name, value = value
-        // deprecated: the 'legacy' yml: key = numerical index, value = array ( field name => value )
-        foreach ($fields as $key => $field) {
+        $fields = $this->convertFields($fields);
 
-            if ($key === $i && is_array($field) && count($field) == 1) {
-                // each $field is one key value pair
-                // eg.: $field = array($fieldIdentifier => $fieldValue)
-                reset($field);
-                $fieldIdentifier = key($field);
-                $fieldValue = $field[$fieldIdentifier];
-            } else {
-                $fieldIdentifier = $key;
-                $fieldValue = $field;
-            }
+        if ($this->hasLanguageCodesAsKeys($fields)) {
+            $fieldsList = $this->parseMultiLangFields($fields);
+        } else {
+            $fieldsList = $this->parseSingleLangFields($fields, $this->getLanguageCode($step));
+        }
 
+        foreach ($fieldsList as list($fieldIdentifier, $fieldValue, $language)) {
             if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
                 throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
             }
 
             $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
             $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $step->context);
+            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $language);
+        }
+    }
 
-            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $this->getLanguageCode($step));
+    /**
+     * @param $fields
+     * @return array
+     */
+    private function convertFields($fields)
+    {
+        $convertedFields = [];
+        $i = 0;
+        // the 'easy' yml: key = field name, value = value
+        // deprecated: the 'legacy' yml: key = numerical index, value = array ( field name => value )
+        foreach ($fields as $key => $field) {
+            if ($key === $i && is_array($field) && count($field) == 1) {
+                // each $field is one key value pair
+                // eg.: $field = array($fieldIdentifier => $fieldValue)
+                reset($field);
+                $fieldIdentifier = key($field);
+                $fieldValue = $field[$fieldIdentifier];
 
+                $convertedFields[$fieldIdentifier] = $fieldValue;
+            } else {
+                $convertedFields[$key] = $field;
+            }
             $i++;
         }
+
+        return $convertedFields;
+    }
+
+    /**
+     * @param array $fields
+     * @param string $language
+     * @return array
+     */
+    protected function parseSingleLangFields(array $fields, $language)
+    {
+        $fieldsList = [];
+        foreach ($fields as $fieldIdentifier => $fieldValue) {
+            $fieldsList[] = [$fieldIdentifier, $fieldValue, $language];
+        }
+
+        return $fieldsList;
+    }
+
+    /**
+     * @param array $fields
+     * @return array
+     * @throws \Exception
+     */
+    protected function parseMultiLangFields(array$fields)
+    {
+        $fieldsList = [];
+
+        foreach ($fields as $key => $field) {
+            if (!is_array($field)) {
+                throw new \Exception("Field '$key' should use multilang syntax as other fields in this step");
+            }
+
+            foreach($field as $languageCode => $value) {
+                $fieldsList[] = [$key, $value, $languageCode];
+            }
+        }
+
+        return $fieldsList;
+    }
+
+    /**
+     * Checks whatever at least one of field is using multilang syntax.
+     *
+     * @param array $fields
+     * @return bool
+     */
+    protected function hasLanguageCodesAsKeys(array $fields)
+    {
+        $languages = $this->getContentLanguages();
+        $languageCodes = array_combine($languages, $languages);
+        $hasLanguageCodesAsKeys = false;
+
+        foreach ($fields as $fieldIdentifier => $fieldData) {
+            if (!is_array($fieldData)) {
+                continue;
+            }
+
+            foreach ($fieldData as $key => $data) {
+                if (array_key_exists($key, $languageCodes)) {
+                    $hasLanguageCodesAsKeys = true;
+                }
+            }
+        }
+
+        return $hasLanguageCodesAsKeys;
+    }
+
+    /**
+     * Returns all Languages.
+     *
+     * @return array
+     */
+    protected function getContentLanguages()
+    {
+        static $languages;
+
+        return !empty($languages) ? $languages : $languages = array_map(
+            function($language) {
+                return $language->languageCode;
+            },
+            array_filter(
+                $this->repository->getContentLanguageService()->loadLanguages(),
+                function ($language) {
+                    return $language->enabled;
+                }
+            )
+        );
     }
 
     protected function setSection(Content $content, $sectionKey)
