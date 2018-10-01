@@ -595,7 +595,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     protected function setFields($createOrUpdateStruct, array $fields, ContentType $contentType, $step)
     {
-        $fields = $this->convertFields($fields);
+        $fields = $this->normalizeFieldDefs($fields, $step);
 
         if ($this->hasLanguageCodesAsKeys($fields)) {
             $fieldsList = $this->parseMultiLangFields($fields);
@@ -603,22 +603,28 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             $fieldsList = $this->parseSingleLangFields($fields, $this->getLanguageCode($step));
         }
 
-        foreach ($fieldsList as list($fieldIdentifier, $fieldValue, $language)) {
-            if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
-                throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
-            }
+        foreach ($fieldsList as $fieldIdentifier => $fieldLanguages) {
+            foreach ($fieldLanguages as $language => $fieldValue) {
+                if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
+                    throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
+                }
 
-            $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
-            $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $step->context);
-            $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $language);
+                $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
+                $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $step->context);
+                $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $language);
+            }
         }
     }
 
     /**
-     * @param $fields
+     * Helper function to accommodate the definition of fields
+     * - using a legacy DSL version
+     * - using either single-language or multi-language style
+     * 
+     * @param array $fields
      * @return array
      */
-    private function convertFields($fields)
+    protected function normalizeFieldDefs($fields, $step)
     {
         $convertedFields = [];
         $i = 0;
@@ -639,83 +645,52 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             $i++;
         }
 
+        // transform single-language field defs in multilang ones
+        if (!$this->hasLanguageCodesAsKeys($convertedFields)) {
+            $language = $this->getLanguageCode($step);
+
+            foreach ($convertedFields as $fieldIdentifier => $fieldValue) {
+                $convertedFields[$fieldIdentifier] = array($language => $fieldValue);
+            }
+        }
+
         return $convertedFields;
     }
 
     /**
-     * @param array $fields
-     * @param string $language
-     * @return array
-     */
-    protected function parseSingleLangFields(array $fields, $language)
-    {
-        $fieldsList = [];
-        foreach ($fields as $fieldIdentifier => $fieldValue) {
-            $fieldsList[] = [$fieldIdentifier, $fieldValue, $language];
-        }
-
-        return $fieldsList;
-    }
-
-    /**
-     * @param array $fields
-     * @return array
-     * @throws \Exception
-     */
-    protected function parseMultiLangFields(array$fields)
-    {
-        $fieldsList = [];
-
-        foreach ($fields as $key => $field) {
-            if (!is_array($field)) {
-                throw new \Exception("Field '$key' should use multilang syntax as other fields in this step");
-            }
-
-            foreach($field as $languageCode => $value) {
-                $fieldsList[] = [$key, $value, $languageCode];
-            }
-        }
-
-        return $fieldsList;
-    }
-
-    /**
-     * Checks whatever at least one of field is using multilang syntax.
+     * Checks whether all fields are using multilang syntax ie. a valid language as key.
      *
      * @param array $fields
      * @return bool
      */
     protected function hasLanguageCodesAsKeys(array $fields)
     {
-        $languages = $this->getContentLanguages();
-        $languageCodes = array_combine($languages, $languages);
-        $hasLanguageCodesAsKeys = false;
+        $languageCodes = $this->getContentLanguageCodes();
 
         foreach ($fields as $fieldIdentifier => $fieldData) {
-            if (!is_array($fieldData)) {
-                continue;
+            if (!is_array($fieldData) || empty($fieldData)) {
+                return false;
             }
 
             foreach ($fieldData as $key => $data) {
-                if (array_key_exists($key, $languageCodes)) {
-                    $hasLanguageCodesAsKeys = true;
+                if (!in_array($key, $languageCodes)) {
+                    return false;
                 }
             }
         }
 
-        return $hasLanguageCodesAsKeys;
+        return true;
     }
 
     /**
-     * Returns all Languages.
+     * Returns all enabled Languages in the repo.
+     * @todo move to parent class?
      *
-     * @return array
+     * @return string[]
      */
-    protected function getContentLanguages()
+    protected function getContentLanguageCodes()
     {
-        static $languages;
-
-        return !empty($languages) ? $languages : $languages = array_map(
+        return array_map(
             function($language) {
                 return $language->languageCode;
             },
