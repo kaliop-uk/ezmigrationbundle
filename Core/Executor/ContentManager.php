@@ -597,13 +597,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $fields = $this->normalizeFieldDefs($fields, $step);
 
-        if ($this->hasLanguageCodesAsKeys($fields)) {
-            $fieldsList = $this->parseMultiLangFields($fields);
-        } else {
-            $fieldsList = $this->parseSingleLangFields($fields, $this->getLanguageCode($step));
-        }
-
-        foreach ($fieldsList as $fieldIdentifier => $fieldLanguages) {
+        foreach ($fields as $fieldIdentifier => $fieldLanguages) {
             foreach ($fieldLanguages as $language => $fieldValue) {
                 if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
                     throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
