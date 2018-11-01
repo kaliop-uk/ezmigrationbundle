@@ -39,10 +39,12 @@ class ReferenceMatcher extends AbstractMatcher
         'count' => '\Symfony\Component\Validator\Constraints\Count',
         'length' => '\Symfony\Component\Validator\Constraints\Length',
         'regex' => '\Symfony\Component\Validator\Constraints\Regex',
+        'satisfies' => '\Symfony\Component\Validator\Constraints\Expression',
         //'in' => Operator::IN,
         //'between' => Operator::BETWEEN, => use count/length with min & max sub-members
         //'like' => Operator::LIKE, => use regex
         //'contains' => Operator::CONTAINS,
+
         Operator::EQ => '\Symfony\Component\Validator\Constraints\EqualTo',
         Operator::GT => '\Symfony\Component\Validator\Constraints\GreaterThan',
         Operator::GTE => '\Symfony\Component\Validator\Constraints\GreaterThanOrEqual',
@@ -58,6 +60,8 @@ class ReferenceMatcher extends AbstractMatcher
         $this->validator = $validator;
     }
 
+    // q: what if we receive an array of conditions? it seems that it might be validated here, even though only the 1st
+    //    condition would be taken into account...
     protected function validateConditions(array $conditions)
     {
         foreach ($conditions as $key => $val) {
@@ -105,6 +109,7 @@ class ReferenceMatcher extends AbstractMatcher
                     // we assume that all are refs because of the call to validate()
                     $currentValue = $this->referenceResolver->resolveReference($key);
                     $targetValue = reset($values);
+                    // q: what about resolving refs in teh target value, too ?
                     $constraint = key($values);
                     $errorList = $this->validator->validate($currentValue, $this->getConstraint($constraint, $targetValue));
                     if (0 === count($errorList)) {
@@ -123,10 +128,6 @@ class ReferenceMatcher extends AbstractMatcher
      */
     protected function getConstraint($constraint, $targetValue)
     {
-        /*if (!is_array($values)) {
-            $values = array($values);
-        }*/
-
         if (!isset(self::$operatorsMap[$constraint])) {
             throw new \Exception("Matching condition '$constraint' is not supported. Supported conditions are: " .
                 implode(', ', array_keys(self::$operatorsMap))

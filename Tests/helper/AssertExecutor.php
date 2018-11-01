@@ -6,7 +6,7 @@ use Kaliop\eZMigrationBundle\Core\Executor\AbstractExecutor;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
-class AssertExecutor extends  AbstractExecutor
+class AssertExecutor extends AbstractExecutor
 {
     protected $supportedStepTypes = array('assert');
     protected $supportedActions = array('reference'/*, 'generated'*/);

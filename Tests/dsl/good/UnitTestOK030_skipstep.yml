@@ -1,0 +1,40 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: abc
+
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: def
+    overwrite: true
+    if:
+        "reference:kmb_test_ref":
+            satisfies: "value == 'def'"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref
+    test:
+        equals: abc
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: def
+    overwrite: true
+    if:
+        "reference:kmb_test_ref":
+            satisfies: "value != 'def'"
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref
+    test:
+        equals: def
