@@ -12,7 +12,7 @@ class LoopResolver extends AbstractResolver implements EnumerableReferenceResolv
 
     public function beginLoop()
     {
-        $this->stack[] = 0;
+        $this->stack[] = array('step' => 0, 'key' => null, 'value' => null);
     }
 
     public function endLoop()
@@ -20,14 +20,16 @@ class LoopResolver extends AbstractResolver implements EnumerableReferenceResolv
         array_pop($this->stack);
     }
 
-    public function loopStep()
+    public function loopStep($key = null, $value = null)
     {
         $idx = count($this->stack) - 1;
-        $this->stack[$idx] = $this->stack[$idx] + 1;
+        $this->stack[$idx]['step'] = $this->stack[$idx]['step'] + 1;
+        $this->stack[$idx]['key'] = $key;
+        $this->stack[$idx]['value'] = $value;
     }
 
     /**
-     * @param string $identifier format: 'loop:index', 'loop:depth'
+     * @param string $identifier format: 'loop:iteration', 'loop:depth', 'loop:key', 'loop:value'
      * @return int
      * @throws \Exception When trying to retrieve anything else but index and depth
      */
@@ -35,7 +37,14 @@ class LoopResolver extends AbstractResolver implements EnumerableReferenceResolv
     {
         switch(substr($identifier, 5)) {
             case 'iteration':
-                return end($this->stack);
+                $current = end($this->stack);
+                return $current['step'];
+            case 'key':
+                $current = end($this->stack);
+                return $current['key'];
+            case 'value':
+                $current = end($this->stack);
+                return $current['value'];
             case 'depth':
                 return count($this->stack);
             default:

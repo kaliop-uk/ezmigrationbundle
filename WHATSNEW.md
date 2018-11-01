@@ -5,7 +5,7 @@ Version 5.4
 
 * Fix: setting custom modification date on Content Create (ticket #173) 
 
-* New: it is now possible to create or update a Content setting multiple translations at teh same time. Ex:
+* New: it is now possible to create or update a Content setting multiple translations at the same time. Ex:
 
         -
             type: content
@@ -18,13 +18,39 @@ Version 5.4
                     abc-DE: hello world in abc-DE
 
     *Note* that in order for the content definition to be considered valid "multi-langauge", ALL attributes values must
-    be specified using a language key. The following example is thus invalid:
+    be specified using a language key. The following example is thus _invalid_:
     
             attributes:
                 title:
                     eng-GB: hello world in eng-GB
                     abc-DE: hello world in abc-DE
                 description: A description to rule them and in the drakness bind them
+
+* New: it is now possible to use Symfony Expression language in IF conditions. Ex:
+
+        -
+            type: ...
+            if:
+                "reference:some_id":
+                    satisfies: "value % 3 == 0"
+
+    Here  the migration step would only be executed if the Id stored in the reference is divisible by 3.    
+    
+* New: it is now possible to loop over arrays, achieving the same as a php `foreach` call. Ex:
+
+        -
+            type: loop
+            over: { "hello": world, "buongiorno": mondo }
+            steps:
+                -
+                    type: reference
+                    mode: set
+                    identifier: loopref
+                    value: "We have found key: [loop:key] and value: [loop:value]"
+                    overwrite: true
+                
+    This should be useful f.e. in conjunction with references of type array, introduced in version 5.1
+
 
 Version 5.3
 ===========

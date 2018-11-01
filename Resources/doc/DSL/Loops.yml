@@ -1,4 +1,4 @@
-# Loop steps allow to execute maultiple times in a row (a sequence of) other steps.
+# Loop steps allow to execute multiple times in a row (a sequence of) other steps.
 # Nested loops are supported.
 # NB: step execution events are triggered only for the outhermost loop step
 
@@ -9,7 +9,7 @@
         -
             type: ...
             mode: ...
-            etc: ... # New references that can be resolved anywhere inside the nested step definitions are `loop:index`
+            etc: ... # New references that can be resolved anywhere inside the nested step definitions are `loop:iteration`
                      # and `loop:depth`.
                      # loop:iteration is the counter of the current loop iteration, starting at 1
                      # loop:depth is used to tell apart nested loops. I starts at depth 1
@@ -21,7 +21,32 @@
 
     if: # Optional. If set, the loop will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+
+# it is possible to loop over arrays values as well. This works like a php `foreach`
+
+-
+    type: loop
+    over: "reference:some_array_reference" # an array (in the php sense, in yml we might call it either a list or an associative array)
+    steps: # the migration steps that you want to be executed repeatedly
+        -
+            type: ...
+            mode: ...
+            etc: ... # New references that can be resolved anywhere inside the nested step definitions are `loop:iteration`
+              # , `loop:depth`, `loop:key` and `loop:value`.
+              # loop:iteration is the counter of the current loop iteration, starting at 1
+              # loop:depth is used to tell apart nested loops. I starts at depth 1
+              # loop:key is the key of the current array element
+              # loop:value is the value of the current array element
+        -
+            type: ...
+            mode: ...
+            etc: ...
+
+    if: # Optional. If set, the loop will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 # Example: how to create a reference that holds a composite index of the current step in nested loops:
 

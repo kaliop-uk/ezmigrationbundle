@@ -19,4 +19,4 @@
     sender: string # references will be resolved
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

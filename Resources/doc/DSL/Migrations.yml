@@ -6,7 +6,7 @@
     message: string # Optional. Will be part of the migration status stored in the database
     if: # Optional. If set, the migration will be halted when the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     # Suspends a migration for a given number of seconds
@@ -39,4 +39,4 @@
         match: # Optional. If set, the migration will be suspended until the condition is matched
             "reference:_ref_name": # Name of a reference to be used for the test.
                                    # NB: it should have been set using the 'load' tag in the same migration step
-                _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+                _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

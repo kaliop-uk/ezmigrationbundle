@@ -33,20 +33,21 @@ class LoopExecutor extends AbstractExecutor
     {
         parent::execute($step);
 
-        if (!isset($step->dsl['repeat']) || $step->dsl['repeat'] < 0) {
-            throw new \Exception("Invalid step definition: missing 'repeat' or not a positive integer");
+        if (!isset($step->dsl['repeat']) && !isset($step->dsl['over'])) {
+            throw new \Exception("Invalid step definition: missing 'repeat' or 'over'");
+        }
+
+        if (isset($step->dsl['repeat']) && isset($step->dsl['over'])) {
+            throw new \Exception("Invalid step definition: can not have both 'repeat' and 'over'");
+        }
+
+        if (isset($step->dsl['repeat']) && $step->dsl['repeat'] < 0) {
+            throw new \Exception("Invalid step definition: 'repeat' is not a positive integer");
         }
 
         if (!isset($step->dsl['steps']) || !is_array($step->dsl['steps'])) {
             throw new \Exception("Invalid step definition: missing 'steps' or not an array");
         }
-
-        // no need for a 'mode' for now
-        /*$action = $step->dsl['mode'];
-
-        if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
-        }*/
 
         $this->skipStepIfNeeded($step);
 
@@ -64,16 +65,30 @@ class LoopExecutor extends AbstractExecutor
         $this->loopResolver->beginLoop();
         $result = null;
 
-        // NB: we are *not* firing events for each pass of the loop... it might be worth making that optionally happen ?
-        for ($i = 0; $i < $step->dsl['repeat']; $i++) {
+        if (isset($step->dsl['over'])) {
+            foreach ($step->dsl['over'] as $key => $value) {
 
-            $this->loopResolver->loopStep();
+                $this->loopResolver->loopStep($key, $value);
 
-            foreach ($step->dsl['steps'] as $j => $stepDef) {
-                $type = $stepDef['type'];
-                unset($stepDef['type']);
-                $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
-                $result = $stepExecutors[$j]->execute($subStep);
+                foreach ($step->dsl['steps'] as $j => $stepDef) {
+                    $type = $stepDef['type'];
+                    unset($stepDef['type']);
+                    $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
+                    $result = $stepExecutors[$j]->execute($subStep);
+                }
+            }
+        } else {
+            // NB: we are *not* firing events for each pass of the loop... it might be worth making that optionally happen ?
+            for ($i = 0; $i < $step->dsl['repeat']; $i++) {
+
+                $this->loopResolver->loopStep();
+
+                foreach ($step->dsl['steps'] as $j => $stepDef) {
+                    $type = $stepDef['type'];
+                    unset($stepDef['type']);
+                    $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
+                    $result = $stepExecutors[$j]->execute($subStep);
+                }
             }
         }
 

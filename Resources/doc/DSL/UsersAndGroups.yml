@@ -20,7 +20,7 @@
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: user
@@ -57,7 +57,7 @@
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: user
@@ -85,7 +85,7 @@
                                  # 'count' can be used to set a reference to the number of items matched
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: user
@@ -113,7 +113,7 @@
                                  # 'count' can be used to set a reference to the number of items matched
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: user_group
@@ -135,7 +135,7 @@
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: user_group
@@ -171,7 +171,7 @@
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     # Note: The users which are not assigned to other groups will be deleted.
@@ -202,7 +202,7 @@
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: user_group
@@ -232,4 +232,4 @@
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

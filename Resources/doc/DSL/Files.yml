@@ -12,7 +12,7 @@
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     # Check file existence and save the information into a reference
@@ -27,7 +27,7 @@
             attribute: exists # only one type of attribute is supported: exists
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: file
@@ -48,7 +48,7 @@
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: file
@@ -68,7 +68,7 @@
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: file
@@ -88,7 +88,7 @@
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: file
@@ -103,7 +103,7 @@
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: file
@@ -120,7 +120,7 @@
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
     type: file
@@ -137,4 +137,4 @@
                                    # Supports: size, uid, gid, ctime, mtime, atime, body
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
-            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
