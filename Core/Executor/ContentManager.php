@@ -667,7 +667,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
 
             foreach ($fieldData as $key => $data) {
-                if (!in_array($key, $languageCodes)) {
+                if (!in_array($key, $languageCodes, true)) {
                     return false;
                 }
             }
