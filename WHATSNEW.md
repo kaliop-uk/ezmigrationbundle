@@ -1,3 +1,31 @@
+Version 5.4
+===========
+
+* Fix: changing ContentTypeGroup upon updating ContentType
+
+* Fix: setting custom modification date on Content Create (ticket #173) 
+
+* New: it is now possible to create or update a Content setting multiple translations at teh same time. Ex:
+
+        -
+            type: content
+            mode: create
+            content_type: myClass
+            parent_location: 2
+            attributes:
+                title:
+                    eng-GB: hello world in eng-GB
+                    abc-DE: hello world in abc-DE
+
+    *Note* that in order for the content definition to be considered valid "multi-langauge", ALL attributes values must
+    be specified using a language key. The following example is thus invalid:
+    
+            attributes:
+                title:
+                    eng-GB: hello world in eng-GB
+                    abc-DE: hello world in abc-DE
+                description: A description to rule them and in the drakness bind them
+
 Version 5.3
 ===========
 

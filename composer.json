@@ -37,7 +37,8 @@
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "php-http/mock-client": "*",
         "phpunit/phpunit": "~4.0 || ~5.0",
-        "codeclimate/php-test-reporter": "~0.4"
+        "codeclimate/php-test-reporter": "~0.4",
+        "roave/security-advisories": "dev-disablechecks as dev-master"
     },
     "suggest": {
         "php-http/httplug-bundle": "Required for usage of HTTP/CALL migration steps"
