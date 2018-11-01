@@ -24,3 +24,30 @@
     identifier: reference:loopindex2
     test:
         equals: "2.2"
+
+-
+    type: loop
+    over: { "hello": world, "buongiorno": mondo }
+    steps:
+        -
+            type: reference
+            mode: set
+            identifier: loopindex
+            value: "[loop:key] => [loop:value]"
+            overwrite: true
+        -
+            type: loop
+            repeat: 2
+            steps:
+            -
+                type: reference
+                mode: set
+                identifier: loopindex2
+                value: "[loop:iteration]. [reference:loopindex]"
+                overwrite: true
+-
+    type: assert
+    target: reference
+    identifier: reference:loopindex2
+    test:
+        equals: "2. buongiorno => mondo"
