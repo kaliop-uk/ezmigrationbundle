@@ -47,6 +47,7 @@ fi
 if [ -f "${APP_DIR}/autoload.php" ]; then sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" ${APP_DIR}/autoload.php; fi
 # as well as the config for jms_translation
 sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kernel.root_dir%/../../ezplatform-admin-ui/src#" ${APP_DIR}/config/config.yml
+sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui-modules/src#'%kernel.root_dir%/../../ezplatform-admin-ui-modules/src#" ${APP_DIR}/config/config.yml
 
 # Generate legacy autoloads
 if [ "$EZ_VERSION" = "ezpublish-community" ]; then cat Tests/ezpublish-legacy/config.php > vendor/ezsystems/ezpublish-legacy/config.php; fi
