@@ -366,6 +366,16 @@ to store a different value for each Symfony environment. For example:
             content_id: "reference:content_id_ref"
         etc: ...
 
+### How to update an existing Role to change its policies? 
+
+When using a migration to update a Role, you must define ALL its policies. Any not defined will be removed.
+The safest and simplest way to make sure that you do not forget any of the existing policies is to first generate a
+update migration that has the complete specification of the role as it currently is defined, and then edit manually.
+
+Example command to create such a migration:
+
+    php ezpublish/console kaliop:migration:generate --type=role --mode=update --match-type=identifier --match-value=Anonymous bundleName   
+
 ### When dumping a Content into a yml migration via the `generate` command, the list of attributes is empty
 
 A: this is most likely due to using a bad language configuration
