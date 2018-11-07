@@ -124,6 +124,9 @@
     policies: # Optional.
               # NB: *take care* this does not work like content type updates or content updates.
               # If this set, all previously existing policies not specified in this list will be removed!
+              # The safest and simplest way to make sure that you do not forget any of the existing policies is to first
+              # generate an update migration that has the complete specification of the role as it currently is defined,
+              # and then edit manually. See the main readme file for an example of such a command.
         -
             module: xyz
             function: xyz
