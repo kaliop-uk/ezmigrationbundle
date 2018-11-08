@@ -5,6 +5,8 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\MigrationService;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\LoopResolver;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
 
 class LoopExecutor extends AbstractExecutor
 {
@@ -18,10 +20,13 @@ class LoopExecutor extends AbstractExecutor
     /** @var LoopResolver $loopResolver */
     protected $loopResolver;
 
-    public function __construct($migrationService, $loopResolver)
+    protected $referenceResolver;
+
+    public function __construct($migrationService, $loopResolver, ReferenceResolverInterface $referenceResolver)
     {
         $this->migrationService = $migrationService;
         $this->loopResolver = $loopResolver;
+        $this->referenceResolver = $referenceResolver;
     }
 
     /**
@@ -64,17 +69,20 @@ class LoopExecutor extends AbstractExecutor
 
         $this->loopResolver->beginLoop();
         $result = null;
-
         if (isset($step->dsl['over'])) {
-            foreach ($step->dsl['over'] as $key => $value) {
-
+            $over = $this->referenceResolver->resolveReference($step->dsl['over']);
+            foreach ($over as $key => $value) {
                 $this->loopResolver->loopStep($key, $value);
 
                 foreach ($step->dsl['steps'] as $j => $stepDef) {
                     $type = $stepDef['type'];
                     unset($stepDef['type']);
                     $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
-                    $result = $stepExecutors[$j]->execute($subStep);
+                    try {
+                        $result = $stepExecutors[$j]->execute($subStep);
+                    } catch(MigrationStepSkippedException $e) {
+                        // all ok, continue the loop
+                    }
                 }
             }
         } else {
@@ -87,7 +95,11 @@ class LoopExecutor extends AbstractExecutor
                     $type = $stepDef['type'];
                     unset($stepDef['type']);
                     $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
-                    $result = $stepExecutors[$j]->execute($subStep);
+                    try {
+                        $result = $stepExecutors[$j]->execute($subStep);
+                    } catch(MigrationStepSkippedException $e) {
+                        // all ok, continue the loop
+                    }
                 }
             }
         }

@@ -1,3 +1,11 @@
+Version 5.4.1
+=============
+
+* Fix: when a sub-migration is skipped in a step of a loop, do not halt the loop immediately but go on un til the end
+
+* Fix: references are now resolved for the "over" element of loops
+
+
 Version 5.4
 ===========
 

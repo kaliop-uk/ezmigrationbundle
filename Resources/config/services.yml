@@ -223,6 +223,7 @@ services:
         arguments:
             - '@ez_migration_bundle.migration_service'
             - '@ez_migration_bundle.reference_resolver.loop'
+            - '@ez_migration_bundle.reference_resolver.customreference'
         calls:
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
         tags:
