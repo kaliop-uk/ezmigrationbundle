@@ -4,9 +4,10 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
-use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use JmesPath\Env as JmesPath;
+use Symfony\Component\Yaml\Yaml;
 
 class MigrationDefinitionExecutor extends AbstractExecutor
 {
@@ -18,7 +19,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
     /** @var ReferenceBagInterface $referenceResolver */
     protected $referenceResolver;
 
-    public function __construct($migrationService, ReferenceBagInterface $referenceResolver)
+    public function __construct($migrationService, ReferenceResolverBagInterface $referenceResolver)
     {
         $this->migrationService = $migrationService;
         $this->referenceResolver = $referenceResolver;
@@ -58,11 +59,11 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         if (!isset($dsl['migration_type'])) {
             throw new \Exception("Invalid step definition: miss 'migration_type'");
         }
-        $migrationType = $dsl['migration_type'];
+        $migrationType = $this->referenceResolver->resolveReference($dsl['migration_type']);
         if (!isset($dsl['migration_mode'])) {
             throw new \Exception("Invalid step definition: miss 'migration_mode'");
         }
-        $migrationMode = $dsl['migration_mode'];
+        $migrationMode = $this->referenceResolver->resolveReference($dsl['migration_mode']);
         if (!isset($dsl['match']) || !is_array($dsl['match'])) {
             throw new \Exception("Invalid step definition: miss 'match' to determine what to generate migration definition for");
         }
@@ -76,14 +77,41 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
         $context = array();
         if (isset($dsl['lang']) && $dsl['lang'] != '') {
-            $context['defaultLanguageCode'] = $dsl['lang'];
+            $context['defaultLanguageCode'] = $this->referenceResolver->resolveReference($dsl['lang']);
         }
 
-        $matchCondition = array($match['type'] => $match['value']);
+        $matchCondition = array($this->referenceResolver->resolveReference($match['type']) => $this->referenceResolver->resolveReference($match['value']));
         if (isset($match['except']) && $match['except']) {
             $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
         }
+
         $result = $executor->generateMigration($matchCondition, $migrationMode, $context);
+
+        if (isset($dsl['file'])) {
+
+            $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+
+            $ext = pathinfo(basename($fileName), PATHINFO_EXTENSION);
+
+            switch ($ext) {
+                case 'yml':
+                case 'yaml':
+                    $code = Yaml::dump($result, 5);
+                    break;
+                case 'json':
+                    $code = json_encode($result, JSON_PRETTY_PRINT);
+                    break;
+                default:
+                    throw new \Exception("Can not save generated migration to a file of type '$ext'");
+            }
+
+            $dir = dirname($fileName);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0777, true);
+            }
+
+            file_put_contents($fileName, $code);
+        }
 
         $this->setReferences($result, $dsl);
 

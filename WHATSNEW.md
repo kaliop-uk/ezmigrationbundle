@@ -1,3 +1,17 @@
+Version 5.5
+===========
+
+* New: it is now possible to generate migration definition files via migration steps.
+    Also, more references are resolved in migrationdefinition/generate steps.
+
+* New: it is now possible to set the location remote_id when creating locations
+    Also, more references are resolved in location/create and location/update steps.
+
+* New: it is now possible to match users using their group id
+
+* New: it is now possible to match user groups using the parent group id
+
+
 Version 5.4.1
 =============
 

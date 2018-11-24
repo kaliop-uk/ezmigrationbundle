@@ -3,6 +3,8 @@
     mode: generate
     migration_type: string # content, content_type, etc...
     migration_mode: string # create, update, delete
+    file: string # path to the file to be generated. NB: if not set, no file is generated at all, and only references are set.
+                 # The filename must end with an extension of either .yml or .json
     match:
         type: xxx # depending on the migration_type, eg: content_id
         value: yyy

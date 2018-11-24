@@ -29,6 +29,7 @@
         id: x # int|int[]
         email: xyz # string|string[]
         login: # string|string[]
+        usergroup_id: # string|string[]
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -39,6 +40,37 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+
+        # NB: if you need more complex matching conditions to select a set of users, you can achieve that using a slightly convoluted way:
+        #     1. use a content/load migration step to match the contents which represent your users
+        #     2. in that step, set an reference, of type array, where you store the content ids
+        #     3. in a second migration step, use a loop/over construct to iterate over the reference and
+        #        the use as substep a user/update where you match based on user_id
+        #        eg:
+        #    -
+        #        type: content
+        #        mode: load
+        #        match:
+        #            contenttype_identifier: editor_user
+        #        references_type: array
+        #        references:
+        #        -
+        #            identifier: editor_user_ids
+        #            attribute: content_id
+        #    -
+        #        type: loop
+        #        over: "reference:editor_user_ids"
+        #        steps:
+        #        -
+        #            type: user
+        #            mode: update
+        #            match:
+        #                user_id: "loop:value"
+        #            password: publish
+        #            attributes:
+        #                first_name: "faker: firstName"
+        #                last_name: "faker: lastName"
+
     email: xyz # Optional. NB: can only be set if the match definition latches a single user
     password: xyz # Optional
     enabled: true|false # Optional
@@ -66,6 +98,7 @@
         id: x # int|int[]
         email: xyz # string|string[]
         login: # string|string[]
+        usergroup_id: # string|string[]
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -76,6 +109,9 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+
+        # NB: if you need more complex matching conditions to select a set of users, see user/update above
+
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
@@ -94,6 +130,7 @@
         id: x # int|int[]
         email: xyz # string|string[]
         login: # string|string[]
+        usergroup_id: # string|string[]
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -143,6 +180,7 @@
     match: # Define which groups to update. Only one match condition at a time supported
         id: x # int|int[]
         content_remote_id: yyy # string|string[]
+        parent_usergroup_id: yyy # string|string[]
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -153,6 +191,9 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+
+        # NB: if you need more complex matching conditions to select a set of usergroups, see user/update above
+
     name: xyz # Optional. Can only be used when the group to be updated is single
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID or group's remote_id
@@ -180,6 +221,7 @@
     match: # Only one of the following can be specified, to define which groups to delete
         id: x # int|int[]
         content_remote_id: yyy # string|string[]
+        parent_usergroup_id: yyy # string|string[]
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
@@ -190,6 +232,9 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+
+        # NB: if you need more complex matching conditions to select a set of usergroups, see user/update above
+
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
@@ -210,6 +255,7 @@
     match: # Only one of the following can be specified, to define which groups to delete
         id: x # int|int[]
         content_remote_id: yyy # string|string[]
+        parent_usergroup_id: yyy # string|string[]
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'

@@ -13,6 +13,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
     const MATCH_USER_ID = 'user_id';
     const MATCH_USER_LOGIN = 'login';
     const MATCH_USER_EMAIL = 'email';
+    const MATCH_USERGROUP_ID = 'usergroup_id';
 
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR,
@@ -52,6 +53,9 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
                 case self::MATCH_USER_LOGIN:
                     return new UserCollection($this->findUsersByLogin($values));
+
+                case self::MATCH_USERGROUP_ID:
+                    return new UserCollection($this->findUsersByGroup($values));
 
                 case self::MATCH_USER_EMAIL:
                     return new UserCollection($this->findUsersByEmail($values));
@@ -131,6 +135,30 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
             // return unique contents
             $matches = $this->repository->getUserService()->loadUsersByEmail($email);
 
+            foreach ($matches as $user) {
+                $users[$user->id] = $user;
+            }
+        }
+
+        return $users;
+    }
+
+    protected function findUsersByGroup(array $groupsIds)
+    {
+        $users = [];
+
+        foreach ($groupsIds as $groupId) {
+
+            $group = $this->repository->getUserService()->loadUserGroup($groupId);
+
+            $offset = 0;
+            $limit = 100;
+            do {
+                $matches = $this->repository->getUserService()->loadUsersOfUserGroup($group, $offset, $limit);
+                $offset += $limit;
+            } while (count($matches));
+
+            // return unique contents
             foreach ($matches as $user) {
                 $users[$user->id] = $user;
             }

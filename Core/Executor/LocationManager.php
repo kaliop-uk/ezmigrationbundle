@@ -70,19 +70,23 @@ class LocationManager extends RepositoryExecutor
                 $locationCreateStruct = $locationService->newLocationCreateStruct($parentLocationId);
 
                 if (isset($step->dsl['is_hidden'])) {
-                    $locationCreateStruct->hidden = $step->dsl['is_hidden'];
+                    $locationCreateStruct->hidden = $this->referenceResolver->resolveReference($step->dsl['is_hidden']);
                 }
 
                 if (isset($step->dsl['priority'])) {
-                    $locationCreateStruct->priority = $step->dsl['priority'];
+                    $locationCreateStruct->priority = $this->referenceResolver->resolveReference($step->dsl['priority']);
                 }
 
                 if (isset($step->dsl['sort_order'])) {
-                    $locationCreateStruct->sortOrder = $this->getSortOrder($step->dsl['sort_order']);
+                    $locationCreateStruct->sortOrder = $this->getSortOrder($this->referenceResolver->resolveReference($step->dsl['sort_order']));
                 }
 
                 if (isset($step->dsl['sort_field'])) {
-                    $locationCreateStruct->sortField = $this->getSortField($step->dsl['sort_field']);
+                    $locationCreateStruct->sortField = $this->getSortField($this->referenceResolver->resolveReference($step->dsl['sort_field']));
+                }
+
+                if (isset($step->dsl['remote_id'])) {
+                    $locationCreateStruct->remoteId = $this->referenceResolver->resolveReference($step->dsl['remote_id']);
                 }
 
                 $location = $locationService->createLocation($contentInfo, $locationCreateStruct);
@@ -147,19 +151,19 @@ class LocationManager extends RepositoryExecutor
                 $locationUpdateStruct = $locationService->newLocationUpdateStruct();
 
                 if (isset($step->dsl['priority'])) {
-                    $locationUpdateStruct->priority = $step->dsl['priority'];
+                    $locationUpdateStruct->priority = $this->referenceResolver->resolveReference($step->dsl['priority']);
                 }
 
                 if (isset($step->dsl['sort_field'])) {
-                    $locationUpdateStruct->sortField = $this->getSortField($step->dsl['sort_field'], $location->sortField);
+                    $locationUpdateStruct->sortField = $this->getSortField($this->referenceResolver->resolveReference($step->dsl['sort_field']), $location->sortField);
                 }
 
                 if (isset($step->dsl['sort_order'])) {
-                    $locationUpdateStruct->sortOrder = $this->getSortOrder($step->dsl['sort_order'], $location->sortOrder);
+                    $locationUpdateStruct->sortOrder = $this->getSortOrder($this->referenceResolver->resolveReference($step->dsl['sort_order']), $location->sortOrder);
                 }
 
                 if (isset($step->dsl['remote_id'])) {
-                    $locationUpdateStruct->remoteId = $step->dsl['remote_id'];
+                    $locationUpdateStruct->remoteId = $this->referenceResolver->resolveReference($step->dsl['remote_id']);
                 }
 
                 $location = $locationService->updateLocation($location, $locationUpdateStruct);
