@@ -25,11 +25,14 @@ class TrashMatcher extends ContentMatcher
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
      * @return TrashedItemCollection
      */
-    public function match(array $conditions)
+    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
-        return $this->matchItem($conditions);
+        return $this->matchItem($conditions, $sort, $offset, $limit);
     }
 
     /**
@@ -38,6 +41,7 @@ class TrashMatcher extends ContentMatcher
      *
      * @todo test all supported matching conditions
      * @todo support matching by item_id
+     * @todo test if sorting and offset,limit do work
      */
     public function matchItem(array $conditions)
     {

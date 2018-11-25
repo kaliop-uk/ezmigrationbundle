@@ -12,9 +12,13 @@ class LocationMatcherDirectLoad extends LocationMatcher
      * This has the advantage of not going through Solr, and hence having less problems with transactions and indexation delay.
      *
      * @param array $conditions
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
+
      * @return LocationCollection
      */
-    public function matchLocation(array $conditions)
+    public function matchLocation(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
         $match = reset($conditions);
         if (count($conditions) === 1 && in_array(($key = key($conditions)), array(self::MATCH_LOCATION_ID, self::MATCH_LOCATION_REMOTE_ID))) {
@@ -37,6 +41,6 @@ class LocationMatcherDirectLoad extends LocationMatcher
             return new LocationCollection($locations);
         }
 
-        return parent::matchLocation($conditions);
+        return parent::matchLocation($conditions, $sort, $offset, $limit);
     }
 }

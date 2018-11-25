@@ -276,7 +276,11 @@ class LocationManager extends RepositoryExecutor
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        return $this->locationMatcher->match($match);
+        $offset = isset($step->dsl['match_offset']) ? $this->referenceResolver->resolveReference($step->dsl['match_offset']) : 0;
+        $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
+        $sort = isset($step->dsl['match_sort']) ? $this->referenceResolver->resolveReference($step->dsl['match_sort']) : array();
+
+        return $this->locationMatcher->match($match, $sort, $offset, $limit);
     }
 
     /**
@@ -416,7 +420,11 @@ class LocationManager extends RepositoryExecutor
             }
         }
 
-        return $this->contentMatcher->matchContent($match);
+        $offset = isset($step->dsl['match_offset']) ? $this->referenceResolver->resolveReference($step->dsl['match_offset']) : 0;
+        $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
+        $sort = isset($step->dsl['match_sort']) ? $this->referenceResolver->resolveReference($step->dsl['match_sort']) : array();
+
+        return $this->contentMatcher->matchContent($match, $sort, $offset, $limit);
     }
 
     protected function setMainLocation(Location $location)
@@ -466,5 +474,4 @@ class LocationManager extends RepositoryExecutor
 
         return $sortOrder;
     }
-
 }

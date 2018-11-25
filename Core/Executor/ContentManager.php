@@ -352,7 +352,11 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        return $this->contentMatcher->match($match);
+        $offset = isset($step->dsl['match_offset']) ? $this->referenceResolver->resolveReference($step->dsl['match_offset']) : 0;
+        $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
+        $sort = isset($step->dsl['match_sort']) ? $this->referenceResolver->resolveReference($step->dsl['match_sort']) : array();
+
+        return $this->contentMatcher->match($match, $sort, $offset, $limit);
     }
 
     /**

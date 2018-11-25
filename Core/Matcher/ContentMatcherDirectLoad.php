@@ -12,9 +12,12 @@ class ContentMatcherDirectLoad extends ContentMatcher
      * This has the advantage of not going through Solr, and hence having less problems with transactions and indexation delay.
      *
      * @param array $conditions
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
      * @return ContentCollection
      */
-    public function matchContent(array $conditions)
+    public function matchContent(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
         $match = reset($conditions);
         if (count($conditions) === 1 && in_array(($key = key($conditions)), array(self::MATCH_CONTENT_ID, self::MATCH_CONTENT_REMOTE_ID))) {
@@ -37,6 +40,6 @@ class ContentMatcherDirectLoad extends ContentMatcher
             return new ContentCollection($contents);
         }
 
-        return parent::matchContent($conditions);
+        return parent::matchContent($conditions, $sort, $offset, $limit);
     }
 }

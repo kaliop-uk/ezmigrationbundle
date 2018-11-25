@@ -84,7 +84,7 @@
     remote_id: custom_remote_id # Optional, will set a custom remote id
     main_location: int|string # Optional, will set the main location. If passed a string, the location remote_id is assumed
     section: x # string|int Optional section id or identifier
-    sort_field: x # Optional. See ManageLocation.yml for details
+    sort_field: x # Optional. See Locations.yml for details
     sort_order: ASC|DESC # Optional
     version_creator: yyy # user id, login or email if unique; Optional, set the creator of the 1st version
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
@@ -147,6 +147,10 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_offset: 0 # optional
+    match_limit: 0 # optional
+    match_sort: # optional. If set, it has to be an array
+        - { sort_field: content_id|content_name|modified|published|section_identifier|section_name, sort_order: ASC|DESC }
     attributes: # the list of attribute identifier value pairs. For the format to use, see above
         attribute1: value1
         attribute2: value2
@@ -237,6 +241,10 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_offset: 0 # optional
+    match_limit: 0 # optional
+    match_sort: # optional. If set, it has to be an array
+        - { sort_field: content_id|content_name|modified|published|section_identifier|section_name, sort_order: ASC|DESC }
     references: # Optional. See above for allowed values
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
@@ -284,6 +292,10 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_offset: 0 # optional
+    match_limit: 0 # optional
+    match_sort: # optional. If set, it has to be an array
+        - { sort_field: content_id|content_name|modified|published|section_identifier|section_name, sort_order: ASC|DESC }
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

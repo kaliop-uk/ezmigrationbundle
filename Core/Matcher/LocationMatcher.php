@@ -3,11 +3,12 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\Content\Query;
-use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Location;
+use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
+use Kaliop\eZMigrationBundle\API\SortingMatcherInterface;
 
-class LocationMatcher extends QueryBasedMatcher
+class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 
@@ -31,25 +32,45 @@ class LocationMatcher extends QueryBasedMatcher
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
      * @return LocationCollection
      */
-    public function match(array $conditions)
+    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
-        return $this->matchLocation($conditions);
+        return $this->matchLocation($conditions, $sort, $offset, $limit);
+    }
+
+    public function matchOne(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    {
+        $results = $this->match($conditions, $sort, $offset, $limit);
+        $count = count($results);
+        if ($count !== 1) {
+            throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
+        }
+        return reset($results);
     }
 
     /**
      * @param array $conditions key: condition, value: value: int / string / int[] / string[]
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
      * @return LocationCollection
      */
-    public function matchLocation(array $conditions)
+    public function matchLocation(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
         $this->validateConditions($conditions);
 
         foreach ($conditions as $key => $values) {
 
             $query = new LocationQuery();
-            $query->limit = self::INT_MAX_16BIT;
+            $query->limit = $limit != 0 ? $limit : self::INT_MAX_16BIT;
+            $query->offset = $offset;
+            if (!empty($sort)) {
+                $query->sortClauses = $this->getSortClauses($sort);
+            }
             if (isset($query->performCount)) $query->performCount = false;
             $query->filter = $this->getQueryCriterion($key, $values);
             $results = $this->repository->getSearchService()->findLocations($query);

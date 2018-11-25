@@ -15,6 +15,13 @@ class SortConverter
         $sortField = null;
 
         if ($value !== null) {
+            // make life nicer for users - we never use 'contentobject' or 'node' in yml...
+            if ($value == 'content_id') {
+                $value = 'contentobject_id';
+            }
+            if ($value == 'location_id') {
+                $value = 'node_id';
+            }
             $sortFieldId = "SORT_FIELD_" . strtoupper($value);
 
             $ref = new \ReflectionClass('eZ\Publish\API\Repository\Values\Content\Location');
@@ -35,7 +42,14 @@ class SortConverter
         $ref = new \ReflectionClass('eZ\Publish\API\Repository\Values\Content\Location');
         foreach($ref->getConstants() as $key => $val) {
             if (strpos($key, 'SORT_FIELD_') === 0 && $val == $value) {
-                return strtolower(substr($key, 11));
+                $out = strtolower(substr($key, 11));
+                if ($out == 'contentobject_id') {
+                    $out = 'content_id';
+                }
+                if ($out == 'node_id') {
+                    $out = 'location_id';
+                }
+                return $out;
             }
         }
 

@@ -5,8 +5,9 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
+use Kaliop\eZMigrationBundle\API\SortingMatcherInterface;
 
-class ContentMatcher extends QueryBasedMatcher
+class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 
@@ -29,18 +30,34 @@ class ContentMatcher extends QueryBasedMatcher
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
      * @return ContentCollection
      */
-    public function match(array $conditions)
+    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
-        return $this->matchContent($conditions);
+        return $this->matchContent($conditions, $sort, $offset, $limit);
+    }
+
+    public function matchOne(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    {
+        $results = $this->match($conditions, $sort, $offset, $limit);
+        $count = count($results);
+        if ($count !== 1) {
+            throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
+        }
+        return reset($results);
     }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
      * @return ContentCollection
      */
-    public function matchContent(array $conditions)
+    public function matchContent(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
         $this->validateConditions($conditions);
 
@@ -84,20 +101,26 @@ class ContentMatcher extends QueryBasedMatcher
                     }
 
                     $query = new Query();
-                    $query->limit = self::INT_MAX_16BIT;
+                    $query->limit = $limit != 0 ? $limit : self::INT_MAX_16BIT;
+                    $query->offset = $offset;
                     if (isset($query->performCount)) $query->performCount = false;
                     $query->filter = $this->getQueryCriterion($key, $values);
-                    switch ($key) {
-                        case 'content_type_id':
-                        case self::MATCH_CONTENT_TYPE_ID:
-                        case 'content_type_identifier':
-                        case self::MATCH_CONTENT_TYPE_IDENTIFIER:
-                            // sort objects by depth, lower to higher, so that deleting them has less chances of failure
-                            // NB: we only do this in eZP versions that allow depth sorting on content queries
-                            if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
-                                $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
-                            }
+                    if (!empty($sort)) {
+                        $query->sortClauses = $this->getSortClauses($sort);
+                    } else {
+                        switch ($key) {
+                            case 'content_type_id':
+                            case self::MATCH_CONTENT_TYPE_ID:
+                            case 'content_type_identifier':
+                            case self::MATCH_CONTENT_TYPE_IDENTIFIER:
+                                // sort objects by depth, lower to higher, so that deleting them has less chances of failure
+                                // NB: we only do this in eZP versions that allow depth sorting on content queries
+                                if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
+                                    $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+                                }
+                        }
                     }
+
                     $results = $this->repository->getSearchService()->findContent($query);
 
                     $contents = [];

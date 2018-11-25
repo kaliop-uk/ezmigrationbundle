@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\Content\Query;
+use eZ\Publish\API\Repository\Values\Content\Query\SortClause;
 use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
@@ -30,6 +31,19 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_SECTION = 'section';
     const MATCH_SUBTREE = 'subtree';
     const MATCH_VISIBILITY = 'visibility';
+
+    const SORT_CONTENT_ID = 'content_id';
+    const SORT_CONTENT_NAME = 'name';
+    const SORT_DATE_MODIFIED = 'modified';
+    const SORT_DATE_PUBLISHED = 'published';
+    const SORT_LOCATION_DEPTH = 'depth';
+    const SORT_LOCATION_ID = 'node_id';
+    const SORT_LOCATION_ISMAIN = 'is_main';
+    const SORT_LOCATION_PATH = 'path';
+    const SORT_LOCATION_PRIORITY = 'priority';
+    const SORT_LOCATION_VISIBILITY = 'visibility';
+    const SORT_SECTION_IDENTIFIER = 'section_identifier';
+    const SORT_SECTION_NAME = 'section_name';
 
     // useful f.e. when talking to Solr, which defaults to java integers for max nr of items for queries
     const INT_MAX_16BIT = 2147483647;
@@ -223,6 +237,102 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
             default:
                 throw new \Exception($this->returns . " can not be matched because matching condition '$key' is not supported. Supported conditions are: " .
                     implode(', ', $this->allowedConditions));
+        }
+    }
+
+    protected function getSortClauses(array $sortDefinition)
+    {
+        $out = array();
+
+        foreach ($sortDefinition as $sortItem) {
+
+            if (is_string($sortItem)) {
+                $sortItem = array('sort_field' => $sortItem);
+            }
+            if (!is_array($sortItem) || !isset($sortItem['sort_field'])) {
+                throw new \Exception("Missing sort_field element in sorting definition");
+            }
+            if (!isset($sortItem['sort_order'])) {
+                // we have to pick a default ;-)
+                $sortItem['sort_order'] = 'ASC';
+            }
+
+            $direction = $this->hash2SortOrder($sortItem['sort_order']);
+
+            switch($sortItem['sort_field']) {
+                case SELF::SORT_CONTENT_ID:
+                    $out[] = new SortClause\ContentId($direction);
+                    break;
+                case SELF::SORT_CONTENT_NAME:
+                    $out[] = new SortClause\ContentName($direction);
+                    break;
+                case SELF::SORT_DATE_MODIFIED:
+                    $out[] = new SortClause\DateModified($direction);
+                    break;
+                case SELF::SORT_DATE_PUBLISHED:
+                    $out[] = new SortClause\DatePublished($direction);
+                    break;
+                /// @todo
+                //case SELF::SORT_FIELD:
+                //    $out[] = new SortClause\Field($direction);
+                //    break;
+                case SELF::SORT_LOCATION_DEPTH:
+                    $out[] = new SortClause\Location\Depth($direction);
+                    break;
+                case SELF::SORT_LOCATION_ID:
+                    $out[] = new SortClause\Location\Id($direction);
+                    break;
+                case SELF::SORT_LOCATION_ISMAIN:
+                    $out[] = new SortClause\Location\IsMainLocation($direction);
+                    break;
+                case SELF::SORT_LOCATION_PATH:
+                    $out[] = new SortClause\Location\Path($direction);
+                    break;
+                case SELF::SORT_LOCATION_PRIORITY:
+                    $out[] = new SortClause\Location\Priority($direction);
+                    break;
+                case SELF::SORT_LOCATION_VISIBILITY:
+                    $out[] = new SortClause\Location\Visibility($direction);
+                    break;
+                case SELF::SORT_SECTION_IDENTIFIER:
+                    $out[] = new SortClause\SectionIdentifier($direction);
+                    break;
+                case SELF::SORT_SECTION_NAME:
+                    $out[] = new SortClause\SectionName($direction);
+                    break;
+                default:
+                    throw new \Exception("Sort field '{$sortItem['sort_field']}' not implemented");
+            }
+        }
+
+        return $out;
+    }
+
+    protected function hash2SortOrder($value)
+    {
+        $sortOrder = null;
+
+        if ($value !== null) {
+            if (strtoupper($value) === 'ASC') {
+                $sortOrder = Query::SORT_ASC;
+            } else {
+                $sortOrder = Query::SORT_DESC;
+            }
+        }
+
+        return $sortOrder;
+    }
+
+    /**
+     * @param int $value
+     * @return string
+     */
+    protected function sortOrder2Hash($value)
+    {
+        if ($value === Query::SORT_ASC) {
+            return 'ASC';
+        } else {
+            return 'DESC';
         }
     }
 }

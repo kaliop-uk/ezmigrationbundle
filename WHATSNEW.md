@@ -1,5 +1,17 @@
-Version 5.5
-===========
+Version 5.5.1
+=============
+
+* New: when updating, deleting, loading Contents and Locations, you can now sort the results, as well as use
+   an offset and limit. Ex:
+   
+        -
+            type: content
+            mode: load
+            match: { content_type_identifier: folder }
+            match_offset: 0
+            match_limit: 10
+            match_sort:
+                - { sort_field: published, sort_order: desc }
 
 * New: it is now possible to generate migration definition files via migration steps.
     Also, more references are resolved in migrationdefinition/generate steps.
@@ -10,6 +22,12 @@ Version 5.5
 * New: it is now possible to match users using their group id
 
 * New: it is now possible to match user groups using the parent group id
+
+
+Version 5.5.0
+=============
+
+Accidental release ;-)
 
 
 Version 5.4.1

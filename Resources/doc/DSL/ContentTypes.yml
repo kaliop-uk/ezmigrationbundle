@@ -109,7 +109,7 @@
     is_container: true|false # Optional, defaults to false
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     url_name_pattern: pattern # Optional
-    default_sort_field: x # Optional. See ManageLocation.yml for details
+    default_sort_field: x # Optional. See Locations.yml for details
     default_sort_order: ASC|DESC # Optional
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
@@ -161,7 +161,7 @@
     name_pattern: xyz # Optional, will be updated if set
     new_identifier: xyz # Optional, will update the identifier if set
     url_name_pattern: xyz # Optional, will be updated if set
-    default_sort_field: x # Optional, will be updated if set. See ManageLocation.yml for details
+    default_sort_field: x # Optional, will be updated if set. See Locations.yml for details
     default_sort_order: ASC|DESC # Optional, will be updated if set
     attributes: # Optional, if set will update existing ones or add new ones.
         -
