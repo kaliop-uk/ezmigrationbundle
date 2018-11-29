@@ -1,13 +1,33 @@
+Version 5.6.0 (unreleased)
+==========================
+
+* New: when using step `reference/dump`, it is possible to use a custom label instead of the reference name
+
+* New: when creating array references, it is possible to allow them to be empty without this being considered an error.
+    Ex:
+
+                ...
+                references_type: array
+                references_allow_empty: true
+                references:
+                    -   identifier: my_content_ids
+                        attribute: content_id
+
+* New: the classes which implement `MigrationGeneratorInterface` will now receive the whole step definition as part
+    of the `$context` parameter for the `generateMigration` call. This allows them to tailor the generated migration
+    definition based on custom conditions.
+
+
 Version 5.5.1
 =============
 
 * New: when updating, deleting, loading Contents and Locations, you can now sort the results, as well as use
    an offset and limit. Ex:
-   
+
         -
             type: content
             mode: load
-            match: { content_type_identifier: folder }
+            match: { content_type_identifier: article }
             match_offset: 0
             match_limit: 10
             match_sort:
@@ -22,6 +42,14 @@ Version 5.5.1
 * New: it is now possible to match users using their group id
 
 * New: it is now possible to match user groups using the parent group id
+
+* BC changes:
+
+    - classes ContentMatcher and LocationMatcher now implement a different interface. If you have subclassed them, you
+        will need to adjust the definition of methods `Math` and `MatchOne`
+
+    - when migrations are generated that specify a Location, tag `content_id` is now used where `contentobject_id` was
+        beforehand for indicating a sort order, and `location_id` is used where `node_id` was 
 
 
 Version 5.5.0

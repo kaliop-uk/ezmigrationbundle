@@ -289,7 +289,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
     /**
      * Verifies compatibility between the definition of the references to be set and the data set to extract them from.
-     * Nb: for multivalued refs, we assume that the users always expect at least one value
+     * NB: for multivalued refs, we assume that the users always expect at least one value
      * @param AbstractCollection|mixed $entity
      * @param array $referencesDefinition
      * @param MigrationStep $step
@@ -300,7 +300,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
     {
         if ($entity instanceof AbstractCollection) {
 
-            $minOneRef = count($referencesDefinition) > 0;
+            $minOneRef = count($referencesDefinition) > 0 && (!$this->allowEmptyReferences($step));
             $maxOneRef = count($referencesDefinition) > 0 && $this->getReferencesType($step) == self::REFERENCE_TYPE_SCALAR;
 
             if ($maxOneRef && count($entity) > 1) {
@@ -312,9 +312,26 @@ abstract class RepositoryExecutor extends AbstractExecutor
         }
     }
 
+    /**
+     * @param array $step
+     * @return string
+     */
     protected function getReferencesType($step)
     {
         return isset($step->dsl['references_type']) ? $step->dsl['references_type'] : self::REFERENCE_TYPE_SCALAR;
+    }
+
+    /**
+     * @param array $step
+     * @return bool
+     */
+    protected function allowEmptyReferences($step)
+    {
+        if (isset($step->dsl['references_type']) && $step->dsl['references_type'] == self::REFERENCE_TYPE_ARRAY &&
+            isset($step->dsl['references_allow_empty']) && $step->dsl['references_allow_empty'] == true
+        )
+            return true;
+        return false;
     }
 
     protected function getSelfName()

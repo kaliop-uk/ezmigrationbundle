@@ -37,3 +37,4 @@
     type: reference
     mode: dump
     identifier: xxx # Name of the reference to dump. must include the 'reference:' prefix
+    label: string # optional. If present, it will be printed instead of the reference name

@@ -75,10 +75,12 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         }
         $executor = $this->migrationService->getExecutor($migrationType);
 
-        $context = array();
         if (isset($dsl['lang']) && $dsl['lang'] != '') {
             $context['defaultLanguageCode'] = $this->referenceResolver->resolveReference($dsl['lang']);
         }
+
+        // in case the executor does different things based on extra information present in the step definition
+        $context['step'] = $dsl;
 
         $matchCondition = array($this->referenceResolver->resolveReference($match['type']) => $this->referenceResolver->resolveReference($match['value']));
         if (isset($match['except']) && $match['except']) {
