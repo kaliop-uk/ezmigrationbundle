@@ -11,7 +11,7 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
-                                   # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
+                                   # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
@@ -53,7 +53,7 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
-                                   # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
+                                   # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
@@ -84,7 +84,7 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
-                                   # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
+                                   # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
@@ -100,7 +100,7 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
-                                   # supports: always_available, depth, main_language_code, main_tag_id, modification_date,
+                                   # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
     references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
