@@ -1,5 +1,5 @@
-Version 5.6.0 (unreleased)
-==========================
+Version 5.6.0
+=============
 
 * New: when using step `reference/dump`, it is possible to use a custom label instead of the reference name
 
