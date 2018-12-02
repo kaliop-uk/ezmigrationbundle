@@ -34,7 +34,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
 
     protected $contentMatcher;
 
-    public function __construct(Repository $repository, ContentMatcher $contentMatcher)
+    public function __construct(Repository $repository, MatcherInterface $contentMatcher)
     {
         $this->repository = $repository;
         $this->contentMatcher = $contentMatcher;

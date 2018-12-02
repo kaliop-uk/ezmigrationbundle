@@ -6,7 +6,7 @@ Version 5.7.0 (unreleased)
 * Fix: the migrations generated for `content/create` and `content/update` were missing information about section and
     object states
 
-* New: new migration step: `content_version/load` 
+* New: new migration step: `content_version/load`. Example:
 
         -
             type: content_version
