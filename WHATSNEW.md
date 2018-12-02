@@ -1,3 +1,25 @@
+Version 5.7.0 (unreleased)
+==========================
+
+* New: when manipulating Locations, it is now possible to set references to `content_remote_id`
+
+* Fix: the migrations generated for `content/create` and `content/update` were missing information about section and
+    object states
+
+* New: new migration step: `content_version/load` 
+
+* New: migration step: `content_version/delete` can now match the versions based on status, as well as using 
+    complex conditions based on and/or/not
+
+* New: when manipulating content versions, it is now possible to set references to `version_no` and `version_status` 
+
+* BC changes:
+
+    - migration step: `content_version/delete` has deprecated the element 'versions' in favour of 'match_versions'
+
+    - when manipulating content versions, it is not possible any more to set references to attributes (might be fixed in the future)
+
+
 Version 5.6.0
 =============
 

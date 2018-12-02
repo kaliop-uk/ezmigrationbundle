@@ -76,6 +76,7 @@ parameters:
     ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcherDirectLoad
     ez_migration_bundle.content_type_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher
     ez_migration_bundle.content_type_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher
+    ez_migration_bundle.content_version_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentVersionMatcher
     ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcherDirectLoad
     ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
     ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
@@ -336,8 +337,18 @@ services:
             - { name: ez_migration_bundle.executor }
 
     ez_migration_bundle.executor.content_version_manager:
-        parent: ez_migration_bundle.executor.content_manager
+        parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.content_version_manager.class%'
+        arguments:
+            - '@ez_migration_bundle.content_matcher'
+            - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.user_matcher'
+            - '@ez_migration_bundle.object_state_matcher'
+            - '@ez_migration_bundle.object_state_group_matcher'
+            - '@ez_migration_bundle.complex_field_manager'
+            - '@ez_migration_bundle.executor.location_manager'
+            - '@ez_migration_bundle.helper.sort_converter'
+            - '@ez_migration_bundle.content_version_matcher'
         tags:
             - { name: ez_migration_bundle.executor }
 
@@ -468,6 +479,12 @@ services:
         class: '%ez_migration_bundle.content_type_group_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
+
+    ez_migration_bundle.content_version_matcher:
+        class: '%ez_migration_bundle.content_version_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.content_matcher'
 
     ez_migration_bundle.location_matcher:
         class: '%ez_migration_bundle.location_matcher.class%'

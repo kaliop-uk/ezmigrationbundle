@@ -39,6 +39,9 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected $locationManager;
     protected $sortConverter;
 
+    // these are not exported when generating a migration
+    protected $ignoredStateGroupIdentifiers = array('ez_lock');
+
     public function __construct(
         ContentMatcher $contentMatcher,
         SectionMatcher $sectionMatcher,
@@ -517,10 +520,13 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             'sort_field' => $this->sortConverter->sortField2Hash($location->sortField),
                             'sort_order' => $this->sortConverter->sortOrder2Hash($location->sortOrder),
                             'remote_id' => $content->contentInfo->remoteId,
-                            'location_remote_id' => $location->remoteId
+                            'location_remote_id' => $location->remoteId,
+                            'section' => $content->contentInfo->sectionId,
+                            'object_states' => $this->getObjectStates($content),
                         )
                     );
                     $locationService = $this->repository->getLocationService();
+                    /// @todo for accurate replication, we should express the addinfg of 2ndary locatins as separate steps, and copy over visibility, priority etc
                     $locations = $locationService->loadLocations($content->contentInfo);
                     if (count($locations) > 1) {
                         $otherParentLocations = array();
@@ -540,6 +546,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                                 ContentMatcher::MATCH_CONTENT_REMOTE_ID => $content->contentInfo->remoteId
                             ),
                             'new_remote_id' => $content->contentInfo->remoteId,
+                            'section' => $content->contentInfo->sectionId,
+                            'object_states' => $this->getObjectStates($content),
                         )
                     );
                     break;
@@ -739,6 +747,23 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
         $contentMetaDataUpdateStruct->mainLocationId = $location->id;
         $contentService->updateContentMetadata($location->contentInfo, $contentMetaDataUpdateStruct);
+    }
+
+    protected function getObjectStates(Content $content)
+    {
+        $states = [];
+
+        $objectStateService = $this->repository->getObjectStateService();
+        $groups = $objectStateService->loadObjectStateGroups();
+        foreach ($groups as $group) {
+            if (in_array($group->identifier, $this->ignoredStateGroupIdentifiers)) {
+                continue;
+            }
+            $state = $objectStateService->getContentState($content->contentInfo, $group);
+            $states[] = $group->identifier . '/' . $state->identifier;
+        }
+
+        return $states;
     }
 
     /**

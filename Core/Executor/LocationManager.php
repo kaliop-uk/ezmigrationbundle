@@ -316,6 +316,9 @@ class LocationManager extends RepositoryExecutor
                     $contentTypeService = $this->repository->getContentTypeService();
                     $value = $contentTypeService->loadContentType($location->contentInfo->contentTypeId)->identifier;
                     break;
+                case 'content_remote_id':
+                    $value = $location->contentInfo->remoteId;
+                    break;
                 case 'current_version':
                 case 'current_version_no':
                     $value = $location->contentInfo->currentVersionNo;

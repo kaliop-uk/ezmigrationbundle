@@ -12,10 +12,12 @@ abstract class AbstractMatcher implements MatcherInterface
     protected $returns;
     /** @var int $maxConditions the maximum number of conditions we allow to match on for a single match request */
     protected $maxConditions = 1;
+    /** @var int $minConditions the minimum number of conditions we allow to match on for a single match request. It could be replaced with an array of mandatory conditions, really... */
+    protected $minConditions = 1;
 
     protected function validateConditions(array $conditions)
     {
-        if (count($conditions) == 0) {
+        if ($this->minConditions > 0 && count($conditions) < $this->minConditions) {
             throw new \Exception($this->returns . ' can not be matched because the matching conditions are empty');
         }
 

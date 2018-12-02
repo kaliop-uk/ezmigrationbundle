@@ -2,9 +2,38 @@
     type: content_version
     mode: delete
     match: # Same as for Content update/delete/load actions
-    versions: xxx # If an integer or array of integers: remove those specific versions
-                  # If a negative integer -X: remove *all* versions except the last X (ie: -1 = leave only the last version)
-    references: # Optional. See Contents.yml for allowed values
+    match_versions:
+        status: string|array # accepted values: draft, archived, published
+        version: xxx # If an integer or array of integers: remove those specific versions
+        or: # match any of the conditions below
+            -   _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -   _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -   _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -   _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional. See Contents.yml for allowed values, except 'attributes', plus: version_no, version_status
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    type: content_version
+    mode: load
+    match: # Same as for Content update/delete/load actions
+    match_versions:
+        status: string|array # accepted values: draft, archived, published
+        version: xxx # If an integer or array of integers: remove those specific versions
+        or: # match any of the conditions below
+            -   _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -   _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -   _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -   _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional. See Contents.yml for allowed values, except 'attributes', plus: version_no, version_status
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
