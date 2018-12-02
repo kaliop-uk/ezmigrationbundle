@@ -8,6 +8,19 @@ Version 5.7.0 (unreleased)
 
 * New: new migration step: `content_version/load` 
 
+        -
+            type: content_version
+            mode: load
+            match:
+                content_id: 2893941
+            match_versions:
+                status: archived
+            references_type: array
+            references:
+                -
+                    identifier: archived_versions_for_2893941
+                    attribute: version_no
+                    
 * New: migration step: `content_version/delete` can now match the versions based on status, as well as using 
     complex conditions based on and/or/not
 
@@ -644,7 +657,7 @@ Version 3.5
 * New: it is now possible to manually create references, including both bulk loading from file and getting the value from
     configuration parameters (useful f.e. to manipulate different contents based on environment).
     It is alos possible to dump the resolved reference values for debugging puproses.
-    Details in the dedicated [documentation](Resources/doc/DSL/ManageReference.yml)
+    Details in the dedicated [documentation](Resources/doc/DSL/References.yml)
 
 * New: the `generate` command can be used to generate SQL migrations in YML file format
 
@@ -1106,7 +1119,7 @@ The main changes are:
         * 'authors' for fields of type ezauthor
 
 The change in database structure are handled automatically by the bundle - by way of a migration that you wll have to run!
-For more details about the upgrade, read the [upgrade guide](doc/Upgrading/1.x_to_2.0.md)
+For more details about the upgrade, read the [upgrade guide](Resources/doc/Upgrading/1.x_to_2.0.md)
 
 
 Versions 1.4.1 to 1.4.10
