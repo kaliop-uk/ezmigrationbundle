@@ -5,6 +5,13 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\Content\VersionInfo;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentVersionMatcher;
+use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
+use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
+use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 
 /**
  * Handles content-version migrations.
