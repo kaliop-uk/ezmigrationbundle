@@ -1,5 +1,5 @@
-Version 5.7.0 (unreleased)
-==========================
+Version 5.7.0
+=============
 
 * New: when manipulating Locations, it is now possible to set references to `content_remote_id`
 
