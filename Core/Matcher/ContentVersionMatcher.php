@@ -107,11 +107,15 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
         }
     }
 
-    protected function matchAnd(array $conditionsArray, $content)
+    protected function matchAnd(array $conditionsArray, $content = null)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
             throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'and' clause.");
+        }
+
+        if (is_null($content)) {
+            throw new \Exception($this->returns . " can not be matched because there was no content to match for 'and' clause.");
         }
 
         foreach ($conditionsArray as $conditions) {
@@ -126,11 +130,15 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
         return $results;
     }
 
-    protected function matchOr(array $conditionsArray, $content)
+    protected function matchOr(array $conditionsArray, $content = null)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
             throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'or' clause.");
+        }
+
+        if (is_null($content)) {
+            throw new \Exception($this->returns . " can not be matched because there was no content to match for 'or' clause.");
         }
 
         $results = array();
