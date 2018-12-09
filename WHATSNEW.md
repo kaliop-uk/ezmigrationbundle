@@ -1,3 +1,9 @@
+Version 5.7.1
+=============
+
+* Fix: warnings due to ContentVersionMatcher methods signatures
+
+
 Version 5.7.0
 =============
 
