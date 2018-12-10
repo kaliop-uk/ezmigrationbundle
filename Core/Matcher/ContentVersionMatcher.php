@@ -55,7 +55,10 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
     /**
      * Like match, but will throw an exception if there are 0 or more than 1 items matching
      *
-     * @param array $conditions
+     * @param array $contentConditions
+     * @param array $versionConditions
+     * @param array $sort
+     * @param int $offset
      * @return mixed
      * @throws \Exception
      */
@@ -107,7 +110,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
         }
     }
 
-    protected function matchAnd(array $conditionsArray, $content = null)
+    protected function matchAnd($conditionsArray, $content = null)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
@@ -130,7 +133,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
         return $results;
     }
 
-    protected function matchOr(array $conditionsArray, $content = null)
+    protected function matchOr($conditionsArray, $content = null)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
