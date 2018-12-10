@@ -33,7 +33,7 @@ abstract class AbstractMatcher implements MatcherInterface
         }
     }
 
-    protected function matchAnd($conditionsArray)
+    protected function matchAnd(array $conditionsArray)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
