@@ -57,10 +57,11 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
      * @todo check if this works in ezplatform
      */
     public function fieldValueToHash($fieldValue, array $context = array())
-    {        
-        if (!$fieldValue->uri) {
+    {
+        if ($fieldValue->uri == null) {
             return null;
         }
+
         return array(
             'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
             'filename'=> $fieldValue->fileName,
