@@ -61,7 +61,7 @@ abstract class AbstractMatcher implements MatcherInterface
         return $results;
     }
 
-    protected function matchOr(array $conditionsArray)
+    protected function matchOr($conditionsArray)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {

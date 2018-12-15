@@ -60,6 +60,10 @@ class EzImage extends FileFieldHandler implements FieldValueConverterInterface
      */
     public function fieldValueToHash($fieldValue, array $context = array())
     {
+        if ($fieldValue->uri == null) {
+            return null;
+        }
+
         return array(
             'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
             'filename'=> $fieldValue->fileName,

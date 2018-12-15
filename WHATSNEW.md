@@ -1,7 +1,21 @@
-Version 5.7.2
+Version 5.7.3
 =============
 
 * Fix: warnings due to ContentVersionMatcher methods signatures
+
+* Fix: creating migrations for Content creation or update with contents which have empty Image/File/Media fields would
+    crash
+
+Version 5.7.2
+=============
+
+* An attempt at fixing php warnings that turned out to be wrong
+
+
+Version 5.7.1
+=============
+
+* An attempt at fixing php warnings that turned out to be wrong
 
 
 Version 5.7.0
