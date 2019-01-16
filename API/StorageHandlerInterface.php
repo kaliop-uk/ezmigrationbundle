@@ -45,10 +45,11 @@ interface StorageHandlerInterface
      * Starts a migration (creates and stores it, in STARTED status)
      *
      * @param MigrationDefinition $migrationDefinition
+     * @param bool $force
      * @return Migration
-     * @throws \Exception If the migration was already executed, skipped or executing
+     * @throws \Exception If the migration was already executing. Also if it as already (executed|skipped) unless $force is true
      */
-    public function startMigration(MigrationDefinition $migrationDefinition);
+    public function startMigration(MigrationDefinition $migrationDefinition, $force = false);
 
     /**
      * Ends a migration (updates it)

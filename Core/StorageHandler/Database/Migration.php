@@ -149,13 +149,14 @@ class Migration extends TableStorage implements StorageHandlerInterface
      * Starts a migration, given its definition: stores its status in the db, returns the Migration object
      *
      * @param MigrationDefinition $migrationDefinition
+     * @param bool $force when true, starts migrations even if they already exist in DONE, SKIPPED status
      * @return APIMigration
      * @throws \Exception if migration was already executing or already done
      * @todo add a parameter to allow re-execution of already-done migrations
      */
-    public function startMigration(MigrationDefinition $migrationDefinition)
+    public function startMigration(MigrationDefinition $migrationDefinition, $force = false)
     {
-        return $this->createMigration($migrationDefinition, APIMigration::STATUS_STARTED, 'started');
+        return $this->createMigration($migrationDefinition, APIMigration::STATUS_STARTED, 'started', $force);
     }
 
     /**
@@ -253,10 +254,11 @@ class Migration extends TableStorage implements StorageHandlerInterface
      * @param MigrationDefinition $migrationDefinition
      * @param int $status
      * @param string $action
+     * @param bool $force
      * @return APIMigration
      * @throws \Exception
      */
-    protected function createMigration(MigrationDefinition $migrationDefinition, $status, $action)
+    protected function createMigration(MigrationDefinition $migrationDefinition, $status, $action, $force = false)
     {
         $this->createTableIfNeeded();
 
@@ -280,21 +282,24 @@ class Migration extends TableStorage implements StorageHandlerInterface
         if (is_array($existingMigrationData)) {
             // migration exists
 
-            // fail if it was already executing or already done
+            // fail if it was already executing
             if ($existingMigrationData['status'] == APIMigration::STATUS_STARTED) {
                 // commit to release the lock
                 $conn->commit();
                 throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it is already executing");
             }
-            if ($existingMigrationData['status'] == APIMigration::STATUS_DONE) {
-                // commit to release the lock
-                $conn->commit();
-                throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already executed");
-            }
-            if ($existingMigrationData['status'] == APIMigration::STATUS_SKIPPED) {
-                // commit to release the lock
-                $conn->commit();
-                throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already skipped");
+            // fail if it was already already done, unless in 'force' mode
+            if (!$force) {
+                if ($existingMigrationData['status'] == APIMigration::STATUS_DONE) {
+                    // commit to release the lock
+                    $conn->commit();
+                    throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already executed");
+                }
+                if ($existingMigrationData['status'] == APIMigration::STATUS_SKIPPED) {
+                    // commit to release the lock
+                    $conn->commit();
+                    throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already skipped");
+                }
             }
 
             // do not set migration start date if we are skipping it

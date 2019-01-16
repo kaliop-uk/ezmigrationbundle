@@ -33,9 +33,10 @@ class GenerateCommand extends AbstractCommand
             ->addOption('match-type', null, InputOption::VALUE_REQUIRED, 'The type of identifier used to find the entity to generate the migration for', null)
             ->addOption('match-value', null, InputOption::VALUE_REQUIRED, 'The identifier value used to find the entity to generate the migration for. Can have many values separated by commas', null)
             ->addOption('match-except', null, InputOption::VALUE_NONE, 'Used to match all entities except the ones satisfying the match-value condition', null)
-            ->addOption('lang', null, InputOption::VALUE_REQUIRED, 'The language of the migration (eng-GB, ger-DE, ...)', 'eng-GB')
+            ->addOption('lang', 'l', InputOption::VALUE_REQUIRED, 'The language of the migration (eng-GB, ger-DE, ...). If null, the default language of the current siteaccess is used')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, when type=db (mysql, postgresql, ...)', 'mysql')
             ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Deprecated: The role identifier (or id) that you would like to update, for type=role', null)
+            ->addOption('admin-login', 'a', InputOption::VALUE_REQUIRED, "Login of admin account used whenever elevated privileges are needed (user id 14 used by default)")
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
@@ -156,7 +157,8 @@ EOT
             'matchValue' => $matchValue,
             'matchExcept' => $matchExcept,
             'mode' => $mode,
-            'lang' => $input->getOption('lang')
+            'lang' => $input->getOption('lang'),
+            'adminLogin' => $input->getOption('admin-login')
         );
 
         $date = date('YmdHis');
@@ -207,6 +209,7 @@ EOT
 
     /**
      * Generates a migration definition file.
+     * @todo allow non-filesystem storage
      *
      * @param string $path filename to file to generate (full path)
      * @param string $fileType The type of migration file to generate
@@ -241,10 +244,7 @@ EOT
                 }
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
-                $context = array();
-                if (isset($parameters['lang']) && $parameters['lang'] != '') {
-                    $context['defaultLanguageCode'] = $parameters['lang'];
-                }
+                $context = $this->migrationContextFromParameters($parameters);
 
                 $matchCondition = array($parameters['matchType'] => $parameters['matchValue']);
                 if ($parameters['matchExcept']) {
@@ -311,5 +311,24 @@ EOT
             }
         }
         return $executors;
+    }
+
+    /**
+     * @see MigrationService::migrationContextFromParameters
+     * @param array $parameters
+     * @return array
+     */
+    protected function migrationContextFromParameters(array $parameters)
+    {
+        $context = array();
+
+        if (isset($parameters['lang']) && $parameters['lang'] != '') {
+            $context['defaultLanguageCode'] = $parameters['lang'];
+        }
+        if (isset($parameters['adminLogin']) && $parameters['adminLogin'] != '') {
+            $context['adminUserLogin'] = $parameters['adminLogin'];
+        }
+
+        return $context;
     }
 }

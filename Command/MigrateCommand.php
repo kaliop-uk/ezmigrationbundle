@@ -41,14 +41,15 @@ class MigrateCommand extends AbstractCommand
             ->setName(self::COMMAND_NAME)
             ->setAliases(array('kaliop:migration:update'))
             ->setDescription('Execute available migration definitions.')
-            ->addOption('path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "The directory or file to load the migration definitions from")
             // nb: when adding options, remember to forward them to sub-commands executed in 'separate-process' mode
-            ->addOption('default-language', 'l', InputOption::VALUE_REQUIRED, "Default language code that will be used if no language is provided in migration steps")
             ->addOption('admin-login', 'a', InputOption::VALUE_REQUIRED, "Login of admin account used whenever elevated privileges are needed (user id 14 used by default)")
-            ->addOption('ignore-failures', 'i', InputOption::VALUE_NONE, "Keep executing migrations even if one fails")
             ->addOption('clear-cache', 'c', InputOption::VALUE_NONE, "Clear the cache after the command finishes")
+            ->addOption('default-language', 'l', InputOption::VALUE_REQUIRED, "Default language code that will be used if no language is provided in migration steps")
+            ->addOption('force', 'f', InputOption::VALUE_NONE, "Force (re)execution of migrations already DONE, SKIPPED or FAILED. Use with great care!")
+            ->addOption('ignore-failures', 'i', InputOption::VALUE_NONE, "Keep executing migrations even if one fails")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question")
             ->addOption('no-transactions', 'u', InputOption::VALUE_NONE, "Do not use a repository transaction to wrap each migration. Unsafe, but needed for legacy slot handlers")
+            ->addOption('path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "The directory or file to load the migration definitions from")
             ->addOption('separate-process', 'p', InputOption::VALUE_NONE, "Use a separate php process to run each migration. Safe if your migration leak memory. A tad slower")
             ->addOption('child', null, InputOption::VALUE_NONE, "*DO NOT USE* Internal option for when forking separate processes")
             ->setHelp(<<<EOT
@@ -106,27 +107,7 @@ EOT
             if (false !== $php = $executableFinder->find()) {
                 $builder->setPrefix($php);
             }
-            // mandatory args and options
-            $builderArgs = array(
-                $_SERVER['argv'][0], // sf console
-                self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
-                '--env=' . $kernel->getEnvironment(), // sf env
-                '--child'
-            );
-            // 'optional' options
-            // note: options 'clear-cache', 'ignore-failures' and 'no-transactions' we never propagate
-            if (!$kernel->isDebug()) {
-                $builderArgs[] = '--no-debug';
-            }
-            if ($input->getOption('default-language')) {
-                $builderArgs[] = '--default-language=' . $input->getOption('default-language');
-            }
-            if ($input->getOption('no-transactions')) {
-                $builderArgs[] = '--no-transactions';
-            }
-            if ($input->getOption('siteaccess')) {
-                $builderArgs[]='--siteaccess='.$input->getOption('siteaccess');
-            }
+            $builderArgs = $this->createChildProcessArgs($input);
         }
 
         $executed = 0;
@@ -247,19 +228,25 @@ EOT
     /**
      * @param string[] $paths
      * @param MigrationService $migrationService
+     * @param bool $force when true, look not only for TODO migrations, but also DONE, SKIPPED, FAILED ones (we still omit STARTED and SUSPENDED ones)
      * @return MigrationDefinition[]
      *
      * @todo this does not scale well with many definitions or migrations
      */
-    protected function buildMigrationsList($paths, $migrationService)
+    protected function buildMigrationsList($paths, $migrationService, $force = false)
     {
         $migrationDefinitions = $migrationService->getMigrationsDefinitions($paths);
         $migrations = $migrationService->getMigrations();
 
+        $allowedStatuses = array(Migration::STATUS_TODO);
+        if ($force) {
+            $allowedStatuses = array_merge($allowedStatuses, array(Migration::STATUS_DONE, Migration::STATUS_FAILED, Migration::STATUS_SKIPPED));
+        }
+
         // filter away all migrations except 'to do' ones
         $toExecute = array();
         foreach ($migrationDefinitions as $name => $migrationDefinition) {
-            if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && $migration->status == Migration::STATUS_TODO)) {
+            if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && in_array($migration->status, $allowedStatuses))) {
                 $toExecute[$name] = $migrationService->parseMigrationDefinition($migrationDefinition);
             }
         }
@@ -268,7 +255,7 @@ EOT
         // found by the loader
         if (empty($paths)) {
             foreach ($migrations as $migration) {
-                if ($migration->status == Migration::STATUS_TODO && !isset($toExecute[$migration->name])) {
+                if (in_array($migration->status, $allowedStatuses) && !isset($toExecute[$migration->name])) {
                     $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
                     if (count($migrationDefinitions)) {
                         $migrationDefinition = reset($migrationDefinitions);
@@ -361,4 +348,44 @@ EOT
         $this->verbosity = $verbosity;
     }
 
+    /**
+     * Returns the command-line arguments needed to execute a migration in a separate subprocess (omitting 'path')
+     * @param InputInterface $input
+     * @return array
+     */
+    protected function createChildProcessArgs(InputInterface $input)
+    {
+        $kernel = $this->getContainer()->get('kernel');
+
+        // mandatory args and options
+        $builderArgs = array(
+            $_SERVER['argv'][0], // sf console
+            self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
+            '--env=' . $kernel->getEnvironment(), // sf env
+            '--child'
+        );
+        // sf/ez env options
+        if (!$kernel->isDebug()) {
+            $builderArgs[] = '--no-debug';
+        }
+        if ($input->getOption('siteaccess')) {
+            $builderArgs[]='--siteaccess='.$input->getOption('siteaccess');
+        }
+        // 'optional' options
+        // note: options 'clear-cache', 'ignore-failures', 'no-interaction', 'path' and 'separate-process' we never propagate
+        if ($input->getOption('admin-login')) {
+            $builderArgs[] = '--admin-login=' . $input->getOption('admin-login');
+        }
+        if ($input->getOption('default-language')) {
+            $builderArgs[] = '--default-language=' . $input->getOption('default-language');
+        }
+        if ($input->getOption('force')) {
+            $builderArgs[] = '--force';
+        }
+        if ($input->getOption('no-transactions')) {
+            $builderArgs[] = '--no-transactions';
+        }
+
+        return $builderArgs;
+    }
 }

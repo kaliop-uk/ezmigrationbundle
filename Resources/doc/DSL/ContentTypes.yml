@@ -155,6 +155,7 @@
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     content_type_group: x # Id or identifier of a new group we want to put the new content type into (this will not remove it from the current group)
     remove_content_type_group: x # Id or identifier of a group we want to remove this content type from
+    default_always_available: true|false # Optional
     description: xyz # Optional, will be updated if set. Either a string, or an array in the format { "eng-GB": "This", "fre-FR": "ceci", ... }
     is_container: true|false # Optional, will be updated if set
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)

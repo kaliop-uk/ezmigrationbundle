@@ -89,41 +89,17 @@ EOT
             }
 
             $concurrency = $input->getOption('concurrency');
-            $this->writeln("Executing migrations using ".count($paths)." processes with a concurrency of $concurrency");
+            $this->writeln("Executing migrations using " . count($paths) . " processes with a concurrency of $concurrency");
 
-            $kernel = $this->getContainer()->get('kernel');
             $builder = new ProcessBuilder();
             $executableFinder = new PhpExecutableFinder();
             if (false !== ($php = $executableFinder->find())) {
                 $builder->setPrefix($php);
             }
+
             // mandatory args and options
-            $builderArgs = array(
-                $_SERVER['argv'][0], // sf console
-                self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
-                '--env=' . $kernel-> getEnvironment(), // sf env
-                '--child'
-            );
-            // 'optional' options
-            // note: options 'clear-cache' we never propagate
-            if (!$kernel->isDebug()) {
-                $builderArgs[] = '--no-debug';
-            }
-            if ($input->getOption('default-language')) {
-                $builderArgs[]='--default-language='.$input->getOption('default-language');
-            }
-            if ($input->getOption('no-transactions')) {
-                $builderArgs[]='--no-transactions';
-            }
-            if ($input->getOption('siteaccess')) {
-                $builderArgs[]='--siteaccess='.$input->getOption('siteaccess');
-            }
-            if ($input->getOption('ignore-failures')) {
-                $builderArgs[]='--ignore-failures';
-            }
-            if ($input->getOption('separate-process')) {
-                $builderArgs[]='--separate-process';
-            }
+            $builderArgs = $this->createChildProcessArgs($input);
+
             $processes = array();
             /** @var MigrationDefinition $migrationDefinition */
             foreach($paths as $path => $count) {
@@ -181,21 +157,8 @@ EOT
                 if (false !== $php = $executableFinder->find()) {
                     $builder->setPrefix($php);
                 }
-                // mandatory args and options
-                $builderArgs = array(
-                    $_SERVER['argv'][0], // sf console
-                    MigrateCommand::COMMAND_NAME, // name of sf command
-                    '--env=' . $this->getContainer()->get('kernel')->getEnvironment(), // sf env
-                    '--child'
-                );
-                // 'optional' options
-                // note: options 'clear-cache', 'ignore-failures' and 'no-transactions' we never propagate
-                if ($input->getOption('default-language')) {
-                    $builderArgs[] = '--default-language=' . $input->getOption('default-language');
-                }
-                if ($input->getOption('no-transactions')) {
-                    $builderArgs[] = '--no-transactions';
-                }
+
+                $builderArgs = parent::createChildProcessArgs($input);
             }
 
             $failed = 0;
@@ -433,4 +396,49 @@ EOT
         return $paths;
     }
 
+    /**
+     * Returns the command-line arguments needed to execute a migration in a separate subprocess (omitting 'path')
+     * @param InputInterface $input
+     * @return array
+     */
+    protected function createChildProcessArgs(InputInterface $input)
+    {
+        $kernel = $this->getContainer()->get('kernel');
+
+        // mandatory args and options
+        $builderArgs = array(
+            $_SERVER['argv'][0], // sf console
+            self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
+            '--env=' . $kernel-> getEnvironment(), // sf env
+            '--child'
+        );
+        // sf/ez env options
+        if (!$kernel->isDebug()) {
+            $builderArgs[] = '--no-debug';
+        }
+        if ($input->getOption('siteaccess')) {
+            $builderArgs[] = '--siteaccess=' . $input->getOption('siteaccess');
+        }
+        // 'optional' options
+        // note: options 'clear-cache', 'no-interaction', 'path' we never propagate
+        if ($input->getOption('admin-login')) {
+            $builderArgs[] = '--admin-login=' . $input->getOption('admin-login');
+        }
+        if ($input->getOption('default-language')) {
+            $builderArgs[] = '--default-language=' . $input->getOption('default-language');
+        }
+        if ($input->getOption('force')) {
+            $builderArgs[] = '--force';
+        }
+        if ($input->getOption('ignore-failures')) {
+            $builderArgs[] = '--ignore-failures';
+        }
+        if ($input->getOption('no-transactions')) {
+            $builderArgs[] = '--no-transactions';
+        }
+        if ($input->getOption('separate-process')) {
+            $builderArgs[] = '--separate-process';
+        }
+
+    }
 }

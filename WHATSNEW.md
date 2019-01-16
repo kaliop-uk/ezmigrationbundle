@@ -1,3 +1,18 @@
+Version 5.8.0 (unreleased)
+==========================
+
+* New: the `content_type/update` migration step now accepts `the default_always_available` element (issue #189)
+
+* New: the `kaliop:migration:generate` command now accepts a `-a` flag to allow specifying custom admin users (issue #187)
+
+* Fix: usage of the `-a` flag when running `kaliop:migration:mass_migrate` and when running `kaliop:migration:migrate -p`
+    was not propagated to subprocesses
+
+* BC changes:
+
+    - the `kaliop:migration:generate` command now uses as default language for the generated migrations the default one
+      of the current siteaccess, instead of 'eng-GB' 
+    
 Version 5.7.3
 =============
 
