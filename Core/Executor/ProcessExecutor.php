@@ -114,13 +114,13 @@ class ProcessExecutor extends AbstractExecutor
         foreach ($dsl['references'] as $reference) {
             switch ($reference['attribute']) {
                 case 'error_output':
-                    $value = $process->getErrorOutput();
+                    $value = rtrim($process->getErrorOutput(), "\r\n");
                     break;
                 case 'exit_code':
                     $value = $process->getExitCode();
                     break;
                 case 'output':
-                    $value = $process->getOutput();
+                    $value = rtrim($process->getOutput(), "\r\n");
                     break;
                 default:
                     throw new \InvalidArgumentException('Process executor does not support setting references for attribute ' . $reference['attribute']);
