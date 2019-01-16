@@ -193,6 +193,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 $contentTypeUpdateStruct->isContainer = $step->dsl['is_container'];
             }
 
+            if (isset($step->dsl['default_always_available'])) {
+                $contentTypeUpdateStruct->defaultAlwaysAvailable = $step->dsl['default_always_available'];
+            }
+
             if (isset($step->dsl['default_sort_field'])) {
                 $contentTypeUpdateStruct->defaultSortField = $this->sortConverter->hash2SortField($step->dsl['default_sort_field']);
             }
