@@ -3,7 +3,8 @@
 # Used to set up an eZPlatform env from scratch for testing purposes (eg. on Travis)
 
 parameters:
-    ezpublish.kernel.root_dir: %kernel.root_dir%/../../ezpublish-kernel
+    ezpublish.kernel.root_dir: '%kernel.root_dir%/../../ezpublish-kernel'
+    ezrichtext.resources: '%kernel.root_dir%/../../ezplatform-richtext/src/lib/eZ/RichText/Resources'
 
 doctrine:
     dbal:

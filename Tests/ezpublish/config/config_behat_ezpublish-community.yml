@@ -5,30 +5,30 @@
 parameters:
     # When installing eZPublish-Community as dependency, the directory where the eZ-Kernel package is changes, compared to where
     # the SF Kernel class is...
-    ezpublish.kernel.root_dir: %kernel.root_dir%/../../ezpublish-kernel
+    ezpublish.kernel.root_dir: '%kernel.root_dir%/../../ezpublish-kernel'
 
     # This is a fix for eZPublish 2014.03, backported from 2014.11: in 2014.03 the paths to these files are
     # set relative to where the SF Kernel class is. We make them relative to where the eZ-Kernel package is
     ezpublish.api.storage_engine.transformation_rules.resources:
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/ascii.tr
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/basic.tr
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/cyrillic.tr
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/greek.tr
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/hebrew.tr
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/latin.tr
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/search.tr
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/ascii.tr'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/basic.tr'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/cyrillic.tr'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/greek.tr'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/hebrew.tr'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/latin.tr'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/search.tr'
     ezpublish.api.storage_engine.preprocessed_transformation_rules.resources:
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/ascii.tr.result
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/basic.tr.result
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/cyrillic.tr.result
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/greek.tr.result
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/hebrew.tr.result
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/latin.tr.result
-        - %ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/search.tr.result
-    ezpublish.fieldType.ezrichtext.resources: %ezpublish.kernel.root_dir%/eZ/Publish/Core/FieldType/RichText/Resources
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/ascii.tr.result'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/basic.tr.result'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/cyrillic.tr.result'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/greek.tr.result'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/hebrew.tr.result'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/latin.tr.result'
+        - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/search.tr.result'
+    ezpublish.fieldType.ezrichtext.resources: '%ezpublish.kernel.root_dir%/eZ/Publish/Core/FieldType/RichText/Resources'
 
 ez_publish_legacy:
-    root_dir: %kernel.root_dir%/../../ezpublish-legacy
+    root_dir: '%kernel.root_dir%/../../ezpublish-legacy'
 
 swiftmailer:
     disable_delivery: false
