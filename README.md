@@ -140,6 +140,8 @@ To apply all available migrations run the migrate command in your eZPublish 5 ro
 NB: if you just executed the above command and got an error message because the migration definition file that you had
 just generated is invalid, do not worry - that is by design. Head on to the next paragraph...
 
+NB: migrations run as the default eZ admin user of ID 14, without this user you must instruct the use of another admin username by passing the `-a` flag.
+
 #### Applying a single migration file
 
 To apply a single migration run the migrate command passing it the path to its definition, as follows:
