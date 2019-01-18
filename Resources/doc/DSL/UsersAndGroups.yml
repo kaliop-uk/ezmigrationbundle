@@ -1,3 +1,9 @@
+# NB: user/create and user/update migration steps do not allow full manipulation of the user Content.
+# Fe. they do not allow to set a value for the remote_id or to set values for the different Fields (attributes).
+# The known workaround to that is to use 2 migration steps, one which creates/updates the User and one which
+# creates/updates the related Content.
+# See https://github.com/kaliop-uk/ezmigrationbundle/issues/191 for an example of how to do it.
+
 -
     type: user
     mode: create
