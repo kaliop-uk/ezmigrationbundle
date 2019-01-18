@@ -248,13 +248,14 @@ class MigrationService implements ContextProviderInterface
      * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
      * @param string $defaultLanguageCode
      * @param string|int|false|null $adminLogin when false, current user is used; when null, hardcoded admin account
+     * @param bool $force when true, execute a migration if it was already in status DONE or SKIPPED (would throw by default)
      * @throws \Exception
      *
      * @todo treating a null and false $adminLogin values differently is prone to hard-to-track errors.
      *       Shall we use instead -1 to indicate the desire to not-login-as-admin-user-at-all ?
      */
     public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
-        $defaultLanguageCode = null, $adminLogin = null)
+        $defaultLanguageCode = null, $adminLogin = null, $force = false)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
@@ -268,7 +269,7 @@ class MigrationService implements ContextProviderInterface
         $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin);
 
         // set migration as begun - has to be in own db transaction
-        $migration = $this->storageHandler->startMigration($migrationDefinition);
+        $migration = $this->storageHandler->startMigration($migrationDefinition, $force);
 
         $this->executeMigrationInner($migration, $migrationDefinition, $migrationContext, 0, $useTransaction, $adminLogin);
     }

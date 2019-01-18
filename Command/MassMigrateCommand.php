@@ -71,7 +71,9 @@ EOT
         $migrationService = $this->getMigrationService();
         $migrationService->setLoader($this->getContainer()->get('ez_migration_bundle.loader.filesystem_recursive'));
 
-        $toExecute = $this->buildMigrationsList($input->getOption('path'), $migrationService, $isChild);
+        $force = $input->getOption('force');
+
+        $toExecute = $this->buildMigrationsList($input->getOption('path'), $migrationService, $force, $isChild);
 
         if (!count($toExecute)) {
             $this->writeln('<info>No migrations to execute</info>');
@@ -79,194 +81,158 @@ EOT
         }
 
         if (!$isChild) {
+            return $this->executeAsParent($input, $output, $toExecute, $start);
 
-            $paths = $this->groupMigrationsByPath($toExecute);
-            $this->printMigrationsList($toExecute, $input, $output, $paths);
+        } else {
+            return $this->executeAsChild($input, $output, $toExecute, $force, $migrationService);
+        }
+    }
 
-            // ask user for confirmation to make changes
-            if (!$this->askForConfirmation($input, $output)) {
-                return 0;
+    protected function executeAsParent($input, $output, $toExecute, $start)
+    {
+        $paths = $this->groupMigrationsByPath($toExecute);
+        $this->printMigrationsList($toExecute, $input, $output, $paths);
+
+        // ask user for confirmation to make changes
+        if (!$this->askForConfirmation($input, $output, null)) {
+            return 0;
+        }
+
+        $concurrency = $input->getOption('concurrency');
+        $this->writeln("Executing migrations using " . count($paths) . " processes with a concurrency of $concurrency");
+
+        $builder = new ProcessBuilder();
+        $executableFinder = new PhpExecutableFinder();
+        if (false !== ($php = $executableFinder->find())) {
+            $builder->setPrefix($php);
+        }
+
+        // mandatory args and options
+        $builderArgs = $this->createChildProcessArgs($input);
+
+        $processes = array();
+        /** @var MigrationDefinition $migrationDefinition */
+        foreach($paths as $path => $count) {
+            $this->writeln("<info>Queueing processing of: $path ($count migrations)</info>", OutputInterface::VERBOSITY_VERBOSE);
+
+            $process = $builder
+                ->setArguments(array_merge($builderArgs, array('--path=' . $path)))
+                ->getProcess();
+
+            $this->writeln('<info>Command: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
+
+            // allow long migrations processes by default
+            $process->setTimeout(86400);
+            $processes[] = $process;
+        }
+
+        $this->writeln("Starting queued processes...");
+
+        $this->migrationsDone = array(0, 0, 0);
+
+        $processManager = new ProcessManager();
+        $processManager->runParallel($processes, $concurrency, 500, array($this, 'onSubProcessOutput'));
+
+        $failed = 0;
+        foreach ($processes as $i => $process) {
+            if (!$process->isSuccessful()) {
+                $output->writeln("\n<error>Subprocess $i failed! Reason: " . $process->getErrorOutput() . "</error>\n");
+                $failed++;
             }
+        }
 
-            $concurrency = $input->getOption('concurrency');
-            $this->writeln("Executing migrations using " . count($paths) . " processes with a concurrency of $concurrency");
+        if ($input->getOption('clear-cache')) {
+            $command = $this->getApplication()->find('cache:clear');
+            $inputArray = new ArrayInput(array('command' => 'cache:clear'));
+            $command->run($inputArray, $output);
+        }
 
+        $time = microtime(true) - $start;
+
+        $this->writeln('<info>'.$this->migrationsDone[0].' migrations executed, '.$this->migrationsDone[1].' failed, '.$this->migrationsDone[2].' skipped</info>');
+
+        // since we use subprocesses, we can not measure max memory used
+        $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
+
+        return $failed;
+    }
+
+    protected function executeAsChild($input, $output, $toExecute, $force, $migrationService)
+    {
+        // @todo disable signal slots that are harmful during migrations, if any
+
+        if ($input->getOption('separate-process')) {
             $builder = new ProcessBuilder();
             $executableFinder = new PhpExecutableFinder();
-            if (false !== ($php = $executableFinder->find())) {
+            if (false !== $php = $executableFinder->find()) {
                 $builder->setPrefix($php);
             }
 
-            // mandatory args and options
-            $builderArgs = $this->createChildProcessArgs($input);
+            $builderArgs = parent::createChildProcessArgs($input);
+        }
 
-            $processes = array();
-            /** @var MigrationDefinition $migrationDefinition */
-            foreach($paths as $path => $count) {
-                $this->writeln("<info>Queueing processing of: $path ($count migrations)</info>", OutputInterface::VERBOSITY_VERBOSE);
+        $failed = 0;
+        $executed = 0;
+        $skipped = 0;
+        $total = count($toExecute);
 
-                $process = $builder
-                    ->setArguments(array_merge($builderArgs, array('--path=' . $path)))
-                    ->getProcess();
-
-                $this->writeln('<info>Command: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
-
-                // allow long migrations processes by default
-                $process->setTimeout(86400);
-                $processes[] = $process;
+        foreach ($toExecute as  $name => $migrationDefinition) {
+            // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
+            if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
+                $this->writeln("<comment>Skipping migration (invalid definition?) Path: ".$migrationDefinition->path."</comment>", self::VERBOSITY_CHILD);
+                $skipped++;
+                continue;
             }
-
-            $this->writeln("Starting queued processes...");
-
-            $this->migrationsDone = array(0, 0, 0);
-
-            $processManager = new ProcessManager();
-            $processManager->runParallel($processes, $concurrency, 500, array($this, 'onSubProcessOutput'));
-
-            $failed = 0;
-            foreach ($processes as $i => $process) {
-                if (!$process->isSuccessful()) {
-                    $output->writeln("\n<error>Subprocess $i failed! Reason: " . $process->getErrorOutput() . "</error>\n");
-                    $failed++;
-                }
-            }
-
-            if ($input->getOption('clear-cache')) {
-                $command = $this->getApplication()->find('cache:clear');
-                $inputArray = new ArrayInput(array('command' => 'cache:clear'));
-                $command->run($inputArray, $output);
-            }
-
-            $time = microtime(true) - $start;
-
-            $this->writeln('<info>'.$this->migrationsDone[0].' migrations executed, '.$this->migrationsDone[1].' failed, '.$this->migrationsDone[2].' skipped</info>');
-            $this->writeln("<info>Import finished</info>\n");
-
-            // since we use subprocesses, we can not measure max memory used
-            $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
-
-            return $failed;
-
-        } else {
-
-            // @todo disable signal slots that are harmful during migrations, if any
 
             if ($input->getOption('separate-process')) {
-                $builder = new ProcessBuilder();
-                $executableFinder = new PhpExecutableFinder();
-                if (false !== $php = $executableFinder->find()) {
-                    $builder->setPrefix($php);
-                }
 
-                $builderArgs = parent::createChildProcessArgs($input);
-            }
+                try {
+                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, false);
 
-            $failed = 0;
-            $executed = 0;
-            $skipped = 0;
-            $total = count($toExecute);
-
-            foreach ($toExecute as  $name => $migrationDefinition) {
-                // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
-                if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-                    $this->writeln("<comment>Skipping migration (invalid definition?) Path: ".$migrationDefinition->path."</comment>", self::VERBOSITY_CHILD);
-                    $skipped++;
-                    continue;
-                }
-
-                if ($input->getOption('separate-process')) {
-
-                    $process = $builder
-                        ->setArguments(array_merge($builderArgs, array('--path=' . $migrationDefinition->path)))
-                        ->getProcess();
-
-                    // allow long migrations processes by default
-                    $process->setTimeout(86400);
-                    // and give no feedback to the user
-                    $process->run(
-                        function($type, $buffer) {
-                            //echo $buffer;
-                        }
-                    );
-
-                    try {
-
-                        if (!$process->isSuccessful()) {
-                            throw new \Exception($process->getErrorOutput());
-                        }
-
-                        // There are cases where the separate process dies halfway but does not return a non-zero code.
-                        // That's why we should double-check here if the migration is still tagged as 'started'...
-                        /** @var Migration $migration */
-                        $migration = $migrationService->getMigration($migrationDefinition->name);
-
-                        if (!$migration) {
-                            // q: shall we add the migration to the db as failed? In doubt, we let it become a ghost, disappeared without a trace...
-                            throw new \Exception("After the separate process charged to execute the migration finished, the migration can not be found in the database any more.");
-                        } else if ($migration->status == Migration::STATUS_STARTED) {
-                            $errorMsg = "The separate process charged to execute the migration left it in 'started' state. Most likely it died halfway through execution.";
-                            $migrationService->endMigration(New Migration(
-                                $migration->name,
-                                $migration->md5,
-                                $migration->path,
-                                $migration->executionDate,
-                                Migration::STATUS_FAILED,
-                                ($migration->executionError != '' ? ($errorMsg . ' ' . $migration->executionError) : $errorMsg)
-                            ));
-                            throw new \Exception($errorMsg);
-                        }
-
-                        $executed++;
-
-                    } catch (\Exception $e) {
-                        if ($input->getOption('ignore-failures')) {
-                            $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
-                            $failed++;
-                            continue;
-                        }
-                        $output->writeln("\n<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>");
-
-                        $missed = $total - $executed - $failed - $skipped;
-                        $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
-
-                        return 1;
-                    }
-
-                } else {
-
-                    try {
-
-                        $migrationService->executeMigration(
-                            $migrationDefinition,
-                            !$input->getOption('no-transactions'),
-                            $input->getOption('default-language')
-                        );
-
-                        $executed++;
-                    } catch(\Exception $e) {
+                    $executed++;
+                } catch (\Exception $e) {
+                    if ($input->getOption('ignore-failures')) {
+                        $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                         $failed++;
-                        if ($input->getOption('ignore-failures')) {
-                            $this->writeln("<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
-                            continue;
-                        }
+                        continue;
+                    }
+                    $output->writeln("\n<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>");
 
-                        $this->writeln("<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
+                    $missed = $total - $executed - $failed - $skipped;
+                    $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
 
-                        $missed = $total - $executed - $failed - $skipped;
-                        $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
+                    return 1;
+                }
 
-                        return 1;
+            } else {
+
+                try {
+                    $this->executeMigrationInProcess($migrationDefinition, $force, $migrationService, $input);
+
+                    $executed++;
+                } catch(\Exception $e) {
+                    $failed++;
+                    if ($input->getOption('ignore-failures')) {
+                        $this->writeln("<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
+                        continue;
                     }
 
+                    $this->writeln("<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
+
+                    $missed = $total - $executed - $failed - $skipped;
+                    $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
+
+                    return 1;
                 }
+
             }
-
-            $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped", self::VERBOSITY_CHILD);
-
-            // We do not return an error code > 0 if migrations fail, but only on proper fatals.
-            // The parent will analyze the output of the child process to gather the number of executed/failed migrations anyway
-            //return $failed;
         }
+
+        $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped", self::VERBOSITY_CHILD);
+
+        // We do not return an error code > 0 if migrations fail, but only on proper fatals.
+        // The parent will analyze the output of the child process to gather the number of executed/failed migrations anyway
+        //return $failed;
     }
 
     public function onSubProcessOutput($type, $buffer, $process=null)
@@ -295,25 +261,31 @@ EOT
     /**
      * @param string $paths
      * @param $migrationService
+     * @param bool $force
      * @param bool $isChild when not in child mode, do not waste time parsing migrations
      * @return MigrationDefinition[] parsed or unparsed, depending on
      *
      * @todo this does not scale well with many definitions or migrations
      */
-    protected function buildMigrationsList($paths, $migrationService, $isChild = false)
+    protected function buildMigrationsList($paths, $migrationService, $force = false, $isChild = false)
     {
         $migrationDefinitions = $migrationService->getMigrationsDefinitions($paths);
         $migrations = $migrationService->getMigrations();
 
         $this->migrationsAlreadyDone = array(Migration::STATUS_DONE => 0, Migration::STATUS_FAILED => 0, Migration::STATUS_SKIPPED => 0, Migration::STATUS_STARTED => 0);
 
+        $allowedStatuses = array(Migration::STATUS_TODO);
+        if ($force) {
+            $allowedStatuses = array_merge($allowedStatuses, array(Migration::STATUS_DONE, Migration::STATUS_FAILED, Migration::STATUS_SKIPPED));
+        }
+
         // filter away all migrations except 'to do' ones
         $toExecute = array();
         foreach($migrationDefinitions as $name => $migrationDefinition) {
-            if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && $migration->status == Migration::STATUS_TODO)) {
+            if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && in_array($migration->status, $allowedStatuses))) {
                 $toExecute[$name] = $isChild ? $migrationService->parseMigrationDefinition($migrationDefinition) : $migrationDefinition;
             }
-            // save the list of non-executable migrations as well
+            // save the list of non-executable migrations as well (even when using 'force')
             if (!$isChild && isset($migrations[$name]) && (($migration = $migrations[$name]) && $migration->status != Migration::STATUS_TODO)) {
                 $this->migrationsAlreadyDone[$migration->status]++;
             }
@@ -323,7 +295,7 @@ EOT
         // found by the loader
         if (empty($paths)) {
             foreach ($migrations as $migration) {
-                if ($migration->status == Migration::STATUS_TODO && !isset($toExecute[$migration->name])) {
+                if (in_array($migration->status, $allowedStatuses) && !isset($toExecute[$migration->name])) {
                     $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
                     if (count($migrationDefinitions)) {
                         $migrationDefinition = reset($migrationDefinitions);
@@ -352,27 +324,9 @@ EOT
         $output->writeln('Found ' . count($toExecute) . ' migrations in ' . count($paths) . ' directories');
         $output->writeln('In the same directories, migrations previously executed: ' . $this->migrationsAlreadyDone[Migration::STATUS_DONE] .
             ', failed: ' . $this->migrationsAlreadyDone[Migration::STATUS_FAILED] . ', skipped: '. $this->migrationsAlreadyDone[Migration::STATUS_SKIPPED]);
-    }
-
-    protected function askForConfirmation(InputInterface $input, OutputInterface $output)
-    {
-        if ($input->isInteractive() && !$input->getOption('no-interaction')) {
-            $dialog = $this->getHelperSet()->get('question');
-            if (!$dialog->ask(
-                $input,
-                $output,
-                new ConfirmationQuestion('<question>Careful, the database will be modified. Do you want to continue Y/N ?</question>', false)
-            )
-            ) {
-                $output->writeln('<error>Migration execution cancelled!</error>');
-                return 0;
-            }
-        } else {
-            // this line is not that nice in the automated scenarios used by the parallel migration
-            //$this->writeln("=============================================");
+        if ($this->migrationsAlreadyDone[Migration::STATUS_STARTED]) {
+            $output->writeln('<info>In the same directories, migrations currently executing: ' . $this->migrationsAlreadyDone[Migration::STATUS_STARTED] . '</info>');
         }
-
-        return 1;
     }
 
     /**

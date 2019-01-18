@@ -8,6 +8,11 @@ Version 5.8.0 (unreleased)
 * Fix: usage of the `-a` flag when running `kaliop:migration:mass_migrate` and when running `kaliop:migration:migrate -p`
     was not propagated to subprocesses
 
+* New: the `kaliop:migration:migrate` and `kaliop:migration:mass_migrate` now accept a `--force` flag that will execute
+    migrations that were previously executed or skipped or failed.
+    *NB* this flag is useful when testing migrations, but should be used sparingly in production context, as replaying
+    migrations that had already been executed can wreak havoc to your database. *you have been warned* 
+
 * BC changes:
 
     - the `kaliop:migration:generate` command now uses as default language for the generated migrations the default one

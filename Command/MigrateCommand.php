@@ -86,7 +86,9 @@ EOT
 
         $migrationService = $this->getMigrationService();
 
-        $toExecute = $this->buildMigrationsList($input->getOption('path'), $migrationService);
+        $force = $input->getOption('force');
+
+        $toExecute = $this->buildMigrationsList($input->getOption('path'), $migrationService, $force);
 
         if (!count($toExecute)) {
             $output->writeln('<info>No migrations to execute</info>');
@@ -101,7 +103,6 @@ EOT
         }
 
         if ($input->getOption('separate-process')) {
-            $kernel = $this->getContainer()->get('kernel');
             $builder = new ProcessBuilder();
             $executableFinder = new PhpExecutableFinder();
             if (false !== $php = $executableFinder->find()) {
@@ -128,50 +129,10 @@ EOT
 
             if ($input->getOption('separate-process')) {
 
-                $process = $builder
-                    ->setArguments(array_merge($builderArgs, array('--path=' . $migrationDefinition->path)))
-                    ->getProcess();
-
-                $this->writeln('<info>Executing: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
-
-                // allow long migrations processes by default
-                $process->setTimeout(86400);
-                // and give immediate feedback to the user
-                $process->run(
-                    function($type, $buffer) {
-                        echo $buffer;
-                    }
-                );
-
                 try {
-
-                    if (!$process->isSuccessful()) {
-                        throw new \Exception($process->getErrorOutput());
-                    }
-
-                    // There are cases where the separate process dies halfway but does not return a non-zero code.
-                    // That's why we should double-check here if the migration is still tagged as 'started'...
-                    /** @var Migration $migration */
-                    $migration = $migrationService->getMigration($migrationDefinition->name);
-
-                    if (!$migration) {
-                        // q: shall we add the migration to the db as failed? In doubt, we let it become a ghost, disappeared without a trace...
-                        throw new \Exception("After the separate process charged to execute the migration finished, the migration can not be found in the database any more.");
-                    } else if ($migration->status == Migration::STATUS_STARTED) {
-                        $errorMsg = "The separate process charged to execute the migration left it in 'started' state. Most likely it died halfway through execution.";
-                        $migrationService->endMigration(New Migration(
-                            $migration->name,
-                            $migration->md5,
-                            $migration->path,
-                            $migration->executionDate,
-                            Migration::STATUS_FAILED,
-                            ($migration->executionError != '' ? ($errorMsg . ' ' . $migration->executionError) : $errorMsg)
-                        ));
-                        throw new \Exception($errorMsg);
-                    }
+                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs);
 
                     $executed++;
-
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
                         $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
@@ -189,12 +150,8 @@ EOT
             } else {
 
                 try {
-                    $migrationService->executeMigration(
-                        $migrationDefinition,
-                        !$input->getOption('no-transactions'),
-                        $input->getOption('default-language'),
-                        $input->getOption('admin-login')
-                    );
+                    $this->executeMigrationInProcess($migrationDefinition, $force, $migrationService, $input);
+
                     $executed++;
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
@@ -222,6 +179,66 @@ EOT
             $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
         } else {
             $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
+        }
+    }
+
+    protected function executeMigrationInProcess($migrationDefinition, $force, $migrationService, $input)
+    {
+        $migrationService->executeMigration(
+            $migrationDefinition,
+            !$input->getOption('no-transactions'),
+            $input->getOption('default-language'),
+            $input->getOption('admin-login'),
+            $force
+        );
+    }
+
+    protected function executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, $feedback = true)
+    {
+        $process = $builder
+            ->setArguments(array_merge($builderArgs, array('--path=' . $migrationDefinition->path)))
+            ->getProcess();
+
+        if ($feedback) {
+            $this->writeln('<info>Executing: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
+        }
+
+        // allow long migrations processes by default
+        $process->setTimeout(86400);
+        // and give immediate feedback to the user
+        $process->run(
+            $feedback ?
+                function($type, $buffer) {
+                    echo $buffer;
+                }
+                :
+                function($type, $buffer) {
+                }
+        );
+
+        if (!$process->isSuccessful()) {
+            throw new \Exception($process->getErrorOutput());
+        }
+
+        // There are cases where the separate process dies halfway but does not return a non-zero code.
+        // That's why we double-check here if the migration is still tagged as 'started'...
+        /** @var Migration $migration */
+        $migration = $migrationService->getMigration($migrationDefinition->name);
+
+        if (!$migration) {
+            // q: shall we add the migration to the db as failed? In doubt, we let it become a ghost, disappeared without a trace...
+            throw new \Exception("After the separate process charged to execute the migration finished, the migration can not be found in the database any more.");
+        } else if ($migration->status == Migration::STATUS_STARTED) {
+            $errorMsg = "The separate process charged to execute the migration left it in 'started' state. Most likely it died halfway through execution.";
+            $migrationService->endMigration(New Migration(
+                $migration->name,
+                $migration->md5,
+                $migration->path,
+                $migration->executionDate,
+                Migration::STATUS_FAILED,
+                ($migration->executionError != '' ? ($errorMsg . ' ' . $migration->executionError) : $errorMsg)
+            ));
+            throw new \Exception($errorMsg);
         }
     }
 
@@ -306,7 +323,7 @@ EOT
         $this->writeln('');
     }
 
-    protected function askForConfirmation(InputInterface $input, OutputInterface $output)
+    protected function askForConfirmation(InputInterface $input, OutputInterface $output, $nonIteractiveOutput = "=============================================\n")
     {
         if ($input->isInteractive() && !$input->getOption('no-interaction')) {
             $dialog = $this->getHelperSet()->get('question');
@@ -320,7 +337,9 @@ EOT
                 return 0;
             }
         } else {
-            $this->writeln("=============================================\n");
+            if ($nonIteractiveOutput != '') {
+                $this->writeln("$nonIteractiveOutput");
+            }
         }
 
         return 1;
