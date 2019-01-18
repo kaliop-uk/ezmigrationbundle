@@ -140,13 +140,17 @@ To apply all available migrations run the migrate command in your eZPublish 5 ro
 NB: if you just executed the above command and got an error message because the migration definition file that you had
 just generated is invalid, do not worry - that is by design. Head on to the next paragraph...
 
-NB: migrations run as the default eZ admin user of ID 14, without this user you must instruct the use of another admin username by passing the `-a` flag.
+NB: migrations execute by the default as the admin user with ID 14. Without this user account in the database, you must
+specify the use of another admin accoungt by passing the `-a` flag.
 
 #### Applying a single migration file
 
 To apply a single migration run the migrate command passing it the path to its definition, as follows:
 
     php ezpublish/console kaliop:migration:migrate --path=src/MyNamespace/MyBundle/MigrationVersions/20160803193400_a_migration.yml
+
+NB: you can specify as well a folder with the `--path` flag, in which case all the migration definitions contained in that
+folder will be executed.
 
 ### Editing migration files
 
@@ -180,6 +184,7 @@ In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of UserGroups
 - purging and recovering Contents from the Trash
 - creation, appending, copy, renaming and deletion of files
+- execution of SQL queries
 - execution of command-line scripts
 - execution of methods of symfony services
 - execution of http calls
@@ -211,6 +216,10 @@ will fail. You are of course free to create a specific SQL migration for a diffe
  
 The Migration bundle itself imposes no limitations on the type of databases supported, but as it is based on the
 Doctrine DBAL, it will only work on the databases that Doctrine supports.
+
+*NB* if the SQL command (or commands) in your migration is too long, the migration might fail or be only partially
+applied, in some cases (such as when using MySQL) without even reporting an error. If you need to execute multiple, long
+queries, you are better off splitting them, either in many .sql migrations, or in a single .yml migration with sql steps.
 
 #### PHP migrations
 
