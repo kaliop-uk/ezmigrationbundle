@@ -394,5 +394,6 @@ EOT
             $builderArgs[] = '--separate-process';
         }
 
+        return $builderArgs;
     }
 }

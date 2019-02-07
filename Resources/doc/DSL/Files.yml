@@ -36,7 +36,7 @@
     body: "file contents" # string. References will be replaced as long as they are within square brackets
                           # eg. to save to a file the value of reference 'abc', write: body: "[reference:abc]"
     template: path/to/file # optional. Alternative to using the "body" tag: load body from the template file
-                           # References will be resolved in the file path
+                           # References will be resolved in the file path, as well as in the template itself
                            # Path will be resolved as relative to $migrationFile/templates/ first and absolute 2nd
     overwrite: true|false # Optional, default false. If not set, and the file already exists, an exception is thrown
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
