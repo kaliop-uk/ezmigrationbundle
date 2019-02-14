@@ -1,5 +1,5 @@
-Version 5.8.0 (unreleased)
-==========================
+Version 5.8.0
+=============
 
 * New: the `content_type/update` migration step now accepts `the default_always_available` element (issue #189)
 
@@ -8,7 +8,7 @@ Version 5.8.0 (unreleased)
 * Fix: usage of the `-a` flag when running `kaliop:migration:mass_migrate` and when running `kaliop:migration:migrate -p`
     was not propagated to subprocesses
 
-* Fix: the `if` element was not giving a afatl error for all migration steps affecting repository elements (Content,
+* Fix: the `if` element was not giving a fatal error for all migration steps affecting repository elements (Content,
     Location, etc...), at least for Symfony version 2.7.10
 
 * New: the `kaliop:migration:migrate` and `kaliop:migration:mass_migrate` now accept a `--force` flag that will execute
