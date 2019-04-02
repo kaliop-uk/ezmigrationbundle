@@ -42,7 +42,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         $sectionIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
         $sectionCreateStruct->identifier = $sectionIdentifier;
-        $sectionCreateStruct->name = $step->dsl['name'];
+        $sectionCreateStruct->name = $this->referenceResolver->resolveReference($step->dsl['name']);
 
         $section = $sectionService->createSection($sectionCreateStruct);
 
@@ -59,7 +59,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
         $sectionCollection = $this->matchSections('update', $step);
 
         if (count($sectionCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Section update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 section matches");
+            throw new \Exception("Can not execute Section update because multiple sections match, and a references section is specified in the dsl. References can be set when only 1 section matches");
         }
 
         $sectionService = $this->repository->getSectionService();
@@ -70,7 +70,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $sectionUpdateStruct->identifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
             }
             if (isset($step->dsl['name'])) {
-                $sectionUpdateStruct->name = $step->dsl['name'];
+                $sectionUpdateStruct->name = $this->referenceResolver->resolveReference($step->dsl['name']);
             }
 
             $section = $sectionService->updateSection($section, $sectionUpdateStruct);
