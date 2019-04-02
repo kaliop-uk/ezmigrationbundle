@@ -310,6 +310,11 @@ and the corresponding php class:
 
 * unlike the Doctrine Migrations Bundle, this bundle does not support rollback of changes. Read above for the reason.
 
+* if you are using the Doctrine Migrations Bundle to manage your schema, you will get spurious sql created to handle the
+    database tables belonging to Kaliop Migrations Bundle.
+    For the moment, the best work around is to use the `filter-expression` parameter on the command-line when running 
+    `doctrine:migrations:diff` and friends, with a value of `kaliop_migrations_*` 
+
 * if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
     related to how the dual-kernel works in eZPublish, and the fact that the legacy and Symfony kernels use a separate
     connection to the database. Since the migration bundle by default wraps all database changes for a migration in a

@@ -69,7 +69,6 @@ install:
   #- sudo service --status-all
   #- php -i
 
-  # try to reduce mem usage by running composer in two steps
   - composer require --dev --no-update ${EZ_PACKAGES}
   - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then travis_wait composer update --dev; else composer update --dev; fi
 
