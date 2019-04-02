@@ -75,7 +75,7 @@
     last_name: Test User
     username: kmb_test_user_8
     email: kmb_test_user_8@test.com
-    password: anUnsafePassword
+    password: anUnsafePassword123
     groups: [12, 42] # Anons, Admins
     references:
          -
