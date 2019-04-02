@@ -519,7 +519,7 @@ services:
             - '@ez_migration_bundle.content_matcher'
 
     ez_migration_bundle.language_matcher:
-        class: '%ez_migration_bundle.section_matcher.class%'
+        class: '%ez_migration_bundle.language_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
 
