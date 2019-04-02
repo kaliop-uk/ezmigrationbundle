@@ -77,6 +77,7 @@ parameters:
     ez_migration_bundle.content_type_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher
     ez_migration_bundle.content_type_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher
     ez_migration_bundle.content_version_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentVersionMatcher
+    ez_migration_bundle.language_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LanguageMatcher
     ez_migration_bundle.location_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcherDirectLoad
     ez_migration_bundle.object_state_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher
     ez_migration_bundle.object_state_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher
@@ -384,6 +385,8 @@ services:
     ez_migration_bundle.executor.language_manager:
         class: '%ez_migration_bundle.executor.language_manager.class%'
         parent: ez_migration_bundle.executor.repository
+        arguments:
+            - '@ez_migration_bundle.language_matcher'
         calls:
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
         tags:
@@ -514,6 +517,11 @@ services:
         arguments:
             - '@ezpublish.api.repository'
             - '@ez_migration_bundle.content_matcher'
+
+    ez_migration_bundle.language_matcher:
+        class: '%ez_migration_bundle.section_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
 
     ez_migration_bundle.location_matcher:
         class: '%ez_migration_bundle.location_matcher.class%'

@@ -3,6 +3,12 @@ Version X.Y.Z
 
 * New: the `role/create` migration step now resolves references for role names. Same for `role/update`.
 
+* New: new migration step `language\update`
+
+* New: more flexible matching for migration step `language\delete`
+
+* New: more reference resolving in section creation and update
+
 
 Version 5.8.0
 =============
