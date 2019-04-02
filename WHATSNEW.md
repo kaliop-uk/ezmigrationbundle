@@ -1,3 +1,9 @@
+Version X.Y.Z
+=============
+
+* New: the `role/create` migration step now resolves references for role names. Same for `role/update`.
+
+
 Version 5.8.0
 =============
 
@@ -20,6 +26,7 @@ Version 5.8.0
 
     - the `kaliop:migration:generate` command now uses as default language for the generated migrations the default one
       of the current siteaccess, instead of 'eng-GB' 
+
     
 Version 5.7.3
 =============
@@ -28,6 +35,7 @@ Version 5.7.3
 
 * Fix: creating migrations for Content creation or update with contents which have empty Image/File/Media fields would
     crash
+
 
 Version 5.7.2
 =============

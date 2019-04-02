@@ -9,7 +9,7 @@ namespace Kaliop\eZMigrationBundle\API;
 interface ReferenceResolverInterface
 {
     /**
-     * @param string $stringIdentifier
+     * @param string|mixed $stringIdentifier
      * @return bool true if the given $stringIdentifier identifies a reference
      */
     public function isReference($stringIdentifier);
@@ -26,9 +26,9 @@ interface ReferenceResolverInterface
      *
      * In pseudocode: return $this->isReference($stringIdentifier) ? $this->getReferenceValue($stringIdentifier) : $stringIdentifier
      *
-     * @param string $stringIdentifier
+     * @param string|mixed $stringIdentifier
      * @return mixed $stringIdentifier if not a reference, otherwise the reference vale
-     * @throws \Exception if the given Identifier is not a reference
+     * @throws \Exception (when ?)
      */
     public function resolveReference($stringIdentifier);
 }

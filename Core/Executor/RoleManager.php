@@ -35,7 +35,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         $roleService = $this->repository->getRoleService();
         $userService = $this->repository->getUserService();
 
-        $roleCreateStruct = $roleService->newRoleCreateStruct($step->dsl['name']);
+        $roleName = $this->referenceResolver->resolveReference($step->dsl['name']);
+        $roleCreateStruct = $roleService->newRoleCreateStruct($roleName);
 
         // Publish new role
         $role = $roleService->createRole($roleCreateStruct);
@@ -82,7 +83,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             // Updating role name
             if (isset($step->dsl['new_name'])) {
                 $update = $roleService->newRoleUpdateStruct();
-                $update->identifier = $step->dsl['new_name'];
+                $newRoleName = $this->referenceResolver->resolveReference($step->dsl['new_name']);
+                $update->identifier = $this->referenceResolver->resolveReference($newRoleName);
                 $role = $roleService->updateRole($role, $update);
             }
 

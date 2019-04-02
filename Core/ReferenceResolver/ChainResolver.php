@@ -95,7 +95,7 @@ class ChainResolver implements EmbeddedReferenceResolverBagInterface, Enumerable
             $stringIdentifier = $this->resolveEmbeddedReferences($stringIdentifier);
         }
 
-        /// @todo sould we throw if $stringIdentifier is not a string any more?
+        /// @todo should we throw if $stringIdentifier is not a string any more?
 
         // for speed, we avoid calling $this->isReference(), and call directly getReferenceValue()
         try {
