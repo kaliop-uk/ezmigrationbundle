@@ -4,14 +4,26 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Language;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
+use Kaliop\eZMigrationBundle\Core\Matcher\LanguageMatcher;
 
 /**
  * Handles language migrations.
  */
-class LanguageManager extends RepositoryExecutor
+class LanguageManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('language');
     protected $supportedActions = array('create', 'delete');
+
+    /** @var LanguageMatcher $languageMatcher */
+    protected $languageMatcher;
+
+    /**
+     * @param LanguageMatcher $languageMatcher
+     */
+    public function __construct(LanguageMatcher $languageMatcher)
+    {
+        $this->languageMatcher = $languageMatcher;
+    }
 
     /**
      * Handles the language create migration action
@@ -25,12 +37,12 @@ class LanguageManager extends RepositoryExecutor
         }
 
         $languageCreateStruct = $languageService->newLanguageCreateStruct();
-        $languageCreateStruct->languageCode = $step->dsl['lang'];
+        $languageCreateStruct->languageCode = $this->referenceResolver->resolveReference($step->dsl['lang']);
         if (isset($step->dsl['name'])) {
-            $languageCreateStruct->name = $step->dsl['name'];
+            $languageCreateStruct->name = $this->referenceResolver->resolveReference($step->dsl['name']);
         }
         if (isset($step->dsl['enabled'])) {
-            $languageCreateStruct->enabled = (bool)$step->dsl['enabled'];
+            $languageCreateStruct->enabled = (bool)$this->referenceResolver->resolveReference($step->dsl['enabled']);
         }
         $language = $languageService->createLanguage($languageCreateStruct);
 
@@ -41,39 +53,80 @@ class LanguageManager extends RepositoryExecutor
 
     /**
      * Handles the language update migration action
-     *
-     * @todo use a matcher for flexible matching?
      */
     protected function update($step)
     {
-        throw new \Exception('Language update is not implemented yet');
+        if (isset($step->dsl['lang'])) {
+            // BC
+            $step->dsl['match'] = array('language_code' => $step->dsl['lang']);
+        }
+        $languageCollection = $this->matchLanguages('delete', $step);
 
-        /*$languageService = $this->repository->getContentLanguageService();
+        //if (count($languageCollection) > 1 && array_key_exists('references', $step->dsl)) {
+        //    throw new \Exception("Can not execute Language update because multiple languages match, and a references section is specified in the dsl. References can be set when only 1 language matches");
+        //}
 
-        if (!isset($step->dsl['lang'])) {
-            throw new \Exception("The 'lang' key is required to update a language.");
+        $languageService = $this->repository->getContentLanguageService();
+
+        foreach ($languageCollection as $key => $language) {
+
+            if (isset($step->dsl['name'])) {
+                $languageService->updateLanguageName($language, $this->referenceResolver->resolveReference($step->dsl['name']));
+            }
+
+            if (isset($step->dsl['enabled'])) {
+                if ($this->referenceResolver->resolveReference($step->dsl['enabled'])) {
+                    $languageService->enableLanguage($language);
+                } else {
+                    $languageService->disableLanguage($language);
+                };
+            }
+
+            $languageCollection[$key] = $languageService->loadLanguageById($key);
         }
 
-        $this->setReferences($language, $step);*/
+        $this->setReferences($languageCollection, $step);
+
+        return $languageCollection;
     }
 
     /**
      * Handles the language delete migration action
-     *
-     * @todo use a matcher for flexible matching?
      */
     protected function delete($step)
     {
-        if (!isset($step->dsl['lang'])) {
-            throw new \Exception("The 'lang' key is required to delete a language.");
+        if (isset($step->dsl['lang'])) {
+            // BC
+            $step->dsl['match'] = array('language_code' => $step->dsl['lang']);
         }
+        $languageCollection = $this->matchLanguages('delete', $step);
+
+        $this->setReferences($languageCollection, $step);
 
         $languageService = $this->repository->getContentLanguageService();
-        $language = $languageService->loadLanguage($step->dsl['lang']);
 
-        $languageService->deleteLanguage($language);
+        foreach ($languageCollection as $language) {
+            $languageService->deleteLanguage($language);
+        }
 
-        return $language;
+        return $languageCollection;
+    }
+
+    /**
+     * @param string $action
+     * @return LanguageCollection
+     * @throws \Exception
+     */
+    protected function matchLanguages($action, $step)
+    {
+        if (!isset($step->dsl['match'])) {
+            throw new \Exception("A match condition is required to $action a language");
+        }
+
+        // convert the references passed in the match
+        $match = $this->resolveReferencesRecursively($step->dsl['match']);
+
+        return $this->languageMatcher->match($match);
     }
 
     /**
@@ -111,5 +164,70 @@ class LanguageManager extends RepositoryExecutor
         }
 
         return $refs;
+    }
+
+    /**
+     * @param array $matchCondition
+     * @param string $mode
+     * @param array $context
+     * @throws \Exception
+     * @return array
+     */
+    public function generateMigration(array $matchCondition, $mode, array $context = array())
+    {
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        $languageCollection = $this->languageMatcher->match($matchCondition);
+        $data = array();
+
+        /** @var \eZ\Publish\API\Repository\Values\Content\Language $language */
+        foreach ($languageCollection as $language) {
+
+            $languageData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode,
+            );
+
+            switch ($mode) {
+                case 'create':
+                    $languageData = array_merge(
+                        $languageData,
+                        array(
+                            'lang' => $language->languageCode,
+                            'name' => $language->name,
+                            'enabled' => $language->enabled
+                        )
+                    );
+                    break;
+                /*case 'update':
+                    $languageData = array_merge(
+                        $languageData,
+                        array(
+                            'match' => array(
+                                LanguageMatcher::MATCH_LANGUAGE_ID => $language->id
+                            ),
+                            'identifier' => $language->identifier,
+                            'name' => $language->name,
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $languageData = array_merge(
+                        $languageData,
+                        array(
+                            'match' => array(
+                                LanguageMatcher::MATCH_LANGUAGE_ID => $language->id
+                            )
+                        )
+                    );
+                    break;*/
+                default:
+                    throw new \Exception("Executor 'section' doesn't support mode '$mode'");
+            }
+
+            $data[] = $languageData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
     }
 }
