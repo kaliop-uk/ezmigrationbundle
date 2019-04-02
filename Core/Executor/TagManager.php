@@ -98,7 +98,7 @@ class TagManager extends RepositoryExecutor
         $tagsCollection = $this->matchTags('update', $step);
 
         if (count($tagsCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Tag update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 matches");
+            throw new \Exception("Can not execute Tag update because multiple tags match, and a references section is specified in the dsl. References can be set when only 1 matches");
         }
 
         foreach ($tagsCollection as $key => $tag) {

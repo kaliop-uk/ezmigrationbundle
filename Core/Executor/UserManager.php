@@ -93,11 +93,11 @@ class UserManager extends RepositoryExecutor
         $userCollection = $this->matchUsers('user', $step);
 
         if (count($userCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute User update because multiple user match, and a references section is specified in the dsl. References can be set when only 1 user matches");
+            throw new \Exception("Can not execute User update because multiple users match, and a references section is specified in the dsl. References can be set when only 1 user matches");
         }
 
         if (count($userCollection) > 1 && isset($step->dsl['email'])) {
-            throw new \Exception("Can not execute User update because multiple user match, and an email section is specified in the dsl.");
+            throw new \Exception("Can not execute User update because multiple users match, and an email section is specified in the dsl.");
         }
 
         $userService = $this->repository->getUserService();

@@ -51,7 +51,7 @@ class TrashManager extends RepositoryExecutor
         $itemsCollection = $this->matchItems('restore', $step);
 
         if (count($itemsCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Trash restore because multiple types match, and a references section is specified in the dsl. References can be set when only 1 section matches");
+            throw new \Exception("Can not execute Trash restore because multiple items match, and a references section is specified in the dsl. References can be set when only 1 item matches");
         }
 
         $locations = array();
@@ -71,10 +71,6 @@ class TrashManager extends RepositoryExecutor
     protected function delete($step)
     {
         $itemsCollection = $this->matchItems('delete', $step);
-
-        if (count($itemsCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Trash restore because multiple types match, and a references section is specified in the dsl. References can be set when only 1 section matches");
-        }
 
         $this->setReferences($itemsCollection, $step);
 
