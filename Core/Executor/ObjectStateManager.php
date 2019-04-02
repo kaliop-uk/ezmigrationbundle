@@ -17,6 +17,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      * @var array
      */
     protected $supportedStepTypes = array('object_state');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     /**
      * @var ObjectStateMatcher
@@ -79,6 +80,15 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
         $this->setReferences($objectState, $step);
 
         return $objectState;
+    }
+
+    protected function load($step)
+    {
+        $stateCollection = $this->matchObjectStates('load', $step);
+
+        $this->setReferences($stateCollection, $step);
+
+        return $stateCollection;
     }
 
     /**

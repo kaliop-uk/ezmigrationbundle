@@ -3,7 +3,7 @@ Version X.Y.Z
 
 * New: the `role/create` migration step now resolves references for role names. Same for `role/update`.
 
-* New: new migration steps `language\update`, `language\load`, `section\load`
+* New: new migration steps `language\update`, `language\load`, `section\load`, `role\load`, `object_state\load`, `object_state_group\load`
 
 * New: more flexible matching for migration step `language\delete`
 

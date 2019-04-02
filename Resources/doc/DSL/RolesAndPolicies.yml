@@ -87,7 +87,7 @@
                                    # The shorthand 'id' can be used instead of 'role_id'
                                    # The shorthand 'identifier' can be used instead of 'role_identifier'
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
+    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -146,7 +146,7 @@
                                    # The shorthand 'identifier' can be used instead of 'role_identifier'
                                    # 'count' can be used to set a reference to the number of items matched
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
+    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -172,7 +172,33 @@
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See above for allowed values
     references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
+    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    type: role
+    mode: load
+    match: # Only one of the following can be specified, to define which roles to remove
+        id: x # int|int[]
+        identifier: xyz # string|string[]
+        all: ~ # matches ALL roles
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    references: # Optional. See above for allowed values
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
+    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

@@ -16,6 +16,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
      * @var array
      */
     protected $supportedStepTypes = array('object_state_group');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     /**
      * @var ObjectStateGroupMatcher
@@ -61,6 +62,15 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
         $this->setReferences($objectStateGroup, $step);
 
         return $objectStateGroup;
+    }
+
+    protected function load($step)
+    {
+        $groupsCollection = $this->matchObjectStateGroups('load', $step);
+
+        $this->setReferences($groupsCollection, $step);
+
+        return $groupsCollection;
     }
 
     /**

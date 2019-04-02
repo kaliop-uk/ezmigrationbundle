@@ -17,6 +17,7 @@ use eZ\Publish\API\Repository\Values\User\Limitation;
 class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('role');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     protected $limitationConverter;
     protected $roleMatcher;
@@ -57,6 +58,15 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         $this->setReferences($role, $step);
 
         return $role;
+    }
+
+    protected function load($step)
+    {
+        $roleCollection = $this->matchRoles('load', $step);
+
+        $this->setReferences($roleCollection, $step);
+
+        return $roleCollection;
     }
 
     /**
