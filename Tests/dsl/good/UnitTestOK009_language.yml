@@ -200,12 +200,16 @@
     mode: load
     match:
         language_code: abc-DE
+    references:
+        -
+            identifier: kmb_test_11_lang
+            attribute: language_id
 
 -
     type: language
     mode: update
     match:
-        language_code: abc-DE
+        language_id: reference:kmb_test_11_lang
     name: Klingon
     enabled: false
 
