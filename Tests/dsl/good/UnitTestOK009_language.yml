@@ -194,7 +194,15 @@
     type: content_type
     mode: delete
     identifier: reference:kmb_test_9
+
 -
     type: language
     mode: delete
-    lang: abc-DE
+    match:
+        language_code: abc-DE
+
+-
+    type: language
+    mode: delete
+    match:
+        language_code: abc-DE

@@ -12,7 +12,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\LanguageMatcher;
 class LanguageManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('language');
-    protected $supportedActions = array('create', 'delete');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     /** @var LanguageMatcher $languageMatcher */
     protected $languageMatcher;
@@ -27,6 +27,8 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
 
     /**
      * Handles the language create migration action
+     *
+     * @todo allow creating disabkled languages
      */
     protected function create($step)
     {
@@ -49,6 +51,15 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
         $this->setReferences($language, $step);
 
         return $language;
+    }
+
+    protected function load($step)
+    {
+        $languageCollection = $this->matchLanguages('load', $step);
+
+        $this->setReferences($languageCollection, $step);
+
+        return $languageCollection;
     }
 
     /**
@@ -199,15 +210,16 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
                         )
                     );
                     break;
-                /*case 'update':
+                case 'update':
                     $languageData = array_merge(
                         $languageData,
                         array(
                             'match' => array(
                                 LanguageMatcher::MATCH_LANGUAGE_ID => $language->id
                             ),
-                            'identifier' => $language->identifier,
+                            'lang' => $language->languageCode,
                             'name' => $language->name,
+                            'enabled' => $language->enabled
                         )
                     );
                     break;
@@ -220,9 +232,9 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
                             )
                         )
                     );
-                    break;*/
+                    break;
                 default:
-                    throw new \Exception("Executor 'section' doesn't support mode '$mode'");
+                    throw new \Exception("Executor 'language' doesn't support mode '$mode'");
             }
 
             $data[] = $languageData;

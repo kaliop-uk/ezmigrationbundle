@@ -18,10 +18,106 @@
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
+    # Updates an existing language
+    type: language
+    mode: update
+    match:
+        langauge_id: x # int|int[]
+        language_code: xyz # string|string[]
+        all: ~ # matches ALL languages
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    name: something
+    enabled: true|false
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+            # Supports: language_id, enabled, language_code, name
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
+    references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
     # Delete an existing language
     type: language
     mode: delete
-    lang: abc-DE
+    match:
+        langauge_id: x # int|int[]
+        language_code: xyz # string|string[]
+        all: ~ # matches ALL languages
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    name: something
+    enabled: true|false
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+            # Supports: language_id, enabled, language_code, name
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
+    references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    # Loads an existing language, useful for setting references
+    type: language
+    mode: load
+    match:
+        langauge_id: x # int|int[]
+        language_code: xyz # string|string[]
+        all: ~ # matches ALL languages
+        or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
+        and: # match all of the conditions below
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+            -
+                _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+        not: # matches elements NOT satisfying the wrapped condition
+            _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    name: something
+    enabled: true|false
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+            # Supports: language_id, enabled, language_code, name
+    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
+    references_allow_empty: bool # optional. Set it to allow array referemces to be empty without it being considered an error
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
