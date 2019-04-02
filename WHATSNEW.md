@@ -9,11 +9,15 @@ Version X.Y.Z
 
 * New: more reference resolving in section creation and update
 
+* BC changes:
+
+    - the `language\delete` step should not be used any more with a `lang` element, but with `match` instead 
+
 
 Version 5.8.0
 =============
 
-* New: the `content_type/update` migration step now accepts `the default_always_available` element (issue #189)
+* New: the `content_type/update` migration step now accepts the `default_always_available` element (issue #189)
 
 * New: the `kaliop:migration:generate` command now accepts a `-a` flag to allow specifying custom admin users (issue #187)
 
