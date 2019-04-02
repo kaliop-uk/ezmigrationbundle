@@ -197,9 +197,17 @@
 
 -
     type: language
-    mode: delete
+    mode: load
     match:
         language_code: abc-DE
+
+-
+    type: language
+    mode: update
+    match:
+        language_code: abc-DE
+    name: Klingon
+    enabled: false
 
 -
     type: language

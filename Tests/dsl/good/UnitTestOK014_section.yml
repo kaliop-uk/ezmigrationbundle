@@ -10,6 +10,16 @@
 
 -
     type: section
+    mode: load
+    match:
+        and:
+            -
+                id: reference:kmb_test_14_1
+            -
+                identifier: kmb_test_tection_1
+
+-
+    type: section
     mode: update
     name: Kaliop Migration Bundle Test Section 1 updated
     identifier: kmb_test_tection_1_updated
