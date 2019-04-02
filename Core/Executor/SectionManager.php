@@ -13,6 +13,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 class SectionManager extends RepositoryExecutor implements MigrationGeneratorInterface
 {
     protected $supportedStepTypes = array('section');
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
 
     /** @var SectionMatcher $sectionMatcher */
     protected $sectionMatcher;
@@ -49,6 +50,15 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
         $this->setReferences($section, $step);
 
         return $section;
+    }
+
+    protected function load($step)
+    {
+        $sectionCollection = $this->matchSections('load', $step);
+
+        $this->setReferences($sectionCollection, $step);
+
+        return $sectionCollection;
     }
 
     /**
