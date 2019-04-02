@@ -16,7 +16,7 @@
     type: user
     mode: update
     id: reference:kmb_test_7
-    password: aMuchSaferPassword
+    password: aMuchSaferPassword321
     enabled: false
     groups: 4 # Users
 
