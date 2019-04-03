@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\SortingMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 
 class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterface
 {
@@ -45,7 +46,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
         $results = $this->match($conditions, $sort, $offset, 2);
         $count = count($results);
         if ($count !== 1) {
-            throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
+            throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
         return reset($results);
     }

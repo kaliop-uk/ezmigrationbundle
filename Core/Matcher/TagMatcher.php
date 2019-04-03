@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 /**
  * @todo when matching by keyword, allow to pick the desired language
@@ -97,7 +98,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
             return array(self::MATCH_TAG_ID => $key);
         }
 
-        throw new \Exception("Tag matcher can not uniquely identify the type of key used to match: " . $key);
+        throw new InvalidMatchConditionsException("Tag matcher can not uniquely identify the type of key used to match: " . $key);
     }
 
     /**

@@ -35,7 +35,6 @@ class GenerateCommand extends AbstractCommand
             ->addOption('match-except', null, InputOption::VALUE_NONE, 'Used to match all entities except the ones satisfying the match-value condition', null)
             ->addOption('lang', 'l', InputOption::VALUE_REQUIRED, 'The language of the migration (eng-GB, ger-DE, ...). If null, the default language of the current siteaccess is used')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, when type=db (mysql, postgresql, ...)', 'mysql')
-            ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Deprecated: The role identifier (or id) that you would like to update, for type=role', null)
             ->addOption('admin-login', 'a', InputOption::VALUE_REQUIRED, "Login of admin account used whenever elevated privileges are needed (user id 14 used by default)")
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
@@ -52,7 +51,7 @@ For SQL type migration you can optionally specify the database server type the m
 
     <info>php ezpublish/console kaliop:migration:generate --format=sql bundleName</info>
 
-For role/content/content_type migrations you need to specify the entity that you want to generate the migration for:
+For role/content/content_type/language/object_state/section migrations you need to specify the entity that you want to generate the migration for:
 
     <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14 bundleName</info>
 
@@ -85,22 +84,11 @@ EOT
         $name = $input->getArgument('name');
         $fileType = $input->getOption('format');
         $migrationType = $input->getOption('type');
-        $role = $input->getOption('role');
         $matchType = $input->getOption('match-type');
         $matchValue = $input->getOption('match-value');
         $matchExcept = $input->getOption('match-except');
         $mode = $input->getOption('mode');
         $dbServer = $input->getOption('dbserver');
-
-        if ($role != '') {
-            $output->writeln('<error>The "role" option is deprecated since version 3.2 and will be removed in 4.0. Use "type=role", "match-type=identifier" and "match-value" instead.</error>');
-            $migrationType = 'role';
-            $matchType = 'identifier';
-            $matchValue = $role;
-            if ($mode == '') {
-                $mode = 'update';
-            }
-        }
 
         if ($bundleName == $this->thisBundle) {
             throw new \InvalidArgumentException("It is not allowed to create migrations in bundle '$bundleName'");

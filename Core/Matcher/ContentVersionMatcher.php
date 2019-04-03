@@ -5,9 +5,10 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use \eZ\Publish\API\Repository\Values\Content\VersionInfo;
-use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\Collection\VersionInfoCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterface
 {
@@ -67,7 +68,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
         $results = $this->match($contentConditions, $versionConditions, $sort, $offset, 2);
         $count = count($results);
         if ($count !== 1) {
-            throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
+            throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
         return reset($results);
     }
@@ -114,13 +115,14 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
-            throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'and' clause.");
+            throw new InvalidMatchConditionsException($this->returns . " can not be matched because no matching conditions found for 'and' clause.");
         }
 
         if (is_null($content)) {
-            throw new \Exception($this->returns . " can not be matched because there was no content to match for 'and' clause.");
+            throw new InvalidMatchConditionsException($this->returns . " can not be matched because there was no content to match for 'and' clause.");
         }
 
+        $results = array();
         foreach ($conditionsArray as $conditions) {
             $out = $this->matchContentVersions($conditions, $content);
             if (!isset($results)) {
@@ -137,11 +139,11 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
-            throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'or' clause.");
+            throw new InvalidMatchConditionsException($this->returns . " can not be matched because no matching conditions found for 'or' clause.");
         }
 
         if (is_null($content)) {
-            throw new \Exception($this->returns . " can not be matched because there was no content to match for 'or' clause.");
+            throw new InvalidMatchConditionsException($this->returns . " can not be matched because there was no content to match for 'or' clause.");
         }
 
         $results = array();

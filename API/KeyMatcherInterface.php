@@ -10,7 +10,8 @@ interface KeyMatcherInterface extends MatcherInterface
      *
      * @param string|int $key
      * @return mixed
-     * @throws \Exception
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException
      */
     public function matchOneByKey($key);
 }

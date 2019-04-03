@@ -4,9 +4,11 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Values\Content\Query\SortClause;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 /**
  * @todo extend to allow matching by modifier, language code, content_type_group_id
@@ -97,7 +99,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
      * @param $key
      * @param $values
      * @return mixed should it be \eZ\Publish\API\Repository\Values\Content\Query\CriterionInterface ?
-     * @throws \Exception for unsupported keys
+     * @throws InvalidMatchConditionsException for unsupported keys
      */
     protected function getQueryCriterion($key, $values)
     {
@@ -125,7 +127,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 $match = reset($spec);
                 $operator = key($spec);
                 if (!isset(self::$operatorsMap[$operator])) {
-                    throw new \Exception("Can not use '$operator' as comparison operator for attributes");
+                    throw new InvalidMatchConditionsException("Can not use '$operator' as comparison operator for attributes");
                 }
                 return new Query\Criterion\Field($attribute, self::$operatorsMap[$operator], $match);
 
@@ -141,7 +143,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 $match = reset($values);
                 $operator = key($values);
                 if (!isset(self::$operatorsMap[$operator])) {
-                    throw new \Exception("Can not use '$operator' as comparison operator for dates");
+                    throw new InvalidMatchConditionsException("Can not use '$operator' as comparison operator for dates");
                 }
                 return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::CREATED, self::$operatorsMap[$operator], $match);
 
@@ -160,7 +162,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 $match = reset($values);
                 $operator = key($values);
                 if (!isset(self::$operatorsMap[$operator])) {
-                    throw new \Exception("Can not use '$operator' as comparison operator for dates");
+                    throw new InvalidMatchConditionsException("Can not use '$operator' as comparison operator for dates");
                 }
                 return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::MODIFIED, self::$operatorsMap[$operator], $match);
 
@@ -235,11 +237,16 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\LogicalNot($subCriterion);
 
             default:
-                throw new \Exception($this->returns . " can not be matched because matching condition '$key' is not supported. Supported conditions are: " .
+                throw new InvalidMatchConditionsException($this->returns . " can not be matched because matching condition '$key' is not supported. Supported conditions are: " .
                     implode(', ', $this->allowedConditions));
         }
     }
 
+    /**
+     * @param array $sortDefinition
+     * @return array
+     * @throws InvalidSortConditionsException
+     */
     protected function getSortClauses(array $sortDefinition)
     {
         $out = array();
@@ -250,7 +257,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 $sortItem = array('sort_field' => $sortItem);
             }
             if (!is_array($sortItem) || !isset($sortItem['sort_field'])) {
-                throw new \Exception("Missing sort_field element in sorting definition");
+                throw new InvalidSortConditionsException("Missing sort_field element in sorting definition");
             }
             if (!isset($sortItem['sort_order'])) {
                 // we have to pick a default ;-)
@@ -260,48 +267,48 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
             $direction = $this->hash2SortOrder($sortItem['sort_order']);
 
             switch($sortItem['sort_field']) {
-                case SELF::SORT_CONTENT_ID:
+                case self::SORT_CONTENT_ID:
                     $out[] = new SortClause\ContentId($direction);
                     break;
-                case SELF::SORT_CONTENT_NAME:
+                case self::SORT_CONTENT_NAME:
                     $out[] = new SortClause\ContentName($direction);
                     break;
-                case SELF::SORT_DATE_MODIFIED:
+                case self::SORT_DATE_MODIFIED:
                     $out[] = new SortClause\DateModified($direction);
                     break;
-                case SELF::SORT_DATE_PUBLISHED:
+                case self::SORT_DATE_PUBLISHED:
                     $out[] = new SortClause\DatePublished($direction);
                     break;
                 /// @todo
-                //case SELF::SORT_FIELD:
+                //case self::SORT_FIELD:
                 //    $out[] = new SortClause\Field($direction);
                 //    break;
-                case SELF::SORT_LOCATION_DEPTH:
+                case self::SORT_LOCATION_DEPTH:
                     $out[] = new SortClause\Location\Depth($direction);
                     break;
-                case SELF::SORT_LOCATION_ID:
+                case self::SORT_LOCATION_ID:
                     $out[] = new SortClause\Location\Id($direction);
                     break;
-                case SELF::SORT_LOCATION_ISMAIN:
+                case self::SORT_LOCATION_ISMAIN:
                     $out[] = new SortClause\Location\IsMainLocation($direction);
                     break;
-                case SELF::SORT_LOCATION_PATH:
+                case self::SORT_LOCATION_PATH:
                     $out[] = new SortClause\Location\Path($direction);
                     break;
-                case SELF::SORT_LOCATION_PRIORITY:
+                case self::SORT_LOCATION_PRIORITY:
                     $out[] = new SortClause\Location\Priority($direction);
                     break;
-                case SELF::SORT_LOCATION_VISIBILITY:
+                case self::SORT_LOCATION_VISIBILITY:
                     $out[] = new SortClause\Location\Visibility($direction);
                     break;
-                case SELF::SORT_SECTION_IDENTIFIER:
+                case self::SORT_SECTION_IDENTIFIER:
                     $out[] = new SortClause\SectionIdentifier($direction);
                     break;
-                case SELF::SORT_SECTION_NAME:
+                case self::SORT_SECTION_NAME:
                     $out[] = new SortClause\SectionName($direction);
                     break;
                 default:
-                    throw new \Exception("Sort field '{$sortItem['sort_field']}' not implemented");
+                    throw new InvalidSortConditionsException("Sort field '{$sortItem['sort_field']}' not implemented");
             }
         }
 

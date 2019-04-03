@@ -3,6 +3,8 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 abstract class AbstractMatcher implements MatcherInterface
 {
@@ -15,29 +17,38 @@ abstract class AbstractMatcher implements MatcherInterface
     /** @var int $minConditions the minimum number of conditions we allow to match on for a single match request. It could be replaced with an array of mandatory conditions, really... */
     protected $minConditions = 1;
 
+    /**
+     * @param array $conditions
+     * @throws InvalidMatchConditionsException
+     */
     protected function validateConditions(array $conditions)
     {
         if ($this->minConditions > 0 && count($conditions) < $this->minConditions) {
-            throw new \Exception($this->returns . ' can not be matched because the matching conditions are empty');
+            throw new InvalidMatchConditionsException($this->returns . ' can not be matched because the matching conditions are empty');
         }
 
         if ($this->maxConditions > 0 && count($conditions) > $this->maxConditions) {
-            throw new \Exception($this->returns . " can not be matched because multiple matching conditions are specified. Only {$this->maxConditions} condition(s) are supported");
+            throw new InvalidMatchConditionsException($this->returns . " can not be matched because multiple matching conditions are specified. Only {$this->maxConditions} condition(s) are supported");
         }
 
         foreach ($conditions as $key => $value) {
             if (!in_array((string)$key, $this->allowedConditions)) {
-                throw new \Exception($this->returns . " can not be matched because matching condition '$key' is not supported. Supported conditions are: " .
+                throw new InvalidMatchConditionsException($this->returns . " can not be matched because matching condition '$key' is not supported. Supported conditions are: " .
                     implode(', ', $this->allowedConditions));
             }
         }
     }
 
+    /**
+     * @param $conditionsArray
+     * @return array|\ArrayObject
+     * @throws InvalidMatchConditionsException
+     */
     protected function matchAnd($conditionsArray)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
-            throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'and' clause.");
+            throw new InvalidMatchConditionsException($this->returns . " can not be matched because no matching conditions found for 'and' clause.");
         }
 
         $class = null;
@@ -61,11 +72,16 @@ abstract class AbstractMatcher implements MatcherInterface
         return $results;
     }
 
+    /**
+     * @param $conditionsArray
+     * @return array
+     * @throws InvalidMatchConditionsException
+     */
     protected function matchOr($conditionsArray)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
-            throw new \Exception($this->returns . " can not be matched because no matching conditions found for 'or' clause.");
+            throw new InvalidMatchConditionsException($this->returns . " can not be matched because no matching conditions found for 'or' clause.");
         }
 
         $class = null;
@@ -86,12 +102,18 @@ abstract class AbstractMatcher implements MatcherInterface
         return $results;
     }
 
+    /**
+     * @param array $conditions
+     * @return mixed
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidMatchResultsNumberException
+     */
     public function matchOne(array $conditions)
     {
         $results = $this->match($conditions);
         $count = count($results);
         if ($count !== 1) {
-            throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
+            throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
         return reset($results);
     }
@@ -99,6 +121,7 @@ abstract class AbstractMatcher implements MatcherInterface
     /**
      * @param array $conditions
      * @return array|\ArrayObject the keys must be a unique identifier of the matched entities
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
      */
     abstract public function match(array $conditions);
 }

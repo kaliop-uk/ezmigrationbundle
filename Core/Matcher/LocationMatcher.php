@@ -7,6 +7,8 @@ use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use Kaliop\eZMigrationBundle\API\SortingMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterface
 {
@@ -47,7 +49,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
         $results = $this->match($conditions, $sort, $offset, 2);
         $count = count($results);
         if ($count !== 1) {
-            throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
+            throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
         return reset($results);
     }
@@ -108,7 +110,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
                 $match = reset($values);
                 $operator = key($values);
                 if (!isset(self::$operatorsMap[$operator])) {
-                    throw new \Exception("Can not use '$operator' as comparison operator for depth");
+                    throw new InvalidMatchConditionsException("Can not use '$operator' as comparison operator for depth");
                 }
                 return new Query\Criterion\Location\Depth(self::$operatorsMap[$operator], $match);
 
@@ -126,7 +128,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
                 $match = reset($values);
                 $operator = key($values);
                 if (!isset(self::$operatorsMap[$operator])) {
-                    throw new \Exception("Can not use '$operator' as comparison operator for depth");
+                    throw new InvalidMatchConditionsException("Can not use '$operator' as comparison operator for depth");
                 }
                 return new Query\Criterion\Location\Priority(self::$operatorsMap[$operator], $match);
         }

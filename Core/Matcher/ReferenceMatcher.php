@@ -2,9 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 /**
  * We abuse a bit the 'matcher' framework to set up a 'constraint' matcher which is used to tell whether a reference
@@ -129,7 +130,7 @@ class ReferenceMatcher extends AbstractMatcher
     protected function getConstraint($constraint, $targetValue)
     {
         if (!isset(self::$operatorsMap[$constraint])) {
-            throw new \Exception("Matching condition '$constraint' is not supported. Supported conditions are: " .
+            throw new InvalidMatchConditionsException("Matching condition '$constraint' is not supported. Supported conditions are: " .
                 implode(', ', array_keys(self::$operatorsMap))
             );
         }

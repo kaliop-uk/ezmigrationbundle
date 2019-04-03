@@ -12,6 +12,8 @@ interface SortingMatcherInterface extends MatcherInterface
      * @param int $offset
      * @param int $limit
      * @return array|\ArrayObject
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException
      */
     public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0);
 
@@ -23,7 +25,9 @@ interface SortingMatcherInterface extends MatcherInterface
      * @param int $offset
      * @param int $limit
      * @return mixed
-     * @throws \Exception
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException
      */
     public function matchOne(array $conditions, array $sort = array(), $offset = 0);
 }

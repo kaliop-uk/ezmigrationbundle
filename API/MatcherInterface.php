@@ -14,6 +14,7 @@ interface MatcherInterface
      *
      * @param array $conditions
      * @return array|\ArrayObject
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
      */
     public function match(array $conditions);
 
@@ -22,7 +23,8 @@ interface MatcherInterface
      *
      * @param array $conditions
      * @return mixed
-     * @throws \Exception
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException
      */
     public function matchOne(array $conditions);
 }
