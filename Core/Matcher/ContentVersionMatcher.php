@@ -61,7 +61,8 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
      * @param array $sort
      * @param int $offset
      * @return mixed
-     * @throws \Exception
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidMatchResultsNumberException
      */
     public function matchOne(array $contentConditions, array $versionConditions = array(), $sort = array(), $offset = 0)
     {
