@@ -77,6 +77,7 @@ class ReferenceMatcher extends AbstractMatcher
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return array 1 element with the value true/false
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions)
     {
@@ -125,7 +126,7 @@ class ReferenceMatcher extends AbstractMatcher
      * @param string $constraint
      * @param $targetValue
      * @return mixed
-     * @throws \Exception for unsupported keys
+     * @throws InvalidMatchConditionsException for unsupported keys
      */
     protected function getConstraint($constraint, $targetValue)
     {

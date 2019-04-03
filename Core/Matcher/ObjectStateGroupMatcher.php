@@ -6,6 +6,7 @@ use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -25,6 +26,7 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ObjectStateGroupCollection
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions)
     {
@@ -42,6 +44,7 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ObjectStateGroupCollection
+     * @throws InvalidMatchConditionsException
      */
     public function matchObjectStateGroup($conditions)
     {

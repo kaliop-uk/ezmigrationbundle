@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 class ContentMatcherDirectLoad extends ContentMatcher
 {
@@ -16,6 +17,7 @@ class ContentMatcherDirectLoad extends ContentMatcher
      * @param int $offset
      * @param int $limit
      * @return ContentCollection
+     * @throws InvalidMatchConditionsException
      */
     public function matchContent(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {

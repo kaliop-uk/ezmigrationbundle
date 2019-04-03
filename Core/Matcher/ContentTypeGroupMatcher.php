@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -24,6 +25,7 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ContentTypeGroupCollection
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions)
     {
@@ -33,6 +35,7 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ContentTypeGroupCollection
+     * @throws InvalidMatchConditionsException
      */
     public function matchContentTypeGroup(array $conditions)
     {

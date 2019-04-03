@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 /**
  * Note: disallowing matches by remote_id allows us to implement KeyMatcherInterface without the risk of users getting
@@ -29,6 +30,7 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ContentTypeCollection
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions)
     {
@@ -38,6 +40,7 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ContentTypeCollection
+     * @throws InvalidMatchConditionsException
      */
     public function matchContentType(array $conditions)
     {

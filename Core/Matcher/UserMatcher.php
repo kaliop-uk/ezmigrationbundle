@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\User\User;
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -26,6 +27,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return UserCollection
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions)
     {
@@ -35,6 +37,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return UserCollection
+     * @throws InvalidMatchConditionsException
      */
     public function matchUser(array $conditions)
     {

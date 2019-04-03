@@ -42,6 +42,8 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return TagCollection
+     * @throws InvalidMatchConditionsException
+     * @throws \Exception if TagBundle is missing
      */
     public function match(array $conditions)
     {
@@ -51,7 +53,8 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return TagCollection
-     * @throws \Exception
+     * @throws InvalidMatchConditionsException
+     * @throws \Exception if TagBundle is missing
      */
     public function matchTag(array $conditions)
     {

@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\User\UserGroup;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 /**
  * @todo add matching all groups of a user, all child groups of a group
@@ -28,6 +29,7 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return UserGroupCollection
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions)
     {
@@ -37,6 +39,7 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return UserGroupCollection
+     * @throws InvalidMatchConditionsException
      */
     public function matchUserGroup(array $conditions)
     {

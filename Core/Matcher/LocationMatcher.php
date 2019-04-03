@@ -9,6 +9,7 @@ use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use Kaliop\eZMigrationBundle\API\SortingMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException;
 
 class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterface
 {
@@ -38,12 +39,23 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
      * @param int $offset
      * @param int $limit
      * @return LocationCollection
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
      */
     public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
         return $this->matchLocation($conditions, $sort, $offset, $limit);
     }
 
+    /**
+     * @param array $conditions
+     * @param array $sort
+     * @param int $offset
+     * @return Location
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
+     * @throws InvalidMatchResultsNumberException
+     */
     public function matchOne(array $conditions, array $sort = array(), $offset = 0)
     {
         $results = $this->match($conditions, $sort, $offset, 2);
@@ -60,6 +72,8 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
      * @param int $offset
      * @param int $limit
      * @return LocationCollection
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
      */
     public function matchLocation(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {

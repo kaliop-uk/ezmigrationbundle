@@ -2,8 +2,9 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\TrashedItemCollection;
-use \eZ\Publish\API\Repository\Values\Content\Query;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 /// q: is it better to extend Content or Location Matcher ?
 class TrashMatcher extends ContentMatcher
@@ -29,15 +30,19 @@ class TrashMatcher extends ContentMatcher
      * @param int $offset
      * @param int $limit
      * @return TrashedItemCollection
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
-        return $this->matchItem($conditions, $sort, $offset, $limit);
+        /// @todo throw id we get passed sorting or offset
+
+        return $this->matchItem($conditions);
     }
 
     /**
      * @param array $conditions
      * @return TrashedItemCollection
+     * @throws InvalidMatchConditionsException
      *
      * @todo test all supported matching conditions
      * @todo support matching by item_id

@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\User\Role;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -24,6 +25,7 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return RoleCollection
+     * @throws InvalidMatchConditionsException
      */
     public function match(array $conditions)
     {
@@ -33,6 +35,7 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return RoleCollection
+     * @throws InvalidMatchConditionsException
      */
     public function matchRole(array $conditions)
     {

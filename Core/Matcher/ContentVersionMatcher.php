@@ -78,6 +78,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
      * @param array $versionConditions
      * @param Content $content
      * @return VersionInfo[] key: obj_id/version_no
+     * @throws InvalidMatchConditionsException
      */
     public function matchContentVersions(array $versionConditions, Content $content)
     {
