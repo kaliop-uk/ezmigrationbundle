@@ -9,6 +9,8 @@ Version X.Y.Z
 
 * New: more reference resolving in section creation and update
 
+* Fix: warnings generated when creating array-valued refs using an empty collection of items
+
 * BC changes:
 
     - the `language\delete` step should not be used any more with a `lang` element, but with `match` instead 

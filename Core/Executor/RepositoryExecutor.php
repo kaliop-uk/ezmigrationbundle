@@ -230,9 +230,8 @@ abstract class RepositoryExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $this->referenceResolver->addReference($reference['identifier'], $referencesValues[$reference['identifier']], $overwrite);
+            $this->referenceResolver->addReference($reference['identifier'], count($referencesValues) ? $referencesValues[$reference['identifier']] : array(), $overwrite);
         }
-
 
         return true;
     }
