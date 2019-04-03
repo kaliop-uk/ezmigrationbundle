@@ -40,9 +40,9 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
         return $this->matchContent($conditions, $sort, $offset, $limit);
     }
 
-    public function matchOne(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    public function matchOne(array $conditions, array $sort = array(), $offset = 0)
     {
-        $results = $this->match($conditions, $sort, $offset, $limit);
+        $results = $this->match($conditions, $sort, $offset, 2);
         $count = count($results);
         if ($count !== 1) {
             throw new \Exception("Found $count " . $this->returns . " when expected exactly only one to match the conditions");

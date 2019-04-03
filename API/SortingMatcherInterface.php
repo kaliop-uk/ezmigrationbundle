@@ -25,5 +25,5 @@ interface SortingMatcherInterface extends MatcherInterface
      * @return mixed
      * @throws \Exception
      */
-    public function matchOne(array $conditions, array $sort = array(), $offset = 0, $limit = 0);
+    public function matchOne(array $conditions, array $sort = array(), $offset = 0);
 }
