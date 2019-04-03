@@ -43,15 +43,14 @@ before_install:
   - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
 
 install:
-  # Latest version of composer breaks downloading eZ, so we can not run self-update. See https://github.com/composer/composer/issues/4582
-  #- composer self-update
+  - composer self-update
 
   # Increase php memory limit (need to do this now or we risk composer failing)
   - phpenv config-add Tests/travis/zzz_php.ini
 
   # Q: are all of these scripts ok here, or shall they be moved to the before_script step, when we add matrix combinations ???
 
-  # Disable xdebug for speed (executing composer), but allow us to e-enable it later
+  # Disable xdebug for speed (both for executing composer and running tests), but allow us to e-enable it later
   - export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
   - export XDEBUG_INI=${XDEBUG_INI/,/}
   - if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
@@ -71,6 +70,8 @@ install:
 
   - composer require --dev --no-update ${EZ_PACKAGES}
   - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then travis_wait composer update --dev; else composer update --dev; fi
+  # useful for troubleshooting tests failures
+  - composer show
 
   # Re-enable xdebug for when we need to generate code coverage
   - if [ "$CODE_COVERAGE" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
@@ -99,7 +100,7 @@ script:
 after_failure:
   # Display as much info as we can to help developers
   #- php -i
-  - cat composer.lock
+  #- cat composer.lock
 
 after_script:
   # Upload code-coverage to Scrutinizer
