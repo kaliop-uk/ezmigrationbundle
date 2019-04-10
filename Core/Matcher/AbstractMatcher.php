@@ -40,6 +40,14 @@ abstract class AbstractMatcher implements MatcherInterface
     }
 
     /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->allowedConditions;
+    }
+
+    /**
      * @param $conditionsArray
      * @return array|\ArrayObject
      * @throws InvalidMatchConditionsException

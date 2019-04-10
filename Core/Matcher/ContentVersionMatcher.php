@@ -37,10 +37,19 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
 
     public function __construct(Repository $repository, MatcherInterface $contentMatcher)
     {
-        $this->repository = $repository;
+        parent::__construct($repository);
         $this->contentMatcher = $contentMatcher;
     }
 
+    /**
+     * @param array $contentConditions
+     * @param array $versionConditions
+     * @param array $sort
+     * @param int $offset
+     * @param int $limit
+     * @return VersionInfoCollection
+     * @throws InvalidMatchConditionsException
+     */
     public function match(array $contentConditions, array $versionConditions = array(), $sort = array(), $offset = 0, $limit = 0)
     {
         $versions = array();

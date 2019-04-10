@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\VersionInfo;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
+use Kaliop\eZMigrationBundle\API\Collection\VersionInfoCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentVersionMatcher;
 use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
@@ -81,7 +82,7 @@ class ContentVersionManager extends ContentManager
 
     /**
      * @param string $action
-     * @return ContentCollection
+     * @return VersionInfoCollection
      * @throws \Exception
      */
     protected function matchVersions($action, $step)

@@ -71,7 +71,7 @@ class FileExecutor extends AbstractExecutor
     /**
      * @param array $dsl
      * @param array $context
-     * @return string
+     * @return bool
      * @throws \Exception
      */
     protected function exists($dsl, $context)

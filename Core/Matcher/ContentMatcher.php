@@ -5,6 +5,8 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException;
 use Kaliop\eZMigrationBundle\API\SortingMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 
@@ -35,12 +37,23 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
      * @param int $offset
      * @param int $limit
      * @return ContentCollection
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
      */
     public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
         return $this->matchContent($conditions, $sort, $offset, $limit);
     }
 
+    /**
+     * @param array $conditions
+     * @param array $sort
+     * @param int $offset
+     * @return Content
+     * @throws InvalidMatchResultsNumberException
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
+     */
     public function matchOne(array $conditions, array $sort = array(), $offset = 0)
     {
         $results = $this->match($conditions, $sort, $offset, 2);
@@ -57,6 +70,8 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
      * @param int $offset
      * @param int $limit
      * @return ContentCollection
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
      */
     public function matchContent(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
