@@ -25,6 +25,8 @@ class EzPage extends AbstractFieldHandler implements FieldValueImporterInterface
      * @param array $fieldValueArray The definition of teh field value, structured in the yml file
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return PageValue
+     *
+     * @todo resolve refs more
      */
     public function hashToFieldValue($fieldValueArray, array $context = array())
     {

@@ -13,6 +13,8 @@ class EzMedia extends FileFieldHandler implements FieldValueConverterInterface
      * @param array|string $fieldValue The path to the file or an array with 'path' and many other keys
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return MediaValue
+     *
+     * @todo resolve refs more
      */
     public function hashToFieldValue($fieldValue, array $context = array())
     {

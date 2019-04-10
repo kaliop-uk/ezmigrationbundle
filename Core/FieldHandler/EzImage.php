@@ -13,6 +13,8 @@ class EzImage extends FileFieldHandler implements FieldValueConverterInterface
      * @param array|string $fieldValue The path to the file or an array with 'path' and 'alt_text' keys
      * @param array $context The context for execution of the current migrations. Contains f.e. the path to the migration
      * @return ImageValue
+     *
+     * @todo resolve refs more
      */
     public function hashToFieldValue($fieldValue, array $context = array())
     {
