@@ -25,11 +25,13 @@ class EzAuthor extends AbstractFieldHandler implements FieldValueImporterInterfa
         /// @deprecated
         if (isset($fieldValue['authors'])) {
             foreach ($fieldValue['authors'] as $author) {
+                $author = $this->referenceResolver->resolveReference($author);
                 $authors[] = new Author($author);
             }
         } else if (is_array($fieldValue)) {
             /// same as what fromHash() does, really
             foreach ($fieldValue as $author) {
+                $author = $this->referenceResolver->resolveReference($author);
                 $authors[] = new Author($author);
             }
         }

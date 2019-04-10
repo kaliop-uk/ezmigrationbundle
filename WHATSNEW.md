@@ -11,6 +11,15 @@ Version X.Y.Z
 
 * Fix: warnings generated when creating array-valued refs using an empty collection of items
 
+* Fix: references would not be resolved for Author and Selection fields, when the field value is given in array form.
+    Ex: this will now be resolved
+
+        ...
+        attributes:
+            country: # an ezselection field
+                - italy
+                - reference:mycountry
+
 * BC changes:
 
     - the `language\delete` step should not be used any more with a `lang` element, but with `match` instead 

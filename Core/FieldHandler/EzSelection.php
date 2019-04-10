@@ -37,6 +37,9 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
         // allow user to pass in selection values by name
         $fieldSettings = null;
         foreach($fieldValue as $key => $val) {
+
+            $val = $this->referenceResolver->resolveReference($val);
+
             if (is_string($val)) {
                 if (ctype_digit($val)) {
                     $fieldValue[$key] = (int)$val;
