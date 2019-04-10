@@ -8,6 +8,7 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
@@ -18,7 +19,7 @@ use JmesPath\Env as JmesPath;
 /**
  * Handles content type migrations
  */
-class ContentTypeManager extends RepositoryExecutor implements MigrationGeneratorInterface
+class ContentTypeManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     protected $supportedActions = array('create', 'load', 'update', 'delete');
     protected $supportedStepTypes = array('content_type');
@@ -525,6 +526,14 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
         $this->loginUser($previousUserId);
         return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->contentTypeMatcher->listAllowedConditions();
     }
 
     /**

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -17,7 +18,7 @@ class GenerateCommand extends AbstractCommand
 
     private $availableMigrationFormats = array('yml', 'php', 'sql', 'json');
     private $availableModes = array('create', 'update', 'delete');
-    private $availableTypes = array('content', 'content_type', 'content_type_group', 'language', 'object_state', 'object_state_group', 'role', 'section', 'generic', 'db', 'php');
+    private $availableTypes = array('content', 'content_type', 'content_type_group', 'language', 'object_state', 'object_state_group', 'role', 'section', 'generic', 'db', 'php', '...');
     private $thisBundle = 'EzMigrationBundle';
 
     /**
@@ -36,6 +37,7 @@ class GenerateCommand extends AbstractCommand
             ->addOption('lang', 'l', InputOption::VALUE_REQUIRED, 'The language of the migration (eng-GB, ger-DE, ...). If null, the default language of the current siteaccess is used')
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, when type=db (mysql, postgresql, ...)', 'mysql')
             ->addOption('admin-login', 'a', InputOption::VALUE_REQUIRED, "Login of admin account used whenever elevated privileges are needed (user id 14 used by default)")
+            ->addOption('list-types', null, InputOption::VALUE_NONE, 'Use this option to list all available migration types and their match conditions')
             ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
@@ -51,7 +53,7 @@ For SQL type migration you can optionally specify the database server type the m
 
     <info>php ezpublish/console kaliop:migration:generate --format=sql bundleName</info>
 
-For role/content/content_type/language/object_state/section migrations you need to specify the entity that you want to generate the migration for:
+For content/content_type/language/object_state/role/section migrations you need to specify the entity that you want to generate the migration for:
 
     <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14 bundleName</info>
 
@@ -63,6 +65,10 @@ you wish for the role. Any not defined will be removed. Example for updating an 
 For freeform php migrations, you will receive a php class definition
 
     <info>php ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
+
+To list all available migration types for generation, as well as the corresponding match-types, run:
+
+    <info> php ezpublish/console ka:mig:gen --list-types whatever</info>
 
 Note that you can pass in a custom directory path instead of a bundle name, but, if you do, you will have to use the <info>--path</info>
 option when you run the <info>migrate</info> command.
@@ -80,6 +86,11 @@ EOT
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        if ($input->getOption('list-types')) {
+            $this->listAvailableTypes($output);
+            return;
+        }
+
         $bundleName = $input->getArgument('bundle');
         $name = $input->getArgument('name');
         $fileType = $input->getOption('format');
@@ -230,6 +241,7 @@ EOT
                 if (!in_array($migrationType, $executors)) {
                     throw new \Exception("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
                 }
+                /** @var MigrationGeneratorInterface $executor */
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
 
                 $context = $this->migrationContextFromParameters($parameters);
@@ -261,6 +273,21 @@ EOT
         return $warning;
     }
 
+    protected function listAvailableTypes(OutputInterface $output)
+    {
+        $output->writeln('Specific migration types available for generation (besides sql,php, generic):');
+        foreach ($this->getGeneratingExecutors() as $executorType) {
+            $output->writeln($executorType);
+            /** @var MigrationGeneratorInterface $executor */
+            $executor = $this->getMigrationService()->getExecutor($executorType);
+            if ($executor instanceof EnumerableMatcherInterface) {
+                $conditions = $executor->listAllowedConditions();
+                $conditions = array_diff($conditions, array('and', 'or', 'not'));
+                $output->writeln("  corresponding match types:\n    - " . implode("\n    - ", $conditions));
+            }
+        }
+    }
+
     /**
      * @param string $bundleName a bundle name or filesystem path to a directory
      * @return string
@@ -287,7 +314,10 @@ EOT
         return $migrationDirectory;
     }
 
-    /// @todo move somewhere else. Maybe to the MigrationService itself ?
+    /**
+     * @todo move somewhere else. Maybe to the MigrationService itself ?
+     * @return string[]
+     */
     protected function getGeneratingExecutors()
     {
         $migrationService = $this->getMigrationService();

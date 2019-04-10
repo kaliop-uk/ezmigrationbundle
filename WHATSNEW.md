@@ -9,6 +9,9 @@ Version X.Y.Z
 
 * New: more reference resolving in section creation and update
 
+* New: the `generate` command now has a `--list-types` option that will have it list all migration types available for
+    generation
+    
 * Fix: warnings generated when creating array-valued refs using an empty collection of items
 
 * Fix: references would not be resolved for Author and Selection fields, when the field value is given in array form.

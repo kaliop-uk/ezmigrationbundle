@@ -11,6 +11,7 @@ use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
@@ -25,7 +26,7 @@ use JmesPath\Env as JmesPath;
  *
  * @todo add support for updating of content metadata
  */
-class ContentManager extends RepositoryExecutor implements MigrationGeneratorInterface
+class ContentManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     protected $supportedStepTypes = array('content');
     protected $supportedActions = array('create', 'load', 'update', 'delete');
@@ -597,6 +598,14 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->contentMatcher->listAllowedConditions();
+    }
+
+    /**
      * Helper function to set the fields of a ContentCreateStruct based on the DSL attribute settings.
      *
      * @param ContentCreateStruct|ContentUpdateStruct $createOrUpdateStruct
@@ -626,7 +635,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * Helper function to accommodate the definition of fields
      * - using a legacy DSL version
      * - using either single-language or multi-language style
-     * 
+     *
      * @param array $fields
      * @return array
      */

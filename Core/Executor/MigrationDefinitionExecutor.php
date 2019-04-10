@@ -143,7 +143,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
     /**
      * @todo cache this for faster access
-     * @return MigrationGeneratorInterface[]
+     * @return string[]
      */
     protected function getGeneratingExecutors()
     {

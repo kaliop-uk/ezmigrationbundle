@@ -6,11 +6,12 @@ use eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 
 /**
  * Handles object-state-group migrations.
  */
-class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface
+class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     /**
      * @var array
@@ -259,5 +260,13 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
         $this->loginUser($previousUserId);
         return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->objectStateGroupMatcher->listAllowedConditions();
     }
 }

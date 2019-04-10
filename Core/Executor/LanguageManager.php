@@ -5,12 +5,13 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\Content\Language;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\LanguageMatcher;
 
 /**
  * Handles language migrations.
  */
-class LanguageManager extends RepositoryExecutor implements MigrationGeneratorInterface
+class LanguageManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     protected $supportedStepTypes = array('language');
     protected $supportedActions = array('create', 'load', 'update', 'delete');
@@ -243,5 +244,13 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
 
         $this->loginUser($previousUserId);
         return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->languageMatcher->listAllowedConditions();
     }
 }

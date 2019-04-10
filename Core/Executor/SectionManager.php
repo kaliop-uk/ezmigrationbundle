@@ -5,12 +5,13 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\Content\Section;
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 
 /**
  * Handles section migrations.
  */
-class SectionManager extends RepositoryExecutor implements MigrationGeneratorInterface
+class SectionManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     protected $supportedStepTypes = array('section');
     protected $supportedActions = array('create', 'load', 'update', 'delete');
@@ -224,5 +225,13 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         $this->loginUser($previousUserId);
         return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->sectionMatcher->listAllowedConditions();
     }
 }

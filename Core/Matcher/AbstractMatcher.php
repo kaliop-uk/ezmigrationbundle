@@ -3,10 +3,11 @@
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
-abstract class AbstractMatcher implements MatcherInterface
+abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInterface
 {
     /** @var string[] $allowedConditions the keywords we allow to be used for matching on*/
     protected $allowedConditions = array();

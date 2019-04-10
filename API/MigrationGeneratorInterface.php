@@ -12,12 +12,12 @@ interface MigrationGeneratorInterface
     /**
      * Generates a migration definition in array format
      *
-     * @param array $matchCondition
+     * @param array $matchConditions
      * @param string $mode
      * @param array $context
      * @return array Migration data
      * @throws InvalidMatchConditionsException
      * @throws \Exception
      */
-    public function generateMigration(array $matchCondition, $mode, array $context = array());
+    public function generateMigration(array $matchConditions, $mode, array $context = array());
 }

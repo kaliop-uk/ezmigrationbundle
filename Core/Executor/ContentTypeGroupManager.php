@@ -5,12 +5,13 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
 
 /**
  * Handles content type groups migrations.
  */
-class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface
+class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     protected $supportedStepTypes = array('content_type_group');
 
@@ -208,6 +209,14 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
 
         $this->loginUser($previousUserId);
         return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->contentTypeGroupMatcher->listAllowedConditions();
     }
 
     /**

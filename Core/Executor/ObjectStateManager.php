@@ -7,11 +7,12 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 
 /**
  * Handles object-state migrations.
  */
-class ObjectStateManager extends RepositoryExecutor implements MigrationGeneratorInterface
+class ObjectStateManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     /**
      * @var array
@@ -279,5 +280,13 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
 
         $this->loginUser($previousUserId);
         return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->objectStateMatcher->listAllowedConditions();
     }
 }
