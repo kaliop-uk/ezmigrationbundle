@@ -23,7 +23,6 @@ interface SortingMatcherInterface extends MatcherInterface
      * @param array $conditions
      * @param array $sort
      * @param int $offset
-     * @param int $limit
      * @return mixed
      * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
      * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException

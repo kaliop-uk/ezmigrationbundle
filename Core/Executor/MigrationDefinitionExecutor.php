@@ -16,7 +16,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
     /** @var \Kaliop\eZMigrationBundle\Core\MigrationService $migrationService */
     protected $migrationService;
-    /** @var ReferenceBagInterface $referenceResolver */
+    /** @var ReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
 
     public function __construct($migrationService, ReferenceResolverBagInterface $referenceResolver)
