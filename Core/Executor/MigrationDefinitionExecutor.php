@@ -73,6 +73,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         if (!in_array($migrationType, $executors)) {
             throw new \Exception("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
         }
+        /** @var MigrationGeneratorInterface $executor */
         $executor = $this->migrationService->getExecutor($migrationType);
 
         if (isset($dsl['lang']) && $dsl['lang'] != '') {
@@ -142,7 +143,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
     /**
      * @todo cache this for faster access
-     * @return array
+     * @return MigrationGeneratorInterface[]
      */
     protected function getGeneratingExecutors()
     {
