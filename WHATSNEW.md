@@ -1,4 +1,4 @@
-Version X.Y.Z
+Version 5.9.0
 =============
 
 * New: the `role/create` migration step now resolves references for role names. Same for `role/update`.
