@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
@@ -38,7 +39,7 @@ class GenerateCommand extends AbstractCommand
             ->addOption('dbserver', null, InputOption::VALUE_REQUIRED, 'The type of the database server the sql migration is for, when type=db (mysql, postgresql, ...)', 'mysql')
             ->addOption('admin-login', 'a', InputOption::VALUE_REQUIRED, "Login of admin account used whenever elevated privileges are needed (user id 14 used by default)")
             ->addOption('list-types', null, InputOption::VALUE_NONE, 'Use this option to list all available migration types and their match conditions')
-            ->addArgument('bundle', InputArgument::REQUIRED, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
+            ->addArgument('bundle', InputArgument::OPTIONAL, 'The bundle to generate the migration definition file in. eg.: AcmeMigrationBundle')
             ->addArgument('name', InputArgument::OPTIONAL, 'The migration name (will be prefixed with current date)', null)
             ->setHelp(<<<EOT
 The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
@@ -68,7 +69,7 @@ For freeform php migrations, you will receive a php class definition
 
 To list all available migration types for generation, as well as the corresponding match-types, run:
 
-    <info> php ezpublish/console ka:mig:gen --list-types whatever</info>
+    <info>php ezpublish/console ka:mig:gen --list-types</info>
 
 Note that you can pass in a custom directory path instead of a bundle name, but, if you do, you will have to use the <info>--path</info>
 option when you run the <info>migrate</info> command.
@@ -92,6 +93,10 @@ EOT
         }
 
         $bundleName = $input->getArgument('bundle');
+        if ($bundleName === null) {
+            // throw same exception as SF would when declaring 'bundle' as mandatory arg
+            throw new RuntimeException('Not enough arguments (missing: "bundle").');
+        }
         $name = $input->getArgument('name');
         $fileType = $input->getOption('format');
         $migrationType = $input->getOption('type');
