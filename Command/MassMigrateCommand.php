@@ -7,12 +7,11 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Kaliop\eZMigrationBundle\API\Value\Migration;
-use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\PhpExecutableFinder;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\Core\Helper\ProcessManager;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class MassMigrateCommand extends MigrateCommand
 {
@@ -39,7 +38,7 @@ One child process will be spawned for each subdirectory found.
 The maximum number of processes to run in parallel is specified via the 'concurrency' option.
 <info>NB: this command does not guarantee that any given migration will be executed before another. Take care about dependencies.</info>
 <info>NB: the rule that each migration filename has to be unique still applies, even if migrations are spread across different directories.</info>
-Unlike for the 'normal' migration command, it is not recommended to use the <info>--separate-process</info> option, as it will make execution much slower
+Unlike for the 'normal' migration command, it is not recommended to use the <info>--separate-process</info> option, as it will make execution slower if you have many migrations
 EOT
             )
         ;
@@ -88,6 +87,13 @@ EOT
         }
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param MigrationDefinition[] $toExecute
+     * @param float $start
+     * @return int
+     */
     protected function executeAsParent($input, $output, $toExecute, $start)
     {
         $paths = $this->groupMigrationsByPath($toExecute);
@@ -122,7 +128,11 @@ EOT
             $this->writeln('<info>Command: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
 
             // allow long migrations processes by default
-            $process->setTimeout(86400);
+            $process->setTimeout($this->processTimeout);
+            // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
+            if ($input->getOption('force-sigchild-handling')) {
+                $process->setEnhanceSigchildCompatibility(true);
+            }
             $processes[] = $process;
         }
 
@@ -136,7 +146,16 @@ EOT
         $failed = 0;
         foreach ($processes as $i => $process) {
             if (!$process->isSuccessful()) {
-                $output->writeln("\n<error>Subprocess $i failed! Reason: " . $process->getErrorOutput() . "</error>\n");
+                $errorOutput = $process->getErrorOutput();
+                if ($errorOutput === '') {
+                    $errorOutput = "(separate process used to execute migration failed with no stderr output. Its exit code was: " . $process->getExitCode();
+                    if ($process->getExitCode() == -1) {
+                        $errorOutput .= ". If you are using Debian or Ubuntu linux, please consider using the --force-sigchild-handling option.";
+                    }
+                    $errorOutput .= ")";
+                }
+                /// @todo should we always add the exit code, even when $errorOutput is not null ?
+                $output->writeln("\n<error>Subprocess $i failed! Reason: " . $errorOutput . "</error>\n");
                 $failed++;
             }
         }
@@ -157,6 +176,14 @@ EOT
         return $failed;
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param MigrationDefinition[] $toExecute
+     * @param bool $force
+     * @param $migrationService
+     * @return int
+     */
     protected function executeAsChild($input, $output, $toExecute, $force, $migrationService)
     {
         // @todo disable signal slots that are harmful during migrations, if any
@@ -170,6 +197,8 @@ EOT
 
             $builderArgs = parent::createChildProcessArgs($input);
         }
+
+        $forceSigChild = $input->getOption('force-sigchild-handling');
 
         $failed = 0;
         $executed = 0;
@@ -187,7 +216,7 @@ EOT
             if ($input->getOption('separate-process')) {
 
                 try {
-                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, false);
+                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, false, $forceSigChild);
 
                     $executed++;
                 } catch (\Exception $e) {
@@ -392,6 +421,10 @@ EOT
         }
         if ($input->getOption('separate-process')) {
             $builderArgs[] = '--separate-process';
+        }
+        // useful in case the subprocess has a migration step of type process/run
+        if ($input->getOption('force-sigchild-handling')) {
+            $builderArgs[] = '--force-sigchild-handling';
         }
 
         return $builderArgs;

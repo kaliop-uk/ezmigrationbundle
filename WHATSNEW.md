@@ -1,3 +1,12 @@
+Version 5.9.1
+=============
+
+* New: the `migrate` and `mass_migrate` commands accept an option `force-sigchild-handling`.
+    This is useful when you are running on eg. Debian and Ubuntu linux, and run the migrations using separate subprocesses:
+    in such scenario there are chances that migrations will be reported as having failed executing even though they
+    have not. Using the `force-sigchild-handling` option should fix that.
+    Fore reference, see comment 12 in this ticket: https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061 
+
 Version 5.9.0
 =============
 

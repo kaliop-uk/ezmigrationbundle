@@ -163,6 +163,8 @@ EOT
             'mode' => $mode,
             'lang' => $input->getOption('lang'),
             'adminLogin' => $input->getOption('admin-login')
+            /// @todo should we allow users to specify this ?
+            //'forceSigchildHandling' => null
         );
 
         $date = date('YmdHis');
@@ -338,7 +340,7 @@ EOT
 
     /**
      * @see MigrationService::migrationContextFromParameters
-     * @param array $parameters
+     * @param array $parameters these come directly from cli options
      * @return array
      */
     protected function migrationContextFromParameters(array $parameters)
@@ -350,6 +352,10 @@ EOT
         }
         if (isset($parameters['adminLogin']) && $parameters['adminLogin'] != '') {
             $context['adminUserLogin'] = $parameters['adminLogin'];
+        }
+        if (isset($parameters['forceSigchildHandling']) && $parameters['forceSigchildHandling'] !== null)
+        {
+            $context['forceSigchildHandling'] = $parameters['forceSigchildHandling'];
         }
 
         return $context;

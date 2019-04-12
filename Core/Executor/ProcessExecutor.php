@@ -53,7 +53,7 @@ class ProcessExecutor extends AbstractExecutor
 
     /**
      * @param $dsl
-     * @param $context
+     * @param array|null $context
      * @return \Symfony\Component\Process\Process
      * @throws \Exception
      * @todo add more options supported by Sf Process
@@ -85,6 +85,10 @@ class ProcessExecutor extends AbstractExecutor
             $timeout = $dsl['timeout'];
         }
         $process->setTimeout($timeout);
+
+        if (is_array($context) && isset($context['forceSigchildHandling'])) {
+            $process->setEnhanceSigchildCompatibility($context['forceSigchildHandling']);
+        }
 
         if (isset($dsl['working_directory'])) {
             $process->setWorkingDirectory($dsl['working_directory']);

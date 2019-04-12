@@ -2,18 +2,18 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
-use Kaliop\eZMigrationBundle\Core\MigrationService;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Process\ProcessBuilder;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
-use Symfony\Component\Process\ProcessBuilder;
-use Symfony\Component\Process\PhpExecutableFinder;
-use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Kaliop\eZMigrationBundle\Core\MigrationService;
 
 /**
  * Command to execute the available migration definitions.
@@ -25,6 +25,8 @@ class MigrateCommand extends AbstractCommand
     /** @var OutputInterface $output */
     protected $output;
     protected $verbosity = OutputInterface::VERBOSITY_NORMAL;
+
+    protected $processTimeout = 86400;
 
     const COMMAND_NAME = 'kaliop:migration:migrate';
 
@@ -51,6 +53,7 @@ class MigrateCommand extends AbstractCommand
             ->addOption('no-transactions', 'u', InputOption::VALUE_NONE, "Do not use a repository transaction to wrap each migration. Unsafe, but needed for legacy slot handlers")
             ->addOption('path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "The directory or file to load the migration definitions from")
             ->addOption('separate-process', 'p', InputOption::VALUE_NONE, "Use a separate php process to run each migration. Safe if your migration leak memory. A tad slower")
+            ->addOption('force-sigchild-handling', null, InputOption::VALUE_NONE, "When using a separate php process to run each migration, tell Symfony that php was compiled with --enable-sigchild option")
             ->addOption('child', null, InputOption::VALUE_NONE, "*DO NOT USE* Internal option for when forking separate processes")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:migrate</info> command loads and executes migrations:
@@ -111,6 +114,8 @@ EOT
             $builderArgs = $this->createChildProcessArgs($input);
         }
 
+        $forceSigChild = $input->getOption('force-sigchild-handling');
+
         $executed = 0;
         $failed = 0;
         $skipped = 0;
@@ -130,7 +135,7 @@ EOT
             if ($input->getOption('separate-process')) {
 
                 try {
-                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs);
+                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, true, $forceSigChild);
 
                     $executed++;
                 } catch (\Exception $e) {
@@ -182,6 +187,12 @@ EOT
         }
     }
 
+    /**
+     * @param MigrationDefinition $migrationDefinition
+     * @param bool $force
+     * @param MigrationService $migrationService
+     * @param InputInterface $input
+     */
     protected function executeMigrationInProcess($migrationDefinition, $force, $migrationService, $input)
     {
         $migrationService->executeMigration(
@@ -189,11 +200,20 @@ EOT
             !$input->getOption('no-transactions'),
             $input->getOption('default-language'),
             $input->getOption('admin-login'),
-            $force
+            $force,
+            $input->getOption('force-sigchild-handling')
         );
     }
 
-    protected function executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, $feedback = true)
+    /**
+     * @param MigrationDefinition $migrationDefinition
+     * @param MigrationService $migrationService
+     * @param ProcessBuilder $builder
+     * @param array $builderArgs
+     * @param bool $feedback
+     * @param null|bool $forceSigchild
+     */
+    protected function executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, $feedback = true, $forceSigchild = null)
     {
         $process = $builder
             ->setArguments(array_merge($builderArgs, array('--path=' . $migrationDefinition->path)))
@@ -204,7 +224,11 @@ EOT
         }
 
         // allow long migrations processes by default
-        $process->setTimeout(86400);
+        $process->setTimeout($this->processTimeout);
+        // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
+        if ($forceSigchild !== null) {
+            $process->setEnhanceSigchildCompatibility($forceSigchild);
+        }
         // and give immediate feedback to the user
         $process->run(
             $feedback ?
@@ -217,7 +241,16 @@ EOT
         );
 
         if (!$process->isSuccessful()) {
-            throw new \Exception($process->getErrorOutput());
+            $errorOutput = $process->getErrorOutput();
+            if ($errorOutput === '') {
+                $errorOutput = "(separate process used to execute migration failed with no stderr output. Its exit code was: " . $process->getExitCode();
+                if ($process->getExitCode() == -1) {
+                    $errorOutput .= ". If you are using Debian or Ubuntu linux, please consider using the --force-sigchild-handling option.";
+                }
+                $errorOutput .= ")";
+            }
+            /// @todo should we always add the exit code, even when $errorOutput is not null ?
+            throw new \Exception($errorOutput);
         }
 
         // There are cases where the separate process dies halfway but does not return a non-zero code.
@@ -403,6 +436,10 @@ EOT
         }
         if ($input->getOption('no-transactions')) {
             $builderArgs[] = '--no-transactions';
+        }
+        // useful in case the subprocess has a migration step of type process/run
+        if ($input->getOption('force-sigchild-handling')) {
+            $builderArgs[] = '--force-sigchild-handling';
         }
 
         return $builderArgs;
