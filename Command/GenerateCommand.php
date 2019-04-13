@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\Yaml\Yaml;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
@@ -87,15 +86,18 @@ EOT
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setOutput($output);
+        $this->setVerbosity($output->getVerbosity());
+
         if ($input->getOption('list-types')) {
             $this->listAvailableTypes($output);
-            return;
+            return 0;
         }
 
         $bundleName = $input->getArgument('bundle');
         if ($bundleName === null) {
             // throw same exception as SF would when declaring 'bundle' as mandatory arg
-            throw new RuntimeException('Not enough arguments (missing: "bundle").');
+            throw new \RuntimeException('Not enough arguments (missing: "bundle").');
         }
         $name = $input->getArgument('name');
         $fileType = $input->getOption('format');
@@ -211,6 +213,8 @@ EOT
         if ($warning != '') {
             $output->writeln("<comment>$warning</comment>");
         }
+
+        return 0;
     }
 
     /**

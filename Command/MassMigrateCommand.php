@@ -128,7 +128,7 @@ EOT
             $this->writeln('<info>Command: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
 
             // allow long migrations processes by default
-            $process->setTimeout($this->processTimeout);
+            $process->setTimeout($this->subProcessTimeout);
             // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
             if ($input->getOption('force-sigchild-handling')) {
                 $process->setEnhanceSigchildCompatibility(true);
@@ -221,11 +221,11 @@ EOT
                     $executed++;
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
-                        $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                        $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                         $failed++;
                         continue;
                     }
-                    $output->writeln("\n<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>");
+                    $this->errOutput->writeln("\n<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>");
 
                     $missed = $total - $executed - $failed - $skipped;
                     $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
@@ -242,11 +242,11 @@ EOT
                 } catch(\Exception $e) {
                     $failed++;
                     if ($input->getOption('ignore-failures')) {
-                        $this->writeln("<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
+                        $this->errOutput->writeln("<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
                         continue;
                     }
 
-                    $this->writeln("<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
+                    $this->errOutput->writeln("<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
 
                     $missed = $total - $executed - $failed - $skipped;
                     $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");

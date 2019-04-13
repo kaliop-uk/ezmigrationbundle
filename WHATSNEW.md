@@ -1,3 +1,11 @@
+Version 5.9.2
+=============
+
+* Fixed: when migrations fail, the error message is written to stderr instead of stdout
+
+* Fixed: better error reporting when executing migrations as subprocesses (using the `-p` option) 
+
+
 Version 5.9.1
 =============
 
@@ -5,7 +13,8 @@ Version 5.9.1
     This is useful when you are running on eg. Debian and Ubuntu linux, and run the migrations using separate subprocesses:
     in such scenario there are chances that migrations will be reported as having failed executing even though they
     have not. Using the `force-sigchild-handling` option should fix that.
-    Fore reference, see comment 12 in this ticket: https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061 
+    For reference, see comment 12 in this ticket: https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061 
+
 
 Version 5.9.0
 =============

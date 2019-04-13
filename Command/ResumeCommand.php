@@ -49,6 +49,9 @@ EOT
     {
         $start = microtime(true);
 
+        $this->setOutput($output);
+        $this->setVerbosity($output->getVerbosity());
+
         $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
 
         $migrationService = $this->getMigrationService();
@@ -72,7 +75,7 @@ EOT
 
         if (!count($suspendedMigrations)) {
             $output->writeln('Nothing to do');
-            return;
+            return 0;
         }
 
         // ask user for confirmation to make changes
@@ -101,11 +104,11 @@ EOT
                 $executed++;
             } catch (\Exception $e) {
                 if ($input->getOption('ignore-failures')) {
-                    $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                    $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                     $failed++;
                     continue;
                 }
-                $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
+                $this->errOutput->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
                 return 1;
             }
         }
@@ -117,5 +120,7 @@ EOT
         if ($failed) {
             return 2;
         }
+
+        return 0;
     }
 }

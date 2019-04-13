@@ -24,9 +24,12 @@ class MigrateCommand extends AbstractCommand
     const VERBOSITY_CHILD = 0.5;
     /** @var OutputInterface $output */
     protected $output;
+    /** @var OutputInterface $output */
+    protected $errOutput;
     protected $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
-    protected $processTimeout = 86400;
+    protected $subProcessTimeout = 86400;
+    protected $subProcessErrorString = '';
 
     const COMMAND_NAME = 'kaliop:migration:migrate';
 
@@ -135,19 +138,29 @@ EOT
             if ($input->getOption('separate-process')) {
 
                 try {
+                    /// @todo in quiet mode, we could suppress output of the sub-command...
                     $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, true, $forceSigChild);
 
                     $executed++;
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
-                        $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                        $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                         $failed++;
                         continue;
                     }
                     if ($e instanceof AfterMigrationExecutionException) {
-                        $output->writeln("\n<error>Failure after migration end! Reason: " . $e->getMessage() . "</error>");
+                        $this->errOutput->writeln("\n<error>Failure after migration end! Reason: " . $e->getMessage() . "</error>");
                     } else {
-                        $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
+
+                        $errorMessage = $e->getMessage();
+                        if ($errorMessage == $this->subProcessErrorString) {
+                            // we have already echoed the error message while the subprocess was executing
+                            $errorMessage = "see above";
+                        } else {
+                            $errorMessage = preg_replace('/^\n*Migration aborted! Reason: */', '', $e->getMessage());
+                        }
+
+                        $this->errOutput->writeln("\n<error>Migration aborted! Reason: " . $errorMessage . "</error>");
                     }
                     return 1;
                 }
@@ -160,11 +173,11 @@ EOT
                     $executed++;
                 } catch (\Exception $e) {
                     if ($input->getOption('ignore-failures')) {
-                        $output->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                        $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
                         $failed++;
                         continue;
                     }
-                    $output->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
+                    $this->errOutput->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
                     return 1;
                 }
 
@@ -224,16 +237,25 @@ EOT
         }
 
         // allow long migrations processes by default
-        $process->setTimeout($this->processTimeout);
+        $process->setTimeout($this->subProcessTimeout);
         // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
         if ($forceSigchild !== null) {
             $process->setEnhanceSigchildCompatibility($forceSigchild);
         }
-        // and give immediate feedback to the user
+        // and give immediate feedback to the user...
+        // NB: if the subprocess writes to stderr then terminates with non-0 exit code, this will lead us to echoing the
+        // error text twice, once here and once at the end of execution of this command.
+        // In order to avoid that, since we can not know at this time what the subprocess exit code will be, we should
+        // somehow still print the error text now, and compare it to what we gt at the end...
         $process->run(
             $feedback ?
                 function($type, $buffer) {
-                    echo $buffer;
+                    if ($type == 'err') {
+                        $this->subProcessErrorString .= $buffer;
+                        $this->errOutput->write(preg_replace('/^\n*Migration aborted! Reason: */', '', $buffer));
+                    } else {
+                        $this->output->write($buffer);
+                    }
                 }
                 :
                 function($type, $buffer) {
@@ -242,6 +264,7 @@ EOT
 
         if (!$process->isSuccessful()) {
             $errorOutput = $process->getErrorOutput();
+            /// @todo should we always add the exit code to the error message, even when $errorOutput is not null ?
             if ($errorOutput === '') {
                 $errorOutput = "(separate process used to execute migration failed with no stderr output. Its exit code was: " . $process->getExitCode();
                 if ($process->getExitCode() == -1) {
@@ -249,7 +272,6 @@ EOT
                 }
                 $errorOutput .= ")";
             }
-            /// @todo should we always add the exit code, even when $errorOutput is not null ?
             throw new \Exception($errorOutput);
         }
 
@@ -376,28 +398,6 @@ EOT
         }
 
         return 1;
-    }
-
-    /**
-     * Small tricks to allow us to lower verbosity between NORMAL and QUIET and have a decent writeln API, even with old SF versions
-     * @param $message
-     * @param int $verbosity
-     */
-    protected function writeln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL)
-    {
-        if ($this->verbosity >= $verbosity) {
-            $this->output->writeln($message);
-        }
-    }
-
-    protected function setOutput(OutputInterface $output)
-    {
-        $this->output = $output;
-    }
-
-    protected function setVerbosity($verbosity)
-    {
-        $this->verbosity = $verbosity;
     }
 
     /**

@@ -13,6 +13,7 @@ use Symfony\Component\Console\Helper\Table;
  * Command to display the status of migrations.
  *
  * @todo add option to skip displaying already executed migrations
+ * @todo allow sorting migrations by their execution date
  */
 class StatusCommand extends AbstractCommand
 {
@@ -39,6 +40,9 @@ EOT
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setOutput($output);
+        $this->setVerbosity($output->getVerbosity());
+
         $migrationsService = $this->getMigrationService();
 
         $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path'));

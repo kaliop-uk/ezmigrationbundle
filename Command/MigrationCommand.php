@@ -54,6 +54,9 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->setOutput($output);
+        $this->setVerbosity($output->getVerbosity());
+
         if (!$input->getOption('add') && !$input->getOption('delete') && !$input->getOption('skip') && !$input->getOption('info')) {
             throw new \InvalidArgumentException('You must specify whether you want to --add, --delete, --skip or --info the specified migration.');
         }
@@ -135,7 +138,7 @@ EOT
             }
 
             $output->writeln('');
-            return;
+            return 0;
         }
 
         // ask user for confirmation to make changes
@@ -173,7 +176,7 @@ EOT
                 $output->writeln('<info>Added migration' . $migrationDefinition->path . '</info>');
             }
 
-            return;
+            return 0;
         }
 
         if ($input->getOption('delete')) {
@@ -184,7 +187,7 @@ EOT
 
             $migrationService->deleteMigration($migration);
 
-            return;
+            return 0;
         }
 
         if ($input->getOption('skip')) {
@@ -201,7 +204,9 @@ EOT
                 $output->writeln('<info>Migration' . $migrationDefinition->path . ' marked as skipped</info>');
             }
 
-            return;
+            return 0;
         }
+
+        throw new \InvalidArgumentException("Please specify one action to be taken on the given migration");
     }
 }
