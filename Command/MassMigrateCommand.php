@@ -155,7 +155,7 @@ EOT
                     $errorOutput .= ")";
                 }
                 /// @todo should we always add the exit code, even when $errorOutput is not null ?
-                $output->writeln("\n<error>Subprocess $i failed! Reason: " . $errorOutput . "</error>\n");
+                $this->errOutput->writeln("\n<error>Subprocess $i failed! Reason: " . $errorOutput . "</error>\n");
                 $failed++;
             }
         }
@@ -168,12 +168,12 @@ EOT
 
         $time = microtime(true) - $start;
 
-        $this->writeln('<info>'.$this->migrationsDone[0].' migrations executed, '.$this->migrationsDone[1].' failed, '.$this->migrationsDone[2].' skipped</info>');
+        $this->writeln('<info>'.$this->migrationsDone[0].' migrations executed, '.$this->migrationsDone[1].($failed ? ' or more' : '').' failed, '.$this->migrationsDone[2].' skipped</info>');
 
         // since we use subprocesses, we can not measure max memory used
         $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
 
-        return $failed;
+        return $failed + $this->migrationsDone[1];
     }
 
     /**
@@ -220,12 +220,15 @@ EOT
 
                     $executed++;
                 } catch (\Exception $e) {
+
+                    $errorMessage = preg_replace('/^\n*Migration aborted! Reason: */', '', $e->getMessage());
+
                     if ($input->getOption('ignore-failures')) {
-                        $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
+                        $this->errOutput->writeln("\n<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>\n");
                         $failed++;
                         continue;
                     }
-                    $this->errOutput->writeln("\n<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>");
+                    $this->errOutput->writeln("\n<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>");
 
                     $missed = $total - $executed - $failed - $skipped;
                     $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
@@ -242,11 +245,11 @@ EOT
                 } catch(\Exception $e) {
                     $failed++;
                     if ($input->getOption('ignore-failures')) {
-                        $this->errOutput->writeln("<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
+                        $this->writeErrorln("<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
                         continue;
                     }
 
-                    $this->errOutput->writeln("<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
+                    $this->writeErrorln("<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
 
                     $missed = $total - $executed - $failed - $skipped;
                     $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
@@ -282,7 +285,12 @@ EOT
 
             // we tag the output from the different processes
             if (trim($line) !== '') {
-                echo '[' . ($process ? $process->getPid() : ''). '] ' . trim($line) . "\n";
+                $msg = '[' . ($process ? $process->getPid() : ''). '] ' . trim($line);
+                if ($type == 'err') {
+                    $this->errOutput->writeln($msg, OutputInterface::OUTPUT_RAW);
+                } else {
+                    $this->output->writeln($msg, OutputInterface::OUTPUT_RAW);
+                }
             }
         }
     }

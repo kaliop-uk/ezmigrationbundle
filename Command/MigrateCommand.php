@@ -236,6 +236,8 @@ EOT
             $this->writeln('<info>Executing: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
         }
 
+        $this->subProcessErrorString = '';
+
         // allow long migrations processes by default
         $process->setTimeout($this->subProcessTimeout);
         // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
@@ -252,9 +254,9 @@ EOT
                 function($type, $buffer) {
                     if ($type == 'err') {
                         $this->subProcessErrorString .= $buffer;
-                        $this->errOutput->write(preg_replace('/^\n*Migration aborted! Reason: */', '', $buffer));
+                        $this->errOutput->write(preg_replace('/^\n*Migration aborted! Reason: */', '', $buffer), OutputInterface::OUTPUT_RAW);
                     } else {
-                        $this->output->write($buffer);
+                        $this->output->write($buffer, OutputInterface::OUTPUT_RAW);
                     }
                 }
                 :

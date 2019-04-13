@@ -1,9 +1,19 @@
 Version 5.9.2
 =============
 
-* Fixed: when migrations fail, the error message is written to stderr instead of stdout
+* Fixed: when migrations fail, the error message is written to stderr instead of stdout, for both the `migrate` and
+    `mass_migrate` commands
 
-* Fixed: better error reporting when executing migrations as subprocesses (using the `-p` option) 
+* Fixed: better error reporting when executing migrations as separate processes (using the `-p` option) 
+
+* Fixed: better error reporting by the `mass_migrate` commands:
+
+    - return a non-0 exit code when at least one migration or one subprocess failed
+    - report '0 or more' migrations failed when at least one subprocess failed
+
+* BC changes:
+
+   - code which relies on parsing the output and/or exit code of `migrate` and `mass_migrate` commands should be adjusted 
 
 
 Version 5.9.1

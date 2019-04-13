@@ -59,4 +59,11 @@ abstract class AbstractCommand extends ContainerAwareCommand
             $this->output->writeln($message);
         }
     }
+
+    protected function writeErrorln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL)
+    {
+        if ($this->verbosity >= $verbosity) {
+            $this->errOutput->writeln($message);
+        }
+    }
 }
