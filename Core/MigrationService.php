@@ -249,7 +249,7 @@ class MigrationService implements ContextProviderInterface
      * @param string $defaultLanguageCode
      * @param string|int|false|null $adminLogin when false, current user is used; when null, hardcoded admin account
      * @param bool $force when true, execute a migration if it was already in status DONE or SKIPPED (would throw by default)
-     * @param bool|null $forcesigchildHandling
+     * @param bool|null forceSigchildEnabled
      * @throws \Exception
      *
      * @todo treating a null and false $adminLogin values differently is prone to hard-to-track errors.
@@ -257,7 +257,7 @@ class MigrationService implements ContextProviderInterface
      * @todo refactor there start to be too many parameters here. Move to an single parameter: array of options or value-object
      */
     public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
-        $defaultLanguageCode = null, $adminLogin = null, $force = false, $forceSigchildHandling = null)
+        $defaultLanguageCode = null, $adminLogin = null, $force = false, $forceSigchildEnabled = null)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
             $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
@@ -268,7 +268,7 @@ class MigrationService implements ContextProviderInterface
         }
 
         /// @todo add support for setting in $migrationContext a userContentType ?
-        $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin, $forceSigchildHandling);
+        $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin, $forceSigchildEnabled);
 
         // set migration as begun - has to be in own db transaction
         $migration = $this->storageHandler->startMigration($migrationDefinition, $force);
@@ -475,10 +475,10 @@ class MigrationService implements ContextProviderInterface
     /**
      * @param string $defaultLanguageCode
      * @param string|int|false $adminLogin
-     * @param bool|null
-     * @return array $forceSigchildHandling
+     * @param bool|null $forceSigchildEnabled
+     * @return array
      */
-    protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null, $forceSigchildHandling = null )
+    protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null, $forceSigchildEnabled = null )
     {
         $properties = array();
 
@@ -489,9 +489,9 @@ class MigrationService implements ContextProviderInterface
         if ($adminLogin !== null) {
             $properties['adminUserLogin'] = $adminLogin;
         }
-        if ($forceSigchildHandling !== null)
+        if ($forceSigchildEnabled !== null)
         {
-            $properties['forceSigchildHandling'] = $forceSigchildHandling;
+            $properties['forceSigchildEnabled'] = $forceSigchildEnabled;
         }
 
         return $properties;

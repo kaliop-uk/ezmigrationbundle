@@ -1,5 +1,12 @@
-Version 5.9.2
+Version 5.9.3
 =============
+
+* Renamed option `force-sigchild-enabled` to `force-sigchild-enabled` and actually made it work (see notes for 5.9.1
+    below for the explanation about its usage)
+
+
+Version 5.9.2 - please don't use
+================================
 
 * Fixed: when migrations fail, the error message is written to stderr instead of stdout, for both the `migrate` and
     `mass_migrate` commands
@@ -16,14 +23,16 @@ Version 5.9.2
    - code which relies on parsing the output and/or exit code of `migrate` and `mass_migrate` commands should be adjusted 
 
 
-Version 5.9.1
-=============
+Version 5.9.1 - please don't use
+================================
 
 * New: the `migrate` and `mass_migrate` commands accept an option `force-sigchild-handling`.
     This is useful when you are running on eg. Debian and Ubuntu linux, and run the migrations using separate subprocesses:
     in such scenario there are chances that migrations will be reported as having failed executing even though they
     have not. Using the `force-sigchild-handling` option should fix that.
-    For reference, see comment 12 in this ticket: https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061 
+    For reference, see comment 12 in this ticket: https://bugs.launchpad.net/ubuntu/+source/php5/+bug/516061
+    
+    *NB* this option actually did not work as intended, and has been replaced in version 5.9.3
 
 
 Version 5.9.0

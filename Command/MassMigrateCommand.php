@@ -7,11 +7,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\Core\Helper\ProcessManager;
+use Kaliop\eZMigrationBundle\Core\Process\Process;
+use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
 
 class MassMigrateCommand extends MigrateCommand
 {
@@ -107,6 +108,11 @@ EOT
         $concurrency = $input->getOption('concurrency');
         $this->writeln("Executing migrations using " . count($paths) . " processes with a concurrency of $concurrency");
 
+        // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
+        if ($input->getOption('force-sigchild-enabled')) {
+            Process::forceSigchildEnabled(true);
+        }
+
         $builder = new ProcessBuilder();
         $executableFinder = new PhpExecutableFinder();
         if (false !== ($php = $executableFinder->find())) {
@@ -129,10 +135,6 @@ EOT
 
             // allow long migrations processes by default
             $process->setTimeout($this->subProcessTimeout);
-            // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
-            if ($input->getOption('force-sigchild-handling')) {
-                $process->setEnhanceSigchildCompatibility(true);
-            }
             $processes[] = $process;
         }
 
@@ -150,7 +152,7 @@ EOT
                 if ($errorOutput === '') {
                     $errorOutput = "(separate process used to execute migration failed with no stderr output. Its exit code was: " . $process->getExitCode();
                     if ($process->getExitCode() == -1) {
-                        $errorOutput .= ". If you are using Debian or Ubuntu linux, please consider using the --force-sigchild-handling option.";
+                        $errorOutput .= ". If you are using Debian or Ubuntu linux, please consider using the --force-sigchild-enabled option.";
                     }
                     $errorOutput .= ")";
                 }
@@ -198,7 +200,10 @@ EOT
             $builderArgs = parent::createChildProcessArgs($input);
         }
 
-        $forceSigChild = $input->getOption('force-sigchild-handling');
+        // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
+        if ($input->getOption('force-sigchild-enabled')) {
+            Process::forceSigchildEnabled(true);
+        }
 
         $failed = 0;
         $executed = 0;
@@ -216,7 +221,7 @@ EOT
             if ($input->getOption('separate-process')) {
 
                 try {
-                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, false, $forceSigChild);
+                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, false);
 
                     $executed++;
                 } catch (\Exception $e) {
@@ -431,8 +436,8 @@ EOT
             $builderArgs[] = '--separate-process';
         }
         // useful in case the subprocess has a migration step of type process/run
-        if ($input->getOption('force-sigchild-handling')) {
-            $builderArgs[] = '--force-sigchild-handling';
+        if ($input->getOption('force-sigchild-enabled')) {
+            $builderArgs[] = '--force-sigchild-enabled';
         }
 
         return $builderArgs;

@@ -166,7 +166,7 @@ EOT
             'lang' => $input->getOption('lang'),
             'adminLogin' => $input->getOption('admin-login')
             /// @todo should we allow users to specify this ?
-            //'forceSigchildHandling' => null
+            //'forceSigchildEnabled' => null
         );
 
         $date = date('YmdHis');
@@ -357,9 +357,9 @@ EOT
         if (isset($parameters['adminLogin']) && $parameters['adminLogin'] != '') {
             $context['adminUserLogin'] = $parameters['adminLogin'];
         }
-        if (isset($parameters['forceSigchildHandling']) && $parameters['forceSigchildHandling'] !== null)
+        if (isset($parameters['forceSigchildEnabled']) && $parameters['forceSigchildEnabled'] !== null)
         {
-            $context['forceSigchildHandling'] = $parameters['forceSigchildHandling'];
+            $context['forceSigchildEnabled'] = $parameters['forceSigchildEnabled'];
         }
 
         return $context;

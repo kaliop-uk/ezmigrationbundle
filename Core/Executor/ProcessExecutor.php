@@ -2,10 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Process\Process;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
 
 class ProcessExecutor extends AbstractExecutor
 {
@@ -85,10 +85,6 @@ class ProcessExecutor extends AbstractExecutor
             $timeout = $dsl['timeout'];
         }
         $process->setTimeout($timeout);
-
-        if (is_array($context) && isset($context['forceSigchildHandling'])) {
-            $process->setEnhanceSigchildCompatibility($context['forceSigchildHandling']);
-        }
 
         if (isset($dsl['working_directory'])) {
             $process->setWorkingDirectory($dsl['working_directory']);
