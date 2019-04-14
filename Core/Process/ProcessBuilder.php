@@ -21,19 +21,24 @@ class ProcessBuilder extends BaseProcessBuilder
      */
     public function getProcess()
     {
-        /** @var array $this_prefix */
-        $this_prefix = \Closure::bind(function(ProcessBuilder $builder){return $builder->prefix;}, null, $this);
-        /** @var array $this_arguments */
-        $this_arguments = \Closure::bind(function(ProcessBuilder $builder){return $builder->arguments;}, null, $this);
-        /** @var array $this_options */
-        $this_options = \Closure::bind(function(ProcessBuilder $builder){return $builder->options;}, null, $this);
-        $this_inheritEnv = \Closure::bind(function(ProcessBuilder $builder){return $builder->inheritEnv;}, null, $this);
-        $this_env = \Closure::bind(function(ProcessBuilder $builder){return $builder->env;}, null, $this);
-        $this_cwd = \Closure::bind(function(ProcessBuilder $builder){return $builder->cwd;}, null, $this);
-        $this_input = \Closure::bind(function(ProcessBuilder $builder){return $builder->input;}, null, $this);
-        $this_timeout = \Closure::bind(function(ProcessBuilder $builder){return $builder->timeout;}, null, $this);
-        $this_outputDisabled = \Closure::bind(function(ProcessBuilder $builder){return $builder->outputDisabled;}, null, $this);
-
+        $this_prefix = \Closure::bind(function(ProcessBuilder $builder){return $builder->prefix;}, null, get_parent_class($this));
+        $this_prefix = $this_prefix($this);
+        $this_arguments = \Closure::bind(function(ProcessBuilder $builder){return $builder->arguments;}, null, get_parent_class($this));
+        $this_arguments = $this_arguments($this);
+        $this_options = \Closure::bind(function(ProcessBuilder $builder){return $builder->options;}, null, get_parent_class($this));
+        $this_options = $this_options($this);
+        $this_inheritEnv = \Closure::bind(function(ProcessBuilder $builder){return $builder->inheritEnv;}, null, get_parent_class($this));
+        $this_inheritEnv = $this_inheritEnv($this);
+        $this_env = \Closure::bind(function(ProcessBuilder $builder){return $builder->env;}, null, get_parent_class($this));
+        $this_env = $this_env($this);
+        $this_cwd = \Closure::bind(function(ProcessBuilder $builder){return $builder->cwd;}, null, get_parent_class($this));
+        $this_cwd = $this_cwd($this);
+        $this_input = \Closure::bind(function(ProcessBuilder $builder){return $builder->input;}, null, get_parent_class($this));
+        $this_input = $this_input($this);
+        $this_timeout = \Closure::bind(function(ProcessBuilder $builder){return $builder->timeout;}, null, get_parent_class($this));
+        $this_timeout = $this_timeout($this);
+        $this_outputDisabled = \Closure::bind(function(ProcessBuilder $builder){return $builder->outputDisabled;}, null, get_parent_class($this));
+        $this_outputDisabled = $this_outputDisabled($this);
         if (0 === count($this_prefix) && 0 === count($this_arguments)) {
             throw new LogicException('You must add() command arguments before calling getProcess().');
         }
@@ -41,7 +46,7 @@ class ProcessBuilder extends BaseProcessBuilder
         $options = $this_options;
 
         $arguments = array_merge($this_prefix, $this_arguments);
-        $script = implode(' ', array_map(array(__NAMESPACE__.'\\ProcessUtils', 'escapeArgument'), $arguments));
+        $script = implode(' ', array_map(array('Symfony\\Component\\Process\\ProcessUtils', 'escapeArgument'), $arguments));
 
         if ($this_inheritEnv) {
             // include $_ENV for BC purposes
