@@ -123,6 +123,8 @@ EOT
             Process::forceSigchildEnabled(true);
         }
 
+        $aborting = false;
+        $total = count($toExecute);
         $executed = 0;
         $failed = 0;
         $skipped = 0;
@@ -147,26 +149,26 @@ EOT
 
                     $executed++;
                 } catch (\Exception $e) {
-                    if ($input->getOption('ignore-failures')) {
-                        $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
-                        $failed++;
-                        continue;
-                    }
-                    if ($e instanceof AfterMigrationExecutionException) {
-                        $this->errOutput->writeln("\n<error>Failure after migration end! Reason: " . $e->getMessage() . "</error>");
-                    } else {
+                    $failed++;
 
-                        $errorMessage = $e->getMessage();
-                        if ($errorMessage == $this->subProcessErrorString) {
-                            // we have already echoed the error message while the subprocess was executing
-                            $errorMessage = "see above";
+
+                    $errorMessage = $e->getMessage();
+                    // we probably have already echoed the error message while the subprocess was executing, avoid repeating it
+                    if ($errorMessage != $this->subProcessErrorString) {
+                        if ($e instanceof AfterMigrationExecutionException) {
+                            $errorMessage = "Failure after migration end! Reason: " . $errorMessage;
                         } else {
-                            $errorMessage = preg_replace('/^\n*Migration aborted! Reason: */', '', $e->getMessage());
+                            $errorMessage = "Migration failed! Reason: " . $errorMessage;
                         }
 
-                        $this->errOutput->writeln("\n<error>Migration aborted! Reason: " . $errorMessage . "</error>");
+                        $this->errOutput->writeln("\n<error>$errorMessage</error>");
                     }
-                    return 1;
+
+                    if (!$input->getOption('ignore-failures')) {
+                        $this->errOutput->writeln("\n<error>Migration execution aborted</error>");
+                        $aborting = true;
+                        break;
+                    }
                 }
 
             } else {
@@ -176,32 +178,39 @@ EOT
 
                     $executed++;
                 } catch (\Exception $e) {
-                    if ($input->getOption('ignore-failures')) {
-                        $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>\n");
-                        $failed++;
-                        continue;
+                    $failed++;
+
+                    $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>");
+
+                    if (!$input->getOption('ignore-failures')) {
+                        $this->writeErrorln("\n<error>Migration execution aborted</error>");
+                        $aborting = true;
+                        break;
                     }
-                    $this->errOutput->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
-                    return 1;
                 }
 
             }
         }
 
-        if ($input->getOption('clear-cache')) {
+        if ($input->getOption('clear-cache') && !$aborting) {
             $command = $this->getApplication()->find('cache:clear');
             $inputArray = new ArrayInput(array('command' => 'cache:clear'));
             $command->run($inputArray, $output);
         }
 
+
+        $missed = $total - $executed - $failed - $skipped;
+
         $time = microtime(true) - $start;
-        $this->writeln("Executed $executed migrations, failed $failed, skipped $skipped");
+        $this->writeln("Executed $executed migrations, failed $failed, skipped $skipped" . ($missed ? ", missed $missed" : ''));
         if ($input->getOption('separate-process')) {
             // in case of using subprocesses, we can not measure max memory used
             $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
         } else {
             $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
         }
+
+        return $failed;
     }
 
     /**
@@ -253,7 +262,7 @@ EOT
                 function($type, $buffer) {
                     if ($type == 'err') {
                         $this->subProcessErrorString .= $buffer;
-                        $this->errOutput->write(preg_replace('/^\n*Migration aborted! Reason: */', '', $buffer), OutputInterface::OUTPUT_RAW);
+                        $this->errOutput->write($buffer, OutputInterface::OUTPUT_RAW);
                     } else {
                         $this->output->write($buffer, OutputInterface::OUTPUT_RAW);
                     }

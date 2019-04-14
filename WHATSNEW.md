@@ -4,6 +4,14 @@ Version 5.9.3
 * Renamed option `force-sigchild-enabled` to `force-sigchild-enabled` and actually made it work (see notes for 5.9.1
     below for the explanation about its usage)
 
+* Improved: better error reporting by the `migrate` and `mass_migrate` commands
+
+* Improved: the `migrate` commands exits with non-0 exit code when any migration failed, even if it is gievn the `-i` option
+
+* BC changes:
+
+   - code which relies on parsing the output and/or exit code of `migrate` and `mass_migrate` commands should be adjusted 
+
 
 Version 5.9.2 - please don't use
 ================================

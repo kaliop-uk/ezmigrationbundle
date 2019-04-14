@@ -39,6 +39,7 @@ class ProcessBuilder extends BaseProcessBuilder
         $this_timeout = $this_timeout($this);
         $this_outputDisabled = \Closure::bind(function(ProcessBuilder $builder){return $builder->outputDisabled;}, null, get_parent_class($this));
         $this_outputDisabled = $this_outputDisabled($this);
+
         if (0 === count($this_prefix) && 0 === count($this_arguments)) {
             throw new LogicException('You must add() command arguments before calling getProcess().');
         }
