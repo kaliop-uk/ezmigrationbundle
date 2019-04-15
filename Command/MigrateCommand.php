@@ -423,7 +423,7 @@ EOT
 
         // mandatory args and options
         $builderArgs = array(
-            $_SERVER['argv'][0], // sf console
+            $this->getConsoleFile(), // sf console
             self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
             '--env=' . $kernel->getEnvironment(), // sf env
             '--child'
@@ -455,5 +455,23 @@ EOT
         }
 
         return $builderArgs;
+    }
+
+    /**
+     * Returns the file-path of the symfony console in use, based on simple heuristics
+     * @return string
+     * @todo improve how we look for the console: we could fe. scan all of the files in the kernel dir, or look up the full process info based on its pid
+     */
+    protected function getConsoleFile()
+    {
+        if (strpos($_SERVER['argv'][0], 'phpunit') !== false) {
+            $kernelDir = $this->getContainer()->get('kernel')->getRootDir();
+            if (is_file("$kernelDir/console")) {
+                return "$kernelDir/console";
+            }
+            throw new \Exception("Can not determine the name of the symfony console file in use for running ");
+        }
+
+        return $_SERVER['argv'][0]; // sf console
     }
 }

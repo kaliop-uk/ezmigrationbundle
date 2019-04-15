@@ -148,7 +148,7 @@ class MigrateTest extends CommandTest
      */
     public function testExecuteWithDifferentOptions(array $options = array())
     {
-        $filePath = $this->dslDir . '/UnitTestOK031_writeToStdout.yml';
+        $filePath = $this->dslDir . '/UnitTestOK031_helloworld.yml';
 
         $this->prepareMigration($filePath);
 
@@ -228,7 +228,7 @@ class MigrateTest extends CommandTest
         return array(
             array(array()),
             array(array('-c' => true)),
-            array(array('clear-cache' => true)),
+            array(array('--clear-cache' => true)),
             array(array('-f' => true)),
             array(array('--force' => true)),
             array(array('-i' => true)),

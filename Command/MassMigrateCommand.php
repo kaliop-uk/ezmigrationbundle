@@ -431,9 +431,9 @@ EOT
 
         // mandatory args and options
         $builderArgs = array(
-            $_SERVER['argv'][0], // sf console
+            $this->getConsoleFile(), // sf console
             self::COMMAND_NAME, // name of sf command. Can we get it from the Application instead of hardcoding?
-            '--env=' . $kernel-> getEnvironment(), // sf env
+            '--env=' . $kernel->getEnvironment(), // sf env
             '--child'
         );
         // sf/ez env options
