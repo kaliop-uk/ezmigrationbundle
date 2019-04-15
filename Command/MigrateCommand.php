@@ -193,12 +193,6 @@ EOT
 
         if ($aborted) {
             $this->writeErrorln("\n<error>Migration execution aborted</error>");
-        } else {
-            if ($input->getOption('clear-cache')) {
-                $command = $this->getApplication()->find('cache:clear');
-                $inputArray = new ArrayInput(array('command' => 'cache:clear'));
-                $command->run($inputArray, $output);
-            }
         }
 
         $missed = $total - $executed - $failed - $skipped;
@@ -210,6 +204,12 @@ EOT
             $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
         } else {
             $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB</info>');
+        }
+
+        if (!$aborted && $input->getOption('clear-cache')) {
+            $command = $this->getApplication()->find('cache:clear');
+            $inputArray = new ArrayInput(array('command' => 'cache:clear'));
+            $command->run($inputArray, $output);
         }
 
         return $failed;
