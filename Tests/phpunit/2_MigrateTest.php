@@ -231,8 +231,8 @@ class MigrateTest extends CommandTest
             ///       it seems that after clearing the cache, further code fails trying to access debug.dump_listener
             ///       PHP Fatal error:  require(): Failed opening required '/home/travis/build/kaliop-uk/ezmigrationbundle/vendor/ezsystems/ezplatform/var/cache/beha_/ContainerIkrz2xn/getDebug_DumpListenerService.php'. in /home/travis/build/kaliop-uk/ezmigrationbundle/vendor/ezsystems/ezplatform/var/cache/behat/ContainerIkrz2xn/appBehatProjectContainer.php on line 5166
             ///       PHP Fatal error:  Uncaught Symfony\Component\Console\Exception\RuntimeException: Unable to write output. in /home/travis/build/kaliop-uk/ezmigrationbundle/vendor/symfony/symfony/src/Symfony/Component/Console/Output/StreamOutput.php:79
-            array(array('-c' => true)),
-            array(array('--clear-cache' => true)),
+            //array(array('-c' => true)),
+            //array(array('--clear-cache' => true)),
             array(array('-f' => true)),
             array(array('--force' => true)),
             array(array('-i' => true)),
