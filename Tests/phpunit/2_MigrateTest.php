@@ -227,8 +227,8 @@ class MigrateTest extends CommandTest
     {
         return array(
             array(array()),
-            array(array('-c --debug' => true)),
-            array(array('--clear-cache --debug' => true)),
+            array(array('-c' => true, '--debug' => true)),
+            array(array('--clear-cache' => true, '--debug' => true)),
             array(array('-f' => true)),
             array(array('--force' => true)),
             array(array('-i' => true)),
