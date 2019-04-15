@@ -50,7 +50,7 @@ sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kerne
 sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui-modules/src#'%kernel.root_dir%/../../ezplatform-admin-ui-modules/src#" ${APP_DIR}/config/config.yml
 
 # Fix the eZ console autoload config if needed (ezplatform 2)
-if [ -f vendor/ezsystems/ezplatform/bin/console ]; then sed -i "s#'/../vendor/autoload.php'#'/../../../vendor/autoload.php'#" vendor/ezsystems/ezplatform/bin/console; fi
+if [ -f vendor/ezsystems/ezplatform/bin/console ]; then sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" vendor/ezsystems/ezplatform/bin/console; fi
 
 # Generate legacy autoloads
 if [ "$EZ_VERSION" = "ezpublish-community" ]; then cat Tests/ezpublish-legacy/config.php > vendor/ezsystems/ezpublish-legacy/config.php; fi
