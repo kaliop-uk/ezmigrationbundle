@@ -88,7 +88,7 @@ class MigrateTest extends CommandTest
         $output = $this->fetchOutput();
         $this->assertNotSame(0, $exitCode, 'CLI Command should have failed. Output: ' . $output);
         // check that there are no notes after adding the migration
-        $this->assertRegexp('?Migration aborted.?', $output);
+        $this->assertRegexp('?Migration failed!?', $output);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
