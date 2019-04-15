@@ -166,6 +166,11 @@ class MigrateTest extends CommandTest
         //$this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
         //$this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
 
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--info' => true, '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
