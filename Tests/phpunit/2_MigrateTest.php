@@ -227,8 +227,9 @@ class MigrateTest extends CommandTest
     {
         return array(
             array(array()),
-            /// @todo re-enable these 2 tests after we find a way to make them not fail with recent Sf versions:
-            ///       it seems that after clearing the cache, further code fails trying to access debug.dump_listener
+            /// @todo re-enable these 2 tests after we find a way to make them not fail with recent versions of Sf  (or is it phpunit?):
+            ///       it seems that after clearing the cache once, further code fails trying to access the debug.dump_listener
+            ///       service after the console StreamOutput writer fails to write to its stream and throws
             ///       PHP Fatal error:  require(): Failed opening required '/home/travis/build/kaliop-uk/ezmigrationbundle/vendor/ezsystems/ezplatform/var/cache/beha_/ContainerIkrz2xn/getDebug_DumpListenerService.php'. in /home/travis/build/kaliop-uk/ezmigrationbundle/vendor/ezsystems/ezplatform/var/cache/behat/ContainerIkrz2xn/appBehatProjectContainer.php on line 5166
             ///       PHP Fatal error:  Uncaught Symfony\Component\Console\Exception\RuntimeException: Unable to write output. in /home/travis/build/kaliop-uk/ezmigrationbundle/vendor/symfony/symfony/src/Symfony/Component/Console/Output/StreamOutput.php:79
             //array(array('-c' => true)),

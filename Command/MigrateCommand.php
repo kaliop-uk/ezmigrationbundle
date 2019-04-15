@@ -471,7 +471,10 @@ EOT
             if (is_file("$kernelDir/console")) {
                 return "$kernelDir/console";
             }
-            throw new \Exception("Can not determine the name of the symfony console file in use for running ");
+            if (is_file("$kernelDir/../bin/console")) {
+                return "$kernelDir/../bin/console";
+            }
+            throw new \Exception("Can not determine the name of the symfony console file in use for running as separate process");
         }
 
         return $_SERVER['argv'][0]; // sf console
