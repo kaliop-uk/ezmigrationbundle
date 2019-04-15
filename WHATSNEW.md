@@ -12,6 +12,8 @@ Version 5.9.3
     you would normally run the migrations using `screen` or `tmux`, such as over ssh connections which risk being dropped
     before the migrations have finished executing
 
+* Fix: match 'all' languages would raise an exception
+
 * BC changes:
 
    - code which relies on parsing the output and/or exit code of `migrate` and `mass_migrate` commands should be adjusted 

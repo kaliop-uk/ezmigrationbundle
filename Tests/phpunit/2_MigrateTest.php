@@ -142,6 +142,7 @@ class MigrateTest extends CommandTest
     }
 
     /**
+     * Tests executing a very simple migration with all the different cli flags enabled or not
      * @param array $options
      * @dataProvider migrateOptionsProvider
      */
@@ -225,19 +226,19 @@ class MigrateTest extends CommandTest
     public function migrateOptionsProvider()
     {
         return array(
-            array(),
-            array('-c' => true),
-            array('clear-cache' => true),
-            array('-f' => true),
-            array('--force' => true),
-            array('-i' => true),
-            array('--ignore-failures' => true),
-            array('-u' => true),
-            array('--no-transactions' => true),
-            array('-p' => true),
-            array('--separate-process' => true),
-            array('--force-sigchild-enabled' => true),
-            array('--survive-disconnected-tty' => true),
+            array(array()),
+            array(array('-c' => true)),
+            array(array('clear-cache' => true)),
+            array(array('-f' => true)),
+            array(array('--force' => true)),
+            array(array('-i' => true)),
+            array(array('--ignore-failures' => true)),
+            array(array('-u' => true)),
+            array(array('--no-transactions' => true)),
+            array(array('-p' => true)),
+            array(array('--separate-process' => true)),
+            array(array('--force-sigchild-enabled' => true)),
+            array(array('--survive-disconnected-tty' => true)),
         );
     }
 
