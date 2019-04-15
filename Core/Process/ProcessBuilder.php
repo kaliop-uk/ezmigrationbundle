@@ -21,23 +21,24 @@ class ProcessBuilder extends BaseProcessBuilder
      */
     public function getProcess()
     {
-        $this_prefix = \Closure::bind(function(ProcessBuilder $builder){return $builder->prefix;}, null, get_parent_class($this));
+        $parentClass = get_parent_class($this);
+        $this_prefix = \Closure::bind(function(ProcessBuilder $builder){return $builder->prefix;}, null, $parentClass);
         $this_prefix = $this_prefix($this);
-        $this_arguments = \Closure::bind(function(ProcessBuilder $builder){return $builder->arguments;}, null, get_parent_class($this));
+        $this_arguments = \Closure::bind(function(ProcessBuilder $builder){return $builder->arguments;}, null, $parentClass);
         $this_arguments = $this_arguments($this);
-        $this_options = \Closure::bind(function(ProcessBuilder $builder){return $builder->options;}, null, get_parent_class($this));
+        $this_options = \Closure::bind(function(ProcessBuilder $builder){return $builder->options;}, null, $parentClass);
         $this_options = $this_options($this);
-        $this_inheritEnv = \Closure::bind(function(ProcessBuilder $builder){return $builder->inheritEnv;}, null, get_parent_class($this));
+        $this_inheritEnv = \Closure::bind(function(ProcessBuilder $builder){return $builder->inheritEnv;}, null, $parentClass);
         $this_inheritEnv = $this_inheritEnv($this);
-        $this_env = \Closure::bind(function(ProcessBuilder $builder){return $builder->env;}, null, get_parent_class($this));
+        $this_env = \Closure::bind(function(ProcessBuilder $builder){return $builder->env;}, null, $parentClass);
         $this_env = $this_env($this);
-        $this_cwd = \Closure::bind(function(ProcessBuilder $builder){return $builder->cwd;}, null, get_parent_class($this));
+        $this_cwd = \Closure::bind(function(ProcessBuilder $builder){return $builder->cwd;}, null, $parentClass);
         $this_cwd = $this_cwd($this);
-        $this_input = \Closure::bind(function(ProcessBuilder $builder){return $builder->input;}, null, get_parent_class($this));
+        $this_input = \Closure::bind(function(ProcessBuilder $builder){return $builder->input;}, null, $parentClass);
         $this_input = $this_input($this);
-        $this_timeout = \Closure::bind(function(ProcessBuilder $builder){return $builder->timeout;}, null, get_parent_class($this));
+        $this_timeout = \Closure::bind(function(ProcessBuilder $builder){return $builder->timeout;}, null, $parentClass);
         $this_timeout = $this_timeout($this);
-        $this_outputDisabled = \Closure::bind(function(ProcessBuilder $builder){return $builder->outputDisabled;}, null, get_parent_class($this));
+        $this_outputDisabled = \Closure::bind(function(ProcessBuilder $builder){return $builder->outputDisabled;}, null, $parentClass);
         $this_outputDisabled = $this_outputDisabled($this);
 
         if (0 === count($this_prefix) && 0 === count($this_arguments)) {

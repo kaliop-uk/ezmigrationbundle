@@ -23,11 +23,6 @@ class MigrateCommand extends AbstractCommand
 {
     // in between QUIET and NORMAL
     const VERBOSITY_CHILD = 0.5;
-    /** @var OutputInterface $output */
-    protected $output;
-    /** @var OutputInterface $output */
-    protected $errOutput;
-    protected $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
     protected $subProcessTimeout = 86400;
     protected $subProcessErrorString = '';
@@ -123,18 +118,18 @@ EOT
             Process::forceSigchildEnabled(true);
         }
 
-        $aborting = false;
-        $total = count($toExecute);
+        $aborted = false;
         $executed = 0;
         $failed = 0;
         $skipped = 0;
+        $total = count($toExecute);
 
         /** @var MigrationDefinition $migrationDefinition */
         foreach ($toExecute as $name => $migrationDefinition) {
 
             // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
             if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-                $output->writeln("<comment>Skipping $name</comment>\n");
+                $output->writeln("<comment>Skipping $name</comment>");
                 $skipped++;
                 continue;
             }
@@ -161,12 +156,11 @@ EOT
                             $errorMessage = "Migration failed! Reason: " . $errorMessage;
                         }
 
-                        $this->errOutput->writeln("\n<error>$errorMessage</error>");
+                        $this->writeErrorln("\n<error>$errorMessage</error>");
                     }
 
                     if (!$input->getOption('ignore-failures')) {
-                        $this->errOutput->writeln("\n<error>Migration execution aborted</error>");
-                        $aborting = true;
+                        $aborted = true;
                         break;
                     }
                 }
@@ -180,11 +174,10 @@ EOT
                 } catch (\Exception $e) {
                     $failed++;
 
-                    $this->errOutput->writeln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>");
+                    $this->writeErrorln("\n<error>Migration failed! Reason: " . $e->getMessage() . "</error>");
 
                     if (!$input->getOption('ignore-failures')) {
-                        $this->writeErrorln("\n<error>Migration execution aborted</error>");
-                        $aborting = true;
+                        $aborted = true;
                         break;
                     }
                 }
@@ -192,22 +185,25 @@ EOT
             }
         }
 
-        if ($input->getOption('clear-cache') && !$aborting) {
-            $command = $this->getApplication()->find('cache:clear');
-            $inputArray = new ArrayInput(array('command' => 'cache:clear'));
-            $command->run($inputArray, $output);
+        if ($aborted) {
+            $this->writeErrorln("\n<error>Migration execution aborted</error>");
+        } else {
+            if ($input->getOption('clear-cache')) {
+                $command = $this->getApplication()->find('cache:clear');
+                $inputArray = new ArrayInput(array('command' => 'cache:clear'));
+                $command->run($inputArray, $output);
+            }
         }
 
-
         $missed = $total - $executed - $failed - $skipped;
+        $this->writeln("\nExecuted $executed migrations, failed $failed, skipped $skipped" . ($missed ? ", missed $missed" : ''));
 
         $time = microtime(true) - $start;
-        $this->writeln("Executed $executed migrations, failed $failed, skipped $skipped" . ($missed ? ", missed $missed" : ''));
         if ($input->getOption('separate-process')) {
             // in case of using subprocesses, we can not measure max memory used
-            $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
+            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
         } else {
-            $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
+            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB</info>');
         }
 
         return $failed;
@@ -262,10 +258,8 @@ EOT
                 function($type, $buffer) {
                     if ($type == 'err') {
                         $this->subProcessErrorString .= $buffer;
-                        $this->errOutput->write($buffer, OutputInterface::OUTPUT_RAW);
-                    } else {
-                        $this->output->write($buffer, OutputInterface::OUTPUT_RAW);
                     }
+                    $this->errOutput->write($buffer, OutputInterface::OUTPUT_RAW);
                 }
                 :
                 function($type, $buffer) {

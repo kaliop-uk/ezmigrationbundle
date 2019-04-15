@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
+use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,7 +19,8 @@ class MassMigrateCommand extends MigrateCommand
 {
     const COMMAND_NAME = 'kaliop:migration:mass_migrate';
 
-    protected $migrationsDone = array(0, 0, 0);
+    // Note: in this array, we lump together in STATUS_DONE everything which is not failed or suspended
+    protected $migrationsDone = array(Migration::STATUS_DONE => 0, Migration::STATUS_FAILED => 0, Migration::STATUS_SKIPPED => 0);
     protected $migrationsAlreadyDone = array();
 
     /**
@@ -80,11 +82,10 @@ EOT
             return 0;
         }
 
-        if (!$isChild) {
-            return $this->executeAsParent($input, $output, $toExecute, $start);
-
-        } else {
+        if ($isChild) {
             return $this->executeAsChild($input, $output, $toExecute, $force, $migrationService);
+        } else {
+            return $this->executeAsParent($input, $output, $toExecute, $start);
         }
     }
 
@@ -138,27 +139,28 @@ EOT
             $processes[] = $process;
         }
 
-        $this->writeln("Starting queued processes...");
+        $this->writeln("<info>Starting queued processes...</info>");
 
+        $total = count($toExecute);
         $this->migrationsDone = array(0, 0, 0);
 
         $processManager = new ProcessManager();
-        $processManager->runParallel($processes, $concurrency, 500, array($this, 'onSubProcessOutput'));
+        $processManager->runParallel($processes, $concurrency, 500, array($this, 'onChildProcessOutput'));
 
-        $failed = 0;
+        $subprocessesFailed = 0;
         foreach ($processes as $i => $process) {
             if (!$process->isSuccessful()) {
                 $errorOutput = $process->getErrorOutput();
                 if ($errorOutput === '') {
-                    $errorOutput = "(separate process used to execute migration failed with no stderr output. Its exit code was: " . $process->getExitCode();
+                    $errorOutput = "(process used to execute migrations failed with no stderr output. Its exit code was: " . $process->getExitCode();
                     if ($process->getExitCode() == -1) {
                         $errorOutput .= ". If you are using Debian or Ubuntu linux, please consider using the --force-sigchild-enabled option.";
                     }
                     $errorOutput .= ")";
                 }
                 /// @todo should we always add the exit code, even when $errorOutput is not null ?
-                $this->errOutput->writeln("\n<error>Subprocess $i failed! Reason: " . $errorOutput . "</error>\n");
-                $failed++;
+                $this->writeErrorln("\n<error>Subprocess $i failed! Reason: " . $errorOutput . "</error>\n");
+                $subprocessesFailed++;
             }
         }
 
@@ -168,14 +170,17 @@ EOT
             $command->run($inputArray, $output);
         }
 
+        $missed = $total - $this->migrationsDone[Migration::STATUS_DONE] - $this->migrationsDone[Migration::STATUS_FAILED] - $this->migrationsDone[Migration::STATUS_SKIPPED];
+        $this->writeln("\nExecuted ".$this->migrationsDone[Migration::STATUS_DONE].' migrations'.
+            ', failed '.$this->migrationsDone[Migration::STATUS_FAILED].
+            ', skipped '.$this->migrationsDone[Migration::STATUS_SKIPPED].
+            ($missed ? ", missed $missed" : ''));
+
         $time = microtime(true) - $start;
-
-        $this->writeln('<info>'.$this->migrationsDone[0].' migrations executed, '.$this->migrationsDone[1].($failed ? ' or more' : '').' failed, '.$this->migrationsDone[2].' skipped</info>');
-
         // since we use subprocesses, we can not measure max memory used
-        $this->writeln("Time taken: ".sprintf('%.2f', $time)." secs");
+        $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
 
-        return $failed + $this->migrationsDone[1];
+        return $subprocessesFailed + $this->migrationsDone['failed'] + $missed;
     }
 
     /**
@@ -205,8 +210,9 @@ EOT
             Process::forceSigchildEnabled(true);
         }
 
-        $failed = 0;
+        $aborted = false;
         $executed = 0;
+        $failed = 0;
         $skipped = 0;
         $total = count($toExecute);
 
@@ -225,20 +231,21 @@ EOT
 
                     $executed++;
                 } catch (\Exception $e) {
+                    $failed++;
 
-                    $errorMessage = preg_replace('/^\n*Migration aborted! Reason: */', '', $e->getMessage());
-
-                    if ($input->getOption('ignore-failures')) {
-                        $this->errOutput->writeln("\n<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>\n");
-                        $failed++;
-                        continue;
+                    $errorMessage = preg_replace('/^\n*(\[[0-9]*\])?(Migration failed|Failure after migration end)! Reason: +/', '', $e->getMessage());
+                    if ($e instanceof AfterMigrationExecutionException) {
+                        $errorMessage = "Failure after migration end! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
+                    } else {
+                        $errorMessage = "Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
                     }
-                    $this->errOutput->writeln("\n<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>");
 
-                    $missed = $total - $executed - $failed - $skipped;
-                    $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
+                    $this->writeErrorln("\n<error>$errorMessage</error>", self::VERBOSITY_CHILD);
 
-                    return 1;
+                    if (!$input->getOption('ignore-failures')) {
+                        $aborted = true;
+                        break;
+                    }
                 }
 
             } else {
@@ -249,52 +256,62 @@ EOT
                     $executed++;
                 } catch(\Exception $e) {
                     $failed++;
-                    if ($input->getOption('ignore-failures')) {
-                        $this->writeErrorln("<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
-                        continue;
+
+                    $errorMessage = $e->getMessage();
+                    $this->writeErrorln("\n<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>", self::VERBOSITY_CHILD);
+
+                    if (!$input->getOption('ignore-failures')) {
+                        $aborted = true;
+                        break;
                     }
-
-                    $this->writeErrorln("<error>Migration aborted! Path: " . $migrationDefinition->path . ", Reason: " . $e->getMessage() . "</error>", self::VERBOSITY_CHILD);
-
-                    $missed = $total - $executed - $failed - $skipped;
-                    $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, to do: $missed");
-
-                    return 1;
                 }
 
             }
         }
 
-        $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped", self::VERBOSITY_CHILD);
+        if ($aborted) {
+            $this->writeErrorln("\n<error>Migration execution aborted</error>", self::VERBOSITY_CHILD);
+        }
 
-        // We do not return an error code > 0 if migrations fail, but only on proper fatals.
+        $missed = $total - $executed - $failed - $skipped;
+        $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, missed: $missed", self::VERBOSITY_CHILD);
+
+        // We do not return an error code > 0 if migrations fail but , but only on proper fatals.
         // The parent will analyze the output of the child process to gather the number of executed/failed migrations anyway
-        //return $failed;
+        return 0;
     }
 
-    public function onSubProcessOutput($type, $buffer, $process=null)
+    /**
+     * @param string $type
+     * @param string $buffer
+     * @param null|\Symfony\Component\Process\Process $process
+     */
+    public function onChildProcessOutput($type, $buffer, $process=null)
     {
         $lines = explode("\n", trim($buffer));
 
         foreach ($lines as $line) {
             if (preg_match('/Migrations executed: ([0-9]+), failed: ([0-9]+), skipped: ([0-9]+)/', $line, $matches)) {
-                $this->migrationsDone[0] += $matches[1];
-                $this->migrationsDone[1] += $matches[2];
-                $this->migrationsDone[2] += $matches[3];
+                $this->migrationsDone[Migration::STATUS_DONE] += $matches[1];
+                $this->migrationsDone[Migration::STATUS_FAILED] += $matches[2];
+                $this->migrationsDone[Migration::STATUS_SKIPPED] += $matches[3];
 
-                // swallow these lines unless we are in verbose mode
+                // swallow the recap lines unless we are in verbose mode
                 if ($this->verbosity <= Output::VERBOSITY_NORMAL) {
                     return;
                 }
             }
 
-            // we tag the output from the different processes
+            // we tag the output with the id of the child process
             if (trim($line) !== '') {
                 $msg = '[' . ($process ? $process->getPid() : ''). '] ' . trim($line);
                 if ($type == 'err') {
-                    $this->errOutput->writeln($msg, OutputInterface::OUTPUT_RAW);
+                    $this->writeErrorln($msg, OutputInterface::VERBOSITY_NORMAL, OutputInterface::OUTPUT_RAW);
                 } else {
-                    $this->output->writeln($msg, OutputInterface::OUTPUT_RAW);
+                    // swallow output of child processes in quiet mode
+                    if ($this->verbosity > Output::VERBOSITY_QUIET) {
+                        $this->writeLn($msg, OutputInterface::VERBOSITY_NORMAL, OutputInterface::OUTPUT_RAW);
+                    }
                 }
             }
         }

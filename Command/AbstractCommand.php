@@ -52,18 +52,24 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * - have a decent writeln API, even with old SF versions
      * @param string|array $message The message as an array of lines or a single string
      * @param int $verbosity
+     * @param int $type
      */
-    protected function writeln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL)
+    protected function writeln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL, $type = OutputInterface::OUTPUT_NORMAL)
     {
         if ($this->verbosity >= $verbosity) {
-            $this->output->writeln($message);
+            $this->output->writeln($message, $type);
         }
     }
 
-    protected function writeErrorln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL)
+    /**
+     * @param string|array $message The message as an array of lines or a single string
+     * @param int $verbosity
+     * @param int $type
+     */
+    protected function writeErrorln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL, $type = OutputInterface::OUTPUT_NORMAL)
     {
         if ($this->verbosity >= $verbosity) {
-            $this->errOutput->writeln($message);
+            $this->errOutput->writeln($message, $type);
         }
     }
 }
