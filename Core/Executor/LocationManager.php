@@ -440,10 +440,10 @@ class LocationManager extends RepositoryExecutor
 
     /**
      * @param $newValue
-     * @param null $currentValue
+     * @param int $currentValue
      * @return int|null
      *
-     * * @todo make protected
+     * @todo make protected
      */
     public function getSortField($newValue, $currentValue = null)
     {

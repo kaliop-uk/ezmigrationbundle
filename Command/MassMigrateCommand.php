@@ -172,6 +172,7 @@ EOT
         }
 
         if ($input->getOption('clear-cache')) {
+            /// @see the comment in the parent class about the problems tied to clearing Sf cache in-process
             $command = $this->getApplication()->find('cache:clear');
             $inputArray = new ArrayInput(array('command' => 'cache:clear'));
             $command->run($inputArray, $output);
