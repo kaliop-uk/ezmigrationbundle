@@ -53,6 +53,7 @@ class MigrateCommand extends AbstractCommand
             ->addOption('path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "The directory or file to load the migration definitions from")
             ->addOption('separate-process', 'p', InputOption::VALUE_NONE, "Use a separate php process to run each migration. Safe if your migration leak memory. A tad slower")
             ->addOption('force-sigchild-enabled', null, InputOption::VALUE_NONE, "When using a separate php process to run each migration, tell Symfony that php was compiled with --enable-sigchild option")
+            ->addOption('survive-disconnected-tty', null, InputOption::VALUE_NONE, "Keep on executing migrations even if the tty where output is written to gets removed. Useful if you run the command over an unstable ssh connection")
             ->addOption('child', null, InputOption::VALUE_NONE, "*DO NOT USE* Internal option for when forking separate processes")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:migrate</info> command loads and executes migrations:
@@ -111,6 +112,11 @@ EOT
                 $builder->setPrefix($php);
             }
             $builderArgs = $this->createChildProcessArgs($input);
+        }
+
+        // For cli scripts, this means: do not die if anyone yanks out our stdout.
+        if ($input->getOption('survive-disconnected-tty')) {
+            ignore_user_abort(true);
         }
 
         // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
@@ -405,9 +411,11 @@ EOT
     }
 
     /**
-     * Returns the command-line arguments needed to execute a migration in a separate subprocess (omitting 'path')
+     * Returns the command-line arguments needed to execute a migration in a separate subprocess
+     * (except path, which should be added after this call)
      * @param InputInterface $input
      * @return array
+     * @todo check if it is a good idea to pass on the current verbosity
      */
     protected function createChildProcessArgs(InputInterface $input)
     {
@@ -428,7 +436,7 @@ EOT
             $builderArgs[]='--siteaccess='.$input->getOption('siteaccess');
         }
         // 'optional' options
-        // note: options 'clear-cache', 'ignore-failures', 'no-interaction', 'path' and 'separate-process' we never propagate
+        // note: options 'clear-cache', 'ignore-failures', 'no-interaction', 'path', 'separate-process' and 'survive-disconnected-tty' we never propagate
         if ($input->getOption('admin-login')) {
             $builderArgs[] = '--admin-login=' . $input->getOption('admin-login');
         }

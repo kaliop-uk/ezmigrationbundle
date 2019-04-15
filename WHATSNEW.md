@@ -6,7 +6,11 @@ Version 5.9.3
 
 * Improved: better error reporting by the `migrate` and `mass_migrate` commands
 
-* Improved: the `migrate` commands exits with non-0 exit code when any migration failed, even if it is gievn the `-i` option
+* Improved: the `migrate` commands exits with non-0 exit code when any migration failed, even if it is given the `-i` option
+
+* New: the `migrate` and `mass_migrate` commands accept an option `survive-disconnected-tty`. This helps in cases where
+    you would normally run the migrations using `screen` or `tmux`, such as over ssh connections which risk being dropped
+    before the migrations have finished executing
 
 * BC changes:
 

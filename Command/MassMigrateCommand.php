@@ -106,6 +106,13 @@ EOT
             return 0;
         }
 
+        // For cli scripts, this means: do not die if anyone yanks out our stdout.
+        // We presume that users who want to halt migrations do send us a KILL signal, and that a lost tty is
+        // generally a mistake, and that carrying on with executing migrations is the best outcome
+        if ($input->getOption('survive-disconnected-tty')) {
+            ignore_user_abort(true);
+        }
+
         $concurrency = $input->getOption('concurrency');
         $this->writeln("Executing migrations using " . count($paths) . " processes with a concurrency of $concurrency");
 
@@ -190,6 +197,7 @@ EOT
      * @param bool $force
      * @param $migrationService
      * @return int
+     * @todo does it make sense to honour the `survive-disconnected-tty` flag when executing as child?
      */
     protected function executeAsChild($input, $output, $toExecute, $force, $migrationService)
     {
@@ -410,9 +418,12 @@ EOT
     }
 
     /**
-     * Returns the command-line arguments needed to execute a migration in a separate subprocess (omitting 'path')
+     * Returns the command-line arguments needed to execute a separate subprocess that will run a set of migrations
+     * (except path, which should be added after this call)
      * @param InputInterface $input
      * @return array
+     * @todo check if it is a good idea to pass on the current verbosity
+     * @todo shall we pass to child processes the `survive-disconnected-tty` flag?
      */
     protected function createChildProcessArgs(InputInterface $input)
     {
@@ -433,7 +444,7 @@ EOT
             $builderArgs[] = '--siteaccess=' . $input->getOption('siteaccess');
         }
         // 'optional' options
-        // note: options 'clear-cache', 'no-interaction', 'path' we never propagate
+        // note: options 'clear-cache', 'no-interaction', 'path' and 'survive-disconnected-tty' we never propagate
         if ($input->getOption('admin-login')) {
             $builderArgs[] = '--admin-login=' . $input->getOption('admin-login');
         }
@@ -442,9 +453,6 @@ EOT
         }
         if ($input->getOption('force')) {
             $builderArgs[] = '--force';
-        }
-        if ($input->getOption('ignore-failures')) {
-            $builderArgs[] = '--ignore-failures';
         }
         if ($input->getOption('no-transactions')) {
             $builderArgs[] = '--no-transactions';
@@ -455,6 +463,9 @@ EOT
         // useful in case the subprocess has a migration step of type process/run
         if ($input->getOption('force-sigchild-enabled')) {
             $builderArgs[] = '--force-sigchild-enabled';
+        }
+        if ($input->getOption('ignore-failures')) {
+            $builderArgs[] = '--ignore-failures';
         }
 
         return $builderArgs;
