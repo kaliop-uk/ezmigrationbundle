@@ -39,6 +39,12 @@
 
 -
     type: reference
+    mode: dump
+    identifier: reference:kmb_test_ref
+    label: this is not a reference
+
+-
+    type: reference
     mode: load
     file: test_refs.yml
 

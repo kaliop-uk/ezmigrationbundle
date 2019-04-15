@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 
 /**
- * Tests the 'migrate' as well as the 'migration' command
+ * Tests the 'kaliop:migration:migrate' as well as the 'kaliop:migration:migration' command
  */
 class MigrateTest extends CommandTest
 {
@@ -141,6 +141,36 @@ class MigrateTest extends CommandTest
         $langService->deleteLanguage($langService->loadLanguage($defaultLanguage));
     }
 
+    /**
+     * @param array $options
+     * @dataProvider migrateOptionsProvider
+     */
+    public function testExecuteWithDifferentOptions(array $options = array())
+    {
+        $filePath = $this->dslDir . '/UnitTestOK031_writeToStdout.yml';
+
+        $this->prepareMigration($filePath);
+
+        $count1 = BeforeStepExecutionListener::getExecutions();
+        $count2 = StepExecutedListener::getExecutions();
+
+        $input = new ArrayInput(array_merge(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true), $options));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        // check that there are no notes after adding the migration
+        $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
+
+        // simplistic check on the event listeners having fired off correctly
+        $this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
+        $this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+    }
+
     public function goodDSLProvider()
     {
         $dslDir = $this->dslDir.'/good';
@@ -190,6 +220,25 @@ class MigrateTest extends CommandTest
             }
         }
         return $out;
+    }
+
+    public function migrateOptionsProvider()
+    {
+        return array(
+            array(),
+            array('-c' => true),
+            array('clear-cache' => true),
+            array('-f' => true),
+            array('--force' => true),
+            array('-i' => true),
+            array('--ignore-failures' => true),
+            array('-u' => true),
+            array('--no-transactions' => true),
+            array('-p' => true),
+            array('--separate-process' => true),
+            array('--force-sigchild-enabled' => true),
+            array('--survive-disconnected-tty' => true),
+        );
     }
 
     /**

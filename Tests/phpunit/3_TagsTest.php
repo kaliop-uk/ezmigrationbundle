@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 
 /**
- * Tests the 'migrate' as well as the 'migration' command for eZTags
+ * Tests the 'kaliop:migration:migrate' as well as the 'kaliop:migration:migration' command for eZTags
  */
 class TagsTest extends CommandTest
 {

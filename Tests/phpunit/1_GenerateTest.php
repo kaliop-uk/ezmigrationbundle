@@ -7,6 +7,8 @@ use Symfony\Component\Console\Input\ArrayInput;
 class GenerateTest extends CommandTest
 {
     /**
+     * Tests the kaliop:migration:generate command
+     *
      * @dataProvider provideGenerateParameters
      *
      * @param string|null $name
@@ -75,31 +77,34 @@ class GenerateTest extends CommandTest
             array('unit_test_generated'),
             array('unit_test_generated', 'sql'),
             array('unit_test_generated', 'php'),
-            array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous'),
-            array('unit_test_generated_role', 'yml', 'role', 'identifier', 'Anonymous', false, 'update'),
-            array('unit_test_generated_role', 'json', 'role', 'identifier', 'Anonymous', false, 'delete'),
-            array('unit_test_generated_role', 'yml', 'role', 'identifier', 'Anonymous,Administrator', true, 'delete'),
-            array('unit_test_generated_role', 'json', 'role', 'all', null, false, 'create'),
+            array('unit_test_generated_content', null, 'content', 'contenttype_identifier', 'user_group'),
+            array('unit_test_generated_content', 'yml', 'content', 'contenttype_identifier', 'user_group', false, 'update'),
+            array('unit_test_generated_content', 'json', 'content', 'contenttype_identifier', 'user_group', false, 'delete'),
             array('unit_test_generated_content_type', null, 'content_type', 'identifier', 'folder'),
             array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder', false, 'update'),
             array('unit_test_generated_content_type', 'json', 'content_type', 'identifier', 'folder', false, 'delete'),
             array('unit_test_generated_content_type', 'yml', 'content_type', 'identifier', 'folder,user', true, 'delete'),
             array('unit_test_generated_content_type', 'json', 'content_type', 'all', null, false, 'create'),
-            array('unit_test_generated_content', null, 'content', 'contenttype_identifier', 'user_group'),
-            array('unit_test_generated_content', 'yml', 'content', 'contenttype_identifier', 'user_group', false, 'update'),
-            array('unit_test_generated_content', 'json', 'content', 'contenttype_identifier', 'user_group', false, 'delete'),
-            array('unit_test_generated_section', null, 'section', 'section_identifier', 'standard'),
-            array('unit_test_generated_section', 'yml', 'section', 'section_identifier', 'standard', false, 'update'),
-            array('unit_test_generated_section', 'json', 'section', 'section_identifier', 'standard', false, 'delete'),
             array('unit_test_generated_content_type_group', null, 'content_type_group', 'contenttypegroup_identifier', 'Content'),
             array('unit_test_generated_content_type_group', 'yml', 'content_type_group', 'contenttypegroup_identifier', 'Content', false, 'update'),
             array('unit_test_generated_content_type_group', 'json', 'content_type_group', 'contenttypegroup_identifier', 'Content', false, 'delete'),
+            array('unit_test_generated_content', null, 'language', 'all', null),
+            array('unit_test_generated_content', 'yml', 'language', 'all', null, false, 'update'),
+            array('unit_test_generated_content', 'json', 'language', 'all', null, false, 'delete'),
             array('unit_test_generated_object_state', null, 'object_state', 'all', null),
             array('unit_test_generated_object_state', 'yml', 'object_state', 'all', null, false, 'update'),
             array('unit_test_generated_object_state', 'json', 'object_state', 'all', null, false, 'delete'),
             array('unit_test_generated_object_state_group', null, 'object_state_group', 'objectstategroup_identifier', 'ez_lock'),
             array('unit_test_generated_object_state_group', 'yml', 'object_state_group', 'objectstategroup_identifier', 'ez_lock', false, 'update'),
             array('unit_test_generated_object_state_group', 'json', 'object_state_group', 'objectstategroup_identifier', 'ez_lock', false, 'delete'),
+            array('unit_test_generated_role', null, 'role', 'identifier', 'Anonymous'),
+            array('unit_test_generated_role', 'yml', 'role', 'identifier', 'Anonymous', false, 'update'),
+            array('unit_test_generated_role', 'json', 'role', 'identifier', 'Anonymous', false, 'delete'),
+            array('unit_test_generated_role', 'yml', 'role', 'identifier', 'Anonymous,Administrator', true, 'delete'),
+            array('unit_test_generated_role', 'json', 'role', 'all', null, false, 'create'),
+            array('unit_test_generated_section', null, 'section', 'section_identifier', 'standard'),
+            array('unit_test_generated_section', 'yml', 'section', 'section_identifier', 'standard', false, 'update'),
+            array('unit_test_generated_section', 'json', 'section', 'section_identifier', 'standard', false, 'delete'),
         );
     }
 
