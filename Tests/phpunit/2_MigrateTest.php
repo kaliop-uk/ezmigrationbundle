@@ -162,9 +162,9 @@ class MigrateTest extends CommandTest
         // check that there are no notes after adding the migration
         $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
 
-        // simplistic check on the event listeners having fired off correctly
-        $this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
-        $this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
+        // we can not check on the event listeners having fired off correctly when using separate-process execution
+        //$this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
+        //$this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
