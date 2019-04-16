@@ -81,7 +81,7 @@ EOT
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        if ($input->getOption('child')) {
+        if ($input->getOption('child') && $output->getVerbosity() <= OutputInterface::VERBOSITY_NORMAL) {
             $this->setVerbosity(self::VERBOSITY_CHILD);
         }
 
@@ -100,9 +100,11 @@ EOT
 
         $this->printMigrationsList($toExecute, $input, $output);
 
-        // ask user for confirmation to make changes
-        if (!$this->askForConfirmation($input, $output)) {
-            return 0;
+        if (!$input->getOption('child')) {
+            // ask user for confirmation to make changes
+            if (!$this->askForConfirmation($input, $output)) {
+                return 0;
+            }
         }
 
         if ($input->getOption('separate-process')) {
@@ -145,8 +147,7 @@ EOT
             if ($input->getOption('separate-process')) {
 
                 try {
-                    /// @todo in quiet mode, we could suppress output of the sub-command...
-                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, true);
+                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs);
 
                     $executed++;
                 } catch (\Exception $e) {
@@ -191,8 +192,12 @@ EOT
             }
         }
 
+        $missed = $total - $executed - $failed - $skipped;
+
         if ($aborted) {
-            $this->writeErrorln("\n<error>Migration execution aborted</error>");
+            if ($missed > 0) {
+                $this->writeErrorln("\n<error>Migration execution aborted</error>");
+            }
         } else {
             // NB: as per the Sf doc at https://symfony.com/doc/2.7/console/calling_commands.html, the 'cache:clear'
             // command should be run 'at the end', as they change some class definitions
@@ -203,7 +208,6 @@ EOT
             }
         }
 
-        $missed = $total - $executed - $failed - $skipped;
         $this->writeln("\nExecuted $executed migrations, failed $failed, skipped $skipped" . ($missed ? ", missed $missed" : ''));
 
         $time = microtime(true) - $start;
@@ -259,15 +263,18 @@ EOT
         // and give immediate feedback to the user...
         // NB: if the subprocess writes to stderr then terminates with non-0 exit code, this will lead us to echoing the
         // error text twice, once here and once at the end of execution of this command.
-        // In order to avoid that, since we can not know at this time what the subprocess exit code will be, we should
-        // somehow still print the error text now, and compare it to what we gt at the end...
+        // In order to avoid that, since we can not know at this time what the subprocess exit code will be, we
+        // do print the error text now, and compare it to what we gt at the end...
         $process->run(
             $feedback ?
                 function($type, $buffer) {
                     if ($type == 'err') {
                         $this->subProcessErrorString .= $buffer;
+                        $this->writeErrorln($buffer, OutputInterface::VERBOSITY_QUIET, OutputInterface::OUTPUT_RAW);
+                    } else {
+                        // swallow output of child processes in quiet mode
+                        $this->writeLn($buffer, self::VERBOSITY_CHILD, OutputInterface::OUTPUT_RAW);
                     }
-                    $this->errOutput->write($buffer, OutputInterface::OUTPUT_RAW);
                 }
                 :
                 function($type, $buffer) {
@@ -435,7 +442,18 @@ EOT
             $builderArgs[] = '--no-debug';
         }
         if ($input->getOption('siteaccess')) {
-            $builderArgs[]='--siteaccess='.$input->getOption('siteaccess');
+            $builderArgs[] = '--siteaccess='.$input->getOption('siteaccess');
+        }
+        switch ($this->verbosity) {
+            case OutputInterface::VERBOSITY_VERBOSE:
+                $builderArgs[] = '-v';
+                break;
+            case OutputInterface::VERBOSITY_VERY_VERBOSE:
+                $builderArgs[] = '-vv';
+                break;
+            case OutputInterface::VERBOSITY_DEBUG:
+                $builderArgs[] = '-vvv';
+                break;
         }
         // 'optional' options
         // note: options 'clear-cache', 'ignore-failures', 'no-interaction', 'path', 'separate-process' and 'survive-disconnected-tty' we never propagate

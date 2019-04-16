@@ -73,7 +73,7 @@ class TracingStepExecutedListener
             case 'tag':
             case 'user':
             case 'user_group':
-                $action = isset($dsl['mode']) ? ($dsl['mode'] . 'd') : 'acted upon';
+                $action = isset($dsl['mode']) ? ($dsl['mode'] == 'load' ? 'loaded' : ($dsl['mode'] . 'd')) : 'acted upon';
                 $out = $type . ' ' . $this->getObjectIdentifierAsString($obj) . ' has been ' . $action;
                 break;
             case 'sql':

@@ -66,10 +66,23 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * @param int $verbosity
      * @param int $type
      */
-    protected function writeErrorln($message, $verbosity = OutputInterface::VERBOSITY_NORMAL, $type = OutputInterface::OUTPUT_NORMAL)
+    protected function writeErrorln($message, $verbosity = OutputInterface::VERBOSITY_QUIET, $type = OutputInterface::OUTPUT_NORMAL)
     {
         if ($this->verbosity >= $verbosity) {
-            $this->errOutput->writeln($message, $type);
+
+            // When verbosity is set to quiet, SF swallows the error message in the writeln call
+            // (unlike for other verbosity levels, which are left for us to handle...)
+            // We resort to a hackish workaround to _always_ print errors to stdout, even in quiet mode.
+            // If the end user does not want any error echoed, he can just 2>/dev/null
+            if ($this->errOutput->getVerbosity() == OutputInterface::VERBOSITY_QUIET) {
+                $this->errOutput->setVerbosity(OutputInterface::VERBOSITY_NORMAL);
+                $this->errOutput->writeln($message, $type);
+                $this->errOutput->setVerbosity(OutputInterface::VERBOSITY_QUIET);
+            }
+            else
+            {
+                $this->errOutput->writeln($message, $type);
+            }
         }
     }
 }

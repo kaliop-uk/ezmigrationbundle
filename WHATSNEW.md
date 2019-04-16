@@ -1,10 +1,13 @@
 Version 5.9.3
 =============
 
-* Renamed option `force-sigchild-enabled` to `force-sigchild-enabled` and actually made it work (see notes for 5.9.1
-    below for the explanation about its usage)
+* Fix: match 'all' languages would raise an exception
 
-* Improved: better error reporting by the `migrate` and `mass_migrate` commands
+* Improved: better error reporting by the `migrate` and `mass_migrate` commands.
+    In particular, they now report the number of non-executed migrations besides the failed and skipped ones.
+
+* Improved: better support for `-v` and `-q` options for the `migrate` and `mass_migrate` commands, esp. when used
+    together with `-p`
 
 * Improved: the `migrate` commands exits with non-0 exit code when any migration failed, even if it is given the `-i` option
 
@@ -12,7 +15,8 @@ Version 5.9.3
     you would normally run the migrations using `screen` or `tmux`, such as over ssh connections which risk being dropped
     before the migrations have finished executing
 
-* Fix: match 'all' languages would raise an exception
+* Renamed option `force-sigchild-enabled` to `force-sigchild-enabled` and actually made it work (see notes for 5.9.1
+    below for the explanation about its usage)
 
 * BC changes:
 
@@ -30,7 +34,7 @@ Version 5.9.2 - please don't use
 * Fixed: better error reporting by the `mass_migrate` commands:
 
     - return a non-0 exit code when at least one migration or one subprocess failed
-    - report '0 or more' migrations failed when at least one subprocess failed
+    - report '0 or more' migrations failed when at least one subprocess failed (this was later changed in rev. 5.9.3)
 
 * BC changes:
 

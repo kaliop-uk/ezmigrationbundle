@@ -63,7 +63,7 @@ EOT
 
         $isChild = $input->getOption('child');
 
-        if ($isChild) {
+        if ($isChild && $output->getVerbosity() <= OutputInterface::VERBOSITY_NORMAL) {
             $this->setVerbosity(self::VERBOSITY_CHILD);
         }
 
@@ -188,7 +188,7 @@ EOT
         // since we use subprocesses, we can not measure max memory used
         $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
 
-        return $subprocessesFailed + $this->migrationsDone['failed'] + $missed;
+        return $subprocessesFailed + $this->migrationsDone[Migration::STATUS_FAILED] + $missed;
     }
 
     /**
@@ -233,23 +233,28 @@ EOT
                 continue;
             }
 
+            $this->writeln("<info>Processing $name</info>", self::VERBOSITY_CHILD);
+
             if ($input->getOption('separate-process')) {
 
                 try {
-                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs, false);
+                    $this->executeMigrationInSeparateProcess($migrationDefinition, $migrationService, $builder, $builderArgs);
 
                     $executed++;
                 } catch (\Exception $e) {
                     $failed++;
 
-                    $errorMessage = preg_replace('/^\n*(\[[0-9]*\])?(Migration failed|Failure after migration end)! Reason: +/', '', $e->getMessage());
-                    if ($e instanceof AfterMigrationExecutionException) {
-                        $errorMessage = "Failure after migration end! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
-                    } else {
-                        $errorMessage = "Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
-                    }
+                    $errorMessage = $e->getMessage();
+                    if ($errorMessage != $this->subProcessErrorString) {
+                        $errorMessage = preg_replace('/^\n*(\[[0-9]*\])?(Migration failed|Failure after migration end)! Reason: +/', '', $errorMessage);
+                        if ($e instanceof AfterMigrationExecutionException) {
+                            $errorMessage = "Failure after migration end! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
+                        } else {
+                            $errorMessage = "Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
+                        }
 
-                    $this->writeErrorln("\n<error>$errorMessage</error>", self::VERBOSITY_CHILD);
+                        $this->writeErrorln("\n<error>$errorMessage</error>");
+                    }
 
                     if (!$input->getOption('ignore-failures')) {
                         $aborted = true;
@@ -267,7 +272,7 @@ EOT
                     $failed++;
 
                     $errorMessage = $e->getMessage();
-                    $this->writeErrorln("\n<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>", self::VERBOSITY_CHILD);
+                    $this->writeErrorln("\n<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>");
 
                     if (!$input->getOption('ignore-failures')) {
                         $aborted = true;
@@ -278,11 +283,12 @@ EOT
             }
         }
 
-        if ($aborted) {
-            $this->writeErrorln("\n<error>Migration execution aborted</error>", self::VERBOSITY_CHILD);
+        $missed = $total - $executed - $failed - $skipped;
+
+        if ($aborted && $missed > 0) {
+            $this->writeErrorln("\n<error>Migration execution aborted</error>");
         }
 
-        $missed = $total - $executed - $failed - $skipped;
         $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, missed: $missed", self::VERBOSITY_CHILD);
 
         // We do not return an error code > 0 if migrations fail but , but only on proper fatals.
@@ -315,12 +321,10 @@ EOT
             if (trim($line) !== '') {
                 $msg = '[' . ($process ? $process->getPid() : ''). '] ' . trim($line);
                 if ($type == 'err') {
-                    $this->writeErrorln($msg, OutputInterface::VERBOSITY_NORMAL, OutputInterface::OUTPUT_RAW);
+                    $this->writeErrorln($msg, OutputInterface::VERBOSITY_QUIET, OutputInterface::OUTPUT_RAW);
                 } else {
                     // swallow output of child processes in quiet mode
-                    if ($this->verbosity > Output::VERBOSITY_QUIET) {
-                        $this->writeLn($msg, OutputInterface::VERBOSITY_NORMAL, OutputInterface::OUTPUT_RAW);
-                    }
+                    $this->writeLn($msg, self::VERBOSITY_CHILD, OutputInterface::OUTPUT_RAW);
                 }
             }
         }
@@ -443,6 +447,18 @@ EOT
         }
         if ($input->getOption('siteaccess')) {
             $builderArgs[] = '--siteaccess=' . $input->getOption('siteaccess');
+        }
+        switch ($this->verbosity) {
+            // no propagation of 'quiet' mode, as we always need to have at least the child output with executed migs
+            case OutputInterface::VERBOSITY_VERBOSE:
+                $builderArgs[] = '-v';
+                break;
+            case OutputInterface::VERBOSITY_VERY_VERBOSE:
+                $builderArgs[] = '-vv';
+                break;
+            case OutputInterface::VERBOSITY_DEBUG:
+                $builderArgs[] = '-vvv';
+                break;
         }
         // 'optional' options
         // note: options 'clear-cache', 'no-interaction', 'path' and 'survive-disconnected-tty' we never propagate
