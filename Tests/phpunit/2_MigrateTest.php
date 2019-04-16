@@ -31,17 +31,14 @@ class MigrateTest extends CommandTest
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        // check that there are no notes after adding the migration
+        // check that there are no notes related to adding the migration before execution
         $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
 
         // simplistic check on the event listeners having fired off correctly
         $this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
         $this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->deleteMigration($filePath, true);
     }
 
     /**
@@ -61,13 +58,10 @@ class MigrateTest extends CommandTest
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        // check that there are no notes after adding the migration
+        // check that the mig has been skipped
         $this->assertRegexp('?Skipping ' . basename($filePath) . '?', $output);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->deleteMigration($filePath, true);
     }
 
     /**
@@ -87,13 +81,10 @@ class MigrateTest extends CommandTest
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertNotSame(0, $exitCode, 'CLI Command should have failed. Output: ' . $output);
-        // check that there are no notes after adding the migration
+        // check that the mig failed
         $this->assertRegexp('?Migration failed!?', $output);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->deleteMigration($filePath, true);
     }
 
     /**
@@ -104,7 +95,7 @@ class MigrateTest extends CommandTest
         $filePath = $this->dslDir . '/UnitTestOK018_defaultLanguage.yml';
         $defaultLanguage = 'def-LA';
 
-        $this->prepareMigration($filePath);
+        $this->deleteMigration($filePath);
 
         $exitCode = $this->runCommand('kaliop:migration:migrate', array(
             '--path' => array($filePath),
@@ -114,8 +105,6 @@ class MigrateTest extends CommandTest
         ));
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        // check that there are no notes after adding the migration
-        $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
 
         $repository = $this->getRepository();
         $contentService = $repository->getContentService();
@@ -139,6 +128,8 @@ class MigrateTest extends CommandTest
 
         $langService = $repository->getContentLanguageService();
         $langService->deleteLanguage($langService->loadLanguage($defaultLanguage));
+
+        $this->deleteMigration($filePath, true);
     }
 
     /**
@@ -150,31 +141,22 @@ class MigrateTest extends CommandTest
     {
         $filePath = $this->dslDir . '/UnitTestOK031_helloworld.yml';
 
-        $this->prepareMigration($filePath);
-
-        $count1 = BeforeStepExecutionListener::getExecutions();
-        $count2 = StepExecutedListener::getExecutions();
+        $this->deleteMigration($filePath);
 
         $input = new ArrayInput(array_merge(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true), $options));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        // check that there are no notes after adding the migration
-        $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
 
-        // we can not check on the event listeners having fired off correctly when using separate-process execution
-        //$this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
-        //$this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
+        /// @todo add some assertion that the output contains the expected 'hello world', unless in quiet mode
 
+        /// @todo add some assertion on the output of `--info` (or move to a separate test?)
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--info' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->deleteMigration($filePath, true);
     }
 
     public function goodDSLProvider()
@@ -249,12 +231,17 @@ class MigrateTest extends CommandTest
             array(array('--separate-process' => true)),
             array(array('--force-sigchild-enabled' => true)),
             array(array('--survive-disconnected-tty' => true)),
+            array(array('-q' => true)),
+            array(array('-v' => true)),
+            array(array('-q' => true, '-p' => true)),
+            array(array('-v' => true, '-p' => true)),
         );
     }
 
     /**
-     * Add a migration from a file to the migration service.
+     * Add a migration from a file to the list of known ones in the db; this involves parsing it for syntax errors
      * @param string $filePath
+     * @return string
      */
     protected function addMigration($filePath)
     {
@@ -266,26 +253,36 @@ class MigrateTest extends CommandTest
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         $this->assertRegexp('?Added migration?', $output);
+
+        return $output;
     }
 
     /**
      * Delete the migration from the database table
      * @param string $filePath
+     * @param bool $checkExitCode
      * @return string
      */
-    protected function deleteMigration($filePath)
+    protected function deleteMigration($filePath, $checkExitCode = false)
     {
-        $this->runCommand('kaliop:migration:migration', [
+        $exitCode = $this->runCommand('kaliop:migration:migration', [
             'migration' => basename($filePath),
             '--delete' => true,
             '-n' => true,
         ]);
 
-        return $this->fetchOutput();
+        $output = $this->fetchOutput();
+
+        if ($checkExitCode) {
+            $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        }
+
+        return $output;
     }
 
     /**
-     * Prepare a migration file for a test.
+     * Prepare a migration file for a test: remove it if needed from list of previously executed and add it to the db,
+     * so that it gets parsed for syntax errors
      * @param string $filePath
      */
     protected function prepareMigration($filePath)
