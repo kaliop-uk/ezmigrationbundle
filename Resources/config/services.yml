@@ -98,6 +98,7 @@ parameters:
     ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzImage
     ez_migration_bundle.complex_field.ezmedia.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzMedia
     ez_migration_bundle.complex_field.ezpage.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzPage
+    ez_migration_bundle.complex_field.ezimageasset.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzImageAsset
     ez_migration_bundle.complex_field.ezrelation.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRelation
     ez_migration_bundle.complex_field.ezrelationlist.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRelationList
     ez_migration_bundle.complex_field.ezrichtext.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzRichText
@@ -660,6 +661,14 @@ services:
             - '@ez_migration_bundle.content_matcher'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezobjectrelation, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezimageasset:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.ezimageasset.class%'
+        arguments:
+            - '@ez_migration_bundle.content_matcher'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezimageasset, priority: 0 }
 
     ez_migration_bundle.complex_field.ezrelationlist:
         parent: ez_migration_bundle.complex_field
