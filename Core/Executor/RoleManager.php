@@ -302,11 +302,19 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     {
         $limitationType = $roleService->getLimitationType($limitation['identifier']);
 
-        $limitationValue = is_array($limitation['values']) ? $limitation['values'] : array($limitation['values']);
-
-        foreach ($limitationValue as $id => $value) {
-            $limitationValue[$id] = $this->referenceResolver->resolveReference($value);
+        // 1st resolve refs (if we got passed a string)
+        $limitationValue = $this->referenceResolver->resolveReference($limitation['values']);
+        // then, if we have an array, resolve refs recursively
+        if (is_array($limitationValue)) {
+            foreach ($limitationValue as $id => $value) {
+                $limitationValue[$id] = $this->referenceResolver->resolveReference($value);
+            }
+        } else {
+            // if still a scalar, make sure we can loop over it
+            $limitationValue = array($limitationValue);
         }
+
+
         $limitationValue = $this->limitationConverter->resolveLimitationValue($limitation['identifier'], $limitationValue);
         return $limitationType->buildValue($limitationValue);
     }

@@ -1,3 +1,9 @@
+Version 5.9.4
+=============
+
+* Fix issue #202: RoleManager::createLimitation fails when using array reference
+
+
 Version 5.9.3
 =============
 
