@@ -1,0 +1,44 @@
+-
+    type: content_type
+    mode: create
+    content_type_group: ez
+    identifier: kaliop_ezimageasset
+    name:
+        fre-FR: 'Kaliop'
+    description: {  }
+    name_pattern: '<title>'
+    url_name_pattern: '<title>'
+    is_container: true
+    lang: fre-FR
+    attributes:
+        -
+            identifier: title
+            type: ezstring
+            name:
+                fre-FR: Title
+            description:
+                fre-FR: 'Title'
+            required: true
+            searchable: true
+            info-collector: false
+            disable-translation: false
+            category: content
+            position: 1
+            field-settings: {  }
+            validator-configuration:
+                StringLengthValidator: { maxStringLength: 250, minStringLength: 1 }
+        -
+            identifier: image_vignette
+            type: ezimageasset
+            name:
+                fre-FR: 'Image'
+            description:
+                fre-FR: 'Image ezimageasset'
+            required: false
+            searchable: true
+            info-collector: false
+            disable-translation: false
+            category: content
+            position: 4
+            field-settings: {  }
+            validator-configuration: {  }

@@ -1,0 +1,22 @@
+-
+    type: content
+    mode: create
+    content_type: kaliop_ezimageasset
+    parent_location: 2 #HP HDA
+    priority: 0
+    is_hidden: false
+    sort_field: published
+    sort_order: DESC
+    remote_id: a50df951d9eeda40b76ca6a323a958c3
+    location_remote_id: b62b6f211fb326f77b9cfea6c6e57944
+    lang: fre-FR
+    section: 1
+    owner: 14
+    modification_date: 1556869563
+    publication_date: 1556813177
+    always_available: true
+    attributes:
+        title: 'ez platform'
+        image_vignette:
+            destinationContentId: 0c6ca3b36823ab38b9c8a8b79d5b12fd
+            alternativeText: null
