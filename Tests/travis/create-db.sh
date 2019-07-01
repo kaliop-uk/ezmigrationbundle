@@ -10,6 +10,14 @@ if [ "$DB_PWD" != "" ]; then
     DB_PWD="-p${DB_PWD}"
 fi
 
+# MySQL 5.7 defaults to strict mode, which is not good with ezpublish community kernel 2014.11.8
+if [ "$EZ_VERSION" = "ezpublish-community" ]; then
+    mysql -u${DB_USER} ${DB_PWD} -e "SHOW VARIABLES LIKE 'sql_mode';"
+    # we want to only remove STRICT_TRANS_TABLES, really
+    echo -e "\n[server]\nsql-mode=''\n" >> /etc/mysql/my.cnf
+    service mysql restart
+fi
+
 mysql -u${DB_USER} ${DB_PWD} -e "DROP DATABASE IF EXISTS ${DB};"
 mysql -u${DB_USER} ${DB_PWD} -e "CREATE DATABASE ${DB}; GRANT ALL ON ${DB}.* TO ezp@localhost IDENTIFIED BY 'ezp';"
 # Create the database from sql files present in either the legacy stack or kernel
