@@ -19,6 +19,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR,
         self::MATCH_USER_ID, self::MATCH_USER_LOGIN, self::MATCH_USER_EMAIL,
+        self::MATCH_USERGROUP_ID,
         // aliases
         'id'
     );
