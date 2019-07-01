@@ -2,9 +2,6 @@
 
 language: php
 
-# use the docker-based Travis images for a tiny speed boost
-sudo: true
-
 services:
     - mysql
 

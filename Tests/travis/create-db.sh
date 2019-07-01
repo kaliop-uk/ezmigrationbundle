@@ -12,10 +12,10 @@ fi
 
 # MySQL 5.7 defaults to strict mode, which is not good with ezpublish community kernel 2014.11.8
 if [ "$EZ_VERSION" = "ezpublish-community" ]; then
-    mysql -u${DB_USER} ${DB_PWD} -e "SHOW VARIABLES LIKE 'sql_mode';"
-    # we want to only remove STRICT_TRANS_TABLES, really
-    echo -e "\n[server]\nsql-mode=''\n" >> /etc/mysql/my.cnf
-    service mysql restart
+    # We want to only remove STRICT_TRANS_TABLES, really
+    #mysql -u${DB_USER} ${DB_PWD} -e "SHOW VARIABLES LIKE 'sql_mode';"
+    echo -e "\n[server]\nsql-mode='ONLY_FULL_GROUP_BY,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'\n" | sudo tee -a /etc/mysql/my.cnf
+    sudo service mysql restart
 fi
 
 mysql -u${DB_USER} ${DB_PWD} -e "DROP DATABASE IF EXISTS ${DB};"
