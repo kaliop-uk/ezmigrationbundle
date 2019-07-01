@@ -1,3 +1,9 @@
+Version 5.9.5
+=============
+
+* Fix issue: usergroup_id matching for users was not working. Thanks @korsarNek
+
+
 Version 5.9.4
 =============
 
