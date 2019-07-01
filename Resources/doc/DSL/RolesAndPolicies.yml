@@ -111,6 +111,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    new_name: # Optional (note: this field might be renamed in the future)
     assign: # Optional
         -
             type: # Must be user or group
@@ -119,9 +120,6 @@
                 -
                     identifier: xyz
                     values: [x, y]
-    unassign: # Optional
-        users: [x, z, y]
-        groups: [x, z, y]
     policies: # Optional.
               # NB: *take care* this does not work like content type updates or content updates.
               # If this set, all previously existing policies not specified in this list will be removed!
