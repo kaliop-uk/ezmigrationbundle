@@ -1,3 +1,11 @@
+Version ?????
+=============
+
+* Fix issue #210: cannot match locations by group
+
+* Improve the DSL docs for the management of Roles (see issue #211)
+
+
 Version 5.9.5
 =============
 
