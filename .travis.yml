@@ -5,6 +5,9 @@ language: php
 # use the docker-based Travis images for a tiny speed boost
 sudo: true
 
+services:
+    - mysql
+
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
 # About php versions:
