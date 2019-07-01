@@ -24,7 +24,7 @@
 #
 # ezfloat
 #    validator-configuration:
-#        FloatValueValidator: { minFloatValue: false, maxFloatValue: false }
+#        FloatValueValidator: { minFloatValue: null, maxFloatValue: null }
 #
 # ezimage
 #    validator-configuration:
@@ -32,7 +32,7 @@
 #
 # ezinteger
 #    validator-configuration:
-#        IntegerValueValidator: { minIntegerValue: false, maxIntegerValue: false }
+#        IntegerValueValidator: { minIntegerValue: null, maxIntegerValue: null }
 #
 # ezmedia
 #    field-settings:
