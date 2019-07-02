@@ -34,71 +34,20 @@ matrix:
     - php: 7.3
       env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
-before_install:
+#before_install:
   # No need for a web server, until we start testing using Selenium
   #- sudo apt-get update -qq
   #- sudo apt-get install -qq -y --force-yes apache2 libapache2-mod-fastcgi
 
-  # For php 5.6, Composer needs humongous amounts of ram - which we don't have. Enable swap as workaround
-  - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
-
 install:
-  # This is now done by Travis automatically...
-  #- composer self-update
-
-  # Increase php memory limit (need to do this now or we risk composer failing)
-  - phpenv config-add Tests/travis/zzz_php.ini
-
-  # Q: are all of these scripts ok here, or shall they be moved to the before_script step, when we add matrix combinations ???
-
-  # Disable xdebug for speed (both for executing composer and running tests), but allow us to e-enable it later
-  - export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
-  - export XDEBUG_INI=${XDEBUG_INI/,/}
-  - if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
-
-  # We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix
-
-  # For the moment, to install eZPlatform, a set of DEV packages has to be allowed (eg roave/security-advisories); really ugly sed expression to alter composer.json follows
-  # A different work around for this has been found in setting up an alias for them in the std composer.json require-dev section
-  #- 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
-
-  # Troubleshooting memory problems...
-  #- sudo free -m -t
-  #- sudo service postgresql stop
-  #- sudo service memcached stop
-  #- sudo service --status-all
-  #- php -i
-
-  - composer require --dev --no-update ${EZ_PACKAGES}
-  - if [ "$TRAVIS_PHP_VERSION" = "5.6" ]; then travis_wait composer update --dev; else composer update --dev; fi
-  # useful for troubleshooting tests failures
-  - composer show
-
-  # Re-enable xdebug for when we need to generate code coverage
-  - if [ "$CODE_COVERAGE" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
-
-  # Create the database from sql files present in either the legacy stack or kernel
-  - ./Tests/travis/create-db.sh ${EZ_VERSION} behattestdb ${INSTALL_TAGSBUNDLE} root
-
-before_script:
-  # Set up configuration files
-  - ./Tests/travis/setup-config.sh ${EZ_VERSION} ${EZ_APP_DIR} ${EZ_KERNEL} ${INSTALL_TAGSBUNDLE}
-
-  - . ./Tests/travis/setup-env.sh ${EZ_VERSION}
-
-  # TODO are these needed at all?
-  #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat assetic:dump
-  #- php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat cache:clear --no-debug
-
-  # TODO for eZPlatform, do we need to set up SOLR as well ?
-  #- if [ "$EZ_VERSION" != "ezpublish" ]; then ./vendor/ezsystems/ezplatform-solr-search-engine && bin/.travis/init_solr.sh; fi
+  - ./Tests/environment/setup.sh
 
 script:
-  # Finally! :-D
+  - . ./Tests/environment/setup-env-vars.sh ${EZ_VERSION}
   # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
   - if [ "$CODE_COVERAGE" = "1" ]; then ./vendor/phpunit/phpunit/phpunit --stderr --colors --coverage-clover=coverage.clover Tests/phpunit; else ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit; fi
 
-after_failure:
+#after_failure:
   # Display as much info as we can to help developers
   #- php -i
   #- cat composer.lock

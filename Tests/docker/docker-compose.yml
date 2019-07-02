@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+
+    ez:
+        build:
+            context: images/ez
+            args:
+                debian_mirror: ${COMPOSE_DEBIAN_MIRROR}
+                timezone: ${COMPOSE_TZ}
+                do_update_os: ${COMPOSE_DO_UPDATE_OS}
+        hostname: ez
+        container_name: ${COMPOSE_PROJECT_NAME}_ez
+        env_file:
+            - ./containers.env
+        volumes:
+            - ../../:/home/test/ezmigrationbundle
+            - ./data/.composer/:/home/test/.composer
+
+    mysql:
+        build:
+            context: images/mysql
+            args:
+                timezone: ${COMPOSE_TZ}
+                do_update_os: ${COMPOSE_DO_UPDATE_OS}
+        hostname: mysql
+        container_name: ${COMPOSE_PROJECT_NAME}_mysql
+        env_file:
+            - ./containers.env
+        volumes:
+            #- ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            - ./data/mysql/:/var/lib/mysql
+            - ./logs/mysql/:/var/log/mysql
+        #tmpfs:
+        #    # used for mysql temp tables
+        #    - /tmpfs:mode=777,size=1g
+        # nb: this prevents the image to start on some ubuntu installs because of apparmor config...
+        #privileged: true
+        #ports:
+        #    - "3307:3306"

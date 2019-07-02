@@ -4,3 +4,9 @@
 /composer.phar
 /composer.lock
 /Tests/dsl/good/references/test_refs_generated.yml
+/Tests/docker/data/.composer/*
+/Tests/docker/data/mysql/*
+/Tests/docker/logs/mysql/*
+!/Tests/docker/data/.composer/.gitkeep
+!/Tests/docker/data/mysql/.gitkeep
+!/Tests/docker/logs/mysql/.gitkeep

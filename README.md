@@ -437,13 +437,23 @@ It is recommended to run the tests suite using a dedicated eZPublish installatio
 A safer choice to run the tests of the bundle is to set up a dedicated environment, as done when the test suite is run on
 Travis.
 The advantages are multiple: one one hand you can start with any version of eZPublish you want; on the other you will
-be more confident that the tests wll still pass on Travis.
-The disadvantages are that you will need to spend some time setting up the test environment, and that the environment
-you will use will look quite unlike a standard eZPublish setup!
+be more confident that the tests will still pass on Travis.
+The disadvantages are that you will need Docker and Docker-compose, and that the environment you will use will look
+quite unlike a standard eZPublish setup!
 
-Steps to set up a dedicated test environment:
+Steps to set up a dedicated test environment and run the tests in it:
 
-(to be documented...)
+    cd Tests/docker
+    docker-compose build
+    docker-compose up -d
+    docker exec -ti kezmbtest_ez su test
+    . ./Tests/environment/setup-env-vars.sh ${EZ_VERSION}
+    ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit 
+
+Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
+Note: make sure to have enough disk space available.
+Note: the tests in the Docker container run against the version of eZPlatform kernel specified in the containers.env file.
+If you want to test against another version, feel free to modify it and _rebuild the containers_.
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)

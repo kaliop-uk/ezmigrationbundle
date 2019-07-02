@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-EZ_VERSION=$1
+# Set up env vars
 
-# Set up env vars:
+# @todo check if all required vars have a value
+
+EZ_VERSION=$1
 
 export SYMFONY_ENV=behat
 

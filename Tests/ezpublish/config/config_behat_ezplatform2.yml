@@ -12,7 +12,8 @@ doctrine:
             default:
                 driver: pdo_mysql
                 host: localhost
-                user: root
+                user: ezp
+                password: ezp
                 dbname: behattestdb
                 charset: UTF8
 
