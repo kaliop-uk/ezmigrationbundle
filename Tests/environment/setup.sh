@@ -54,7 +54,7 @@ fi
 if [ "${CODE_COVERAGE}" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
 
 # Create the database from sql files present in either the legacy stack or kernel
-./Tests/environment/create-db.sh ${EZ_VERSION} behattestdb ${INSTALL_TAGSBUNDLE}
+./Tests/environment/create-db.sh ${EZ_VERSION} ${INSTALL_TAGSBUNDLE}
 
 # Set up configuration files
 ./Tests/environment/setup-ez-config.sh ${EZ_VERSION} ${EZ_APP_DIR} ${EZ_KERNEL} ${INSTALL_TAGSBUNDLE}

@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
 EZ_VERSION=$1
-DB=$2
-INSTALL_TAGSBUNDLE=$3
+INSTALL_TAGSBUNDLE=$2
 ROOT_DB_USER=root
 ROOT_DB_PWD=
-# @todo use the same env vars used by the docker container, even when on Travis
-EZ_DB_USER=ezp
-EZ_DB_PWD=ezp
 DB_HOST=
 
 # @todo check if all required vars have a value
@@ -18,7 +14,7 @@ if [ "${TRAVIS}" != "true" ]; then
 fi
 
 ROOT_DB_COMMAND="mysql ${DB_HOST} -u${ROOT_DB_USER} ${ROOT_DB_PWD}"
-EZ_DB_COMMAND="mysql ${DB_HOST} -u${EZ_DB_USER} -p${EZ_DB_PWD} ${DB}"
+EZ_DB_COMMAND="mysql ${DB_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}"
 
 # MySQL 5.7 defaults to strict mode, which is not good with ezpublish community kernel 2014.11.8
 if [ "${EZ_VERSION}" = "ezpublish-community" -a "${TRAVIS}" = "true" ]; then
@@ -28,8 +24,8 @@ if [ "${EZ_VERSION}" = "ezpublish-community" -a "${TRAVIS}" = "true" ]; then
     sudo service mysql restart
 fi
 
-${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${DB};"
-${ROOT_DB_COMMAND} -e "CREATE DATABASE ${DB}; GRANT ALL ON ${DB}.* TO ${EZ_DB_USER}@'*' IDENTIFIED BY '${EZ_DB_PWD}';"
+${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${MYSQL_DATABASE};"
+${ROOT_DB_COMMAND} -e "CREATE DATABASE ${MYSQL_DATABASE}; GRANT ALL ON ${MYSQL_DATABASE}.* TO ${MYSQL_USER}@'*' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 
 # Load the database schema and data from sql files present in either the legacy stack or kernel
 if [ "${EZ_VERSION}" = "ezpublish-community" ]; then

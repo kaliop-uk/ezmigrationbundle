@@ -48,6 +48,8 @@ matrix:
   # @todo install memcached, java (for Solr)
 
 install:
+  # in case...
+  - chmod 755 ./Tests/environment/*.sh
   - ./Tests/environment/setup.sh
 
 script:
