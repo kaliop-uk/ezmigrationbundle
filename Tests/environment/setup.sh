@@ -41,11 +41,7 @@ if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 #- 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
 composer require --dev --no-update ${EZ_PACKAGES}
-if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
-    travis_wait composer update --dev
-else
-    composer update --dev
-fi
+composer update --dev
 
 if [ "${TRAVIS}" = "true" ]; then
     # useful for troubleshooting tests failures
