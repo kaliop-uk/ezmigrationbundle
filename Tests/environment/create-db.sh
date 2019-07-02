@@ -25,7 +25,7 @@ if [ "${EZ_VERSION}" = "ezpublish-community" -a "${TRAVIS}" = "true" ]; then
 fi
 
 ${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${MYSQL_DATABASE};"
-${ROOT_DB_COMMAND} -e "CREATE DATABASE ${MYSQL_DATABASE}; GRANT ALL ON ${MYSQL_DATABASE}.* TO ${MYSQL_USER}@'*' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+${ROOT_DB_COMMAND} -e "CREATE DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8mb4; CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}'; GRANT ALL PRIVILEGES ON `${MYSQL_DATABASE}`.* TO '${MYSQL_USER}'@'%'"
 
 # Load the database schema and data from sql files present in either the legacy stack or kernel
 if [ "${EZ_VERSION}" = "ezpublish-community" ]; then

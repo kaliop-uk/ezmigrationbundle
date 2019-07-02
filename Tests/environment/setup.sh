@@ -7,6 +7,8 @@
 
 # @todo check if all required env vars have a value
 
+set -ev
+
 cd $(dirname ${BASH_SOURCE[0]})/../..
 
 # For php 5.6, Composer needs humongous amounts of ram - which we don't have on Travis. Enable swap as workaround
