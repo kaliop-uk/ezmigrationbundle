@@ -38,3 +38,9 @@ services:
         #privileged: true
         #ports:
         #    - "3307:3306"
+
+#networks:
+#    default:
+#        ipam:
+#            config:
+#                - subnet: "${COMPOSE_SUBNET}.0/24"
