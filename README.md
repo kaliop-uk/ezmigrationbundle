@@ -434,8 +434,8 @@ It is recommended to run the tests suite using a dedicated eZPublish installatio
 
 #### Setting up a dedicated test environment for the bundle
 
-A safer choice to run the tests of the bundle is to set up a dedicated environment, as done when the test suite is run on
-Travis.
+A safer choice to run the tests of the bundle is to set up a dedicated environment, similar to the one used when the test
+suite is run on Travis.
 The advantages are multiple: one one hand you can start with any version of eZPublish you want; on the other you will
 be more confident that the tests will still pass on Travis.
 The disadvantages are that you will need Docker and Docker-compose, and that the environment you will use will look
@@ -447,7 +447,6 @@ Steps to set up a dedicated test environment and run the tests in it:
     docker-compose build
     docker-compose up -d
     docker exec -ti kezmbtest_ez su test
-    . ./Tests/environment/setup-env-vars.sh ${EZ_VERSION}
     ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit 
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.

@@ -5,6 +5,13 @@ language: php
 services:
     - mysql
 
+env:
+  global:
+    - SYMFONY_ENV=behat
+    - MYSQL_USER=ezp
+    - MYSQL_PASSWORD=ezp
+    - MYSQL_DATABASE=behattestdb
+
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
 # About php versions:
@@ -17,33 +24,34 @@ matrix:
   include:
     # The last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4
     - php: 5.6
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:^5.4 netgen/tagsbundle:^2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.0 ezsystems/behatbundle:^5.4 netgen/tagsbundle:^2.0' EZ_VERSION=ezpublish-community EZ_APP_DIR=ezpublish EZ_KERNEL=EzPublishKernel KERNEL_DIR=vendor/ezsystems/ezpublish-community/ezpublish CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
     # eZPlatform 1 aka eZPublish 6 - earliest LTS release is 1.7
     - php: 7.0
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.6 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.6 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     # last version available of eZPlatform 1 - also an LTS
     - php: 7.1
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.0 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.0' EZ_VERSION=ezplatform EZ_APP_DIR=app EZ_KERNEL=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
 
     # next-to-latest version currently available of eZPlatform 2
     # sensio/generator-bundle is only needed because we run the tests using 'behat' sf env
     - php: 7.2
-      env: EZ_PACKAGES='ezsystems/ezplatform:~2.4.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle' EZ_VERSION=ezplatform2 EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~2.4.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle' EZ_VERSION=ezplatform2 EZ_APP_DIR=app EZ_KERNEL=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     # latest version currently available of eZPlatform 2 - currently 2.5, which is also LTS
     - php: 7.3
-      env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 EZ_APP_DIR=app EZ_KERNEL=AppKernel CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 EZ_APP_DIR=app EZ_KERNEL=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
 #before_install:
   # No need for a web server, until we start testing using Selenium
   #- sudo apt-get update -qq
   #- sudo apt-get install -qq -y --force-yes apache2 libapache2-mod-fastcgi
+  # @todo install memcached, java (for Solr)
 
 install:
   - ./Tests/environment/setup.sh
 
 script:
-  - . ./Tests/environment/setup-env-vars.sh ${EZ_VERSION}
+  #- . ./Tests/environment/setup-env-vars.sh ${EZ_VERSION}
   # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
   - if [ "$CODE_COVERAGE" = "1" ]; then ./vendor/phpunit/phpunit/phpunit --stderr --colors --coverage-clover=coverage.clover Tests/phpunit; else ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit; fi
 

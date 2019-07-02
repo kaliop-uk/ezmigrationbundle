@@ -3,7 +3,9 @@ Version ?????
 
 * Fix issue #210: cannot match locations by group
 
-* Improve the DSL docs for the management of Roles (see issue #211)
+* Improved the DSL docs for the management of Roles (see issue #211)
+
+* Added a Docker-Compose based stack to ease execution of the test suite locally
 
 
 Version 5.9.5
