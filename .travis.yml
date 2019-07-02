@@ -53,7 +53,6 @@ install:
   - ./Tests/environment/setup.sh
 
 script:
-  #- . ./Tests/environment/setup-env-vars.sh ${EZ_VERSION}
   # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
   - if [ "$CODE_COVERAGE" = "1" ]; then ./vendor/phpunit/phpunit/phpunit --stderr --colors --coverage-clover=coverage.clover Tests/phpunit; else ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit; fi
 
