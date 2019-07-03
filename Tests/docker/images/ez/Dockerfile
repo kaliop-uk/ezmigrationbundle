@@ -25,6 +25,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php-mbstring \
     php-cli \
     php-curl \
+    php-gd \
     php-intl \
     php-memcached \
     php-xml \
@@ -54,9 +55,9 @@ RUN adduser test sudo && \
 
 RUN chown -R test:test /home/test
 
-# Set up eZ
+# Set up eZ... can not be done as the volumes are not mounted yet!
 # -----------------------------------------------------------------------------
-RUN su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh"
+#RUN su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh"
 
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi

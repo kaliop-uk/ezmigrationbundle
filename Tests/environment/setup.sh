@@ -27,14 +27,12 @@ else
     sudo cp Tests/environment/zzz_php.ini /etc/php/7.3/cli/conf.d
 fi
 
-# Q: are all of these scripts ok here, or shall they be moved to the before_script step, when we add matrix combinations ???
-
 # Disable xdebug for speed (both for executing composer and running tests), but allow us to e-enable it later
 export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
 export XDEBUG_INI=${XDEBUG_INI/,/}
 if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 
-# We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix
+# We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix (env vars)
 
 # For the moment, to install eZPlatform, a set of DEV packages has to be allowed (eg roave/security-advisories); really ugly sed expression to alter composer.json follows
 # A different work around for this has been found in setting up an alias for them in the std composer.json require-dev section
@@ -51,7 +49,7 @@ fi
 # Re-enable xdebug for when we need to generate code coverage
 if [ "${CODE_COVERAGE}" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
 
-# Create the database from sql files present in either the legacy stack or kernel
+# Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
 ./Tests/environment/create-db.sh
 
 # Set up configuration files

@@ -446,8 +446,13 @@ Steps to set up a dedicated test environment and run the tests in it:
     cd Tests/docker
     docker-compose build
     docker-compose up -d
+    docker-compose logs # wait for the setup process of the ez container to be fully finished. It takes a while!
     docker exec -ti kezmbtest_ez su test
-    ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit 
+    ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit
+    
+In case you want to run manual commands:
+    
+    php vendor/ezsystems/ezplatform/bin/console 
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
 Note: make sure to have enough disk space available.
