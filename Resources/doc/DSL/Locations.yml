@@ -79,7 +79,7 @@
         depth:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
         is_main_location: true # bool
-        group: [x, y, z] # array of user group ids or remote ids
+        group: xxx # int|int[] a user group id or remote id
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         object_state: zzz # int|int[]|string|string[] object state(s) either as id or using 'group/identifier'
@@ -153,7 +153,7 @@
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         depth:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
-        group: [x, y, z] # array of user group ids or remote ids
+        group: xxx # int|int[] a user group id or remote id
         is_main_location: true # bool
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
@@ -224,7 +224,7 @@
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
         depth:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
-        group: [x, y, z] # array of user group ids or remote ids
+        group: xxx # int|int[] a user group id or remote id
         is_main_location: true # bool
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
