@@ -120,7 +120,7 @@
         content_type_identifier: yyy # string|string[] a content type identifier
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
-        group: xxx # user id, login or email if unique
+        group: xxx # int|int[] a user group id or remote id
         lang: xxx # language code, eg. eng-GB
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
@@ -214,7 +214,7 @@
         content_type_identifier: yyy # string|string[] a content type identifier
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
-        group: xxx # user id, login or email if unique
+        group: xxx # int|int[] a user group id or remote id
         lang: xxx # language code, eg. eng-GB
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
@@ -265,7 +265,7 @@
         content_type_identifier: yyy # string|string[] a content type identifier
         creation_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
-        group: xxx # user id, login or email if unique
+        group: xxx # int|int[] a user group id or remote id
         lang: xxx # language code, eg. eng-GB
         modification_date:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: unix timestamp
