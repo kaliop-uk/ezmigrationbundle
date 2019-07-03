@@ -89,7 +89,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
         KeyMatcherInterface $userMatcher = null)
     {
         parent::__construct($repository);
-        $this->userMatcher = $userMatcher;
+        $this->groupMatcher = $groupMatcher;
         $this->sectionMatcher = $sectionMatcher;
         $this->stateMatcher = $stateMatcher;
         $this->userMatcher = $userMatcher;
