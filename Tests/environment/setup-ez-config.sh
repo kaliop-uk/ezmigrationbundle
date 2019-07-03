@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-EZ_VERSION=$1
-EZ_APP_DIR=$2
-EZ_KERNEL=$3
-INSTALL_TAGSBUNDLE=$4
+# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, EZ_APP_DIR, EZ_KERNEL
 
 # @todo check if all required vars have a value
 
