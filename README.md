@@ -286,6 +286,11 @@ An event is fired only in case a migration fails because a step throws a specifi
 
     * ez_migration.migration_aborted => listeners receive a MigrationAbortedEvent event instance
 
+An event is fired when a migration is being generated using the `kaliop:migration:generate` command, allowing to alter
+the data that will be serialized as migration steps:
+
+    * ez_migration.migration_generated => listeners receive a MigrationGeneratedEvent event instance
+
 In order to act on those events, you will need to declare tagged services, such as for ex:
 
     my.step_executed_listener:

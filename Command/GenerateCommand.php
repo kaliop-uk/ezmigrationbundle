@@ -11,6 +11,7 @@ use Symfony\Component\Yaml\Yaml;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Event\MigrationGeneratedEvent;
 
 class GenerateCommand extends AbstractCommand
 {
@@ -20,6 +21,8 @@ class GenerateCommand extends AbstractCommand
     private $availableModes = array('create', 'update', 'delete');
     private $availableTypes = array('content', 'content_type', 'content_type_group', 'language', 'object_state', 'object_state_group', 'role', 'section', 'generic', 'db', 'php', '...');
     private $thisBundle = 'EzMigrationBundle';
+
+    protected $eventName = 'ez_migration.migration_generated';
 
     /**
      * Configure the console command
@@ -83,6 +86,8 @@ EOT
      * @param OutputInterface $output
      * @return null|int null or 0 if everything went fine, or an error code
      * @throws \InvalidArgumentException When an unsupported file type is selected
+     *
+     * @todo for type=db, we could fold 'dbserver' option into 'mode'
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -158,11 +163,13 @@ EOT
         }
 
         $parameters = array(
-            'dbserver' => $dbServer,
+            'type' => $migrationType,
+            'mode' => $mode,
             'matchType' => $matchType,
             'matchValue' => $matchValue,
             'matchExcept' => $matchExcept,
-            'mode' => $mode,
+            'dbserver' => $dbServer,
+            /// @todo move these 2 params out of here, pass the context as template parameter instead
             'lang' => $input->getOption('lang'),
             'adminLogin' => $input->getOption('admin-login')
             /// @todo should we allow users to specify this ?
@@ -204,11 +211,11 @@ EOT
                 $fileName = $date . '_' . $name . '.' . $fileType;
         }
 
-        $path = $migrationDirectory . '/' . $fileName;
+        $filePath = $migrationDirectory . '/' . $fileName;
 
-        $warning = $this->generateMigrationFile($path, $fileType, $migrationType, $parameters);
+        $warning = $this->generateMigrationFile($migrationType, $mode, $fileType, $filePath, $parameters);
 
-        $output->writeln(sprintf("Generated new migration file: <info>%s</info>", $path));
+        $output->writeln(sprintf("Generated new migration file: <info>%s</info>", $filePath));
 
         if ($warning != '') {
             $output->writeln("<comment>$warning</comment>");
@@ -221,14 +228,15 @@ EOT
      * Generates a migration definition file.
      * @todo allow non-filesystem storage
      *
-     * @param string $path filename to file to generate (full path)
-     * @param string $fileType The type of migration file to generate
      * @param string $migrationType The type of migration to generate
+     * @param string $migrationMode
+     * @param string $fileType The type of migration file to generate
+     * @param string $filePath filename to file to generate (full path)
      * @param array $parameters passed on to twig
      * @return string A warning message in case file generation was OK but there was something weird
      * @throws \Exception
      */
-    protected function generateMigrationFile($path, $fileType, $migrationType, array $parameters = array())
+    protected function generateMigrationFile($migrationType, $migrationMode, $fileType, $filePath, array $parameters = array())
     {
         $warning = '';
 
@@ -244,6 +252,13 @@ EOT
                 }
 
                 $code = $this->getContainer()->get('twig')->render($this->thisBundle . ':MigrationTemplate:' . $template, $parameters);
+
+                // allow event handlers to replace data
+                $event = new MigrationGeneratedEvent($migrationType, $migrationMode, $fileType, $code, $filePath);
+                $this->getContainer()->get('event_dispatcher')->dispatch($this->eventName, $event);
+                $code = $event->getData();
+                $filePath = $event->getFile();
+
                 break;
 
             default:
@@ -261,7 +276,13 @@ EOT
                 if ($parameters['matchExcept']) {
                     $matchCondition = array(MatcherInterface::MATCH_NOT => $matchCondition);
                 }
-                $data = $executor->generateMigration($matchCondition, $parameters['mode'], $context);
+                $data = $executor->generateMigration($matchCondition, $migrationMode, $context);
+
+                // allow event handlers to replace data
+                $event = new MigrationGeneratedEvent($migrationType, $migrationMode, $fileType, $data, $filePath, $matchCondition, $context);
+                $this->getContainer()->get('event_dispatcher')->dispatch($this->eventName, $event);
+                $data = $event->getData();
+                $filePath = $event->getFile();
 
                 if (!is_array($data) || !count($data)) {
                     $warning = 'Note: the generated migration is empty';
@@ -279,7 +300,7 @@ EOT
                 }
         }
 
-        file_put_contents($path, $code);
+        file_put_contents($filePath, $code);
 
         return $warning;
     }

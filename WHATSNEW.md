@@ -5,11 +5,14 @@ Version ?????
 
 * Improved the DSL docs for the management of Roles (see issue #211)
 
-* Implemented issue #205: allow to generate migrations for tag creation independently of content
+* Implemented request #205: allow to generate migrations for tag creation independently of content
 
 * Allow more flexibility in tag matching:
   - allow to match all tags
-  - when specifying a tag parent'd id, the remote_id can be used in its place
+  - when specifying a parent-tag id, the remote_id can be used in its place
+
+* Implemented request #204: an event of class MigrationGeneratedEvent is now emitted when a migration definition is
+  generated via the command `kaliop:migration:generate`, allowing developers to easily customize the generated migrations
 
 * Added a Docker-Compose based stack to ease execution of the test suite locally
 
