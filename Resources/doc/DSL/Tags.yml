@@ -2,7 +2,7 @@
     type: tag
     mode: create
     always_available: true|false # Optional (false by default)
-    parent_tag_id: 0 # Optional. Parent tag id (0 by default)
+    parent_tag_id: 0 # Optional. Parent tag id (0 by default). If a string, it is assumed to be a tag remote_id
     remote_id: custom_remote_id # Optional, will set a custom remote id
     lang: eng-GB # Optional
     keywords:

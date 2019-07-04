@@ -17,10 +17,11 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     const MATCH_TAG_REMOTE_ID = 'tag_remote_id';
     const MATCH_TAG_KEYWORD = 'tag_keyword';
     const MATCH_PARENT_TAG_ID = 'parent_tag_id';
+    const MATCH_PARENT_TAG_REMOTE_ID = 'parent_tag_remote_id';
 
     protected $allowedConditions = array(
-        self::MATCH_AND, self::MATCH_OR,
-        self::MATCH_TAG_ID, self::MATCH_TAG_REMOTE_ID, self::MATCH_TAG_KEYWORD, self::MATCH_PARENT_TAG_ID,
+        self::MATCH_AND, self::MATCH_OR, self::MATCH_ALL,
+        self::MATCH_TAG_ID, self::MATCH_TAG_REMOTE_ID, self::MATCH_TAG_KEYWORD, self::MATCH_PARENT_TAG_ID, self::MATCH_PARENT_TAG_REMOTE_ID,
         // aliases
         'id', 'remote_id', 'keyword'
     );
@@ -86,6 +87,12 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
                 case self::MATCH_PARENT_TAG_ID:
                     return new TagCollection($this->findTagsByParentTagIds($values));
 
+                case self::MATCH_PARENT_TAG_REMOTE_ID:
+                    return new TagCollection($this->findTagsByParentTagRemoteIds($values));
+
+                case self::MATCH_ALL:
+                    return new TagCollection($this->findAllTags());
+
                 case self::MATCH_AND:
                     return $this->matchAnd($values);
 
@@ -101,7 +108,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
             return array(self::MATCH_TAG_ID => $key);
         }
 
-        throw new InvalidMatchConditionsException("Tag matcher can not uniquely identify the type of key used to match: " . $key);
+        return array(self::MATCH_TAG_REMOTE_ID => $key);
     }
 
     /**
@@ -134,6 +141,29 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
         }
 
         return $tags;
+    }
+
+    protected function findAllTags()
+    {
+        $parentTags = [];
+
+        foreach ($this->tagService->loadTagChildren() as $parentTag) {
+            $parentTags[$parentTag->id] = $parentTag;
+        }
+        $tags = $parentTags;
+
+        do {
+            $childTags = $this->findTagsByParentTagIds(array_keys($parentTags));
+            $tags = array_merge($tags, $childTags);
+            $parentTags = $childTags;
+        } while ( count( $childTags ) > 0 );
+
+        return $tags;
+    }
+
+    protected function findTagsByParentTagRemoteIds(array $tagRemoteIds)
+    {
+        return $this->findTagsByParentTagIds(array_keys($this->findTagsByRemoteIds($tagRemoteIds)));
     }
 
     /**

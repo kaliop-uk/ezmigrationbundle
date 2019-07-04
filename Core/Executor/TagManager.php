@@ -2,14 +2,17 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 use Netgen\TagsBundle\API\Repository\Values\Tags\Tag;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 
 /**
  * Handles tag migrations.
  */
-class TagManager extends RepositoryExecutor
+class TagManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
     protected $supportedStepTypes = array('tag');
     protected $supportedActions = array('create', 'load', 'update', 'delete');
@@ -43,6 +46,11 @@ class TagManager extends RepositoryExecutor
         if (isset($step->dsl['parent_tag_id'])) {
             $parentTagId = $step->dsl['parent_tag_id'];
             $parentTagId = $this->referenceResolver->resolveReference($parentTagId);
+            // allow remote-ids to be used to reference parent tag
+            if (!is_int($parentTagId) && !ctype_digit($parentTagId)) {
+                $parentTag = $this->tagMatcher->matchOneByKey($parentTagId);
+                $parentTagId = $parentTag->id;
+            }
         }
         $remoteId = isset($step->dsl['remote_id']) ? $step->dsl['remote_id'] : null;
 
@@ -151,6 +159,13 @@ class TagManager extends RepositoryExecutor
 
         $this->setReferences($tagsCollection, $step);
 
+        // sort tags by depth so that there will be no errors in case we are deleting parent and child
+        $tagsCollection = $tagsCollection->getArrayCopy();
+        uasort($tagsCollection, function ($t1, $t2) {
+            if ($t1->depth == $t2->depth) return 0;
+            return ($t1->depth > $t2->depth) ? -1 : 1;
+        });
+
         foreach ($tagsCollection as $tag) {
             $this->tagService->deleteTag($tag);
         }
@@ -228,6 +243,119 @@ class TagManager extends RepositoryExecutor
         }
 
         return $refs;
+    }
+
+    /**
+     * Generates a migration definition in array format
+     *
+     * @param array $matchConditions
+     * @param string $mode
+     * @param array $context
+     * @return array Migration data
+     * @throws InvalidMatchConditionsException
+     * @throws \Exception
+     */
+    public function generateMigration(array $matchConditions, $mode, array $context = array())
+    {
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+
+        $tagCollection = $this->tagMatcher->match($matchConditions);
+        $data = array();
+
+        switch ($mode) {
+            case 'create':
+                // sort top to bottom
+                $tagCollection = $tagCollection->getArrayCopy();
+                uasort($tagCollection, function ($t1, $t2) {
+                    if ($t1->depth == $t2->depth) return 0;
+                    return ($t1->depth > $t2->depth) ? 1 : -1;
+                });
+                break;
+            case 'delete':
+                // sort bottom to top
+                $tagCollection = $tagCollection->getArrayCopy();
+                uasort($tagCollection, function ($t1, $t2) {
+                    if ($t1->depth == $t2->depth) return 0;
+                    return ($t1->depth > $t2->depth) ? -1 : 1;
+                });
+                break;
+        }
+
+        /** @var Tag $tag */
+        foreach ($tagCollection as $tag) {
+
+            $tagData = array(
+                'type' => reset($this->supportedStepTypes),
+                'mode' => $mode
+            );
+
+            switch ($mode) {
+                case 'create':
+                    if ($tag->parentTagId != 0) {
+                        $parentTagRid = $this->tagMatcher->matchOneByKey($tag->parentTagId)->remoteId;
+                    } else {
+                        $parentTagRid = 0;
+                    }
+                    $tagData = array_merge(
+                        $tagData,
+                        array(
+                            'parent_tag_id' => $parentTagRid,
+                            'always_available' => $tag->alwaysAvailable,
+                            'lang' => $tag->mainLanguageCode,
+                            'keywords' => $this->getTagKeywords($tag),
+                            'remote_id' => $tag->remoteId
+                        )
+                    );
+                    break;
+                case 'update':
+                    $tagData = array_merge(
+                        $tagData,
+                        array(
+                            'match' => array(
+                                TagMatcher::MATCH_TAG_REMOTE_ID => $tag->remoteId
+                            ),
+                            'always_available' => $tag->alwaysAvailable,
+                            'lang' => $tag->mainLanguageCode,
+                            'keywords' => $this->getTagKeywords($tag),
+                        )
+                    );
+                    break;
+                case 'delete':
+                    $tagData = array_merge(
+                        $tagData,
+                        array(
+                            'match' => array(
+                                TagMatcher::MATCH_TAG_REMOTE_ID => $tag->remoteId
+                            )
+                        )
+                    );
+                    break;
+                default:
+                    throw new \Exception("Executor 'tag' doesn't support mode '$mode'");
+            }
+
+            $data[] = $tagData;
+        }
+
+        $this->loginUser($previousUserId);
+        return $data;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listAllowedConditions()
+    {
+        return $this->tagMatcher->listAllowedConditions();
+    }
+
+    protected function getTagKeywords($tag)
+    {
+        $out = array();
+        foreach($tag->languageCodes as $languageCode) {
+            $out[$languageCode] = $tag->getKeyword($languageCode);
+        }
+        return $out;
     }
 
     protected function checkTagsBundleInstall()

@@ -5,6 +5,12 @@ Version ?????
 
 * Improved the DSL docs for the management of Roles (see issue #211)
 
+* Implemented issue #205: allow to generate migrations for tag creation independently of content
+
+* Allow more flexibility in tag matching:
+  - allow to match all tags
+  - when specifying a tag parent'd id, the remote_id can be used in its place
+
 * Added a Docker-Compose based stack to ease execution of the test suite locally
 
 
