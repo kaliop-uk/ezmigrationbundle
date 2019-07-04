@@ -22,7 +22,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     git \
     memcached \
     php \
-    php-mbstring \
     php-cli \
     php-curl \
     php-gd \
