@@ -443,10 +443,12 @@ quite unlike a standard eZPublish setup!
 
 Steps to set up a dedicated test environment and run the tests in it:
 
+    # if you have a github auth token, it is a good idea to copy it now to Tests/docker/data/.composer/auth.json
     cd Tests/docker
-    docker-compose build
+    docker-compose build    
     docker-compose up -d
-    docker-compose logs # wait for the setup process of the ez container to be fully finished. It takes a while!
+    docker-compose logs -f ez
+    # wait for the bootstrap process of the ez container to be fully finished. It takes a while!
     docker exec -ti kezmbtest_ez su test
     ./vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit
     

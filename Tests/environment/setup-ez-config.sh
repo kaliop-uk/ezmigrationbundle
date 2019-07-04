@@ -19,11 +19,12 @@ else
     LAST_BUNDLE=OneupFlysystemBundle
 fi
 
-# eZ5 config files
+# eZ5/eZPlatform config files
 cp ${APP_DIR}/config/parameters.yml.dist ${APP_DIR}/config/parameters.yml
-fgrep -q 'This file will be appended' ${APP_DIR}/config/config_behat.yml
-if [ $? -ne 0 ]; then
-    cat Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml >> ${APP_DIR}/config/config_behat.yml
+if [ ! -f ${APP_DIR}/config/config_behat_orig.yml ]; then
+    mv ${APP_DIR}/config/config_behat.yml ${APP_DIR}/config/config_behat_orig.yml
+    cp Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml ${APP_DIR}/config/config_behat.yml
+    cp Tests/ezpublish/config/config_behat.php ${APP_DIR}/config/config_behat.php
 fi
 
 # Load the migration bundle in the Sf kernel
@@ -57,7 +58,7 @@ if [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" ]; then
     fi
 fi
 
-# Fix the eZ5 autoload configuration for the unexpected directory layout
+# Fix the eZ5/eZPlatform autoload configuration for the unexpected directory layout
 if [ -f "${APP_DIR}/autoload.php" ]; then
     sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" ${APP_DIR}/autoload.php
 fi
@@ -71,7 +72,7 @@ if [ -f vendor/ezsystems/ezplatform/bin/console ]; then
     sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" vendor/ezsystems/ezplatform/bin/console
 fi
 
-# Generate legacy autoloads
+# Set up legacy settings and generate legacy autoloads
 if [ "${EZ_VERSION}" = "ezpublish-community" ]; then
     cat Tests/ezpublish-legacy/config.php > vendor/ezsystems/ezpublish-legacy/config.php
     cd vendor/ezsystems/ezpublish-legacy && php bin/php/ezpgenerateautoloads.php && cd ../../..

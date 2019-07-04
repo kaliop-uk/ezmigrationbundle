@@ -8,8 +8,8 @@ clean_up() {
     #echo "[`date`] Stopping the Web server"
     #service apache2 stop
 
-    echo "[`date`] Stopping Memcached"
-    service memcached stop
+    #echo "[`date`] Stopping Memcached"
+    #service memcached stop
 
     #echo "[`date`] Stopping Solr"
     #service solr stop
@@ -45,8 +45,8 @@ fi
 
 trap clean_up TERM
 
-echo "[`date`] Starting Memcached..."
-service memcached start
+#echo "[`date`] Starting Memcached..."
+#service memcached start
 
 #echo "[`date`] Starting Solr..."
 #service solr start
@@ -54,9 +54,10 @@ service memcached start
 #echo "[`date`] Starting the Web server..."
 #service apache2 start
 
-echo "[`date`] Setting up eZ..."
-# @todo allow this _not_ to run on every start of the container...
-su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh"
+if [ ! -f /var/run/setup_ok ]; then
+    echo "[`date`] Setting up eZ..."
+    su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh && echo 0 > /var/run/setup_ok"
+fi
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
 

@@ -15,7 +15,6 @@ cd $(dirname ${BASH_SOURCE[0]})/../..
 if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
 
 # This is done by Travis automatically...
-# @todo re-enable once we have composer installed from source
 #if [ "${TRAVIS}" != "true" ]; then
 #    composer selfupdate
 #fi

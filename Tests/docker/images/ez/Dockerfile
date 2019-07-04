@@ -27,7 +27,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php-curl \
     php-gd \
     php-intl \
+    php-json \
     php-memcached \
+    php-mbstring \
+    php-mysql \
     php-xml \
     sudo \
     unzip \
