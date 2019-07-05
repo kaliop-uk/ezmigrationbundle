@@ -70,7 +70,7 @@ class GenerateTest extends CommandTest
 
     public function provideGenerateParameters()
     {
-        return array(
+        $out = array(
             array(),
             array(null, 'sql'),
             array(null, 'php'),
@@ -105,7 +105,20 @@ class GenerateTest extends CommandTest
             array('unit_test_generated_section', null, 'section', 'section_identifier', 'standard'),
             array('unit_test_generated_section', 'yml', 'section', 'section_identifier', 'standard', false, 'update'),
             array('unit_test_generated_section', 'json', 'section', 'section_identifier', 'standard', false, 'delete'),
+            array('unit_test_generated_content', null, 'language', 'all', null),
+            array('unit_test_generated_content', 'yml', 'language', 'all', null, false, 'update'),
+            array('unit_test_generated_content', 'json', 'language', 'all', null, false, 'delete'),
         );
+
+        /// @todo we should create some tags before running these...
+        $bundles = $this->getContainer()->getParameter('kernel.bundles');
+        if (isset($bundles['NetgenTagsBundle'])) {
+            $out[] = array('unit_test_generated_tags', null, 'tag', 'all', null);
+            $out[] = array('unit_test_generated_tags', 'yml', 'tag', 'all', null, false, 'update');
+            $out[] = array('unit_test_generated_tags', 'json', 'tag', 'all', null, false, 'delete');
+        }
+
+        return $out;
     }
 
     protected function saveGeneratedFile($output)

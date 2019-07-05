@@ -14,7 +14,9 @@ Version ?????
 * Implemented request #204: an event of class MigrationGeneratedEvent is now emitted when a migration definition is
   generated via the command `kaliop:migration:generate`, allowing developers to easily customize the generated migrations
 
-* Added a Docker-Compose based stack to ease execution of the test suite locally
+* Improved: it is now possible to set a reference to the `remote_id` of any created/updated/deleted userGroup
+
+* Added a Docker-Compose based stack to ease execution of the test suite locally. See the main README for details on use
 
 
 Version 5.9.5

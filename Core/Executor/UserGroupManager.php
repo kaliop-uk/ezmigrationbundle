@@ -223,6 +223,9 @@ class UserGroupManager extends RepositoryExecutor
                 case 'parent_user_group_id':
                     $value = $userGroup->parentId;
                     break;
+                case 'remote_id':
+                    $value = $userGroup->contentInfo->remoteId;
+                    break;
                 case 'users_ids':
                     $value = [];
                     $userService = $this->repository->getUserService();
