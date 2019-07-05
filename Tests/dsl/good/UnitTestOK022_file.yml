@@ -143,6 +143,11 @@
 -
     type: file
     mode: delete
+    file: /tmp/z.txt
+
+-
+    type: file
+    mode: delete
     file: reference:kmb_test_22_y
 
 -

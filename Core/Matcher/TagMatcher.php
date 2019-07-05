@@ -156,7 +156,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
             $childTags = $this->findTagsByParentTagIds(array_keys($parentTags));
             $tags = array_merge($tags, $childTags);
             $parentTags = $childTags;
-        } while ( count( $childTags ) > 0 );
+        } while (count( $childTags ) > 0);
 
         return $tags;
     }

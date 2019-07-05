@@ -160,12 +160,13 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
             do {
                 $matches = $this->repository->getUserService()->loadUsersOfUserGroup($group, $offset, $limit);
                 $offset += $limit;
-            } while (count($matches));
 
-            // return unique contents
-            foreach ($matches as $user) {
-                $users[$user->id] = $user;
-            }
+                // return unique contents
+                foreach ($matches as $user) {
+                    $users[$user->id] = $user;
+                }
+
+            } while (count($matches));
         }
 
         return $users;

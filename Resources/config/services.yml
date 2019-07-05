@@ -207,6 +207,8 @@ services:
         class: '%ez_migration_bundle.executor.file.class%'
         arguments:
             - '@ez_migration_bundle.reference_resolver.customreference'
+        calls:
+            - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
         tags:
             - { name: ez_migration_bundle.executor }
 

@@ -25,6 +25,7 @@ Manages the Test Environment Docker Stack
 Commands:
     build           build or rebuild the complete set of containers and set up eZ. Leaves the stack running
     enter           enter the test container
+    exec \$cmd       execute a command in the test container
     runtests        execute the whole test suite using the test container
     images          list container images
     logs            view output from containers
@@ -178,6 +179,11 @@ case "$ACTION" in
 
     enter)
         docker exec -ti ${WEBCONTAINER} su ${WEBUSER}
+    ;;
+
+    exec)
+        # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
+        docker exec -ti ${WEBCONTAINER} su ${WEBUSER} -c '"$0" "$@"' -- "$@"
     ;;
 
     images)

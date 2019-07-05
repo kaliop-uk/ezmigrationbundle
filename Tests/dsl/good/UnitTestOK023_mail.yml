@@ -1,3 +1,22 @@
+# cleanup leftovers
+-
+    type: file
+    mode: exists
+    file: /tmp/mail.txt
+    references:
+        -
+            attribute: exists
+            identifier: kmb_test_023_exists
+-
+    type: file
+    mode: delete
+    file: /tmp/mail.txt
+    if:
+        "reference:kmb_test_023_exists":
+            eq: true
+
+# main test
+
 -
      type: reference
      mode: set
@@ -81,3 +100,8 @@
     identifier: reference:kmb_test_023_mailmessage
     test:
         contains: "Subject: this is an email subject about testing etc..."
+
+-
+    type: file
+    mode: delete
+    file: /tmp/mail.txt

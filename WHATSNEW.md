@@ -3,6 +3,10 @@ Version ?????
 
 * Fix issue #210: cannot match locations by group
 
+* Fix: matching users by usergroup_id
+
+* Fix: `file` migration steps would not work when using an `if` element
+
 * Improved the DSL docs for the management of Roles (see issue #211)
 
 * Implemented request #205: allow to generate migrations for tag creation independently of content

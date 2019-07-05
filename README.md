@@ -450,17 +450,16 @@ Steps to set up a dedicated test environment and run the tests in it:
 
     # if you have a github auth token, it is a good idea to copy it now to Tests/docker/data/.composer/auth.json
     ./Tests/teststack.sh build
-    ./Tests/teststack.sh exec
+    ./Tests/teststack.sh runtests
     ./Tests/teststack.sh stop
    
-In case you want to run manual commands:
+In case you want to run manual commands, eg. the symfony console:
     
-    ./Tests/teststack.sh enter
-    php vendor/ezsystems/ezplatform/bin/console 
+    ./Tests/teststack.sh exec php vendor/ezsystems/ezplatform/bin/console cache:clear
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
 Note: make sure to have enough disk space available.
-Note: the tests in the Docker container run against the version of eZPlatform kernel specified in the containers.env file.
+Note: the tests in the Docker container run against the version of eZPlatform kernel specified in the file `containers.env`.
 If you want to test against another version, feel free to modify it and _rebuild the containers_.
 
 
