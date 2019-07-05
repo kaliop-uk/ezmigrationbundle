@@ -123,6 +123,7 @@ parameters:
 services:
 
     ez_migration_bundle.migration_service:
+        public: true
         class: '%ez_migration_bundle.migration_service.class%'
         arguments:
             - '@ez_migration_bundle.loader'
@@ -648,6 +649,7 @@ services:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezmedia, priority: 0 }
 
     ez_migration_bundle.complex_field.ezpage:
+        lazy: true
         parent: ez_migration_bundle.complex_field
         class: '%ez_migration_bundle.complex_field.ezpage.class%'
         arguments:
@@ -770,6 +772,7 @@ services:
 
     # This service is used for the verbose mode when executing migrations on the command line
     ez_migration_bundle.step_executed_listener.tracing:
+        public: true
         class: '%ez_migration_bundle.step_executed_listener.tracing.class%'
         arguments:
             - '%ez_migration_bundle.enable_debug_output%'
@@ -799,3 +802,29 @@ services:
         arguments:
             - '@ezpublish.config.resolver'
             - '@service_container'
+            
+    Kaliop\eZMigrationBundle\Command\AbstractCommand: ~
+
+    Kaliop\eZMigrationBundle\Command\GenerateCommand:
+        tags:
+            - { name: 'console.command', command: 'kaliop:migration:generate' }
+
+    Kaliop\eZMigrationBundle\Command\MassMigrateCommand:
+        tags:
+            - { name: 'console.command', command: 'kaliop:migration:mass_migrate' }
+
+    Kaliop\eZMigrationBundle\Command\MigrateCommand:
+        tags:
+            - { name: 'console.command', command: 'kaliop:migration:migrate' }
+
+    Kaliop\eZMigrationBundle\Command\MigrationCommand:
+        tags:
+            - { name: 'console.command', command: 'kaliop:migration:migration' }
+
+    Kaliop\eZMigrationBundle\Command\ResumeCommand:
+        tags:
+            - { name: 'console.command', command: 'kaliop:migration:resume' }
+
+    Kaliop\eZMigrationBundle\Command\StatusCommand:
+        tags:
+            - { name: 'console.command', command: 'kaliop:migration:status' }
