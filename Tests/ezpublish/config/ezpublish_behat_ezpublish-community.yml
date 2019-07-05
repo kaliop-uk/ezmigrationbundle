@@ -1,0 +1,18 @@
+
+# This file will replace (and then include) the equivalent one from eZPublish Community distribution
+# Used to set up an eZPublish env from scratch for testing purposes (eg. on Travis)
+
+imports:
+    - { resource: ezpublish_behat_orig.yml }
+
+doctrine:
+    dbal:
+        connections:
+            default:
+                driver: pdo_mysql
+                host: '%database_host%'
+                user: '%database_user%'
+                password: '%database_password%'
+                dbname: '%database_name%'
+                charset: UTF8
+

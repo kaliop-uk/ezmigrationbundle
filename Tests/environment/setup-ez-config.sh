@@ -25,6 +25,10 @@ if [ ! -f ${APP_DIR}/config/config_behat_orig.yml ]; then
     mv ${APP_DIR}/config/config_behat.yml ${APP_DIR}/config/config_behat_orig.yml
     cp Tests/ezpublish/config/config_behat_${EZ_VERSION}.yml ${APP_DIR}/config/config_behat.yml
     cp Tests/ezpublish/config/config_behat.php ${APP_DIR}/config/config_behat.php
+    if [ -f Tests/ezpublish/config/ezpublish_behat_${EZ_VERSION}.yml ]; then
+        mv ${APP_DIR}/config/ezpublish_behat.yml ${APP_DIR}/config/ezpublish_behat_orig.yml
+        cp Tests/ezpublish/config/ezpublish_behat_${EZ_VERSION}.yml ${APP_DIR}/config/ezpublish_behat.yml
+    fi
 fi
 
 # Load the migration bundle in the Sf kernel

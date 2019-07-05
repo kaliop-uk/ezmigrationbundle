@@ -31,17 +31,6 @@ parameters:
         - '%ezpublish.kernel.root_dir%/eZ/Publish/Core/Persistence/Tests/TransformationProcessor/_fixtures/transformations/search.tr.result'
     ezpublish.fieldType.ezrichtext.resources: '%ezpublish.kernel.root_dir%/eZ/Publish/Core/FieldType/RichText/Resources'
 
-doctrine:
-    dbal:
-        connections:
-            default:
-                driver: pdo_mysql
-                host: '%database_host%'
-                user: '%database_user%'
-                password: '%database_password%'
-                dbname: '%database_name%'
-                charset: UTF8
-
 ez_publish_legacy:
     root_dir: '%kernel.root_dir%/../../ezpublish-legacy'
 
