@@ -20,6 +20,10 @@ services:
         class: Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener
         tags:
             - { name: kernel.event_listener, event: ez_migration.before_execution, method: onBeforeStepExecution }
+    ez_migration_bundle.test.before_migration_generated_listener:
+        class: Kaliop\eZMigrationBundle\Tests\helper\MigrationGeneratedListener
+        tags:
+            - { name: kernel.event_listener, event: ez_migration.migration_generated, method: onMigrationGenerated }
     ez_migration_bundle.test.custom_reference_resolver:
         class: Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
         tags:
