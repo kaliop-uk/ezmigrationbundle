@@ -11,7 +11,7 @@
     last_name: xyz
     username: xyz
     email: xyz
-    password: xyz
+    password: xyz. # NB: The given password string is the plaintext version; it will be automatically hashed in the cms. PLEASE DON'T LET CLEARTEXT PASSWORDS BE STORED IN YOUR SOURCE CODE VERSIONING SYSTEMS
     user_content_type: xxx # Optional, Content Type identifier (defaults to 'user')
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
     groups: [x, y, z] # The user group ID or IDs (Content IDs or its/their remote_ids as string) to put the user into
@@ -79,7 +79,7 @@
         #                last_name: "faker: lastName"
 
     email: xyz # Optional. NB: can only be set if the match definition latches a single user
-    password: xyz # Optional. NB: The given password string will be automatically hashed.
+    password: xyz # Optional. NB: The given password string is the plaintext version; it will be automatically hashed in the cms. PLEASE DON'T LET CLEARTEXT PASSWORDS BE STORED IN YOUR SOURCE CODE VERSIONING SYSTEMS
     enabled: true|false # Optional
     # Optional, Group ID / list of group IDs (or its/their remote_ids) the user has to be a member of.
     # The user will be removed from all groups that are not in the list
