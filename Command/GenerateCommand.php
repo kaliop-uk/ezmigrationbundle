@@ -226,7 +226,7 @@ EOT
 
     /**
      * Generates a migration definition file.
-     * @todo allow non-filesystem storage
+     * @todo allow non-filesystem storage (delegate saving to a service, just as we do for loading)
      *
      * @param string $migrationType The type of migration to generate
      * @param string $migrationMode
