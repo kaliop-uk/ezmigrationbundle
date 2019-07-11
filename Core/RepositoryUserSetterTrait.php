@@ -3,7 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core;
 
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
-use Kaliop\eZMigrationBundle\API\Exception\InvalidAdminUserException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidUserAccountException;
 
 /**
  * NB: needs a class member 'repository'
@@ -37,7 +37,7 @@ trait RepositoryUserSetterTrait
                 $newUser = $this->repository->getUserService()->loadUserByLogin($userLoginOrId);
             }
         } catch (NotFoundException $e) {
-            throw new InvalidAdminUserException("Could not find the required user account to be used for logging in: '$userLoginOrId'. UserService says: " . $e->getMessage(), $e->getCode(), $e);
+            throw new InvalidUserAccountException("Could not find the required user account to be used for logging in: '$userLoginOrId'. UserService says: " . $e->getMessage(), $e->getCode(), $e);
         }
 
         $this->repository->setCurrentUser($newUser);
