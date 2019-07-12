@@ -30,6 +30,33 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         $m = $ms->getMigration('exception_test.json');
         $this->assertEquals(Migration::STATUS_DONE, $m->status, 'Migration supposed to be aborted but in unexpected state');
         $this->assertContains('Oh yeah', $m->executionError, 'Migration aborted but its exception message lost');
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => 'exception_test.json', '--delete' => true, '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+    }
+
+    public function testInvalidUserAccountException()
+    {
+        $ms = $this->container->get('ez_migration_bundle.migration_service');
+        $ms->addExecutor($this);
+        $md = new MigrationDefinition(
+            'invalid_admin_test.json',
+            '/dev/null',
+            // any migration step could do, really...
+            json_encode(array(array('type' => 'abort')))
+        );
+        $ms->executeMigration($md, true, null, 1234567890);
+
+        $m = $ms->getMigration('invalid_admin_test.json');
+        $this->assertEquals(Migration::STATUS_FAILED, $m->status, 'Migration supposed to be failed but in unexpected state');
+        $this->assertContains('Could not find the required user account to be used for logging in', $m->executionError, 'Migration failed but its exception message lost');
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => 'invalid_admin_test.json', '--delete' => true, '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
     }
 
     /**

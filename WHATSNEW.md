@@ -11,6 +11,8 @@ Version ?????
 
 * Implemented request #205: allow to generate migrations for tag creation independently of content
 
+* Implemented request #215: better error message when migrations fail because an invalid admin account is used to run them
+
 * Allow more flexibility in tag matching:
   - allow to match all tags
   - when specifying a parent-tag id, the remote_id can be used in its place
