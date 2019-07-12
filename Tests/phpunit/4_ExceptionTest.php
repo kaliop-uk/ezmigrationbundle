@@ -47,7 +47,11 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
             // any migration step could do, really...
             json_encode(array(array('type' => 'abort')))
         );
-        $ms->executeMigration($md, true, null, 1234567890);
+        try {
+            $ms->executeMigration($md, true, null, 1234567890);
+        } catch (\Exception $e) {
+            $this->assertContains('Could not find the required user account to be used for logging in', $e->getMessage());
+        }
 
         $m = $ms->getMigration('invalid_admin_test.json');
         $this->assertEquals(Migration::STATUS_FAILED, $m->status, 'Migration supposed to be failed but in unexpected state');
