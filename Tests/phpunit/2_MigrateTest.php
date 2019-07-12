@@ -235,6 +235,7 @@ class MigrateTest extends CommandTest
             array(array('-v' => true)),
             array(array('-q' => true, '-p' => true)),
             array(array('-v' => true, '-p' => true)),
+            /// @todo add tests for `a`, `l` flags
         );
     }
 

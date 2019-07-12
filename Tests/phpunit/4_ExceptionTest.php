@@ -11,11 +11,11 @@ use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 
-/**
- * Tests the MigrationAbortedException, as well as direct manipulation of the migration service
- */
 class ExceptionTest extends CommandTest implements ExecutorInterface
 {
+    /**
+     * Tests the MigrationAbortedException, as well as direct manipulation of the migration service
+     */
     public function testMigrationAbortedException()
     {
         $ms = $this->container->get('ez_migration_bundle.migration_service');
@@ -39,25 +39,32 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
 
     public function testInvalidUserAccountException()
     {
+        //$bundles = $this->container->getParameter('kernel.bundles');
         $ms = $this->container->get('ez_migration_bundle.migration_service');
-        $ms->addExecutor($this);
-        $md = new MigrationDefinition(
-            'invalid_admin_test.json',
-            '/dev/null',
-            // any migration step could do, really...
-            json_encode(array(array('type' => 'abort')))
-        );
-        try {
-            $ms->executeMigration($md, true, null, 1234567890);
-        } catch (\Exception $e) {
-            $this->assertContains('Could not find the required user account to be used for logging in', $e->getMessage());
-        }
 
-        $m = $ms->getMigration('invalid_admin_test.json');
-        $this->assertEquals(Migration::STATUS_FAILED, $m->status, 'Migration supposed to be failed but in unexpected state');
-        $this->assertContains('Could not find the required user account to be used for logging in', $m->executionError, 'Migration failed but its exception message lost');
+        $filePath = $this->dslDir . '/UnitTestOK031_helloworld.yml';
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => 'invalid_admin_test.json', '--delete' => true, '-n' => true));
+        // Make sure migration is not in the db: delete it, ignoring errors
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
+        $this->app->run($input, $this->output);
+        $this->fetchOutput();
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->assertRegexp('?Added migration?', $output);
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true, '--admin-login' => 123456789));
+        $exitCode = $this->app->run($input, $this->output);
+        $output = $this->fetchOutput();
+        $this->assertNotEquals(0, $exitCode, 'CLI Command succeeded instead of failing. Output: ' . $output);
+        $this->assertContains('Could not find the required user account to be used for logging in', $output, 'Migration aborted but its exception message lost');
+
+        $m = $ms->getMigration(basename($filePath));
+        $this->assertSame($m->status, Migration::STATUS_FAILED, 'Migration supposed to be failed but in unexpected state');
+
+        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
@@ -69,7 +76,7 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
      */
     public function testExecuteGoodDSL($filePath = '')
     {
-        $bundles = $this->container->getParameter('kernel.bundles');
+        //$bundles = $this->container->getParameter('kernel.bundles');
         $ms = $this->container->get('ez_migration_bundle.migration_service');
 
         if ($filePath == '') {
