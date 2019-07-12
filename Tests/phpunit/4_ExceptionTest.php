@@ -42,7 +42,7 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         //$bundles = $this->container->getParameter('kernel.bundles');
         $ms = $this->container->get('ez_migration_bundle.migration_service');
 
-        $filePath = $this->dslDir . '/UnitTestOK031_helloworld.yml';
+        $filePath = $this->dslDir . '/UnitTestOK033_loadSomething.yml';
 
         // Make sure migration is not in the db: delete it, ignoring errors
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
