@@ -62,7 +62,7 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         $this->assertContains('Could not find the required user account to be used for logging in', $output, 'Migration aborted but its exception message lost');
 
         $m = $ms->getMigration(basename($filePath));
-        $this->assertSame($m->status, Migration::STATUS_FAILED, 'Migration supposed to be failed but in unexpected state');
+        $this->assertEquals($m->status, Migration::STATUS_FAILED, 'Migration supposed to be failed but in unexpected state');
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
         $exitCode = $this->app->run($input, $this->output);

@@ -55,7 +55,7 @@ class TrashMatcher extends ContentMatcher
         foreach ($conditions as $key => $values) {
 
             $query = new Query();
-            $query->limit = self::INT_MAX_16BIT;
+            $query->limit = $this->queryLimit;
             if (isset($query->performCount)) $query->performCount = false;
             $query->filter = $this->getQueryCriterion($key, $values);
             $results = $this->repository->getTrashService()->findTrashItems($query);

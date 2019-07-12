@@ -117,7 +117,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
                     }
 
                     $query = new Query();
-                    $query->limit = $limit != 0 ? $limit : self::INT_MAX_16BIT;
+                    $query->limit = $limit != 0 ? $limit : $this->queryLimit;
                     $query->offset = $offset;
                     if (isset($query->performCount)) $query->performCount = false;
                     $query->filter = $this->getQueryCriterion($key, $values);
@@ -244,7 +244,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
     protected function findContentsByParentLocationIds($parentLocationIds)
     {
         $query = new Query();
-        $query->limit = self::INT_MAX_16BIT;
+        $query->limit = $this->queryLimit;
         if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
         $results = $this->repository->getSearchService()->findContent($query);
@@ -284,7 +284,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
     protected function findContentsByContentTypeIdentifiers(array $contentTypeIdentifiers)
     {
         $query = new Query();
-        $query->limit = self::INT_MAX_16BIT;
+        $query->limit = $this->queryLimit;
         if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
@@ -312,7 +312,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
     protected function findContentsByContentTypeIds(array $contentTypeIds)
     {
         $query = new Query();
-        $query->limit = self::INT_MAX_16BIT;
+        $query->limit = $this->queryLimit;
         if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ContentTypeId($contentTypeIds);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure

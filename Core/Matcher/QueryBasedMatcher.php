@@ -75,6 +75,8 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     protected $stateMatcher;
     /** @var  KeyMatcherInterface $userMatcher */
     protected $userMatcher;
+    /** @var int $queryLimit */
+    protected $queryLimit;
 
     /**
      * @param Repository $repository
@@ -82,17 +84,22 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
      * @param KeyMatcherInterface $sectionMatcher
      * @param KeyMatcherInterface $stateMatcher
      * @param KeyMatcherInterface $userMatcher
+     * @param int $queryLimit passed to the repo as max. number of results to fetch. Important to avoid SOLR errors
      * @todo inject the services needed, not the whole repository
      */
     public function __construct(Repository $repository, KeyMatcherInterface $groupMatcher = null,
         KeyMatcherInterface $sectionMatcher = null, KeyMatcherInterface $stateMatcher = null,
-        KeyMatcherInterface $userMatcher = null)
+        KeyMatcherInterface $userMatcher = null, $queryLimit = null)
     {
         parent::__construct($repository);
         $this->groupMatcher = $groupMatcher;
         $this->sectionMatcher = $sectionMatcher;
         $this->stateMatcher = $stateMatcher;
         $this->userMatcher = $userMatcher;
+
+        if ($queryLimit !== null) {
+            $this->queryLimit = self::INT_MAX_16BIT;
+        }
     }
 
     /**

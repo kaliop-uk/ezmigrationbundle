@@ -7,6 +7,8 @@ Version ?????
 
 * Fix: `file` migration steps would not work when using an `if` element
 
+* Fix issue #207: java.lang.NegativeArraySizeException error when using SOLR multi core
+
 * Improved the DSL docs for the management of Roles (see issue #211)
 
 * Implemented request #205: allow to generate migrations for tag creation independently of content

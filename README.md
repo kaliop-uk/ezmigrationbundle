@@ -337,6 +337,9 @@ and the corresponding php class:
     - adding `sleep` migration steps to migrations 2 .. N
     - and/or configuring Solr to always commit changes to the index immediately (eg. disable `commitwithin`)
 
+* when using SOLR in multi-core configurations and getting a `java.lang.NegativeArraySizeException` error, you will have
+    to set a lower value than the default 2147483647 for parameter `ez_migration_bundle.query_limit`
+
 * if you get fatal errors without any error message when running a migration which involves a lot of content changes,
     such as f.e. altering a contentType with many contents, it might be that you are running out of memory for your
     php process.

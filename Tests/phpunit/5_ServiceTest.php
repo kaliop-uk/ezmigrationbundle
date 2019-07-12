@@ -20,7 +20,7 @@ class ServiceTest extends CommandTest implements ExecutorInterface
         );
         $ms->executeMigration($md);
 
-        $m = $ms->getMigration('exception_test.json');
+        $m = $ms->getMigration('storage_test1.json');
         $this->assertEquals(Migration::STATUS_DONE, $m->status, 'Migration supposed to be aborted but in unexpected state');
 
         $migrations = $ms->getMigrationsByStatus(Migration::STATUS_DONE);

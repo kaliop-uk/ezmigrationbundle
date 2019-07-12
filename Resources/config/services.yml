@@ -27,6 +27,12 @@ parameters:
         - 'sqlserver'
         - 'sqlanywhere'
 
+    # This is by default the max value for a 16-bit integer, which is what SOLR accepts as maximum nuber-of-results
+    # limitation for its queries.
+    # However, in multi-core configurations, you have to divide this most likely by the number of cores, or you will get
+    # an 'java.lang.NegativeArraySizeException' error
+    ez_migration_bundle.query_limit: 2147483647
+
     # Deprecated parameter. Left in for the v1-to-v2 migration to work.
     kaliop_bundle_migration.table_name: 'kaliop_versions'
 
@@ -503,6 +509,7 @@ services:
             - '@ez_migration_bundle.section_matcher'
             - '@ez_migration_bundle.object_state_matcher'
             - '@ez_migration_bundle.user_matcher'
+            - '%ez_migration_bundle.query_limit%'
 
     ez_migration_bundle.content_type_matcher:
         class: '%ez_migration_bundle.content_type_matcher.class%'
@@ -533,6 +540,7 @@ services:
             - '@ez_migration_bundle.section_matcher'
             - '@ez_migration_bundle.object_state_matcher'
             - '@ez_migration_bundle.user_matcher'
+            - '%ez_migration_bundle.query_limit%'
 
     ez_migration_bundle.object_state_matcher:
         class: '%ez_migration_bundle.object_state_matcher.class%'
@@ -570,6 +578,11 @@ services:
         class: '%ez_migration_bundle.trash_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
+            - '@ez_migration_bundle.user_group_matcher'
+            - '@ez_migration_bundle.section_matcher'
+            - '@ez_migration_bundle.object_state_matcher'
+            - '@ez_migration_bundle.user_matcher'
+            - '%ez_migration_bundle.query_limit%'
 
     ez_migration_bundle.user_matcher:
         class: '%ez_migration_bundle.user_matcher.class%'
