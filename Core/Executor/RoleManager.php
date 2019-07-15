@@ -118,6 +118,10 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                 $this->assignRole($role, $roleService, $userService, $step->dsl['assign']);
             }
 
+            if (isset($step->dsl['unassign'])) {
+                $this->unassignRole($role, $roleService, $userService, $step->dsl['unassign']);
+            }
+
             $roleCollection[$key] = $role;
         }
 
@@ -364,21 +368,44 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                         $group = $userService->loadUserGroup($groupId);
 
                         if (!isset($assign['limitations'])) {
-                            // q: why are we swallowing exceptions here ?
-                            //try {
-                                $roleService->assignRoleToUserGroup($role, $group);
-                            //} catch (InvalidArgumentException $e) {}
+                            $roleService->assignRoleToUserGroup($role, $group);
                         } else {
                             foreach ($assign['limitations'] as $limitation) {
                                 $limitationObject = $this->createLimitation($roleService, $limitation);
-                                // q: why are we swallowing exceptions here ?
-                                //try {
-                                    $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
-                                //} catch (InvalidArgumentException $e) {}
+                                $roleService->assignRoleToUserGroup($role, $group, $limitationObject);
                             }
                         }
                     }
                     break;
+                default:
+                    throw new \Exception("Unsupported type '{$assign['type']}'");
+            }
+        }
+    }
+
+    protected function unassignRole(Role $role, RoleService $roleService, UserService $userService, array $assignments)
+    {
+        foreach ($assignments as $assign) {
+            switch ($assign['type']) {
+                case 'user':
+                    foreach ($assign['ids'] as $userId) {
+                        $userId = $this->referenceResolver->resolveReference($userId);
+
+                        $user = $userService->loadUser($userId);
+
+                        $roleService->unassignRoleFromUser($role, $user);
+                    }
+                    break;
+                case 'group':
+                    foreach ($assign['ids'] as $groupId) {
+                        $groupId = $this->referenceResolver->resolveReference($groupId);
+
+                        $group = $userService->loadUserGroup($groupId);
+                        $roleService->unassignRoleFromUserGroup($role, $group);
+                    }
+                    break;
+                default:
+                    throw new \Exception("Unsupported type '{$assign['type']}'");
             }
         }
     }

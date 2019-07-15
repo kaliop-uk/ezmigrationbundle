@@ -120,6 +120,7 @@
                 -
                     identifier: xyz
                     values: [x, y]
+    unassign: # Optional. Same values as for 'assign'
     policies: # Optional.
               # NB: *take care* this does not work like content type updates or content updates.
               # If this set, all previously existing policies not specified in this list will be removed!

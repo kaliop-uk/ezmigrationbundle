@@ -98,6 +98,8 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
         $this->userMatcher = $userMatcher;
 
         if ($queryLimit !== null) {
+            $this->queryLimit = (int)$queryLimit;
+        } else {
             $this->queryLimit = self::INT_MAX_16BIT;
         }
     }

@@ -2,6 +2,9 @@
     type: role
     mode: create
     name: Kaliop Migration Bundle Test Role 1
+    assign:
+        - type: group
+          ids: [ 12 ]
     references:
         -
             identifier: kmb_test_8_1
@@ -47,6 +50,10 @@
                 -
                     identifier: Subtree
                     values: [ /1/2 ]
+    unassign:
+        -
+            type: group
+            ids: [ 12 ]
 # assign role to a new user with subtree limitation, using references
 -
     type: content_type
