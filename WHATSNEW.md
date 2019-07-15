@@ -1,4 +1,4 @@
-Version ?????
+Version 5.10.0
 =============
 
 * Fix issue #210: cannot match locations by group
@@ -14,6 +14,8 @@ Version ?????
 * Implemented request #205: allow to generate migrations for tag creation independently of content
 
 * Implemented request #215: better error message when migrations fail because an invalid admin account is used to run them
+
+* Implemented request #211: allow to unassign roles from groups on update 
 
 * Allow more flexibility in tag matching:
   - allow to match all tags
