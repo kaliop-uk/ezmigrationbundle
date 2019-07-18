@@ -25,7 +25,7 @@ matrix:
   include:
     # latest version currently available of eZPlatform 3 - currently 3.0.0-beta
     - php: 7.3
-      env: EZ_PACKAGES='ezsystems/ezplatform:^3.0.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^7.0 overblog/graphiql-bundle:^0.1.2' EZ_VERSION=ezplatform3 EZ_APP_DIR=src EZ_KERNEL=Kernel KERNEL_DIR=vendor/ezsystems/ezplatform/src CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:^3.0.0 ezsystems/ezplatform-xmltext-fieldtype:^2.0 ezsystems/behatbundle:^7.0 overblog/graphiql-bundle:^0.1.2' EZ_VERSION=ezplatform3 EZ_APP_DIR=src EZ_KERNEL=Kernel KERNEL_DIR=vendor/ezsystems/ezplatform/src CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
 #before_install:
   # No need for a web server, until we start testing using Selenium
