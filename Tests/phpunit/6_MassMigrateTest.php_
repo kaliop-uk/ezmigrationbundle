@@ -261,7 +261,7 @@ class MassMigrateTest extends CommandTest
      */
     protected function getRepository($loginUserId = \Kaliop\eZMigrationBundle\Core\MigrationService::ADMIN_USER_ID)
     {
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
+        $repository = $this->bootContainer()->get('ezpublish.api.repository');
         if ($loginUserId !== false && (is_null($repository->getCurrentUser()) || $repository->getCurrentUser()->id != $loginUserId)) {
             $repository->setCurrentUser($repository->getUserService()->loadUser($loginUserId));
         }

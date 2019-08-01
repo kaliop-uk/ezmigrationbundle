@@ -111,7 +111,9 @@ class GenerateTest extends CommandTest
         );
 
         /// @todo we should create some tags before running these...
-        $bundles = $this->getContainer()->getParameter('kernel.bundles');
+        // try to make this work across phpunit versions, which run this before/after calling setUp()
+        $container = $this->getContainer() == null ? $this->bootContainer() : $this->getContainer()();
+        $bundles = $container->getParameter('kernel.bundles');
         if (isset($bundles['NetgenTagsBundle'])) {
             $out[] = array('unit_test_generated_tags', null, 'tag', 'all', null);
             $out[] = array('unit_test_generated_tags', 'yml', 'tag', 'all', null, false, 'update');

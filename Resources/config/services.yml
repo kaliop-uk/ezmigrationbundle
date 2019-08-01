@@ -129,7 +129,7 @@ parameters:
 services:
 
     ez_migration_bundle.migration_service:
-        public: true
+        #public: true
         class: '%ez_migration_bundle.migration_service.class%'
         arguments:
             - '@ez_migration_bundle.loader'
@@ -785,7 +785,7 @@ services:
 
     # This service is used for the verbose mode when executing migrations on the command line
     ez_migration_bundle.step_executed_listener.tracing:
-        public: true
+        #public: true
         class: '%ez_migration_bundle.step_executed_listener.tracing.class%'
         arguments:
             - '%ez_migration_bundle.enable_debug_output%'
@@ -815,7 +815,7 @@ services:
         arguments:
             - '@ezpublish.config.resolver'
             - '@service_container'
-            
+
     Kaliop\eZMigrationBundle\Command\AbstractCommand: ~
 
     Kaliop\eZMigrationBundle\Command\GenerateCommand:
