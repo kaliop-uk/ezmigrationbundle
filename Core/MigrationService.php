@@ -267,7 +267,7 @@ class MigrationService implements ContextProviderInterface
             throw new \Exception("Can not execute " . $this->getEntityName($migrationDefinition). " '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
-        /// @todo add support for setting in $migrationContext a userContentType ?
+        /// @todo add support for setting in $migrationContext a userContentType, userGroupContentType ?
         $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin, $forceSigchildEnabled);
 
         // set migration as begun - has to be in own db transaction

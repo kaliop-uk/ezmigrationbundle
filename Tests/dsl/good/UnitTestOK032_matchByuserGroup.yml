@@ -7,30 +7,30 @@
     roles: [1, 2] # Anon, admin
     references:
         -
-            identifier: kmb_test_31_g
+            identifier: kmb_test_32_g
             attribute: id
         -
-            identifier: kmb_test_31_gr
+            identifier: kmb_test_32_gr
             attribute: remote_id
 -
     type: user
     mode: create
     first_name: Kaliop
-    last_name: Test User 31
-    username: kmb_test_user_31
-    email: kmb_test_user_31@test.com
+    last_name: Test User 32
+    username: kmb_test_user_32
+    email: kmb_test_user_32@test.com
     password: anUnsafePassword123
-    groups: [reference:kmb_test_31_g]
+    groups: [reference:kmb_test_32_g]
     references:
         -
-            identifier: kmb_test_31_u
+            identifier: kmb_test_32_u
             attribute: id
 -
     type: content_type
     mode: create
     content_type_group: 1
-    identifier: kmb_test_31_cti
-    name: Kaliop Migration Bundle Test Class 31
+    identifier: kmb_test_32_cti
+    name: Kaliop Migration Bundle Test Class 32
     name_pattern: '<ezstring>'
     attributes:
         -
@@ -39,71 +39,71 @@
             identifier: ezstring
     references:
         -
-            identifier: kmb_test_31_ct
+            identifier: kmb_test_32_ct
             attribute: id
 -
     type: content
     mode: create
-    content_type: kmb_test_31_cti
+    content_type: kmb_test_32_cti
     parent_location: 2
-    owner: reference:kmb_test_31_u
+    owner: reference:kmb_test_32_u
     attributes:
-        - ezstring: hello world 31
+        - ezstring: hello world 32
     references:
         -
-            identifier: kmb_test_31_c
+            identifier: kmb_test_32_c
             attribute: id
 -
     type: content
     mode: load
     match:
-        group: reference:kmb_test_31_g
+        group: reference:kmb_test_32_g
     references:
         -
-            identifier: kmb_test_31_count_1
+            identifier: kmb_test_32_count_1
             attribute: count
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_31_count_1
+    identifier: reference:kmb_test_32_count_1
     test:
         equals: 1
 -
     type: content
     mode: delete
     match:
-        content_type: kmb_test_31_cti
+        content_type: kmb_test_32_cti
 -
     type: content_type
     mode: delete
-    identifier: kmb_test_31_cti
+    identifier: kmb_test_32_cti
 -
     type: user
     mode: delete
     match:
-        usergroup_id: reference:kmb_test_31_g
+        usergroup_id: reference:kmb_test_32_g
     references:
         -
-            identifier: kmb_test_31_count_2
+            identifier: kmb_test_32_count_2
             attribute: count
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_31_count_2
+    identifier: reference:kmb_test_32_count_2
     test:
         equals: 1
 -
     type: user_group
     mode: delete
     match:
-        content_remote_id: reference:kmb_test_31_gr
+        content_remote_id: reference:kmb_test_32_gr
     references:
         -
-            identifier: kmb_test_31_count_3
+            identifier: kmb_test_32_count_3
             attribute: count
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_31_count_3
+    identifier: reference:kmb_test_32_count_3
     test:
         equals: 1

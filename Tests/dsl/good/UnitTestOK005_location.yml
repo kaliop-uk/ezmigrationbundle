@@ -77,7 +77,9 @@
         -
             identifier: kmb_test_005_4_rid
             attribute: remote_id
-
+        -
+            identifier: kmb_test_005_4_loc_rid
+            attribute: location_remote_id
 -
     type: content
     mode: create
@@ -260,7 +262,7 @@
     mode: update
     # deprecated
     location_id: reference:kmb_test_005_3_loc_3
-    parent_location: reference:kmb_test_005_4_loc
+    parent_location: reference:kmb_test_005_4_loc_rid
     priority: 1998
     is_hidden: false
     is_main: true

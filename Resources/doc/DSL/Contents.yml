@@ -95,7 +95,7 @@
             attribute: attributeId # The attribute to get the value of for the reference.
                                    # Supports: content_id, content_remote_id,
                                    # always_available, content_type_id, content_type_identifier, current_version_no,
-                                   # location_id, main_language_code, modification_date, name, object_state.$stategroup,
+                                   # location_id, location_remote_id, main_language_code, modification_date, name, object_state.$stategroup,
                                    # owner_id, path, publication_date, section_id as well as attributes.$name (for scalar
                                    # attributes) and complex expressions for non-scalar attributes, such as f.e.
                                    # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)
@@ -173,7 +173,7 @@
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: content_id, content_remote_id,
                                    # always_available, content_type_id, content_type_identifier, current_version_no,
-                                   # location_id, main_language_code, modification_date, name, object_state.$stategroup,
+                                   # location_id, location_remote_id, main_language_code, modification_date, name, object_state.$stategroup,
                                    # owner_id, path, publication_date, section_id as well as attributes.$name (for scalar
                                    # attributes) and complex expressions for non-scalar attributes, such as f.e.
                                    # attributes.objectrelationlistattr.destinationContentIds[0] (1st element in an object-relation)

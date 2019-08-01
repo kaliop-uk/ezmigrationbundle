@@ -403,6 +403,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 case 'main_location_id':
                     $value = $content->contentInfo->mainLocationId;
                     break;
+                case 'location_remote_id':
+                    $locationService = $this->repository->getLocationService();
+                    $value = $locationService->loadLocation($content->contentInfo->mainLocationId)->remoteId;
+                    break;
                 case 'main_language_code':
                     $value = $content->contentInfo->mainLanguageCode;
                     break;

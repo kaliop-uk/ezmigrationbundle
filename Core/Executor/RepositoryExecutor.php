@@ -29,6 +29,8 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
     /** Used if not specified by the migration */
     const USER_CONTENT_TYPE = 'user';
+    /** Used if not specified by the migration */
+    const USERGROUP_CONTENT_TYPE = 'user_group';
 
     const REFERENCE_TYPE_SCALAR = 'scalar';
     const REFERENCE_TYPE_ARRAY = 'array';
@@ -161,12 +163,30 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
+     * @param MigrationStep $step
+     * @return string
+     */
+    protected function getUserGroupContentType($step)
+    {
+        return isset($step->dsl['usergroup_content_type']) ? $this->referenceResolver->resolveReference($step->dsl['usergroup_content_type']) : $this->getUserGroupContentTypeFromContext($step->context);
+    }
+
+    /**
      * @param array $context
      * @return string
      */
     protected function getUserContentTypeFromContext($context)
     {
         return isset($context['userContentType']) ? $context['userContentType'] : self::USER_CONTENT_TYPE;
+    }
+
+    /**
+     * @param array $context
+     * @return string
+     */
+    protected function getUserGroupContentTypeFromContext($context)
+    {
+        return isset($context['userGroupContentType']) ? $context['userGroupContentType'] : self::USERGROUP_CONTENT_TYPE;
     }
 
     /**

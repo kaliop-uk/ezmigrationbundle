@@ -184,7 +184,7 @@ class LocationManager extends RepositoryExecutor
                 $parentLocationId = isset($step->dsl['parent_location']) ? $step->dsl['parent_location'] : $step->dsl['parent_location_id'];
                 $parentLocationId = $this->referenceResolver->resolveReference($parentLocationId);
 
-                $newParentLocation = $locationService->loadLocation($parentLocationId);
+                $newParentLocation = $this->matchLocationByKey($parentLocationId);
 
                 $locationService->moveSubtree($location, $newParentLocation);
 

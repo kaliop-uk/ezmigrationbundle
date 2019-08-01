@@ -1,4 +1,4 @@
-# Fails by attempting creation of content in non-existing language.
+# Fails by attempting creation of content with non-existing field.
 # NB: needs a follow-up migration to remove the created content type
 
 -
@@ -34,10 +34,10 @@
 -
     type: content
     mode: create
-    content_type: kmb_test_9
+    content_type: kmb_test_15
     parent_location: 2
     attributes:
-        ezstring:
+        ezstring_notexist:
             abe-TA: hello world 4 abe-TA
             abe-TB: hello world 4 abe-TB
         ezstring_2:

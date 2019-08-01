@@ -39,7 +39,7 @@ class UserGroupManager extends RepositoryExecutor
         $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
         $parentGroup = $this->userGroupMatcher->matchOneByKey($parentGroupId);
 
-        $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier("user_group");
+        $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($this->getUserGroupContentType($step));
 
         $userGroupCreateStruct = $userService->newUserGroupCreateStruct($this->getLanguageCode($step), $contentType);
         $userGroupCreateStruct->setField('name', $step->dsl['name']);

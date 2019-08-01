@@ -23,7 +23,7 @@
 -
     type: content
     mode: create
-    content_type: kmb_test_9
+    content_type: kmb_test_14
     parent_location: 2
     attributes:
         ezstring:

@@ -5,7 +5,7 @@
     type: content_type
     mode: create
     content_type_group: 1
-    identifier: kmb_test_9
+    identifier: kmb_test_9k
     name: Kaliop Migration Bundle Test Class 9
     name_pattern: '<ezstring>'
     attributes:
@@ -15,13 +15,13 @@
             identifier: ezstring
     references:
         -
-            identifier: kmb_test_9
+            identifier: kmb_test_9k
             attribute: identifier
 
 -
     type: content
     mode: create
-    content_type: kmb_test_9
+    content_type: kmb_test_9k
     parent_location: 2
     lang: fre-IT
     attributes:

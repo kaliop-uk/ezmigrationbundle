@@ -3,9 +3,9 @@
 -
     type: content_type
     mode: delete
-    identifier: reference:kmb_test_9
+    identifier: reference:kmb_test_9k
 
 -
     type: content_type
     mode: delete
-    identifier: reference:kmb_test_9
+    identifier: reference:kmb_test_9k

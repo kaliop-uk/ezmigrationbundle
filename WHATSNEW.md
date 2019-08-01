@@ -1,5 +1,15 @@
+Version 5.10.1
+==============
+
+* Fix issue #216: cannot update a location's parent matching it by remote id
+
+* Improved: when creating/updating content, allow to set references to `location_remote_id`
+
+* Improved: add plumbing to allow future usage of custom content types for UserGroups
+
+
 Version 5.10.0
-=============
+==============
 
 * Fix issue #210: cannot match locations by group
 
@@ -138,7 +148,8 @@ Version 5.8.0
 
 * Fix: the `if` element was not giving a fatal error for all migration steps affecting repository elements (Content,
     Location, etc...), at least for Symfony version 2.7.10
-ezjscserverfunctionsjs.phprate` now accept a `--force` flag that will execute
+
+* New: the command `kaliop:migration:migrate` now accepts a `--force` flag that will execute
     migrations that were previously executed or skipped or failed.
     *NB* this flag is useful when testing migrations, but should be used sparingly in production context, as replaying
     migrations that had already been executed can wreak havoc to your database. *you have been warned* 
@@ -148,7 +159,7 @@ ezjscserverfunctionsjs.phprate` now accept a `--force` flag that will execute
     - the `kaliop:migration:generate` command now uses as default language for the generated migrations the default one
       of the current siteaccess, instead of 'eng-GB' 
 
-    
+
 Version 5.7.3
 =============
 
