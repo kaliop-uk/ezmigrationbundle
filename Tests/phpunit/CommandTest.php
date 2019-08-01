@@ -89,8 +89,8 @@ abstract class CommandTest extends WebTestCase
         if (!isset($_SERVER['SYMFONY_ENV'])) {
             throw new \Exception("Please define the environment variable SYMFONY_ENV to specify the environment to use for the tests");
         }
-        // Run in our own test environment. Sf by default uses the 'test' one. We let phpunit.xml set it...
-        // We also allow to disable debug mode
+        // Run in our own test environment. Sf by default uses the 'test' one.
+        // We also allow to disable debug mode (we let phpunit.xml set it...)
         $options = array(
             'environment' => $_SERVER['SYMFONY_ENV']
         );
