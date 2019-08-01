@@ -93,7 +93,7 @@ fi
 # Fix the eZ console autoload config if needed (ezplatform 2 and ezplatform 3)
 if [ -f vendor/ezsystems/ezplatform/bin/console ]; then
     sed -i "s#'/../vendor/autoload.php'#'/../../../../vendor/autoload.php'#" vendor/ezsystems/ezplatform/bin/console
-    sed -i "s#dirname(__DIR__).'/vendor/autoload.php'#'dirname(__DIR__).'/../../../vendor/autoload.php''#" vendor/ezsystems/ezplatform/bin/console
+    sed -i "s#dirname(__DIR__).'/vendor/autoload.php'#dirname(__DIR__).'/../../../vendor/autoload.php'#" vendor/ezsystems/ezplatform/bin/console
 fi
 
 # Set up legacy settings and generate legacy autoloads
