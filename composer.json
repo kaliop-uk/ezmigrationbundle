@@ -1,4 +1,6 @@
 {
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "name": "kaliop/ezmigrationbundle",
     "type": "symfony-bundle",
     "description": "Kaliop eZ-Migration Bundle",
@@ -22,38 +24,27 @@
         }
     ],
     "require": {
-        "php": ">=5.6",
+        "php": "^7.3",
         "ext-pdo": "*",
-        "ezsystems/ezpublish-kernel": ">=5.4|>=2014.11",
+        "ezsystems/ezpublish-kernel": "^8.0@dev",
+        "ezsystems/doctrine-dbal-schema": "^1.0@dev",
         "mtdowling/jmespath.php": "2.*",
-        "nikic/php-parser": "^2.0 || ^3.0 || ^4.0",
+        "nikic/php-parser": "^4.2.2",
         "symfony/process": "*",
         "symfony/swiftmailer-bundle": "*",
         "symfony/validator": "*",
         "symfony/var-dumper": "*"
     },
     "require-dev": {
-        "mikey179/vfsstream": "~1.2.0",
-        "polishsymfonycommunity/symfony2-mocker-extension": "*",
-        "php-http/mock-client": "*",
-        "phpunit/phpunit": "~4.0 || ~5.0",
-        "codeclimate/php-test-reporter": "~0.4",
+        "mikey179/vfsstream": "^2.0@dev",
+        "phpunit/phpunit": "^8.2",
         "roave/security-advisories": "dev-disablechecks as dev-master"
     },
     "suggest": {
         "php-http/httplug-bundle": "Required for usage of HTTP/CALL migration steps"
     },
-    "conflict": {
-        "netgen/tagsbundle": "1.*",
-        "ezsystems/ezpublish-kernel": "6.7.3",
-        "symfony/symfony": "3.4.12"
-    },
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }
-    },
-    "_comment::travis": "the following section is needed to insure that eZPublish 5 can be built on travis, using the custom directory structure where it is not in the root folder",
-    "extra": {
-        "ezpublish-legacy-dir": "vendor/ezsystems/ezpublish-legacy"
     },
     "repositories": [
         {
