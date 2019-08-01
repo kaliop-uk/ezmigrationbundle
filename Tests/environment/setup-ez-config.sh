@@ -85,8 +85,10 @@ if [ -f "${APP_DIR}/autoload.php" ]; then
 fi
 
 # as well as the config for jms_translation
-sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kernel.root_dir%/../../ezplatform-admin-ui/src#" ${CONFIG_DIR}/config.yml
-sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui-modules/src#'%kernel.root_dir%/../../ezplatform-admin-ui-modules/src#" ${CONFIG_DIR}/config.yml
+if [ -f ${CONFIG_DIR}/config.yml ]; then
+    sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kernel.root_dir%/../../ezplatform-admin-ui/src#" ${CONFIG_DIR}/config.yml
+    sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui-modules/src#'%kernel.root_dir%/../../ezplatform-admin-ui-modules/src#" ${CONFIG_DIR}/config.yml
+fi
 
 # Fix the eZ console autoload config if needed (ezplatform 2 and ezplatform 3)
 if [ -f vendor/ezsystems/ezplatform/bin/console ]; then

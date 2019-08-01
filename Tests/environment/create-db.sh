@@ -33,7 +33,7 @@ ${ROOT_DB_COMMAND} -e "CREATE DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8mb4; 
 if [ "${EZ_VERSION}" = "ezpublish-community" ]; then
     ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-legacy/kernel/sql/mysql/kernel_schema.sql
     ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-legacy/kernel/sql/common/cleandata.sql
-elif [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" "${EZ_VERSION}" = "ezplatform3" ]; then
+elif [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" -o "${EZ_VERSION}" = "ezplatform3" ]; then
     ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/mysql/schema.sql
     ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/cleandata.sql
 fi
