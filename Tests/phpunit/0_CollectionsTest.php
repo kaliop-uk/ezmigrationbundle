@@ -10,16 +10,6 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
  */
 class CollectionsTest extends CommandTest
 {
-    // phpunit compat layer: 4.8 => 6.x
-    public function expectException($exception)
-    {
-        if (method_exists($this, 'setExpectedException')) {
-            parent::setExpectedException($exception);
-        } else {
-            parent::expectException($exception);
-        }
-    }
-
     public function testValidElements1()
     {
         $collection = new MigrationStepsCollection(array(new MigrationStep('test')));
