@@ -87,7 +87,7 @@ function build() {
 
     #fi
 
-    echo "[`date`] Build finished"
+    echo "[`date`] Build finished. Exit code: $(docker exec ${WEBCONTAINER} cat /tmp/setup_ok)"
 }
 
 function provision() {
@@ -99,11 +99,11 @@ function provision() {
         sleep 5
     done
 
-    docker exec ${WEBCONTAINER} rm /var/run/setup_ok
+    docker exec ${WEBCONTAINER} rm /tmp/setup_ok
     echo "[`date`] Setting up eZ..."
-    su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh && echo 0 > /var/run/setup_ok"
+    docker exec ${WEBCONTAINER}  su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
 
-    echo "[`date`] Provisioning finished"
+    echo "[`date`] Provisioning finished. Exit code: $(docker exec ${WEBCONTAINER} cat /tmp/setup_ok)"
 }
 
 function start() {

@@ -54,9 +54,9 @@ trap clean_up TERM
 #echo "[`date`] Starting the Web server..."
 #service apache2 start
 
-if [ ! -f /var/run/setup_ok ]; then
+if [ ! -f /tmp/setup_ok ]; then
     echo "[`date`] Setting up eZ..."
-    su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh && echo 0 > /var/run/setup_ok"
+    su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
 fi
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
