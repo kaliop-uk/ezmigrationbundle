@@ -27,7 +27,8 @@ abstract class CommandTest extends WebTestCase
         $this->dslDir = __DIR__ . '/../dsl';
     }
 
-    protected function setUp()
+    /// @todo if we want to be compatible with phpunit < 8.0, we should do something akin to https://github.com/symfony/framework-bundle/blob/4.3/Test/ForwardCompatTestTrait.php
+    protected function setUp(): void
     {
         $this->_container = $this->bootContainer();
 
@@ -60,7 +61,7 @@ abstract class CommandTest extends WebTestCase
         return $out;
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach ($this->leftovers as $file) {
             unlink($file);
