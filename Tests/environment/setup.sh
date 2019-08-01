@@ -37,6 +37,8 @@ if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 # A different work around for this has been found in setting up an alias for them in the std composer.json require-dev section
 #- 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
+# composer.lock gets in the way when switching between eZ versions
+if [ -f composer.lock ]; then rm composer.lock; fi
 composer require --dev --no-update ${EZ_PACKAGES}
 composer update --dev
 
