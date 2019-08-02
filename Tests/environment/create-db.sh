@@ -35,7 +35,11 @@ if [ "${EZ_VERSION}" = "ezpublish-community" ]; then
     ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-legacy/kernel/sql/common/cleandata.sql
 elif [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" -o "${EZ_VERSION}" = "ezplatform3" ]; then
     ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/mysql/schema.sql
-    ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/cleandata.sql
+    if [ -f vendor/ezsystems/ezpublish-kernel/data/mysql/cleandata.sql ]; then
+        ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/mysql/cleandata.sql
+    else
+        ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/cleandata.sql
+    fi
 fi
 
 if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then

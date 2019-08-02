@@ -3,7 +3,7 @@
 # Used to set up an eZPlatform env from scratch for testing purposes (eg. on Travis)
 
 imports:
-    - { resource: ezplatform_orig.yml }
+    - { resource: ezplatform_orig.yaml }
     #- { resource: config_behat.php }
 
 parameters:

@@ -46,14 +46,14 @@ if [ -f Tests/config/${EZ_VERSION}/config_behat.yml ]; then
     mv ${CONFIG_DIR}/config_behat.yml ${CONFIG_DIR}/config_behat_orig.yml
     cp Tests/config/${EZ_VERSION}/config_behat.yml ${CONFIG_DIR}/config_behat.yml
 fi
-cp Tests/config/${EZ_VERSION}/common/config_behat.php ${CONFIG_DIR}/config_behat.php
+cp Tests/config/common/config_behat.php ${CONFIG_DIR}/config_behat.php
 if [ -f Tests/config/${EZ_VERSION}/ezpublish_behat.yml ]; then
     mv ${CONFIG_DIR}/ezpublish_behat.yml ${CONFIG_DIR}/ezpublish_behat_orig.yml
     cp Tests/config/${EZ_VERSION}/ezpublish_behat.yml ${CONFIG_DIR}/ezpublish_behat.yml
 fi
 if [ -f Tests/config/${EZ_VERSION}/ezplatform.yml ]; then
-    mv ${CONFIG_DIR}/packages/behat/ezplatform.yml ${CONFIG_DIR}/packages/behat/ezplatform_orig.yml
-    cp Tests/config/${EZ_VERSION}/ezplatform.yml ${CONFIG_DIR}/packages/behat/ezplatform.yml
+    mv ${CONFIG_DIR}/packages/behat/ezplatform.yaml ${CONFIG_DIR}/packages/behat/ezplatform_orig.yaml
+    cp Tests/config/${EZ_VERSION}/ezplatform.yml ${CONFIG_DIR}/packages/behat/ezplatform.yaml
 fi
 
 # Load the migration bundle in the Sf kernel
@@ -104,8 +104,8 @@ if [ -f ${CONFIG_DIR}/config.yml ]; then
     sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui-modules/src#'%kernel.root_dir%/../../ezplatform-admin-ui-modules/src#" ${CONFIG_DIR}/config.yml
 fi
 if [ -f ${CONFIG_DIR}/packages/ezplatform_admin_ui.yaml ]; then
-    sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kernel.root_dir%/../../ezplatform-admin-ui/src#" ${CONFIG_DIR}/packages/ezplatform_admin_ui.yam
-    sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src/bundle/Resources/translations/#'%kernel.root_dir%/../../ezplatform-admin-ui/src/bundle/Resources/translations/#" ${CONFIG_DIR}/packages/ezplatform_admin_ui.yam
+    sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src#'%kernel.root_dir%/../../ezplatform-admin-ui/src#" ${CONFIG_DIR}/packages/ezplatform_admin_ui.yaml
+    sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui/src/bundle/Resources/translations/#'%kernel.root_dir%/../../ezplatform-admin-ui/src/bundle/Resources/translations/#" ${CONFIG_DIR}/packages/ezplatform_admin_ui.yaml
 fi
 if [ -f ${CONFIG_DIR}/packages/ezplatform_admin_ui_modules.yaml ]; then
     sed -i "s#'%kernel.root_dir%/../vendor/ezsystems/ezplatform-admin-ui-modules/src#'%kernel.root_dir%/../../ezplatform-admin-ui-modules/src#" ${CONFIG_DIR}/packages/ezplatform_admin_ui_modules.yaml
