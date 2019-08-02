@@ -1,0 +1,29 @@
+
+# This file will replace (and then include) the equivalent one from eZPlatform distribution
+# Used to set up an eZPlatform env from scratch for testing purposes (eg. on Travis)
+
+imports:
+    - { resource: config_behat_orig.yml }
+    #- { resource: config_behat.php }
+
+parameters:
+
+    # Reduce the need for env vars (avoid overriding the .env file)
+    #search_engine: '%env(SEARCH_ENGINE)%'
+    #ezplatform.session.save_path: '%env(SESSION_SAVE_PATH)%'
+    #cache_pool: '%env(CACHE_POOL)%'
+    #httpcache_default_ttl: '%env(HTTPCACHE_DEFAULT_TTL)%'
+    #purge_server: '%env(HTTPCACHE_PURGE_SERVER)%'
+
+    # Fix for: 'Incompatible use of dynamic environment variables "SESSION_HANDLER_ID" found in parameters.'
+    ezplatform.session.handler_id: 'session.handler.native_file'
+
+doctrine:
+    dbal:
+        server_version: '5.6'
+        url: 'mysql://%env(MYSQL_USER)%:%env(MYSQL_PASSWORD)%@%env(MYSQL_HOST)%:3306/%env(MYSQL_DATABASE)%'
+
+framework:
+    session:
+        # Fix for https://github.com/symfony/symfony/issues/32837
+        handler_id: '%ezplatform.session.handler_id%'

@@ -28,7 +28,7 @@ class EzMigrationExtension extends Extension
         $loader->load('services.yml');
 
         if (self::$loadTestConfig != false) {
-            $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Tests/ezpublish/config'));
+            $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Tests/config/common'));
             $loader->load('services.yml');
         }
     }

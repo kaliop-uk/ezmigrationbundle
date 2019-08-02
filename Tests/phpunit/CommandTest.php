@@ -86,16 +86,20 @@ abstract class CommandTest extends WebTestCase
     {
         static::ensureKernelShutdown();
 
-        if (!isset($_SERVER['SYMFONY_ENV'])) {
-            throw new \Exception("Please define the environment variable SYMFONY_ENV to specify the environment to use for the tests");
-        }
+        /// @todo depending on Sf version, privilege APP_ vars instead of SYMFONY_ vars
+
         // Run in our own test environment. Sf by default uses the 'test' one.
-        // We also allow to disable debug mode (we let phpunit.xml set it...)
+        // We also allow to enable/disable debug mode (we let phpunit.xml set it...)
+        if (!isset($_SERVER['SYMFONY_ENV']) && !isset($_SERVER['APP_ENV'])) {
+            throw new \Exception("Please define the environment variable SYMFONY_ENV (or APP_ENV) to specify the environment to use for the tests");
+        }
         $options = array(
-            'environment' => $_SERVER['SYMFONY_ENV']
+            'environment' => isset($_SERVER['SYMFONY_ENV']) ? $_SERVER['SYMFONY_ENV'] : $_SERVER['APP_ENV']
         );
         if (isset($_SERVER['SYMFONY_DEBUG'])) {
             $options['debug'] = $_SERVER['SYMFONY_DEBUG'];
+        } else if (isset($_SERVER['APP_DEBUG'])) {
+            $options['debug'] = $_SERVER['APP_DEBUG'];
         }
         try {
             static::bootKernel($options);

@@ -6,8 +6,10 @@
     <php>
         <!-- the following have been moved to env vars, as they might vary depending on setups -->
         <!--<server name="KERNEL_DIR" value="vendor/ezsystems/ezplatform/src" />
-        <server name="SYMFONY_ENV" value="behat" />-->
+        <server name="SYMFONY_ENV" value="behat" />
+        <server name="APP_ENV" value="behat" />-->
         <server name="SYMFONY_DEBUG" value="false" />
+        <server name="APP_DEBUG" value="false" />
     </php>
 
     <!-- code coverage reporting -->
