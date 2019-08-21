@@ -35,7 +35,7 @@ The `registerBundles` method should look similar to:
     {
         $bundles = array(
             ... more stuff here ...
-            new \Kaliop\eZMigrationBundle\EzMigrationBundle()
+            new \Kaliop\eZMigrationBundle\eZMigrationBundle()
         );
     }
 

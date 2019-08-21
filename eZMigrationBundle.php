@@ -6,7 +6,7 @@ use Kaliop\eZMigrationBundle\DependencyInjection\CompilerPass\TaggedServicesComp
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class EzMigrationBundle extends Bundle
+class eZMigrationBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
