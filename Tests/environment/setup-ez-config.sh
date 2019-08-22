@@ -57,10 +57,10 @@ if [ -f Tests/config/${EZ_VERSION}/ezplatform.yml ]; then
 fi
 
 # Load the migration bundle in the Sf kernel
-fgrep -q 'new Kaliop\eZMigrationBundle\EzMigrationBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
+fgrep -q 'new Kaliop\eZMigrationBundle\eZMigrationBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
 if [ $? -ne 0 ]; then
-    sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${KERNEL_DIR}/${EZ_KERNEL}.php
-    sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\eZMigrationBundle(),/' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\eZMigrationBundle(),/' ${KERNEL_DIR}/${EZ_KERNEL}.php
 fi
 
 # And optionally the EzCoreExtraBundle bundle

@@ -20,7 +20,7 @@ class GenerateCommand extends AbstractCommand
     private $availableMigrationFormats = array('yml', 'php', 'sql', 'json');
     private $availableModes = array('create', 'update', 'delete');
     private $availableTypes = array('content', 'content_type', 'content_type_group', 'language', 'object_state', 'object_state_group', 'role', 'section', 'generic', 'db', 'php', '...');
-    private $thisBundle = 'EzMigrationBundle';
+    private $thisBundle = 'eZMigrationBundle';
 
     protected $eventName = 'ez_migration.migration_generated';
 
