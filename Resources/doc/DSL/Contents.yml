@@ -68,6 +68,10 @@
         attribute15: [ 1, "option 2" ] # array of selection options ids or textual values
         # ezselection, single value
         attribute16: "option 3" # integer index or string
+        # ezcountry, multiple values
+        attribute17: [IT, ESP, 41, Taiwan] # Either Alpha2, Alpha3, IDC or Name array of the countries, as defined in %ezpublish.fieldType.ezcountry.data%'
+        # ezcountry, single value
+        attribute18: IT # allows also 'ITA', '39' and 'Italy'. Either Alpha2, Alpha3, IDC or Name of the country, as defined in %ezpublish.fieldType.ezcountry.data%'
     always_available: true|false # Optional, will default to content type defaultAlwaysAvailable
     is_hidden: true|false # Optional
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)
