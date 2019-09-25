@@ -331,6 +331,8 @@ services:
             - ['setConfigResolver', ['@ezpublish.config.resolver']]
             # SF bug? this method is not called for child srevices as it belongs to a trait instead of teh base class...
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
+            - ['setPermissionResolver', ['@eZ\Publish\API\Repository\PermissionResolver']]
+            - ['setUserService', ['@eZ\Publish\API\Repository\UserService']]
 
     ez_migration_bundle.executor.content_manager:
         parent: ez_migration_bundle.executor.repository
