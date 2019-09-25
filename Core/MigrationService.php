@@ -25,12 +25,17 @@ use Kaliop\eZMigrationBundle\API\Event\MigrationSuspendedEvent;
 
 class MigrationService implements ContextProviderInterface
 {
-    use RepositoryUserSetterTrait;
+    use AuthenticatedUserSetterTrait;
 
     /**
      * The default Admin user Id, used when no Admin user is specified
      */
     const ADMIN_USER_ID = 14;
+
+    /**
+     * The default Admin user login, used when no Admin user is specified
+     */
+    const ADMIN_USER_LOGIN = 'admin';
 
     /**
      * @var LoaderInterface $loader
@@ -364,10 +369,11 @@ class MigrationService implements ContextProviderInterface
 
             if ($useTransaction) {
                 // there might be workflows or other actions happening at commit time that fail if we are not admin
-                $previousUserId = $this->loginUser($this->getAdminUserIdentifier($adminLogin));
+                $currentUser = $this->getCurrentUser();
+                $this->authenticateUserByLogin($adminLogin ?? self::ADMIN_USER_LOGIN);
 
                 $this->repository->commit();
-                $this->loginUser($previousUserId);
+                $this->authenticateUserByReference($currentUser);
             }
 
         } catch (\Exception $e) {
@@ -379,8 +385,8 @@ class MigrationService implements ContextProviderInterface
             if ($useTransaction) {
                 try {
                     // cater to the case where the $this->repository->commit() call above throws an exception
-                    if ($previousUserId) {
-                        $this->loginUser($previousUserId);
+                    if (isset($currentUser)) {
+                        $this->authenticateUserByReference($currentUser);
                     }
 
                     // there is no need to become admin here, at least in theory
