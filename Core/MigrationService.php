@@ -513,19 +513,6 @@ class MigrationService implements ContextProviderInterface
     }
 
     /**
-     * @param string $adminLogin
-     * @return int|string
-     */
-    protected function getAdminUserIdentifier($adminLogin)
-    {
-        if ($adminLogin != null) {
-            return $adminLogin;
-        }
-
-        return self::ADMIN_USER_ID;
-    }
-
-    /**
      * Turns eZPublish cryptic exceptions into something more palatable for random devs
      * @todo should this be moved to a lower layer ?
      *

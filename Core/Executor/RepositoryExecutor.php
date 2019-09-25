@@ -192,19 +192,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * @param array $context we have to return FALSE if that is set as adminUserLogin, whereas if NULL is set, we return the default admin
-     * @return int|string|false
-     */
-    protected function getAdminUserIdentifierFromContext($context)
-    {
-        if (isset($context['adminUserLogin'])) {
-            return $context['adminUserLogin'];
-        }
-
-        return self::ADMIN_USER_ID;
-    }
-
-    /**
      * @param array $context
      *
      * @return \eZ\Publish\API\Repository\Values\User\UserReference previously logged-in user
