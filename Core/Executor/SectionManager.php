@@ -172,7 +172,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        $currentUser = $this->authenticateUserByContext($context);
         $sectionCollection = $this->sectionMatcher->match($matchCondition);
         $data = array();
 
@@ -223,7 +223,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             $data[] = $sectionData;
         }
 
-        $this->loginUser($previousUserId);
+        $this->authenticateUserByReference($currentUser);
         return $data;
     }
 

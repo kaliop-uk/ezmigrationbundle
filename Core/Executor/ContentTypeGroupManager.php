@@ -156,7 +156,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
      */
     public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        $currentUser = $this->authenticateUserByContext($context);
         $contentTypeGroupCollection = $this->contentTypeGroupMatcher->match($matchCondition);
         $data = array();
 
@@ -207,7 +207,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
             $data[] = $contentTypeGroupData;
         }
 
-        $this->loginUser($previousUserId);
+        $this->authenticateUserByReference($currentUser);
         return $data;
     }
 

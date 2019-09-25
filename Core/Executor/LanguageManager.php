@@ -189,7 +189,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
      */
     public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        $currentUser = $this->authenticateUserByContext($context);
         $languageCollection = $this->languageMatcher->match($matchCondition);
         $data = array();
 
@@ -242,7 +242,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
             $data[] = $languageData;
         }
 
-        $this->loginUser($previousUserId);
+        $this->authenticateUserByReference($currentUser);
         return $data;
     }
 
