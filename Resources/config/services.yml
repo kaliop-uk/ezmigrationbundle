@@ -139,6 +139,9 @@ services:
             - '@ez_migration_bundle.context_handler'
         tags:
             - { name: ez_migration_bundle.context_provider, label: migration_service }
+        calls:
+            - ['setPermissionResolver', ['@eZ\Publish\API\Repository\PermissionResolver']]
+            - ['setUserService', ['@eZ\Publish\API\Repository\UserService']]
 
     ### loaders
 
