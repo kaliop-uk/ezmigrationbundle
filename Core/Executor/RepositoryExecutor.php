@@ -3,18 +3,19 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Repository;
+use eZ\Publish\API\Repository\Values\User\UserReference;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
+use Kaliop\eZMigrationBundle\Core\AuthenticatedUserSetterTrait;
 
 /**
  * The core manager class that all migration action managers inherit from.
  */
 abstract class RepositoryExecutor extends AbstractExecutor
 {
-    use RepositoryUserSetterTrait;
+    use AuthenticatedUserSetterTrait;
     use IgnorableStepExecutorTrait;
 
     /**
@@ -26,6 +27,11 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * The default Admin user Id, used when no Admin user is specified
      */
     const ADMIN_USER_ID = 14;
+
+    /**
+     * The default Admin user login, used when no Admin user is specified
+     */
+    const ADMIN_USER_LOGIN = 'admin';
 
     /** Used if not specified by the migration */
     const USER_CONTENT_TYPE = 'user';
@@ -95,17 +101,13 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
             $this->skipStepIfNeeded($step);
 
-            $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
-
+            $currentUser = $this->authenticateUserByContext($step->context);
             try {
                 $output = $this->$action($step);
-            } catch (\Exception $e) {
-                $this->loginUser($previousUserId);
-                throw $e;
+            } finally {
+                // reset the environment as much as possible as we had found it before the migration
+                $this->authenticateUserByReference($currentUser);
             }
-
-            // reset the environment as much as possible as we had found it before the migration
-            $this->loginUser($previousUserId);
 
             return $output;
         } else {
@@ -190,16 +192,22 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * @param array $context we have to return FALSE if that is set as adminUserLogin, whereas if NULL is set, we return the default admin
-     * @return int|string|false
+     * @param array $context
+     *
+     * @return \eZ\Publish\API\Repository\Values\User\UserReference previously logged-in user
+     *
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidUserAccountException
      */
-    protected function getAdminUserIdentifierFromContext($context)
+    protected function authenticateUserByContext(array $context): UserReference
     {
-        if (isset($context['adminUserLogin'])) {
-            return $context['adminUserLogin'];
+        $currentUser = $this->getCurrentUser();
+
+        $userLogin = $context['adminUserLogin'] ?? self::ADMIN_USER_LOGIN;
+        if (false !== $userLogin) {
+            $this->authenticateUserByLogin($userLogin);
         }
 
-        return self::ADMIN_USER_ID;
+        return $currentUser;
     }
 
     /**

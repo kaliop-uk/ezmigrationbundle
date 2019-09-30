@@ -208,7 +208,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
      */
     public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        $currentUser = $this->authenticateUserByContext($context);
         $objectStateCollection = $this->objectStateMatcher->match($matchCondition);
         $data = array();
 
@@ -278,7 +278,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
             $data[] = $groupData;
         }
 
-        $this->loginUser($previousUserId);
+        $this->authenticateUserByReference($currentUser);
         return $data;
     }
 

@@ -257,7 +257,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
      */
     public function generateMigration(array $matchConditions, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        $currentUser = $this->authenticateUserByContext($context);
 
         $tagCollection = $this->tagMatcher->match($matchConditions);
         $data = array();
@@ -337,7 +337,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
             $data[] = $tagData;
         }
 
-        $this->loginUser($previousUserId);
+        $this->authenticateUserByReference($currentUser);
         return $data;
     }
 
