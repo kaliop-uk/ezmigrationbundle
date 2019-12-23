@@ -69,7 +69,7 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
     {
         $contentTypeService = $this->repository->getContentTypeService();
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
-        $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
+        $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
         return $fieldDefinition->fieldSettings;
     }
 

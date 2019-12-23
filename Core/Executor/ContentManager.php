@@ -624,11 +624,11 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         foreach ($fields as $fieldIdentifier => $fieldLanguages) {
             foreach ($fieldLanguages as $language => $fieldValue) {
-                if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
+                if (!$contentType->getFieldDefinition($fieldIdentifier)) {
                     throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
                 }
 
-                $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
+                $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
                 $fieldValue = $this->getFieldValue($fieldValue, $fieldDefinition, $contentType->identifier, $step->context);
                 $createOrUpdateStruct->setField($fieldIdentifier, $fieldValue, $language);
             }
