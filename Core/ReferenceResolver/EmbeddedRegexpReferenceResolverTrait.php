@@ -86,5 +86,5 @@ trait EmbeddedRegexpReferenceResolverTrait
      * @param string $stringIdentifier
      * @return mixed
      */
-    abstract protected function getReferenceValue($stringIdentifier);
+    abstract public function getReferenceValue($stringIdentifier);
 }
