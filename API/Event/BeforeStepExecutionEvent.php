@@ -2,7 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\API\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 

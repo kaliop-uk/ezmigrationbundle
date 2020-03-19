@@ -2,15 +2,16 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
+use Psr\Container\ContainerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Kaliop\eZMigrationBundle\Core\MigrationService;
 
 /**
  * Base command class that all migration commands extend from.
  */
-abstract class AbstractCommand extends ContainerAwareCommand
+abstract class AbstractCommand extends Command
 {
     /**
      * @var MigrationService
@@ -22,6 +23,20 @@ abstract class AbstractCommand extends ContainerAwareCommand
     /** @var OutputInterface $output */
     protected $errOutput;
     protected $verbosity = OutputInterface::VERBOSITY_NORMAL;
+
+    protected $container;
+
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+
+        parent::__construct($this->getName());
+    }
+
+    protected function getContainer()
+    {
+        return $this->container;
+    }
 
     /**
      * @return MigrationService

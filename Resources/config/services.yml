@@ -832,6 +832,8 @@ services:
             - { name: 'console.command', command: 'kaliop:migration:mass_migrate' }
 
     Kaliop\eZMigrationBundle\Command\MigrateCommand:
+        arguments:
+            - '@service_container'
         tags:
             - { name: 'console.command', command: 'kaliop:migration:migrate' }
 

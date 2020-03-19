@@ -319,7 +319,7 @@ class MigrationService implements ContextProviderInterface
                     $executor = $this->executors[$step->type];
 
                     $beforeStepExecutionEvent = new BeforeStepExecutionEvent($step, $executor);
-                    $this->dispatcher->dispatch($this->eventPrefix . 'before_execution', $beforeStepExecutionEvent);
+                    $this->dispatcher->dispatch($beforeStepExecutionEvent);
                     // allow some sneaky trickery here: event listeners can manipulate 'live' the step definition and the executor
                     $executor = $beforeStepExecutionEvent->getExecutor();
                     $step = $beforeStepExecutionEvent->getStep();
@@ -327,7 +327,7 @@ class MigrationService implements ContextProviderInterface
                     try {
                         $result = $executor->execute($step);
 
-                        $this->dispatcher->dispatch($this->eventPrefix . 'step_executed', new StepExecutedEvent($step, $result));
+                        $this->dispatcher->dispatch(new StepExecutedEvent($step, $result));
                     } catch (MigrationStepSkippedException $e) {
                         continue;
                     }

@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,6 +29,11 @@ class MigrateCommand extends AbstractCommand
     protected $subProcessErrorString = '';
 
     const COMMAND_NAME = 'kaliop:migration:migrate';
+
+    public function __construct(ContainerInterface $container)
+    {
+        parent::__construct($container);
+    }
 
     /**
      * Set up the command.
