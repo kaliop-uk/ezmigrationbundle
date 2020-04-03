@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Schema\Schema;
-use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
-use eZ\Publish\Core\Persistence\Database\SelectQuery;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationCollection;
 use Kaliop\eZMigrationBundle\API\Value\Migration as APIMigration;
@@ -23,14 +24,14 @@ class Migration extends TableStorage implements StorageHandlerInterface
     protected $fieldList = 'migration, md5, path, execution_date, status, execution_error';
 
     /**
-     * @param DatabaseHandler $dbHandler
+     * @param \Doctrine\DBAL\Connection $connection
      * @param string $tableNameParameter
      * @param ConfigResolverInterface $configResolver
      * @throws \Exception
      */
-    public function __construct(DatabaseHandler $dbHandler, $tableNameParameter = 'kaliop_migrations', ConfigResolverInterface $configResolver = null)
+    public function __construct(Connection $connection, $tableNameParameter = 'kaliop_migrations', ConfigResolverInterface $configResolver = null)
     {
-        parent::__construct($dbHandler, $tableNameParameter, $configResolver);
+        parent::__construct($connection, $tableNameParameter, $configResolver);
     }
 
     /**
@@ -64,14 +65,17 @@ class Migration extends TableStorage implements StorageHandlerInterface
     {
         $this->createTableIfNeeded();
 
-        /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
-        $q = $this->dbHandler->createSelectQuery();
+        /** @var \Doctrine\DBAL\Query\QueryBuilder $q */
+        $q = $this->connection->createQueryBuilder();
+
         $q->select($this->fieldList)
             ->from($this->tableName)
-            ->orderBy('migration', SelectQuery::ASC);
+            ->orderBy('migration', 'ASC');
+
         if ($status !== null) {
-            $q->where($q->expr->eq('status', $q->bindValue($status)));
+            $q->where($q->expr()->eq('status', $q->createPositionalParameter($status)));
         }
+
         if ($limit > 0 || $offset > 0) {
             if ($limit <= 0) {
                 $limit = null;
@@ -79,10 +83,11 @@ class Migration extends TableStorage implements StorageHandlerInterface
             if ($offset == 0) {
                 $offset = null;
             }
-            $q->limit($limit, $offset);
+            $q->setMaxResults($limit);
+            $q->setFirstResult($offset);
         }
-        $stmt = $q->prepare();
-        $stmt->execute();
+
+        $stmt = $q->execute();
         $results = $stmt->fetchAll();
 
         $migrations = array();
@@ -101,14 +106,15 @@ class Migration extends TableStorage implements StorageHandlerInterface
     {
         $this->createTableIfNeeded();
 
-        /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
-        $q = $this->dbHandler->createSelectQuery();
+        /** @var \Doctrine\DBAL\Query\QueryBuilder $q */
+        $q = $this->connection->createQueryBuilder();
+
         $q->select($this->fieldList)
             ->from($this->tableName)
-            ->where($q->expr->eq('migration', $q->bindValue($migrationName)));
-        $stmt = $q->prepare();
-        $stmt->execute();
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            ->where($q->expr()->eq('migration', $q->createPositionalParameter($migrationName)));
+
+        $stmt = $q->execute();
+        $result = $stmt->fetch(FetchMode::ASSOCIATIVE);
 
         if (is_array($result) && !empty($result)) {
             return $this->arrayToMigration($result);
@@ -196,7 +202,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         $conn->beginTransaction();
 
         $stmt = $conn->executeQuery($sql, array($migration->name));
-        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $existingMigrationData = $stmt->fetch(FetchMode::ASSOCIATIVE);
 
         // fail if it was not executing
 
@@ -277,7 +283,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         $conn->beginTransaction();
 
         $stmt = $conn->executeQuery($sql, array($migrationDefinition->name));
-        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $existingMigrationData = $stmt->fetch(FetchMode::ASSOCIATIVE);
 
         if (is_array($existingMigrationData)) {
             // migration exists
@@ -359,7 +365,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         $conn->beginTransaction();
 
         $stmt = $conn->executeQuery($sql, array($migration->name));
-        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $existingMigrationData = $stmt->fetch(FetchMode::ASSOCIATIVE);
 
         if (!is_array($existingMigrationData)) {
             // commit immediately, to release the lock and avoid deadlocks
@@ -428,7 +434,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         //$t->addIndex(array('path'));
 
         foreach ($schema->toSql($dbPlatform) as $sql) {
-            $this->dbHandler->exec($sql);
+            $this->connection->exec($sql);
         }
     }
 

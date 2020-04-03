@@ -2,7 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
+use Doctrine\DBAL\Connection;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 
@@ -10,10 +10,8 @@ class SQLExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
 
-    /**
-     * @var DatabaseHandler $connection
-     */
-    protected $dbHandler;
+    /** @var \Doctrine\DBAL\Connection */
+    protected $connection;
 
     protected $supportedStepTypes = array('sql');
 
@@ -21,12 +19,12 @@ class SQLExecutor extends AbstractExecutor
     protected $referenceResolver;
 
     /**
-     * @param DatabaseHandler $dbHandler
+     * @param \Doctrine\DBAL\Connection $connection
      * @param ReferenceBagInterface $referenceResolver
      */
-    public function __construct(DatabaseHandler $dbHandler, ReferenceBagInterface $referenceResolver)
+    public function __construct(Connection $connection, ReferenceBagInterface $referenceResolver)
     {
-        $this->dbHandler = $dbHandler;
+        $this->connection = $connection;
         $this->referenceResolver = $referenceResolver;
     }
 
@@ -41,7 +39,7 @@ class SQLExecutor extends AbstractExecutor
 
         $this->skipStepIfNeeded($step);
 
-        $conn = $this->dbHandler->getConnection();
+        $conn = $this->connection;
         // @see http://doctrine-orm.readthedocs.io/projects/doctrine-dbal/en/latest/reference/platforms.html
         $dbType = strtolower(preg_replace('/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()->getName()));
 

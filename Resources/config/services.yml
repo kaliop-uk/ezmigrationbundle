@@ -197,7 +197,7 @@ services:
     ez_migration_bundle.storage_handler.database:
         class: '%ez_migration_bundle.storage_handler.database.class%'
         arguments:
-            - '@ezpublish.connection'
+            - "@ezpublish.api.storage_engine.legacy.connection"
             - 'ez_migration_bundle.table_name'
             - '@ez_migration_bundle.helper.config.resolver'
 
@@ -207,7 +207,7 @@ services:
     ez_migration_bundle.context_storage_handler.database:
         class: '%ez_migration_bundle.context_storage_handler.database.class%'
         arguments:
-            - '@ezpublish.connection'
+            - "@ezpublish.api.storage_engine.legacy.connection"
             - 'ez_migration_bundle.context_table_name'
             - '@ez_migration_bundle.helper.config.resolver'
 
@@ -318,7 +318,7 @@ services:
     ez_migration_bundle.executor.sql:
         class: '%ez_migration_bundle.executor.sql.class%'
         arguments:
-            - '@ezpublish.connection'
+            - "@ezpublish.api.storage_engine.legacy.connection"
             - '@ez_migration_bundle.reference_resolver.customreference'
         calls:
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]

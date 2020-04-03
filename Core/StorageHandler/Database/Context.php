@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 
+use Doctrine\DBAL\FetchMode;
 use Kaliop\eZMigrationBundle\API\ContextStorageHandlerInterface;
 use Doctrine\DBAL\Schema\Schema;
 
@@ -13,14 +14,15 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
     {
         $this->createTableIfNeeded();
 
-        /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
-        $q = $this->dbHandler->createSelectQuery();
+        /** @var \Doctrine\DBAL\Query\QueryBuilder $q */
+        $q = $this->connection->createQueryBuilder();
+
         $q->select($this->fieldList)
             ->from($this->tableName)
-            ->where($q->expr->eq('migration', $q->bindValue($migrationName)));
-        $stmt = $q->prepare();
-        $stmt->execute();
-        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            ->where($q->expr()->eq('migration', $q->createPositionalParameter($migrationName)));
+
+        $stmt = $q->execute();
+        $result = $stmt->fetch(FetchMode::ASSOCIATIVE);
 
         if (is_array($result) && !empty($result)) {
             return $this->stringToContext($result['context']);
@@ -54,7 +56,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         $conn->beginTransaction();
 
         $stmt = $conn->executeQuery($sql, array($migrationName));
-        $existingMigrationData = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $existingMigrationData = $stmt->fetch(FetchMode::ASSOCIATIVE);
 
         if (is_array($existingMigrationData)) {
             // context exists
@@ -106,7 +108,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
     public function createTable()
     {
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
-        $sm = $this->dbHandler->getConnection()->getSchemaManager();
+        $sm = $this->getConnection()->getSchemaManager();
         $dbPlatform = $sm->getDatabasePlatform();
 
         $schema = new Schema();
@@ -118,7 +120,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         $t->setPrimaryKey(array('migration'));
 
         foreach ($schema->toSql($dbPlatform) as $sql) {
-            $this->dbHandler->exec($sql);
+            $this->connection->exec($sql);
         }
     }
 

@@ -4,12 +4,14 @@ use Kaliop\eZMigrationBundle\API\MigrationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use \eZ\Publish\Core\Persistence\Database\SelectQuery;
 
 class MigrateV1ToV2 implements MigrationInterface
 {
     private $container;
-    private $dbHandler;
+
+    /** @var \Doctrine\DBAL\Connection */
+    private $connection;
+
     private $activeBundles;
     private $legacyTableName;
     private $legacyMigrationsDir;
@@ -32,7 +34,7 @@ class MigrateV1ToV2 implements MigrationInterface
         $this->legacyMigrationsDir = $this->container->get('ez_migration_bundle.helper.config.resolver')->getParameter('kaliop_bundle_migration.version_directory');
 
         $migrationStorageService = $this->container->get('ez_migration_bundle.storage_handler');
-        $this->dbHandler = $this->container->get('ezpublish.connection');
+        $this->connection = $this->container->get('ezpublish.api.storage_engine.legacy.connection');
 
         $this->activeBundles = array();
         foreach ($this->container->get('kernel')->getBundles() as $bundle)
@@ -102,7 +104,7 @@ class MigrateV1ToV2 implements MigrationInterface
     private function tableExist($tableName)
     {
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
-        $sm = $this->dbHandler->getConnection()->getSchemaManager();
+        $sm = $this->connection->getSchemaManager();
         foreach ($sm->listTables() as $table) {
             if ($table->getName() == $tableName) {
                 return true;
@@ -114,13 +116,13 @@ class MigrateV1ToV2 implements MigrationInterface
 
     private function loadLegacyMigrations()
     {
-        /** @var \eZ\Publish\Core\Persistence\Database\SelectQuery $q */
-        $q = $this->dbHandler->createSelectQuery();
+        /** @var \Doctrine\DBAL\Query\QueryBuilder $q */
+        $q = $this->connection->createQueryBuilder();
+
         $q->select('version, bundle')
             ->from($this->legacyTableName)
-            ->orderBy('version', SelectQuery::ASC);
-        $stmt = $q->prepare();
-        $stmt->execute();
+            ->orderBy('version', 'ASC');
+        $stmt = $q->execute();
         $results = $stmt->fetchAll();
 
         return $results;
@@ -128,7 +130,7 @@ class MigrateV1ToV2 implements MigrationInterface
 
     private function deleteLegacyMigration($version, $bundle)
     {
-        $this->dbHandler->getConnection()->delete($this->legacyTableName, array('version' => $version, 'bundle' => $bundle));
+        $this->connection->delete($this->legacyTableName, array('version' => $version, 'bundle' => $bundle));
     }
 
     /**
