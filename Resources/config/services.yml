@@ -824,10 +824,14 @@ services:
     Kaliop\eZMigrationBundle\Command\AbstractCommand: ~
 
     Kaliop\eZMigrationBundle\Command\GenerateCommand:
+        arguments:
+            - '@service_container'
         tags:
             - { name: 'console.command', command: 'kaliop:migration:generate' }
 
     Kaliop\eZMigrationBundle\Command\MassMigrateCommand:
+        arguments:
+            - '@service_container'
         tags:
             - { name: 'console.command', command: 'kaliop:migration:mass_migrate' }
 
@@ -838,13 +842,19 @@ services:
             - { name: 'console.command', command: 'kaliop:migration:migrate' }
 
     Kaliop\eZMigrationBundle\Command\MigrationCommand:
+        arguments:
+            - '@service_container'
         tags:
             - { name: 'console.command', command: 'kaliop:migration:migration' }
 
     Kaliop\eZMigrationBundle\Command\ResumeCommand:
+        arguments:
+            - '@service_container'
         tags:
             - { name: 'console.command', command: 'kaliop:migration:resume' }
 
     Kaliop\eZMigrationBundle\Command\StatusCommand:
+        arguments:
+            - '@service_container'
         tags:
             - { name: 'console.command', command: 'kaliop:migration:status' }
