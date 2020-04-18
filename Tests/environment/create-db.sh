@@ -40,6 +40,11 @@ elif [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" -o "${E
     else
         ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/cleandata.sql
     fi
+
+    # work around bug https://jira.ez.no/browse/EZP-31586: the db schema delivered in kernel 7.5.7 does not contain _all_ columns!
+    if [ "${EZ_VERSION}" = "ezplatform2" ]; then
+         ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/update/mysql/dbupdate-7.5.4-to-7.5.5.sql
+    fi
 fi
 
 if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then
