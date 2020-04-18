@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:buster-slim
 
 ARG debian_mirror=none
 ARG timezone=none
@@ -12,6 +12,8 @@ RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buste
 # Configure timezone
 # -----------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
+
+# @todo Buster comes with php 7.3. Allow usage of an ARG to decide if we want to install instead php 7.4 (from SURY repos)
 
 # Required packages
 # -----------------------------------------------------------------------------

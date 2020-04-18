@@ -6,6 +6,9 @@ clean_up() {
     # Perform program exit housekeeping
     echo "[`date`] Stopping the service..."
     pkill --signal term mysqld
+    if [ -f /var/run/bootstrap_ok ]; then
+        rm /var/run/bootstrap_ok
+    fi
     exit
 }
 
@@ -26,15 +29,14 @@ DEV_UID=${DEV_UID:=$ORIG_UID}
 DEV_GID=${DEV_GID:=$ORIG_GID}
 
 if [ "$DEV_UID" != "$ORIG_UID" -o "$DEV_GID" != "$ORIG_GID" ]; then
-
     # note: we allow non-unique user and group ids...
     groupmod -o -g "$DEV_GID" mysql
     usermod -o -u "$DEV_UID" -g "$DEV_GID" mysql
-
-    # does mysql user have a root dir created by default ?
-    #chown "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"
-    #chown -R "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"/.*
-
+fi
+if [ $(stat -c '%u' "/var/lib/mysql") != "${DEV_UID}" -o $(stat -c '%g' "/var/lib/mysql") != "${DEV_GID}" ]; then
+    chown -R "${DEV_UID}":"${DEV_GID}" "/var/lib/mysql"
+    #chown -R "${DEV_UID}":"${DEV_GID}" "/var/log/mysql"
+    # $HOME is set to /home/mysql, but the dir does not exist...
 fi
 
 chown -R mysql:mysql /var/run/mysqld

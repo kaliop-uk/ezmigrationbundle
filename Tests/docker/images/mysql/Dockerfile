@@ -8,6 +8,11 @@ ARG do_update_os=true
 # -----------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
+# Base packages
+# -----------------------------------------------------------------------------
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
+    procps
+
 # Currently fails for MySQL 5.6 image...
 # -----------------------------------------------------------------------------
 #RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --allow-unauthenticated; fi
@@ -20,6 +25,5 @@ RUN chmod 755 /root/bootstrap.sh
 
 EXPOSE 3306
 
-# q: why are we not using just ENTRYPOINT?
-ENTRYPOINT []
-CMD ["/root/bootstrap.sh", "mysqld"]
+ENTRYPOINT ["/root/bootstrap.sh"]
+CMD ["mysqld"]

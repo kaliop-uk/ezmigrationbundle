@@ -14,6 +14,9 @@ clean_up() {
     #echo "[`date`] Stopping Solr"
     #service solr stop
 
+    if [ -f /var/run/bootstrap_ok ]; then
+        rm /var/run/bootstrap_ok
+    fi
     exit
 }
 
@@ -34,13 +37,12 @@ DEV_UID=${DEV_UID:=$ORIG_UID}
 DEV_GID=${DEV_GID:=$ORIG_GID}
 
 if [ "$DEV_UID" != "$ORIG_UID" -o "$DEV_GID" != "$ORIG_GID" ]; then
-
     groupmod -g "$DEV_GID" test
     usermod -u "$DEV_UID" -g "$DEV_GID" test
-
+fi
+if [ $(stat -c '%u' "${ORIG_HOME}") != "${DEV_UID}" -o $(stat -c '%g' "${ORIG_HOME}") != "${DEV_GID}" ]; then
     chown "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"
     chown -R "${DEV_UID}":"${DEV_GID}" "${ORIG_HOME}"/.*
-
 fi
 
 trap clean_up TERM

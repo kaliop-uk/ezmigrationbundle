@@ -33,7 +33,7 @@ services:
             - ./logs/mysql/:/var/log/mysql
         #tmpfs:
         #    # used for mysql temp tables
-        #    - /tmpfs:mode=777,size=1g
+        #    - /tmpfs:mode=777
         # nb: this prevents the image to start on some ubuntu installs because of apparmor config...
         #privileged: true
         #ports:
