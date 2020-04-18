@@ -60,7 +60,7 @@ class TagsTest extends CommandTest
         $dslDir = $this->dslDir.'/eztags';
 
         // try to make this work across phpunit versions, which run this before/after calling setUp()
-        $container = $this->getContainer() == null ? $this->bootContainer() : $this->getContainer()();
+        $container = $this->getContainer() == null ? $this->bootContainer() : $this->getContainer();
         $tagsFieldType = $container->get('ezpublish.fieldType.eztags');
         $settingsSchema = $tagsFieldType->getSettingsSchema();
         if (isset($settingsSchema['subTreeLimit'])) {
