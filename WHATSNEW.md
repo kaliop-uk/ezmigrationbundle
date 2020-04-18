@@ -1,7 +1,9 @@
-Version 5.11.0
+Version 5.10.2
 ==============
 
 * Fixed issue #232: error with EmbeddedRegexpReferenceResolverTrait.php and php 7.4
+
+* Improved: massively reworked travis setup to make it friendlier to ezplatform 3 installations
 
 
 Version 5.10.1
