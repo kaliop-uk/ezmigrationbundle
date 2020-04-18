@@ -18,7 +18,7 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
      */
     public function testMigrationAbortedException()
     {
-        $ms = $this->container->get('ez_migration_bundle.migration_service');
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
         $ms->addExecutor($this);
         $md = new MigrationDefinition(
             'exception_test.json',
@@ -39,8 +39,8 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
 
     public function testInvalidUserAccountException()
     {
-        //$bundles = $this->container->getParameter('kernel.bundles');
-        $ms = $this->container->get('ez_migration_bundle.migration_service');
+        //$bundles = $this->getContainer()->getParameter('kernel.bundles');
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
 
         $filePath = $this->dslDir . '/UnitTestOK033_loadSomething.yml';
 
@@ -76,8 +76,8 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
      */
     public function testExecuteGoodDSL($filePath = '')
     {
-        //$bundles = $this->container->getParameter('kernel.bundles');
-        $ms = $this->container->get('ez_migration_bundle.migration_service');
+        //$bundles = $this->getContainer()->getParameter('kernel.bundles');
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
 
         if ($filePath == '') {
             $this->markTestSkipped();

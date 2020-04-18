@@ -1,8 +1,8 @@
 <?php
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use eZ\Bundle\EzPublishCoreBundle\Console\Application;
 use Symfony\Component\Console\Output\StreamOutput;
+use eZ\Bundle\EzPublishCoreBundle\Console\Application;
 
 abstract class CommandTest extends WebTestCase
 {
@@ -11,7 +11,7 @@ abstract class CommandTest extends WebTestCase
     protected $leftovers = array();
 
     /** @var \Symfony\Component\DependencyInjection\ContainerInterface $container */
-    protected $container;
+    private $_container;
     /** @var \eZ\Bundle\EzPublishCoreBundle\Console\Application $app */
     protected $app;
     /** @var StreamOutput $output */
@@ -27,9 +27,10 @@ abstract class CommandTest extends WebTestCase
         $this->dslDir = __DIR__ . '/../dsl';
     }
 
+   /// @todo if we want to be compatible with phpunit >= 8.0, we should do something akin to https://github.com/symfony/framework-bundle/blob/4.3/Test/ForwardCompatTestTrait.php
     protected function setUp()
     {
-        $this->container = $this->getContainer();
+        $this->_container = $this->bootContainer();
 
         $this->app = new Application(static::$kernel);
         $this->app->setAutoExit(false);
@@ -72,13 +73,19 @@ abstract class CommandTest extends WebTestCase
             fclose($fp);
             $this->output = null;
         }
+
+        // shuts down the kernel etc...
+        parent::tearDown();
     }
 
-    protected function getContainer()
+    /**
+     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     * @throws Exception
+     */
+    protected function bootContainer()
     {
-        if (null !== static::$kernel) {
-            static::$kernel->shutdown();
-        }
+        static::ensureKernelShutdown();
+
         if (!isset($_SERVER['SYMFONY_ENV'])) {
             throw new \Exception("Please define the environment variable SYMFONY_ENV to specify the environment to use for the tests");
         }
@@ -91,11 +98,17 @@ abstract class CommandTest extends WebTestCase
             $options['debug'] = $_SERVER['SYMFONY_DEBUG'];
         }
         try {
-            static::$kernel = static::createKernel($options);
+            static::bootKernel($options);
         } catch (\RuntimeException $e) {
             throw new \RuntimeException($e->getMessage() . " Did you forget to define the environment variable KERNEL_DIR?", $e->getCode(), $e->getPrevious());
         }
-        static::$kernel->boot();
-        return static::$kernel->getContainer();
+
+        // In Sf4 we do have the container available, in Sf3 we do not
+        return isset(static::$container) ? static::$container : static::$kernel->getContainer();
+    }
+
+    protected function getContainer()
+    {
+        return $this->_container;
     }
 }

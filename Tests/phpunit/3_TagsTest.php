@@ -17,7 +17,7 @@ class TagsTest extends CommandTest
      */
     public function testExecuteGoodDSL($filePath = '')
     {
-        $bundles = $this->container->getParameter('kernel.bundles');
+        $bundles = $this->getContainer()->getParameter('kernel.bundles');
 
         if ($filePath == '' || !isset($bundles['NetgenTagsBundle'])) {
             $this->markTestSkipped();
@@ -59,8 +59,8 @@ class TagsTest extends CommandTest
     {
         $dslDir = $this->dslDir.'/eztags';
 
-        // try to make this work across phpunit versions
-        $container = $this->container == null ? $this->getContainer() : $this->container;
+        // try to make this work across phpunit versions, which run this before/after calling setUp()
+        $container = $this->getContainer() == null ? $this->bootContainer() : $this->getContainer()();
         $tagsFieldType = $container->get('ezpublish.fieldType.eztags');
         $settingsSchema = $tagsFieldType->getSettingsSchema();
         if (isset($settingsSchema['subTreeLimit'])) {

@@ -4,8 +4,8 @@
 <phpunit colors="true" bootstrap="Tests/bootstrap.php" convertNoticesToExceptions="false" convertWarningsToExceptions="false">
 
     <php>
-        <!-- the following 2 have been moved to env vars, as they might vary depending on setups -->
-        <!--<server name="KERNEL_DIR" value="vendor/ezsystems/ezpublish-community/ezpublish" />
+        <!-- the following have been moved to env vars, as they might vary depending on setups -->
+        <!--<server name="KERNEL_DIR" value="vendor/ezsystems/ezplatform/app" />
         <server name="SYMFONY_ENV" value="behat" />-->
         <server name="SYMFONY_DEBUG" value="false" />
     </php>
