@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\NotImplementedException;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
@@ -131,13 +132,13 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
                             case self::MATCH_CONTENT_TYPE_IDENTIFIER:
                                 // sort objects by depth, lower to higher, so that deleting them has less chances of failure
                                 // NB: we only do this in eZP versions that allow depth sorting on content queries
-                                if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
-                                    $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+                                if ($sortClauses = $this->getDefaultSortClauses()) {
+                                    $query->sortClauses = $sortClauses;
                                 }
                         }
                     }
 
-                    $results = $this->repository->getSearchService()->findContent($query);
+                    $results = $this->getSearchService()->findContent($query);
 
                     $contents = [];
                     foreach ($results->searchHits as $result) {
@@ -247,7 +248,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
         $query->limit = $this->queryLimit;
         if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
-        $results = $this->repository->getSearchService()->findContent($query);
+        $results = $this->getSearchService()->findContent($query);
 
         $contents = [];
         foreach ($results->searchHits as $result) {
@@ -289,11 +290,11 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
         $query->filter = new Query\Criterion\ContentTypeIdentifier($contentTypeIdentifiers);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
         // NB: we only do this in eZP versions that allow depth sorting on content queries
-        if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
-            $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        if ($sortClauses = $this->getDefaultSortClauses()) {
+            $query->sortClauses = $sortClauses;
         }
 
-        $results = $this->repository->getSearchService()->findContent($query);
+        $results = $this->getSearchService()->findContent($query);
 
         $contents = [];
         foreach ($results->searchHits as $result) {
@@ -317,10 +318,10 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
         $query->filter = new Query\Criterion\ContentTypeId($contentTypeIds);
         // sort objects by depth, lower to higher, so that deleting them has less chances of failure
         // NB: we only do this in eZP versions that allow depth sorting on content queries
-        if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
-            $query->sortClauses = array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        if ($sortClauses = $this->getDefaultSortClauses()) {
+            $query->sortClauses = $sortClauses;
         }
-        $results = $this->repository->getSearchService()->findContent($query);
+        $results = $this->getSearchService()->findContent($query);
 
         $contents = [];
         foreach ($results->searchHits as $result) {
@@ -331,4 +332,31 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
         return $contents;
     }
 
+    /**
+     * @return false|\eZ\Publish\API\Repository\Values\Content\Query\SortClause[]
+     */
+    protected function getDefaultSortClauses()
+    {
+        if (class_exists('eZ\Publish\API\Repository\Values\Content\Query\SortClause\LocationDepth')) {
+            // Work around the fact that, on eZP 5.4 with recent ezplatform-solr-search-engine versions, sort class
+            // LocationDepth does exist, but it is not supported by the Solr-based search engine.
+            // The best workaround that we found so far: test a dummy query!
+            $searchService = $this->getSearchService();
+            if (class_exists('EzSystems\EzPlatformSolrSearchEngine\Handler') /*&& $searchService instanceof */) {
+                try {
+                    $query = new Query();
+                    $query->limit = 1;
+                    $query->performCount = false;
+                    $query->filter = new Query\Criterion\ContentTypeIdentifier('this_is_a_very_unlikely_content_type_identifier');
+                    //$query->filter = new Query\Criterion\ContentTypeId($contentTypeIds);
+                } catch(NotImplementedException $e) {
+                    return false;
+                }
+            }
+
+            return array(new Query\SortClause\LocationDepth(Query::SORT_DESC));
+        }
+
+        return false;
+    }
 }

@@ -324,6 +324,15 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
         return $out;
     }
 
+    /**
+     * @todo investigate how to better return the 'legacy' (db based) search engine even when a Solr-based one is available
+     * @return \eZ\Publish\API\Repository\SearchService
+     */
+    protected function getSearchService()
+    {
+        return $this->repository->getSearchService();
+    }
+
     protected function hash2SortOrder($value)
     {
         $sortOrder = null;

@@ -89,7 +89,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
             }
             if (isset($query->performCount)) $query->performCount = false;
             $query->filter = $this->getQueryCriterion($key, $values);
-            $results = $this->repository->getSearchService()->findLocations($query);
+            $results = $this->getSearchService()->findLocations($query);
 
             $locations = [];
             foreach ($results->searchHits as $result) {
@@ -237,7 +237,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
         if (isset($query->performCount)) $query->performCount = false;
         $query->filter = new Query\Criterion\ParentLocationId($parentLocationIds);
 
-        $results = $this->repository->getSearchService()->findLocations($query);
+        $results = $this->getSearchService()->findLocations($query);
 
         $locations = [];
 
