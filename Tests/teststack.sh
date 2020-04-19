@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-# Shortcut to manage the whole set of containers and run tests
+# Manage the whole set of containers and run tests without having to learn Docker
 
-# @todo add support for loading an override.env file before launching docker & docker-compose, and/or set up
-#       file Tests/docker/data/.composer/auth.json
-# @todo add '-y' option to avoid being asked questions
+# @todo add support for loading an .env file before launching docker & docker-compose (if required because of uid/gid),
+#       and/or set up file Tests/docker/data/.composer/auth.json
 
 # consts
 BOOTSTRAP_OK_FILE=/var/run/bootstrap_ok
@@ -22,6 +21,7 @@ REBUILD=false
 RECREATE=false
 SETUP_APP_ON_BOOT=
 VERBOSITY=
+WEBCONTAINER=
 
 function help() {
     printf "Usage: teststack.sh [OPTIONS] COMMAND [OPTARGS]
@@ -328,13 +328,7 @@ check_requirements
 
 cd $(dirname -- ${BASH_SOURCE[0]})/docker
 
-# @todo retrieve WEBCONTAINER container name from docker-compose inspect
-#COMPOSEPROJECT=$(fgrep COMPOSE_PROJECT_NAME .env | sed 's/COMPOSE_PROJECT_NAME=//')
-#if [ -z "${COMPOSEPROJECT}" ]; then
-#    echo -e "\n\e[31mCan not find the name of the composer project name in .env\e[0m\n"
-#    exit 1
-#fi
-#WEBCONTAINER="${COMPOSEPROJECT}_${WEBSVC}"
+WEBCONTAINER=$(docker-compose ps ${WEBSVC} | sed -e '1,2d' | awk '{print $1;}')
 
 case "${COMMAND}" in
     build)
