@@ -82,9 +82,7 @@ check_requirements() {
 
 build() {
     if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
-        # for good measure, do a bit of hdd disk cleanup ;-)
-        echo "[`date`] Removing unused Docker images from disk..."
-        docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
+        cleanup_dead_docker_images
     fi
 
     echo "[`date`] Building all Containers..."
@@ -121,8 +119,7 @@ build() {
     RETCODE=$?
 
     if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
-        echo "[`date`] Removing unused Docker images from disk, again..."
-        docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
+        cleanup_dead_docker_images
     fi
 
     echo "[`date`] Build finished. Exit code: $(docker exec ${WEBCONTAINER} cat /tmp/setup_ok)"
@@ -150,8 +147,7 @@ cleanup() {
             find ./data/ -type d -empty -delete
         ;;
         docker-images)
-            # @todo this gives a warning when no images are found to delete
-            docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
+            cleanup_dead_docker_images
         ;;
         docker-logs)
             for CONTAINER in $(docker-compose ${COMPOSE_ENV_FILE_FLAG} ps -q)
@@ -180,6 +176,14 @@ cleanup() {
             exit 1
         ;;
     esac
+}
+
+cleanup_dead_docker_images() {
+    echo "[`date`] Removing unused Docker images from disk..."
+    DEAD_IMAGES=$(docker images | grep "<none>" | awk "{print \$3}")
+    if [ -n "${DEAD_IMAGES}" ]; then
+        docker rmi ${DEAD_IMAGES}
+    fi
 }
 
 setup_app() {
@@ -266,7 +270,7 @@ wait_for_bootstrap() {
 }
 
 # @todo move to a function
-while getopts ":ce:hnrsuvwz" opt
+while getopts ":ce:hnrsuvwyz" opt
 do
     case $opt in
         c)
@@ -302,6 +306,9 @@ do
         ;;
         w)
             BOOTSTRAP_TIMEOUT=${OPTARG}
+        ;;
+        Y)
+            SILENT=true
         ;;
         z)
             DOCKER_NO_CACHE=--no-cache
