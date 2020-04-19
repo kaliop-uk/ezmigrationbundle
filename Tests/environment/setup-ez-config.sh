@@ -2,7 +2,7 @@
 
 # Set up configuration files
 
-# Uses env vars: EZ_VERSION, KERNEL_DIR, INSTALL_TAGSBUNDLE
+# Uses env vars: EZ_VERSION, KERNEL_DIR, INSTALL_SOLRBUNDLE, INSTALL_TAGSBUNDLE
 
 # @todo check if all required vars have a value
 
@@ -74,6 +74,13 @@ if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then
     fgrep -q 'new Netgen\TagsBundle\NetgenTagsBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
     if [ $? -ne 0 ]; then
         sed -i "/${LAST_BUNDLE}()/i new Netgen\\\\\TagsBundle\\\\\NetgenTagsBundle()," ${KERNEL_DIR}/${EZ_KERNEL}.php
+    fi
+fi
+
+if [ "${INSTALL_SOLRBUNDLE}" = "1" ]; then
+    fgrep -q 'new EzSystems\EzPlatformSolrSearchEngineBundle\EzSystemsEzPlatformSolrSearchEngineBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    if [ $? -ne 0 ]; then
+        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformSolrSearchEngineBundle\\\\\EzSystemsEzPlatformSolrSearchEngineBundle()," ${KERNEL_DIR}/${EZ_KERNEL}.php
     fi
 fi
 

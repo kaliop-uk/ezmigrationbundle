@@ -1,8 +1,8 @@
 FROM debian:buster-slim
 
 ARG debian_mirror=none
-ARG timezone=none
 ARG do_update_os=true
+ARG timezone=none
 
 # Set up debian mirror
 # (use fixed debian mirrors if you have problems building on a given day)
@@ -66,7 +66,7 @@ RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=
 # Clear archives in apt cache folder
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY bootstrap.sh /root/entrypoint.sh
+COPY entrypoint.sh /root/entrypoint.sh
 RUN chmod 755 /root/entrypoint.sh
 
 WORKDIR /home/test/ezmigrationbundle

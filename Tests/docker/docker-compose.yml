@@ -12,8 +12,8 @@ services:
         hostname: ez
         container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_ez
         environment:
-            - DEV_UID=${DEV_UID:-1000}
-            - DEV_GID=${DEV_GID:-1000}
+            - CONTAINER_USER_UID=${CONTAINER_USER_UID:-1000}
+            - CONTAINER_USER_GID=${CONTAINER_USER_GID:-1000}
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_test}
             - MYSQL_USER=${MYSQL_USER:-ezp}
             - MYSQL_PASSWORD=${MYSQL_PASSWORD:-ezp}
@@ -25,6 +25,7 @@ services:
             - CODE_COVERAGE=${CODE_COVERAGE:-0}
             - EZ_PACKAGES=${EZ_PACKAGES:-ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle}
             - EZ_VERSION=${EZ_VERSION:-ezplatform2}
+            - INSTALL_SOLRBUNDLE=${INSTALL_SOLRBUNDLE:-0}
             - INSTALL_TAGSBUNDLE=${INSTALL_TAGSBUNDLE:-1}
             # Configuration used by Symfony when running via phpunit
             - APP_ENV=${APP_ENV:-behat}
@@ -47,8 +48,8 @@ services:
         hostname: mysql
         container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_mysql
         environment:
-            - DEV_UID=${DEV_UID:-1000}
-            - DEV_GID=${DEV_GID:-1000}
+            - CONTAINER_USER_UID=${CONTAINER_USER_UID:-1000}
+            - CONTAINER_USER_GID=${CONTAINER_USER_GID:-1000}
             - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_test}
             - MYSQL_USER=${MYSQL_USER:-ezp}
             - MYSQL_PASSWORD=${MYSQL_PASSWORD:-ezp}

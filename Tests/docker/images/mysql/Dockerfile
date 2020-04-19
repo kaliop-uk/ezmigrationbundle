@@ -1,8 +1,8 @@
 FROM mysql:5.6
 LABEL mysql.version=5.6
 
-ARG timezone=none
 ARG do_update_os=true
+ARG timezone=none
 
 # Configure timezone
 # -----------------------------------------------------------------------------
@@ -20,7 +20,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
 # Clear archives in apt cache folder to slim down the image
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY bootstrap.sh /root/entrypoint.sh
+COPY entrypoint.sh /root/entrypoint.sh
 RUN chmod 755 /root/entrypoint.sh
 
 EXPOSE 3306

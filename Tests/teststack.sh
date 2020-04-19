@@ -2,17 +2,17 @@
 
 # Manage the whole set of containers and run tests without having to learn Docker
 
-# @todo add support for loading an .env file before launching docker & docker-compose (if required because of uid/gid),
-#       and/or set up file Tests/docker/data/.composer/auth.json
-
 # consts
 BOOTSTRAP_OK_FILE=/var/run/bootstrap_ok
-WEBSVC=ez
-WEBUSER=test
+DEFAULT_CONTAINER_USER_UID=1000
+DEFAULT_CONTAINER_USER_GID=1000
+WEB_SERVICE=ez
+WEB_USER=test
 # vars
 BOOTSTRAP_TIMEOUT=300
 CLEANUP_UNUSED_IMAGES=false
-COMPOSE_ENV_FILE_FLAG=
+CONFIG_FILE=
+DEFAULT_CONFIG_FILE=.env
 DOCKER_NO_CACHE=
 PARALLEL_BUILD=
 PULL_IMAGES=false
@@ -21,9 +21,9 @@ REBUILD=false
 RECREATE=false
 SETUP_APP_ON_BOOT=
 VERBOSITY=
-WEBCONTAINER=
+WEB_CONTAINER=
 
-function help() {
+help() {
     printf "Usage: teststack.sh [OPTIONS] COMMAND [OPTARGS]
 
 Manages the Test Environment Docker Stack
@@ -53,7 +53,7 @@ Commands:
 
 Options:
     -c              clean up docker images which have become useless - when running 'build'
-    -e FILE         name of an environment file to use instead of .env
+    -e FILE         name of an environment file to use instead of .env (has to be used for 'start', not for 'exec' or 'enter'). Path relative to the docker folder
     -h              print help
     -f              force the app to be set up - when running 'build', 'start'
     -n              do not set up the app - when running 'build', 'start'
@@ -64,6 +64,59 @@ Options:
     -w SECONDS      wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
     -z              avoid using docker cache - when running 'build -r'
 "
+}
+
+build() {
+
+    if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
+        cleanup_dead_docker_images
+    fi
+
+    echo "[`date`] Stopping running Containers..."
+
+    docker-compose ${VERBOSITY} stop
+
+    if [ ${REBUILD} = 'true' ]; then
+        echo "[`date`] Removing existing Containers..."
+
+        docker-compose ${VERBOSITY} rm -f
+    fi
+
+    if [ ${PULL_IMAGES} = 'true' ]; then
+        echo "[`date`] Pulling base Docker images..."
+        IMAGES=$(find . -name Dockerfile | xargs fgrep -h 'FROM' | sort -u | sed 's/FROM //g')
+        for IMAGE in $IMAGES; do
+            docker pull $IMAGE
+        done
+    fi
+
+    echo "[`date`] Building Containers..."
+
+    echo docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
+
+    # q: do we really need to have 2 different env vars and an EXPORT call?
+    if [ "${SETUP_APP_ON_BOOT}" != '' ]; then
+        export COMPOSE_SETUP_APP_ON_BOOT=${SETUP_APP_ON_BOOT}
+    fi
+
+    echo "[`date`] Starting Containers..."
+
+    if [ ${RECREATE} = 'true' ]; then
+        docker-compose ${VERBOSITY} up -d --force-recreate
+    else
+        docker-compose ${VERBOSITY} up -d
+    fi
+
+    wait_for_bootstrap all
+    RETCODE=$?
+
+    if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
+        cleanup_dead_docker_images
+    fi
+
+    echo "[`date`] Build finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
+
+    exit ${RETCODE}
 }
 
 check_requirements() {
@@ -80,54 +133,7 @@ check_requirements() {
     fi
 }
 
-build() {
-    if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
-        cleanup_dead_docker_images
-    fi
-
-    echo "[`date`] Building all Containers..."
-
-    docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} stop
-    if [ ${REBUILD} = 'true' ]; then
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} rm -f
-    fi
-
-    if [ ${PULL_IMAGES} = 'true' ]; then
-        echo "[`date`] Pulling base Docker images..."
-        IMAGES=$(find . -name Dockerfile | xargs fgrep -h 'FROM' | sort -u | sed 's/FROM //g')
-        for IMAGE in $IMAGES; do
-            docker pull $IMAGE
-        done
-    fi
-
-    docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
-
-    # q: do we really need to have 2 different env vars and an EXPORT call?
-    if [ "${SETUP_APP_ON_BOOT}" != '' ]; then
-        export COMPOSE_SETUP_APP_ON_BOOT=${SETUP_APP_ON_BOOT}
-    fi
-
-    echo "[`date`] Starting all Containers..."
-
-    if [ ${RECREATE} = 'true' ]; then
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} up -d --force-recreate
-    else
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} up -d
-    fi
-
-    wait_for_bootstrap all
-    RETCODE=$?
-
-    if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
-        cleanup_dead_docker_images
-    fi
-
-    echo "[`date`] Build finished. Exit code: $(docker exec ${WEBCONTAINER} cat /tmp/setup_ok)"
-
-    exit ${RETCODE}
-}
-
-# @todo loop over all args
+# @todo loop over all args instead of allowing just one
 cleanup() {
     case "${1}" in
         data)
@@ -150,7 +156,7 @@ cleanup() {
             cleanup_dead_docker_images
         ;;
         docker-logs)
-            for CONTAINER in $(docker-compose ${COMPOSE_ENV_FILE_FLAG} ps -q)
+            for CONTAINER in $(docker-compose ps -q)
             do
                 LOGFILE=$(docker inspect --format='{{.LogPath}}' ${CONTAINER})
                 if [ -n "${LOGFILE}" ]; then
@@ -186,12 +192,57 @@ cleanup_dead_docker_images() {
     fi
 }
 
+# @todo add support for setting up file Tests/docker/data/.composer/auth.json
+create_default_config() {
+    if [ ! -f ${DEFAULT_CONFIG_FILE} ]; then
+        echo "[`date`] Setting up the configuration file..."
+
+        CURRENT_USER_UID=$(id -u)
+        CURRENT_USER_GID=$(id -g)
+
+        touch ${DEFAULT_CONFIG_FILE}
+
+        # @todo in case the file already has these vars, replace them instead of appending!
+        if [ "${DEFAULT_CONTAINER_USER_UID}" != "${CURRENT_USER_UID}" ]; then
+            echo "CONTAINER_USER_UID=${CURRENT_USER_UID}" >> ${DEFAULT_CONFIG_FILE}
+        fi
+        if [ "${DEFAULT_CONTAINER_USER_GID}" != "${CURRENT_USER_GID}" ]; then
+            echo "CONTAINER_USER_GID=${CURRENT_USER_GID}" >> ${DEFAULT_CONFIG_FILE}
+        fi
+    fi
+}
+
+dotenv() {
+    if [ ! -f "${1}" ]; then
+        printf "WARNING: configuration file '${1}' not found\n" >&2
+        return 1
+    fi
+    set -a
+        . "${1}"
+    set +a
+}
+
+# @todo shall we use paths for config files relative to the 'docker' folder, to teststack.sh, or to the current execution folder?
+# @todo test again: why is docker-compose not picking up .env files? neither the default .env one nor the ones
+#       we tried specifying using --env-file...
+load_config() {
+    if [ -z "${CONFIG_FILE}" ]; then
+        CONFIG_FILE=${DEFAULT_CONFIG_FILE}
+    fi
+
+    dotenv ${CONFIG_FILE}
+
+    # @todo check UID, GID from conf vs. current. If different, ask for confirmation before running
+    #if []; then
+    #fi
+}
+
 setup_app() {
     echo "[`date`] Starting all Containers..."
 
     # avoid automatic app setup being triggered here
     export COMPOSE_SETUP_APP_ON_BOOT=skip
-    docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} up -d
+    docker-compose ${VERBOSITY} up -d
 
     wait_for_bootstrap all
     RETCODE=$?
@@ -199,11 +250,10 @@ setup_app() {
         exit ${RETCODE}
     fi
 
-    #docker exec ${WEBCONTAINER} rm /tmp/setup_ok
     echo "[`date`] Setting up eZ..."
-    docker exec ${WEBCONTAINER}  su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
+    docker exec ${WEB_CONTAINER} su ${WEB_USER} -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
 
-    echo "[`date`] Setup finished. Exit code: $(docker exec ${WEBCONTAINER} cat /tmp/setup_ok)"
+    echo "[`date`] Setup finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
 }
 
 # Wait until containers have fully booted
@@ -216,8 +266,8 @@ wait_for_bootstrap() {
     case "${1}" in
         all)
             # q: check all services or only the running ones?
-            #BOOTSTRAP_CONTAINERS=$(docker-compose ${COMPOSE_ENV_FILE_FLAG} config --services)
-            BOOTSTRAP_CONTAINERS=$(docker-compose ${COMPOSE_ENV_FILE_FLAG} ps --services | tr '\n' ' ')
+            #BOOTSTRAP_CONTAINERS=$(docker-compose config --services)
+            BOOTSTRAP_CONTAINERS=$(docker-compose ps --services | tr '\n' ' ')
         ;;
         app)
             BOOTSTRAP_CONTAINERS='ez'
@@ -240,7 +290,7 @@ wait_for_bootstrap() {
         for BS_CONTAINER in ${BOOTSTRAP_CONTAINERS}; do
             printf "Waiting for ${BS_CONTAINER} ... "
             # @todo speed this up... maybe go back to generating and checking files mounted on the host?
-            docker-compose ${COMPOSE_ENV_FILE_FLAG} exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
+            docker-compose exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
             RETCODE=$?
             if [ ${RETCODE} -eq 0 ]; then
                 printf "\e[32mdone\e[0m\n"
@@ -270,17 +320,15 @@ wait_for_bootstrap() {
 }
 
 # @todo move to a function
-while getopts ":ce:hnrsuvwyz" opt
+# @todo allow parsing of cli options after args -- see fe. https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+while getopts ":ce:fhnrsuvwyz" opt
 do
     case $opt in
         c)
             CLEANUP_UNUSED_IMAGES=true
         ;;
         e)
-            if [ ! -f ${OPTARG} ]; then
-                printf "WARNING: env file '${OPTARG}' not found\n" >&2
-            fi
-            COMPOSE_ENV_FILE_FLAG="--env-file ${OPTARG}"
+            CONFIG_FILE=${OPTARG}
         ;;
         f)
             SETUP_APP_ON_BOOT=force
@@ -328,7 +376,13 @@ check_requirements
 
 cd $(dirname -- ${BASH_SOURCE[0]})/docker
 
-WEBCONTAINER=$(docker-compose ps ${WEBSVC} | sed -e '1,2d' | awk '{print $1;}')
+if [ -z "${CONFIG_FILE}" ]; then
+    create_default_config
+fi
+
+load_config
+
+WEB_CONTAINER=$(docker-compose ps ${WEB_SERVICE} | sed -e '1,2d' | awk '{print $1}')
 
 case "${COMMAND}" in
     build)
@@ -341,49 +395,52 @@ case "${COMMAND}" in
     ;;
 
     config)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} config ${2}
+        docker-compose ${VERBOSITY} config ${2}
     ;;
 
     # courtesy command alias - same as 'ps'
     containers)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} ps ${2}
+        docker-compose ${VERBOSITY} ps ${2}
     ;;
 
     enter)
-        docker exec -ti ${WEBCONTAINER} su ${WEBUSER}
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER}
     ;;
 
     exec)
         # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
-        docker exec -ti ${WEBCONTAINER} su ${WEBUSER} -c '"$0" "$@"' -- "$@"
+        # q: do we need -ti ?
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c '"$0" "$@"' -- "$@"
     ;;
 
     images)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} images ${2}
+        docker-compose ${VERBOSITY} images ${2}
     ;;
 
     kill)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} kill ${2}
+        docker-compose ${VERBOSITY} kill ${2}
     ;;
 
     logs)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} logs ${2}
+        docker-compose ${VERBOSITY} logs ${2}
     ;;
 
     pause)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} pause ${2}
+        docker-compose ${VERBOSITY} pause ${2}
     ;;
 
     ps)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} ps ${2}
+        docker-compose ${VERBOSITY} ps ${2}
     ;;
 
     resetdb)
-        docker exec -ti ${WEBCONTAINER} su ${WEBUSER} -c './Tests/environment/create-db.sh'
+        # q: do we need -ti ?
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/environment/create-db.sh'
     ;;
 
     runtests)
-        docker exec -ti ${WEBCONTAINER} su ${WEBUSER} -c './vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit'
+        # q: do we need -ti ?
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit'
     ;;
 
     setup)
@@ -391,14 +448,15 @@ case "${COMMAND}" in
     ;;
 
     services)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} config --services | sort
+        docker-compose config --services | sort
     ;;
 
     start)
         if [ "${SETUP_APP_ON_BOOT}" != '' ]; then
             export COMPOSE_SETUP_APP_ON_BOOT=${SETUP_APP_ON_BOOT}
         fi
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} up -d ${2}
+        echo docker-compose ${VERBOSITY} up -d ${2}
+        docker-compose ${VERBOSITY} up -d ${2}
         if [ -z "${2}" ]; then
             wait_for_bootstrap all
             exit $?
@@ -409,15 +467,15 @@ case "${COMMAND}" in
     ;;
 
     stop)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} stop ${2}
+        docker-compose ${VERBOSITY} stop ${2}
     ;;
 
     top)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} top ${2}
+        docker-compose ${VERBOSITY} top ${2}
     ;;
 
     unpause)
-        docker-compose ${COMPOSE_ENV_FILE_FLAG} ${VERBOSITY} unpause ${2}
+        docker-compose ${VERBOSITY} unpause ${2}
     ;;
 
     *)

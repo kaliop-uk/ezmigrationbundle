@@ -25,17 +25,17 @@ ORIGPASSWD=$(cat /etc/passwd | grep mysql)
 ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
 ORIG_GID=$(echo $ORIGPASSWD | cut -f4 -d:)
 ORIG_HOME=$(echo "$ORIGPASSWD" | cut -f6 -d:)
-DEV_UID=${DEV_UID:=$ORIG_UID}
-DEV_GID=${DEV_GID:=$ORIG_GID}
+CONTAINER_USERUID=${CONTAINER_USERUID:=$ORIG_UID}
+CONTAINER_USERGID=${CONTAINER_USERGID:=$ORIG_GID}
 
-if [ "$DEV_UID" != "$ORIG_UID" -o "$DEV_GID" != "$ORIG_GID" ]; then
+if [ "$CONTAINER_USERUID" != "$ORIG_UID" -o "$CONTAINER_USERGID" != "$ORIG_GID" ]; then
     # note: we allow non-unique user and group ids...
-    groupmod -o -g "$DEV_GID" mysql
-    usermod -o -u "$DEV_UID" -g "$DEV_GID" mysql
+    groupmod -o -g "$CONTAINER_USERGID" mysql
+    usermod -o -u "$CONTAINER_USERUID" -g "$CONTAINER_USERGID" mysql
 fi
-if [ $(stat -c '%u' "/var/lib/mysql") != "${DEV_UID}" -o $(stat -c '%g' "/var/lib/mysql") != "${DEV_GID}" ]; then
-    chown -R "${DEV_UID}":"${DEV_GID}" "/var/lib/mysql"
-    #chown -R "${DEV_UID}":"${DEV_GID}" "/var/log/mysql"
+if [ $(stat -c '%u' "/var/lib/mysql") != "${CONTAINER_USERUID}" -o $(stat -c '%g' "/var/lib/mysql") != "${CONTAINER_USERGID}" ]; then
+    chown -R "${CONTAINER_USERUID}":"${CONTAINER_USERGID}" "/var/lib/mysql"
+    #chown -R "${CONTAINER_USERUID}":"${CONTAINER_USERGID}" "/var/log/mysql"
     # $HOME is set to /home/mysql, but the dir does not exist...
 fi
 
