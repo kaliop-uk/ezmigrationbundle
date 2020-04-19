@@ -33,16 +33,16 @@ ORIGPASSWD=$(cat /etc/passwd | grep test)
 ORIG_UID=$(echo "$ORIGPASSWD" | cut -f3 -d:)
 ORIG_GID=$(echo "$ORIGPASSWD" | cut -f4 -d:)
 ORIG_HOME=$(echo "$ORIGPASSWD" | cut -f6 -d:)
-CONTAINER_USERUID=${CONTAINER_USERUID:=$ORIG_UID}
-CONTAINER_USERGID=${CONTAINER_USERGID:=$ORIG_GID}
+CONTAINER_USER_UID=${CONTAINER_USER_UID:=$ORIG_UID}
+CONTAINER_USER_GID=${CONTAINER_USER_GID:=$ORIG_GID}
 
-if [ "$CONTAINER_USERUID" != "$ORIG_UID" -o "$CONTAINER_USERGID" != "$ORIG_GID" ]; then
-    groupmod -g "$CONTAINER_USERGID" test
-    usermod -u "$CONTAINER_USERUID" -g "$CONTAINER_USERGID" test
+if [ "$CONTAINER_USER_UID" != "$ORIG_UID" -o "$CONTAINER_USER_GID" != "$ORIG_GID" ]; then
+    groupmod -g "$CONTAINER_USER_GID" test
+    usermod -u "$CONTAINER_USER_UID" -g "$CONTAINER_USER_GID" test
 fi
-if [ $(stat -c '%u' "${ORIG_HOME}") != "${CONTAINER_USERUID}" -o $(stat -c '%g' "${ORIG_HOME}") != "${CONTAINER_USERGID}" ]; then
-    chown "${CONTAINER_USERUID}":"${CONTAINER_USERGID}" "${ORIG_HOME}"
-    chown -R "${CONTAINER_USERUID}":"${CONTAINER_USERGID}" "${ORIG_HOME}"/.*
+if [ $(stat -c '%u' "${ORIG_HOME}") != "${CONTAINER_USER_UID}" -o $(stat -c '%g' "${ORIG_HOME}") != "${CONTAINER_USER_GID}" ]; then
+    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"
+    chown -R "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}"/.*
 fi
 
 trap clean_up TERM

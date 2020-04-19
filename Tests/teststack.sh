@@ -92,7 +92,7 @@ build() {
 
     echo "[`date`] Building Containers..."
 
-    echo docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
+    docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
 
     # q: do we really need to have 2 different env vars and an EXPORT call?
     if [ "${SETUP_APP_ON_BOOT}" != '' ]; then
@@ -114,7 +114,11 @@ build() {
         cleanup_dead_docker_images
     fi
 
-    echo "[`date`] Build finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
+    if [ "${SETUP_APP_ON_BOOT}" = skip ]; then
+        echo "[`date`] Build finished"
+    else
+        echo "[`date`] Build finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
+    fi
 
     exit ${RETCODE}
 }
