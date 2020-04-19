@@ -17,6 +17,7 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 
 # Required packages
 # -----------------------------------------------------------------------------
+RUN mkdir -p /usr/share/man/man1
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     apache2 \
     default-jre-headless \
@@ -59,18 +60,14 @@ RUN adduser test sudo && \
 
 RUN chown -R test:test /home/test
 
-# Set up eZ... can not be done as the volumes are not mounted yet!
-# -----------------------------------------------------------------------------
-#RUN su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh"
-
 # -----------------------------------------------------------------------------
 RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y; fi
 
 # Clear archives in apt cache folder
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY bootstrap.sh /root/bootstrap.sh
-RUN chmod 755 /root/bootstrap.sh
+COPY bootstrap.sh /root/entrypoint.sh
+RUN chmod 755 /root/entrypoint.sh
 
 WORKDIR /home/test/ezmigrationbundle
 
@@ -79,4 +76,4 @@ WORKDIR /home/test/ezmigrationbundle
 # 11211: memcached
 EXPOSE 80 8983 11211
 
-ENTRYPOINT ["/root/bootstrap.sh"]
+ENTRYPOINT ["/root/entrypoint.sh"]

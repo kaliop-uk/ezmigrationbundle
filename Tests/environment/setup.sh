@@ -3,7 +3,7 @@
 # Set up fully the test environment (except for installing required sw packages).
 # Has to be useable from Docker as well as from Travis.
 #
-# Uses env vars: TRAVIS_PHP_VERSION, EZ_PACKAGES, CODE_COVERAGE, EZ_VERSION, EZ_APPDIR, INSTALL_TAGSBUNDLE
+# Uses env vars: CODE_COVERAGE, EZ_PACKAGES, EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS_PHP_VERSION
 
 # @todo check if all required env vars have a value
 

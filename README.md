@@ -61,7 +61,7 @@ To get the latest version, you can update the bundle to the latest available ver
 
 ### Upgrading from version 4.x to version 5
 
-* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md) 
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
 
 * Nothing else is required, unless you have one of the following:
 
@@ -73,7 +73,7 @@ To get the latest version, you can update the bundle to the latest available ver
 
 ### Upgrading from version 3.x to version 4
 
-* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md) 
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
 
 * Nothing else is required, unless you have one of the following:
 
@@ -84,7 +84,7 @@ To get the latest version, you can update the bundle to the latest available ver
 
 ### Upgrading from version 2.x to version 3
 
-* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md) 
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
 
 * Nothing else is required, unless you have one of the following:
 
@@ -113,7 +113,7 @@ For example:
 
 The above command will place a new yml skeleton file in the `MigrationVersions` directory of the MyProjectBundle bundle.
 
-If the directory does not exists then the command will create it for you, as long as the bundle does exist and is registered.
+If the directory does not exist then the command will create it for you, as long as the bundle does exist and is registered.
 If the command is successful it will create a new yml file named with the following pattern: `YYYYMMDDHHMMSS_placeholder.yml`.
 You are encouraged to rename the file and change the `placeholder` part to something more meaningful, but please keep
 the timestamp part and underscore, as well as the extension.
@@ -141,7 +141,7 @@ NB: if you just executed the above command and got an error message because the 
 just generated is invalid, do not worry - that is by design. Head on to the next paragraph...
 
 NB: migrations execute by the default as the admin user with ID 14. Without this user account in the database, you must
-specify the use of another admin accoungt by passing the `-a` flag.
+specify the use of another admin account by passing the `-a` flag.
 
 #### Applying a single migration file
 
@@ -156,7 +156,7 @@ folder will be executed.
 
 So far so good, but what kind of actions can be actually done using a migration?
 
-Each migration definition consists of a series of steps, where each step defines an action. 
+Each migration definition consists of a series of steps, where each step defines an action.
 
 A simple example of a migration to create a 'folder' content is:
 
@@ -179,7 +179,7 @@ In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of ObjectStateGroups
 - creation, update and deletion of Roles
 - creation, update and deletion of Sections
-- creation and deletion of of Tags (from the Netgen Tags Bundle)
+- creation and deletion of Tags (from the Netgen Tags Bundle)
 - creation, update and deletion of Users
 - creation, update and deletion of UserGroups
 - purging and recovering Contents from the Trash
@@ -199,7 +199,7 @@ For more specific needs, you can also use 2 other types of migrations:
 - SQL migrations
 - PHP migrations
 
-#### SQL migrations 
+#### SQL migrations
 
 Example command to generate an SQL migration definition:
 
@@ -213,7 +213,7 @@ This will create the following file, which you are free to edit:
 of the filename between the first and second underscore characters.
 If you later try to execute that migration on an eZPublish installation running on, say, PostgreSQL, the migration
 will fail. You are of course free to create a specific SQL migration for a different database type.
- 
+
 The Migration bundle itself imposes no limitations on the type of databases supported, but as it is based on the
 Doctrine DBAL, it will only work on the databases that Doctrine supports.
 
@@ -224,7 +224,7 @@ queries, you are better off splitting them, either in many .sql migrations, or i
 #### PHP migrations
 
 If the type of manipulation that you need to do is too complex for either YML or SQL, you can use a php class as
-migration definition. To generate a PHP migration definition, execute: 
+migration definition. To generate a PHP migration definition, execute:
 
      php ezpublish/console kaliop:migration:generate MyBundle AMigrationClass --format=php
 
@@ -237,10 +237,10 @@ interface. The Symfony DIC container is passed to the migration class so that it
 parameters and other thing that it needs.
 
 For a more detailed example of a migration definition done in PHP, look in the MigrationVersions folder of this very bundle.
-  
+
 *NB* if you rename the php file, keep in mind that the filename and the name of the class it contains are tied - the
 standard autoloading mechanism of the application does not apply when loading the migration definition. This is also
-the reason why the php classes used as migrations should not use namespaces. 
+the reason why the php classes used as migrations should not use namespaces.
 
 *NB* since version 4.5, it is also possible to run any method of any existing Symfony service just by declaring it as
 migration step in a yaml migration. See the [relevant DSL](Resources/doc/DSL/Service.yml) for details.
@@ -257,7 +257,7 @@ After removing the information about the migration form the migrations table, ru
 ## Usage of transactions / rolling back changes
 
 By default the bundle runs each migration in a database transaction.
-This means that if a step fails, all of the previous steps get rolled back, and the database is left in its original state.
+This means that if a step fails, all the previous steps get rolled back, and the database is left in its original state.
 This is a safety feature built in by design;
 * if you prefer the migration steps to be executed in separate transactions the easiest way is to create a separate
     migration file for each step
@@ -269,7 +269,7 @@ to allow it to continue and execute all available migrations even in case of fai
 As for rolling back changes: given the nature of the eZPublish API, rolling back changes to Content is not an easy feat.
 As such, the bundle does not provide built-in support for rolling back the database to the version it had before
 applying a given migration. We recommend always taking a database snapshot before applying migrations, and use it in
-case you need to roll back your changes. Another approach consists in writing a separate migration to undo the changes. 
+case you need to roll back your changes. Another approach consists in writing a separate migration to undo the changes.
 
 
 ## Customizing the migration logic via Event Listeners
@@ -301,7 +301,7 @@ In order to act on those events, you will need to declare tagged services, such 
 and the corresponding php class:
 
     use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
-    
+
     class StepExecutedListener
     {
         public function onStepExecuted(StepExecutedEvent $event)
@@ -317,19 +317,19 @@ and the corresponding php class:
 
 * if you are using the Doctrine Migrations Bundle to manage your schema, you will get spurious sql created to handle the
     database tables belonging to Kaliop Migrations Bundle.
-    For the moment, the best work around is to use the `filter-expression` parameter on the command-line when running 
-    `doctrine:migrations:diff` and friends, with a value of `kaliop_migrations_*` 
+    For the moment, the best work around is to use the `filter-expression` parameter on the command-line when running
+    `doctrine:migrations:diff` and friends, with a value of `kaliop_migrations_*`
 
 * if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
     related to how the dual-kernel works in eZPublish, and the fact that the legacy and Symfony kernels use a separate
     connection to the database. Since the migration bundle by default wraps all database changes for a migration in a
     database transaction, when the Slots are fired which allow the legacy kernel to clear its caches, the legacy kernel
-    can not see the database changes applied by the Symfony kernel, and, depending on the specific Slot in use, might
+    cannot see the database changes applied by the Symfony kernel, and, depending on the specific Slot in use, might
     fail with a fatal error.
     The simplest workaround is to disable usage of transactions by passing the `-u` flag to the `migrate` command.
 
 * similar symptoms can manifest themselves when you are using the Solr Search Engine Bundle.
-    In this case the problem is compounded the fact that, even if an node or object is sent to Solr from within a database
+    In this case the problem is compounded the fact that, even if a node or object is sent to Solr from within a database
     transaction, the Solr search index might be configured to only commit received data within a short time delay.
     A known workaround involve:
     - separate your migration steps into separate migrations
@@ -348,7 +348,7 @@ and the corresponding php class:
     - execute the migration command using a Symfony environment which has reduced logging and kernel debug disabled:
         the default configuration for the `dev` environment is known to leak memory
 
-* if you get fatal errors with he message 'You cannot create a service ("request") of an inactive scope ("request")',
+* if you get fatal errors with the message 'You cannot create a service ("request") of an inactive scope ("request")',
     take a look at the following issue for a possible explanation and ideas for workarounds:
     https://jira.ez.no/browse/EZP-24691
 
@@ -374,7 +374,7 @@ and the corresponding php class:
 
 ### How can I update a specific content which has a different Id on dev, test and prod environments?
 
-A: use the 'reference/set' migration step to define a reference for the desired content Id, and use a Symfony parameter 
+A: use the 'reference/set' migration step to define a reference for the desired content Id, and use a Symfony parameter
 to store a different value for each Symfony environment. For example:
 
     -
@@ -390,15 +390,15 @@ to store a different value for each Symfony environment. For example:
             content_id: "reference:content_id_ref"
         etc: ...
 
-### How to update an existing Role to change its policies? 
+### How to update an existing Role to change its policies?
 
 When using a migration to update a Role, you must define ALL its policies. Any not defined will be removed.
-The safest and simplest way to make sure that you do not forget any of the existing policies is to first generate a
+The safest and simplest way to make sure that you do not forget any of the existing policies is to first generate an
 update migration that has the complete specification of the role as it currently is defined, and then edit manually.
 
 Example command to create such a migration:
 
-    php ezpublish/console kaliop:migration:generate --type=role --mode=update --match-type=identifier --match-value=Anonymous bundleName   
+    php ezpublish/console kaliop:migration:generate --type=role --mode=update --match-type=identifier --match-value=Anonymous bundleName
 
 ### When dumping a Content into a yml migration via the `generate` command, the list of attributes is empty
 
@@ -415,10 +415,10 @@ The bundle has been designed to be easily extended in many ways, such as:
 * adding support for a new file format for storing migration definitions
 * adding support for a new resolver for the custom references in the migration definitions
 * taking over the way that the migrations definitions are loaded from the filesystem or stored in the database
-* etc... 
+* etc...
 
 Following Symfony best practices, for the first 4 options in the list above all you need to do is to create a service
-and give it an appropriate tag (the class implementing service should of course implement an appropriate interface). 
+and give it an appropriate tag (the class implementing service should of course implement an appropriate interface).
 
 To find out the names of the tags that you need to implement, as well as for all the other services which you can
 override, take a look at the [services.yml file](Resources/config/services.yml).
@@ -438,13 +438,13 @@ To run the tests:
 
 *NB* the tests do *not* mock interaction with the database, but create/modify/delete many types of data in it.
 As such, there are good chances that running tests will leave stale/broken data.
-It is recommended to run the tests suite using a dedicated eZPublish installation or at least dedicated database.
+It is recommended to run the tests suite using a dedicated eZPublish installation or at least a dedicated database.
 
 #### Setting up a dedicated test environment for the bundle
 
 A safer choice to run the tests of the bundle is to set up a dedicated environment, similar to the one used when the test
 suite is run on Travis.
-The advantages are multiple: one one hand you can start with any version of eZPublish you want; on the other you will
+The advantages are multiple: on one hand you can start with any version of eZPublish you want; on the other you will
 be more confident that the tests will still pass on Travis.
 The disadvantages are that you will need Docker and Docker-compose, and that the environment you will use will look
 quite unlike a standard eZPublish setup!
@@ -455,14 +455,14 @@ Steps to set up a dedicated test environment and run the tests in it:
     ./Tests/teststack.sh build
     ./Tests/teststack.sh runtests
     ./Tests/teststack.sh stop
-   
+
 In case you want to run manual commands, eg. the symfony console:
-    
+
     ./Tests/teststack.sh exec php vendor/ezsystems/ezplatform/bin/console cache:clear
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
 Note: make sure to have enough disk space available.
-Note: the tests in the Docker container run against the version of eZPlatform kernel specified in the file `containers.env`.
+Note: the tests in the Docker container run against the version of eZPlatform kernel specified in the file `.env`.
 If you want to test against another version, feel free to modify it and _rebuild the containers_.
 
 

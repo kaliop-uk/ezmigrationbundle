@@ -6,14 +6,35 @@ services:
         build:
             context: images/ez
             args:
-                debian_mirror: ${COMPOSE_DEBIAN_MIRROR}
-                timezone: ${COMPOSE_TZ}
-                do_update_os: ${COMPOSE_DO_UPDATE_OS}
+                debian_mirror: ${COMPOSE_DEBIAN_MIRROR:-none}
+                timezone: ${COMPOSE_TZ:-none}
+                do_update_os: ${COMPOSE_DO_UPDATE_OS:-true}
         hostname: ez
-        container_name: ${COMPOSE_PROJECT_NAME}_ez
-        env_file:
-            - ./containers.env
+        container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_ez
+        environment:
+            - DEV_UID=${DEV_UID:-1000}
+            - DEV_GID=${DEV_GID:-1000}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_test}
+            - MYSQL_USER=${MYSQL_USER:-ezp}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD:-ezp}
+            - MYSQL_DATABASE=${MYSQL_DATABASE:-behattestdb}
+            # to be kept in sync with the hostname of the mysql container a few lines below
+            - MYSQL_HOST=${MYSQL_HOST:-mysql}
+            - COMPOSE_SETUP_APP_ON_BOOT
+            # Configuration for the eZ test env to build
+            - CODE_COVERAGE=${CODE_COVERAGE:-0}
+            - EZ_PACKAGES=${EZ_PACKAGES:-ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle}
+            - EZ_VERSION=${EZ_VERSION:-ezplatform2}
+            - INSTALL_TAGSBUNDLE=${INSTALL_TAGSBUNDLE:-1}
+            # Configuration used by Symfony when running via phpunit
+            - APP_ENV=${APP_ENV:-behat}
+            - SYMFONY_ENV=${SYMFONY_ENV:-behat}
+            - KERNEL_CLASS=${KERNEL_CLASS:-AppKernel}
+            - KERNEL_DIR=v${KERNEL_DIR:-endor/ezsystems/ezplatform/app}
+            # As opposed to TRAVIS=true ;-)
+            - DOCKER=true
         volumes:
+            # @todo is there any value in making this folder a variable?
             - ../../:/home/test/ezmigrationbundle
             - ./data/.composer/:/home/test/.composer
 
@@ -21,26 +42,34 @@ services:
         build:
             context: images/mysql
             args:
-                timezone: ${COMPOSE_TZ}
-                do_update_os: ${COMPOSE_DO_UPDATE_OS}
+                timezone: ${COMPOSE_TZ:-none}
+                do_update_os: ${COMPOSE_DO_UPDATE_OS:-true}
         hostname: mysql
-        container_name: ${COMPOSE_PROJECT_NAME}_mysql
-        env_file:
-            - ./containers.env
+        container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_mysql
+        environment:
+            - DEV_UID=${DEV_UID:-1000}
+            - DEV_GID=${DEV_GID:-1000}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_test}
+            - MYSQL_USER=${MYSQL_USER:-ezp}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD:-ezp}
+            - MYSQL_DATABASE=${MYSQL_DATABASE:-behattestdb}
+            # As opposed to TRAVIS=true ;-)
+            - DOCKER=true
         volumes:
             #- ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             - ./data/mysql/:/var/lib/mysql
             - ./logs/mysql/:/var/log/mysql
         #tmpfs:
-        #    # used for mysql temp tables
+        #    # used for mysql temp tables. Useful with ez5 db schema / queries (it creates lots of temp tables on disk)
         #    - /tmpfs:mode=777
-        # nb: this prevents the image to start on some ubuntu installs because of apparmor config...
-        #privileged: true
+        # uncomment this to be able to access the db from the host
         #ports:
         #    - "3307:3306"
+        # nb: this prevents the image to start on some ubuntu installs because of apparmor config...
+        #privileged: true
 
 #networks:
 #    default:
 #        ipam:
 #            config:
-#                - subnet: "${COMPOSE_SUBNET}.0/24"
+#                - subnet: "${COMPOSE_SUBNET:-172.19.30}.0/24"

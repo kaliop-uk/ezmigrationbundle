@@ -21,6 +21,7 @@ env:
 # We thus still test on php 5.6
 # We limit the matrix to one version of eZPublish for each version of PHP
 # @todo where we have 2 minor versions of the same 'main version' tested, we should test the lower numbered one forcing composer to use the oldest possible dependencies
+# @todo add tests with usage of ezplatform-solr-search-engine as search engine replacement (at least one with 2014.11 and one with 2.x ?)
 matrix:
   include:
     # The last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4

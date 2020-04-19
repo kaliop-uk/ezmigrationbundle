@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
+# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, MYSQL_DATABASE, MYSQL_HOST, MYSQL_PASSWORD, MYSQL_USER
 
 ROOT_DB_USER=root
 ROOT_DB_PWD=
@@ -10,7 +10,7 @@ DB_HOST=
 
 if [ "${TRAVIS}" != "true" ]; then
     ROOT_DB_PWD="-p${MYSQL_ROOT_PASSWORD}"
-    DB_HOST='-h mysql'
+    DB_HOST="-h ${MYSQL_HOST}"
 fi
 
 ROOT_DB_COMMAND="mysql ${DB_HOST} -u${ROOT_DB_USER} ${ROOT_DB_PWD}"
@@ -57,7 +57,7 @@ if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then
             if [ -f vendor/netgen/tagsbundle/Resources/sql/mysql/schema.sql ]; then
                 ${EZ_DB_COMMAND} < vendor/netgen/tagsbundle/Resources/sql/mysql/schema.sql
             else
-                echo "WARNING: should have loaded the Netgen TagsBundle db schema file but could not find it!"
+                echo "WARNING: should have loaded the Netgen TagsBundle db schema file but could not find it!" >&2
             fi
         fi
     fi

@@ -56,9 +56,12 @@ trap clean_up TERM
 #echo "[`date`] Starting the Web server..."
 #service apache2 start
 
-if [ ! -f /tmp/setup_ok ]; then
-    echo "[`date`] Setting up eZ..."
-    su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
+if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
+    # @todo try to reinstall if last install did fail, even if /tmp/setup_ok does exist...
+    if [ "${COMPOSE_SETUP_APP_ON_BOOT}" = 'force' -o ! -f /tmp/setup_ok ]; then
+        echo "[`date`] Setting up eZ..."
+        su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
+    fi
 fi
 
 echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
