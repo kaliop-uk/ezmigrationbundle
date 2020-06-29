@@ -15,3 +15,6 @@
             identifier: # A string used to identify the reference
             json_path: zzz # Since the generated migration is a nested structure, you have to use a selector, eg: '[0].name_pattern'
                            # For syntax, see: http://jmespath.org/tutorial.html, http://jmespath.org/specification.html#grammar
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

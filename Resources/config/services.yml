@@ -267,6 +267,8 @@ services:
         arguments:
             - '@ez_migration_bundle.migration_service'
             - '@ez_migration_bundle.reference_resolver.customreference'
+        calls:
+            - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
         # avoid 'ServiceCircularReferenceException' errors when this service is injected into a migration service
         # that is related to the event dispatcher by making it lazy
         lazy: true

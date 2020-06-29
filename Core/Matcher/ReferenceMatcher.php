@@ -45,6 +45,8 @@ class ReferenceMatcher extends AbstractMatcher
         //'between' => Operator::BETWEEN, => use count/length with min & max sub-members
         //'like' => Operator::LIKE, => use regex
         //'contains' => Operator::CONTAINS,
+        'isnull' => '\Symfony\Component\Validator\Constraints\IsNull',
+        'notnull' => '\Symfony\Component\Validator\Constraints\NotNull',
 
         Operator::EQ => '\Symfony\Component\Validator\Constraints\EqualTo',
         Operator::GT => '\Symfony\Component\Validator\Constraints\GreaterThan',

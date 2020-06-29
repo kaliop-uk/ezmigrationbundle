@@ -1,3 +1,11 @@
+Version 5.11.0
+==============
+
+* New: new constraints 'isnull' and 'notnull' are now supported in 'if' clauses to match references
+
+* New: the `migration_definition/generate` step now supports 'if' clauses
+
+
 Version 5.10.2
 ==============
 
