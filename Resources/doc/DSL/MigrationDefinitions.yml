@@ -13,8 +13,25 @@
     references:
         -
             identifier: # A string used to identify the reference
-            json_path: zzz # Since the generated migration is a nested structure, you have to use a selector, eg: '[0].name_pattern'
+            attribute: zzz # This can be either the keyword 'definition', in which case the whole definition will be saved,
+                           # or a selector identifying a subset, eg: '[0].name_pattern'
                            # For syntax, see: http://jmespath.org/tutorial.html, http://jmespath.org/specification.html#grammar
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    type: migration_definition
+    mode: save
+    migration_steps: # an array of steps. References will be resolved recursively. Ex:
+        -
+            type: content
+            mode: update
+            match: { location_id: 2 }
+            attributes: { }
+        - etc...
+    file: string # path to the file to be generated. Mandatory.
+                 # The filename must end with an extension of either .yml or .json
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

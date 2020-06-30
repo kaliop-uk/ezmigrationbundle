@@ -152,6 +152,7 @@ class ReferenceExecutor extends AbstractExecutor
                 break;
             case 'yml':
             case 'yaml':
+            /// @todo use Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE option if it is supported
                 $data = Yaml::dump($data);
                 break;
             default:

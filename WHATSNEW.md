@@ -1,9 +1,18 @@
 Version 5.11.0
 ==============
 
-* New: new constraints 'isnull' and 'notnull' are now supported in 'if' clauses to match references
+* New: new constraints `isnull` and `notnull` are now supported in 'if' clauses to match references values
 
-* New: the `migration_definition/generate` step now supports 'if' clauses
+* New: the `migration_definition/generate` step now supports an 'if' clause
+
+* New: the `migration_definition/generate` step now supports setting a reference to the whole definition
+
+* New migration step: `migration_definition/save`. Useful in content migrations / syndication scenarios
+
+* BC changes:
+
+  - the `migration_definition/generate` step now uses a different syntax for setting references. The old one is
+    still accepted but deprecated (key `json_path` has been replaced by `attribute`)
 
 
 Version 5.10.2

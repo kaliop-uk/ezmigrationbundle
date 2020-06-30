@@ -290,6 +290,8 @@ EOT
 
                 switch ($fileType) {
                     case 'yml':
+                    case 'yaml':
+                        /// @todo use Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE option if it is supported
                         $code = Yaml::dump($data, 5);
                         break;
                     case 'json':

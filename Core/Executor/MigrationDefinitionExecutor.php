@@ -14,7 +14,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
     use IgnorableStepExecutorTrait;
 
     protected $supportedStepTypes = array('migration_definition');
-    protected $supportedActions = array('generate');
+    protected $supportedActions = array('generate', 'save');
 
     /** @var \Kaliop\eZMigrationBundle\Core\MigrationService $migrationService */
     protected $migrationService;
@@ -98,31 +98,64 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
             $fileName = $this->referenceResolver->resolveReference($dsl['file']);
 
-            $ext = pathinfo(basename($fileName), PATHINFO_EXTENSION);
-
-            switch ($ext) {
-                case 'yml':
-                case 'yaml':
-                    $code = Yaml::dump($result, 5);
-                    break;
-                case 'json':
-                    $code = json_encode($result, JSON_PRETTY_PRINT);
-                    break;
-                default:
-                    throw new \Exception("Can not save generated migration to a file of type '$ext'");
-            }
-
-            $dir = dirname($fileName);
-            if (!is_dir($dir)) {
-                mkdir($dir, 0777, true);
-            }
-
-            file_put_contents($fileName, $code);
+            $this->saveDefinition($result, $fileName);
         }
 
         $this->setReferences($result, $dsl);
 
         return $result;
+    }
+
+    public function save($dsl, $context)
+    {
+        if (!isset($dsl['migration_steps'])) {
+            throw new \Exception("Invalid step definition: miss 'migration_steps'");
+        }
+        if (!isset($dsl['file'])) {
+            throw new \Exception("Invalid step definition: miss 'file'");
+        }
+
+        if (is_string($dsl['migration_steps'])) {
+            $definition = $this->referenceResolver->resolveReference($dsl['migration_steps']);
+        } else {
+            $definition = $dsl['migration_steps'];
+        }
+        $definition = $this->resolveReferencesRecursively($definition);
+
+        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+
+        $this->saveDefinition($definition, $fileName);
+
+        /// @todo what to allow setting refs to ?
+
+        /// @todo what to return ?
+    }
+
+    protected function saveDefinition($definition, $fileName)
+    {
+        $ext = pathinfo(basename($fileName), PATHINFO_EXTENSION);
+
+        switch ($ext) {
+            case 'yml':
+            case 'yaml':
+                /// @todo use Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE option if it is supported
+                $code = Yaml::dump($definition, 5);
+                break;
+            case 'json':
+                $code = json_encode($definition, JSON_PRETTY_PRINT);
+                break;
+            default:
+                throw new \Exception("Can not save migration definition to a file of type '$ext'");
+        }
+
+        $dir = dirname($fileName);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        if (!file_put_contents($fileName, $code)) {
+            throw new \Exception("Failed saving migration definition to file '$fileName'");
+        }
     }
 
     protected function setReferences($result, $dsl)
@@ -132,15 +165,24 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         }
 
         foreach ($dsl['references'] as $reference) {
-            if (!isset($reference['json_path'])) {
-                throw new \InvalidArgumentException('MigrationDefinition Executor does not support setting references if not using a json_path expression');
+            // BC
+            if (isset($reference['json_path'])) {
+                $reference['attribute'] = $reference['json_path'];
+            }
+
+            switch ($reference['attribute']) {
+                case 'definition':
+                    $value = $result;
+                    break;
+                default:
+                    $value = JmesPath::search($reference['json_path'], $result);
             }
 
             $overwrite = false;
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $value = JmesPath::search($reference['json_path'], $result);
+
             $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
     }
@@ -160,5 +202,21 @@ class MigrationDefinitionExecutor extends AbstractExecutor
             }
         }
         return $executors;
+    }
+
+    /**
+     * @todo should be moved into the reference resolver classes
+     * @todo allow resolving references within texts, not only as full value
+     */
+    protected function resolveReferencesRecursively($match)
+    {
+        if (is_array($match)) {
+            foreach ($match as $condition => $values) {
+                $match[$condition] = $this->resolveReferencesRecursively($values);
+            }
+            return $match;
+        } else {
+            return $this->referenceResolver->resolveReference($match);
+        }
     }
 }
