@@ -300,7 +300,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
         $this->insureEntityCountCompatibility($entity, $referencesDefinition, $step);
 
         if ($entity instanceof AbstractCollection) {
-            return reset($entity);
+            return $entity->reset();
         }
 
         return $entity;

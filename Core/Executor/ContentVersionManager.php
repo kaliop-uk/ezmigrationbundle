@@ -145,8 +145,9 @@ class ContentVersionManager extends ContentManager
                     $value = $this->versionStatusToHash($versionInfo->status);
                     break;
                 default:
-                    // NB: this will generate an error if the user tries to seta  ref to a field value
-                    $value = reset(parent::getReferencesValues($versionInfo, array($references), $step));
+                    // NB: this will generate an error if the user tries to set a ref to a field value
+                    $value = parent::getReferencesValues($versionInfo, array($references), $step);
+                    $value = reset($value);
             }
 
             $refs[$reference['identifier']] = $value;

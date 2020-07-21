@@ -70,7 +70,7 @@ EOT
                     try {
                         $migrationDefinitionCollection = $migrationsService->getMigrationsDefinitions(array($migration->path));
                         if (count($migrationDefinitionCollection)) {
-                            $index[$migration->name]['definition'] = reset($migrationDefinitionCollection);
+                            $index[$migration->name]['definition'] = $migrationDefinitionCollection->reset();
                         }
                     } catch (\Exception $e) {
                         /// @todo one day we should be able to limit the kind of exceptions we have to catch here...

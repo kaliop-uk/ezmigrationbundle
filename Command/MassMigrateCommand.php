@@ -370,7 +370,7 @@ EOT
                 if (in_array($migration->status, $allowedStatuses) && !isset($toExecute[$migration->name])) {
                     $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
                     if (count($migrationDefinitions)) {
-                        $migrationDefinition = reset($migrationDefinitions);
+                        $migrationDefinition = $migrationDefinitions->reset();
                         $toExecute[$migration->name] = $isChild ? $migrationService->parseMigrationDefinition($migrationDefinition) : $migrationDefinition;
                     } else {
                         // q: shall we raise a warning here ?

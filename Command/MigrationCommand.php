@@ -115,7 +115,7 @@ EOT
                     try {
                         $migrationDefinitionCollection = $migrationService->getMigrationsDefinitions(array($migration->path));
                         if (count($migrationDefinitionCollection)) {
-                            $migrationDefinition = reset($migrationDefinitionCollection);
+                            $migrationDefinition = $migrationDefinitionCollection->reset();
                             $migrationDefinition = $migrationService->parseMigrationDefinition($migrationDefinition);
 
                             if ($migrationDefinition->status != MigrationDefinition::STATUS_PARSED) {

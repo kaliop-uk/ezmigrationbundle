@@ -66,6 +66,17 @@ class AbstractCollection extends \ArrayObject
         parent::offsetSet($index, $value);
     }
 
+    /**
+     * Work around php 7.4 having removed support for calling `reset($this)`
+     * @todo optimize this (esp. for big collections)
+     */
+    public function reset()
+    {
+        $results = $this->getArrayCopy();
+
+        return reset($results);
+    }
+
     protected function isValidElement($value)
     {
         return is_a($value, $this->allowedClass);

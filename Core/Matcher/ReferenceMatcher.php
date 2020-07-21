@@ -107,7 +107,8 @@ class ReferenceMatcher extends AbstractMatcher
                     return array(false);
 
                 case self::MATCH_NOT:
-                    return array(!reset($this->match($values)));
+                    $val = $this->match($values);
+                    return array(!reset($val));
 
                 default:
                     // we assume that all are refs because of the call to validate()
