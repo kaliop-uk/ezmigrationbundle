@@ -35,13 +35,15 @@ matrix:
     - php: 7.1
       env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.5 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.2' EZ_VERSION=ezplatform KERNEL_CLASS=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
 
-    # next-to-latest version currently available of eZPlatform 2
     # sensio/generator-bundle is only needed because we run the tests using 'behat' sf env
     - php: 7.2
+      env: EZ_PACKAGES='ezsystems/ezplatform:~2.3.2 ezsystems/ezplatform-xmltext-fieldtype:^1.7 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.2 sensio/generator-bundle' EZ_VERSION=ezplatform2 KERNEL_CLASS=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    # next-to-latest version currently available of eZPlatform 2
+    - php: 7.3
       env: EZ_PACKAGES='ezsystems/ezplatform:~2.4.2 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.3 sensio/generator-bundle' EZ_VERSION=ezplatform2 KERNEL_CLASS=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     # latest version currently available of eZPlatform 2 - currently 2.5, which is also LTS
-    - php: 7.3
-      env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.9 ezsystems/ezplatform-xmltext-fieldtype:^1.9 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.4 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 KERNEL_CLASS=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+    - php: 7.4
+      env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.12 ezsystems/ezplatform-xmltext-fieldtype:^1.9 ezsystems/behatbundle:^7.0 netgen/tagsbundle:^3.4 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 KERNEL_CLASS=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
 #before_install:
   # No need for a web server, until we start testing using Selenium
@@ -52,7 +54,7 @@ matrix:
 install:
   # just in case...
   - chmod 755 ./Tests/environment/*.sh
-  - travis_wait 30 ./Tests/environment/setup.sh
+  - travis_wait 45 ./Tests/environment/setup.sh
 
 script:
   # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
