@@ -120,7 +120,7 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
     public function matchOne(array $conditions)
     {
         $results = $this->match($conditions);
-        $count = \count($results);
+        $count = count($results);
         if ($count !== 1) {
             throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
@@ -129,7 +129,7 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
             $results = $results->getArrayCopy();
         }
 
-        return \reset($results);
+        return reset($results);
     }
 
     /**

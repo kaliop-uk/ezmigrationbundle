@@ -67,7 +67,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
             $results = $results->getArrayCopy();
         }
 
-        return \reset($results);
+        return reset($results);
     }
 
     /**

@@ -59,7 +59,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
     public function matchOne(array $conditions, array $sort = array(), $offset = 0)
     {
         $results = $this->match($conditions, $sort, $offset, 2);
-        $count = \count($results);
+        $count = count($results);
         if ($count !== 1) {
             throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
@@ -68,7 +68,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
             $results = $results->getArrayCopy();
         }
 
-        return \reset($results);
+        return reset($results);
     }
 
     /**
