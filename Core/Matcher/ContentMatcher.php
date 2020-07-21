@@ -62,6 +62,11 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
         if ($count !== 1) {
             throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
+
+        if ($results instanceof \ArrayObject) {
+            $results = $results->getArrayCopy();
+        }
+
         return reset($results);
     }
 
@@ -80,15 +85,15 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
 
         foreach ($conditions as $key => $values) {
 
-            switch($key) {
+            switch ($key) {
 
                 case self::MATCH_RELATES_TO:
                     $contentService = $this->repository->getContentService();
                     $contents = array();
                     // allow to specify the objects to relate to using different ways
                     $relatedContents = $this->match($values);
-                    foreach($relatedContents as $relatedContent) {
-                        foreach($contentService->loadReverseRelations($relatedContent->contentInfo) as $relatingContent) {
+                    foreach ($relatedContents as $relatedContent) {
+                        foreach ($contentService->loadReverseRelations($relatedContent->contentInfo) as $relatingContent) {
                             $contents[$relatingContent->contentInfo->id] = $relatingContent;
                         }
                     }
@@ -99,8 +104,8 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
                     $contents = array();
                     // allow to specify the objects we relate to using different ways
                     $relatingContents = $this->match($values);
-                    foreach($relatingContents as $relatingContent) {
-                        foreach($contentService->loadRelations($relatingContent->contentInfo) as $relatedContent) {
+                    foreach ($relatingContents as $relatingContent) {
+                        foreach ($contentService->loadRelations($relatingContent->contentInfo) as $relatedContent) {
                             $contents[$relatedContent->contentInfo->id] = $relatedContent;
                         }
                     }
@@ -349,7 +354,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
                     $query->performCount = false;
                     $query->filter = new Query\Criterion\ContentTypeIdentifier('this_is_a_very_unlikely_content_type_identifier');
                     //$query->filter = new Query\Criterion\ContentTypeId($contentTypeIds);
-                } catch(NotImplementedException $e) {
+                } catch (NotImplementedException $e) {
                     return false;
                 }
             }

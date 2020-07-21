@@ -9,7 +9,7 @@ use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 
 abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInterface
 {
-    /** @var string[] $allowedConditions the keywords we allow to be used for matching on*/
+    /** @var string[] $allowedConditions the keywords we allow to be used for matching on */
     protected $allowedConditions = array();
     /** @var  string $returns user-readable name of the type of object returned */
     protected $returns;
@@ -124,6 +124,11 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
         if ($count !== 1) {
             throw new InvalidMatchResultsNumberException("Found $count " . $this->returns . " when expected exactly only one to match the conditions");
         }
+
+        if ($results instanceof \ArrayObject) {
+            $results = $results->getArrayCopy();
+        }
+
         return reset($results);
     }
 
