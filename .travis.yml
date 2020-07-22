@@ -17,7 +17,7 @@ env:
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
 # About php versions:
 #     - php 5.6 can be installed on RHEL/CentOS 6, which is the oldest currently supported (see at the bottom of https://access.redhat.com/support/policy/updates/errata)
-#     - Debian 8 comes with php 5.6 too - although it is in LTS support by now
+#     - Debian 8 comes with php 5.6 too - although it is _abandonware_ by now
 # We thus still test on php 5.6
 # We limit the matrix to one version of eZPublish for each version of PHP
 # @todo where we have 2 minor versions of the same 'main version' tested, we should test the lower numbered one forcing composer to use the oldest possible dependencies
@@ -26,7 +26,7 @@ matrix:
   include:
     # The last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4
     - php: 5.6
-      env: EZ_PACKAGES='ezsystems/ezpublish-community:~2014.11.1 ezsystems/behatbundle:^5.4 netgen/tagsbundle:^2.0' EZ_VERSION=ezpublish-community KERNEL_CLASS=EzPublishKernel KERNEL_DIR=vendor/ezsystems/ezpublish-community/ezpublish CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezpublish-community:^2014.11.1 ezsystems/behatbundle:^5.4 netgen/tagsbundle:^2.0.11' EZ_VERSION=ezpublish-community KERNEL_CLASS=EzPublishKernel KERNEL_DIR=vendor/ezsystems/ezpublish-community/ezpublish CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
     # eZPlatform 1 aka eZPublish 6 - earliest LTS release is 1.7
     - php: 7.0
@@ -45,16 +45,17 @@ matrix:
     - php: 7.4
       env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.12 ezsystems/ezplatform-xmltext-fieldtype:^1.9 ezsystems/behatbundle:^7.0 netgen/tagsbundle:^3.4 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 KERNEL_CLASS=AppKernel KERNEL_DIR=vendor/ezsystems/ezplatform/app CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
-#before_install:
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y zip unzip
   # No need for a web server, until we start testing using Selenium
-  #- sudo apt-get update -qq
   #- sudo apt-get install -qq -y --force-yes apache2 libapache2-mod-fastcgi
   # @todo install memcached, java (for Solr)
 
 install:
   # just in case...
   - chmod 755 ./Tests/environment/*.sh
-  - travis_wait 45 ./Tests/environment/setup.sh
+  - travis_wait 30 ./Tests/environment/setup.sh
 
 script:
   # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014

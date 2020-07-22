@@ -12,7 +12,9 @@ set -ev
 cd $(dirname ${BASH_SOURCE[0]})/../..
 
 # For php 5.6, Composer needs humongous amounts of ram - which we don't have on Travis. Enable swap as workaround
-if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile; fi
+if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
+    sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile;
+fi
 
 # This is done by Travis automatically...
 #if [ "${TRAVIS}" != "true" ]; then
@@ -27,9 +29,11 @@ else
 fi
 
 # Disable xdebug for speed (both for executing composer and running tests), but allow us to e-enable it later
-export XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
-export XDEBUG_INI=${XDEBUG_INI/,/}
-if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
+XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
+XDEBUG_INI=${XDEBUG_INI/,/}
+if [ "${XDEBUG_INI}" != "" ]; then
+    mv "${XDEBUG_INI}" "${XDEBUG_INI}.bak";
+fi
 
 # We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix (env vars)
 
@@ -38,7 +42,9 @@ if [ "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI" "$XDEBUG_INI.bak"; fi
 #- 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
 # composer.lock gets in the way when switching between eZ versions
-if [ -f composer.lock ]; then rm composer.lock; fi
+if [ -f composer.lock ]; then
+    rm composer.lock;
+fi
 composer require --dev --no-update ${EZ_PACKAGES}
 composer update --dev
 
@@ -48,7 +54,7 @@ if [ "${TRAVIS}" = "true" ]; then
 fi
 
 # Re-enable xdebug for when we need to generate code coverage
-if [ "${CODE_COVERAGE}" = "1" -a "$XDEBUG_INI" != "" ]; then mv "$XDEBUG_INI.bak" "$XDEBUG_INI"; fi
+if [ "${CODE_COVERAGE}" = "1" -a "${XDEBUG_INI}" != "" ]; then mv "${XDEBUG_INI}.bak" "${XDEBUG_INI}"; fi
 
 # Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
 ./Tests/environment/create-db.sh
