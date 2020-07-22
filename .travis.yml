@@ -55,7 +55,7 @@ before_install:
 install:
   # just in case...
   - chmod 755 ./Tests/environment/*.sh
-  - travis_wait 30 ./Tests/environment/setup.sh
+  - travis_wait 45 ./Tests/environment/setup.sh
 
 script:
   # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
