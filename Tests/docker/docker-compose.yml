@@ -31,11 +31,11 @@ services:
             - APP_ENV=${APP_ENV:-behat}
             - SYMFONY_ENV=${SYMFONY_ENV:-behat}
             - KERNEL_CLASS=${KERNEL_CLASS:-AppKernel}
-            - KERNEL_DIR=v${KERNEL_DIR:-endor/ezsystems/ezplatform/app}
+            - KERNEL_DIR=${KERNEL_DIR:-vendor/ezsystems/ezplatform/app}
             # As opposed to TRAVIS=true ;-)
             - DOCKER=true
         volumes:
-            # @todo is there any value in making this folder a variable?
+            # @todo is there any value in using env vars for these folders?
             - ../../:/home/test/ezmigrationbundle
             - ./data/.composer/:/home/test/.composer
 
@@ -58,6 +58,7 @@ services:
             - DOCKER=true
         volumes:
             #- ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
+            # @todo is there any value in using env vars for these folders?
             - ./data/mysql/:/var/lib/mysql
             - ./logs/mysql/:/var/log/mysql
         #tmpfs:
