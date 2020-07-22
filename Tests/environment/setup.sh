@@ -40,8 +40,9 @@ fi
 if [ "${TRAVIS}" = "true" ]; then
     phpenv config-add Tests/environment/zzz_php.ini
 else
-    # @todo figure out this dir from running `php -i`
-    sudo cp Tests/environment/zzz_php.ini /etc/php/7.3/cli/conf.d
+    INI_PATH=$(php -i | grep 'Scan this dir for additional .ini files')
+    INI_PATH=${INI_PATH/Scan this dir for additional .ini files => /}
+    sudo cp Tests/environment/zzz_php.ini ${INI_PATH}
 fi
 
 # Disable xdebug for speed (both for executing composer and running tests), but allow us to e-enable it later
@@ -57,12 +58,18 @@ fi
 # A different work around for this has been found in setting up an alias for them in the std composer.json require-dev section
 #- 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
 
-# composer.lock gets in the way when switching between eZ versions
-if [ -f composer.lock ]; then
-    rm composer.lock
+# Allow installing a precomputed set of packages. Useful to save memory, eg. for running with php 5.6...
+if [ -n "${EZ_COMPOSER_LOCK}" ]; then
+    cp ${EZ_COMPOSER_LOCK} composer.lock
+    composer install
+else
+    # composer.lock gets in the way when switching between eZ versions
+    if [ -f composer.lock ]; then
+        rm composer.lock
+    fi
+    composer require --dev --no-update ${EZ_PACKAGES}
+    composer update --dev
 fi
-composer require --dev --no-update ${EZ_PACKAGES}
-composer update --dev
 
 if [ "${TRAVIS}" = "true" ]; then
     # useful for troubleshooting tests failures

@@ -41,7 +41,8 @@ if [ -f ${CONFIG_DIR}/parameters.yml.dist ]; then
     cp ${CONFIG_DIR}/parameters.yml.dist ${CONFIG_DIR}/parameters.yml
 fi
 if [ -f Tests/config/${EZ_VERSION}/config_behat.yml ]; then
-    mv ${CONFIG_DIR}/config_behat.yml ${CONFIG_DIR}/config_behat_orig.yml
+    # @todo if config_behat_orig.yml exists, rename it as well
+    grep -q 'config_behat_orig.yml' ${CONFIG_DIR}/config_behat.yml || mv ${CONFIG_DIR}/config_behat.yml ${CONFIG_DIR}/config_behat_orig.yml
     cp Tests/config/${EZ_VERSION}/config_behat.yml ${CONFIG_DIR}/config_behat.yml
 fi
 cp Tests/config/common/config_behat.php ${CONFIG_DIR}/config_behat.php
