@@ -53,7 +53,9 @@ Commands:
 
 Options:
     -c              clean up docker images which have become useless - when running 'build'
-    -e FILE         name of an environment file to use instead of .env (has to be used for 'start', not for 'exec' or 'enter'). Path relative to the docker folder
+    -e FILE         name of an environment file to use instead of .env (has to be used for 'start', not for 'exec' or 'enter').
+                    Path relative to the docker folder.
+                    The env var TESTSTACK_CONFIG_FILE can also be used as an alternative to this option.
     -h              print help
     -f              force the app to be set up - when running 'build', 'start'
     -n              do not set up the app - when running 'build', 'start'
@@ -379,6 +381,12 @@ COMMAND=$1
 check_requirements
 
 cd $(dirname -- ${BASH_SOURCE[0]})/docker
+
+if [ -z "${CONFIG_FILE}" ]; then
+    if [ ! -z "${TESTSTACK_CONFIG_FILE}" ]; then
+        CONFIG_FILE=${TESTSTACK_CONFIG_FILE}
+    fi
+fi
 
 if [ -z "${CONFIG_FILE}" ]; then
     create_default_config

@@ -58,9 +58,10 @@ trap clean_up TERM
 
 if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
 
+    HASH=$(echo "${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
+
     # We hash the name of the vendor folder based on packages to install. This allows quick swaps
     if [ -L /home/test/ezmigrationbundle/vendor -o ! -d /home/test/ezmigrationbundle/vendor ]; then
-        HASH=$(echo "${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
         if [ ! -d /home/test/ezmigrationbundle/vendor_${HASH} ]; then
             mkdir /home/test/ezmigrationbundle/vendor_${HASH}
         fi
@@ -76,6 +77,8 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
     if [ "${COMPOSE_SETUP_APP_ON_BOOT}" = 'force' -o ! -f /tmp/setup_ok ]; then
         echo "[`date`] Setting up eZ..."
         su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
+        # back up composer config
+        su test -c "cp /home/test/ezmigrationbundle/composer.json /home/test/ezmigrationbundle/composer_${HASH}.json; cp /home/test/ezmigrationbundle/composer.lock /home/test/ezmigrationbundle/composer_${HASH}.lock"
     fi
 fi
 
