@@ -13,16 +13,22 @@ cd $(dirname ${BASH_SOURCE[0]})/../..
 
 # For php 5.6, Composer needs humongous amounts of ram - which we don't have on Travis. Enable swap as workaround
 if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
-    sudo service mysql stop
+    # @todo any other services we could stop ?
+    sudo systemctl stop cron atd docker snap mysql
 
     sudo fallocate -l 10G /swapfile
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
     sudo swapon -s
-    free -m
-    df -h
+
+    sudo sysctl vm.swappiness=10
+    sudo sysctl vm.vfs_cache_pressure=50
+
+    #free -m
+    #df -h
     ps auxwww
+    systemctl list-units --type=service
 fi
 
 # This is done by Travis automatically...
@@ -63,10 +69,12 @@ if [ "${TRAVIS}" = "true" ]; then
 fi
 
 # Re-enable xdebug for when we need to generate code coverage
-if [ "${CODE_COVERAGE}" = "1" -a "${XDEBUG_INI}" != "" ]; then mv "${XDEBUG_INI}.bak" "${XDEBUG_INI}"; fi
+if [ "${CODE_COVERAGE}" = "1" -a "${XDEBUG_INI}" != "" ]; then
+    mv "${XDEBUG_INI}.bak" "${XDEBUG_INI}"
+fi
 
 if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
-    sudo service mysql start
+    sudo systemctl start mysql
 fi
 
 # Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
