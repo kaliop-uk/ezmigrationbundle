@@ -13,7 +13,16 @@ cd $(dirname ${BASH_SOURCE[0]})/../..
 
 # For php 5.6, Composer needs humongous amounts of ram - which we don't have on Travis. Enable swap as workaround
 if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
-    sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile;
+    sudo service mysql stop
+
+    sudo fallocate -l 10G /swapfile
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+    sudo swapon -s
+    free -m
+    df -h
+    ps auxwww
 fi
 
 # This is done by Travis automatically...
@@ -43,7 +52,7 @@ fi
 
 # composer.lock gets in the way when switching between eZ versions
 if [ -f composer.lock ]; then
-    rm composer.lock;
+    rm composer.lock
 fi
 composer require --dev --no-update ${EZ_PACKAGES}
 composer update --dev
@@ -55,6 +64,10 @@ fi
 
 # Re-enable xdebug for when we need to generate code coverage
 if [ "${CODE_COVERAGE}" = "1" -a "${XDEBUG_INI}" != "" ]; then mv "${XDEBUG_INI}.bak" "${XDEBUG_INI}"; fi
+
+if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
+    sudo service mysql start
+fi
 
 # Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
 ./Tests/environment/create-db.sh
