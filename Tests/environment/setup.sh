@@ -14,7 +14,7 @@ cd $(dirname ${BASH_SOURCE[0]})/../..
 # For php 5.6, Composer needs humongous amounts of ram - which we don't have on Travis. Enable swap as workaround
 if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
     # @todo any other services we could stop ?
-    sudo systemctl stop cron atd docker snap mysql
+    sudo systemctl stop cron atd docker snapd mysql
 
     sudo fallocate -l 10G /swapfile
     sudo chmod 600 /swapfile
@@ -40,6 +40,7 @@ fi
 if [ "${TRAVIS}" = "true" ]; then
     phpenv config-add Tests/environment/zzz_php.ini
 else
+    # @todo figure out this dir from running `php -i`
     sudo cp Tests/environment/zzz_php.ini /etc/php/7.3/cli/conf.d
 fi
 
