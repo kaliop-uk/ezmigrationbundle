@@ -47,7 +47,7 @@ if [ -f Tests/config/${EZ_VERSION}/config_behat.yml ]; then
 fi
 cp Tests/config/common/config_behat.php ${CONFIG_DIR}/config_behat.php
 if [ -f Tests/config/${EZ_VERSION}/ezpublish_behat.yml ]; then
-    mv ${CONFIG_DIR}/ezpublish_behat.yml ${CONFIG_DIR}/ezpublish_behat_orig.yml
+    grep -q 'ezpublish_behat_orig.yml' ${CONFIG_DIR}/ezpublish_behat.yml || mv ${CONFIG_DIR}/ezpublish_behat.yml ${CONFIG_DIR}/ezpublish_behat_orig.yml
     cp Tests/config/${EZ_VERSION}/ezpublish_behat.yml ${CONFIG_DIR}/ezpublish_behat.yml
 fi
 if [ -f Tests/config/${EZ_VERSION}/ezplatform.yml ]; then

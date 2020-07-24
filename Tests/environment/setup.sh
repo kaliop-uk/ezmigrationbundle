@@ -27,8 +27,8 @@ if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
 
     #free -m
     #df -h
-    ps auxwww
-    systemctl list-units --type=service
+    #ps auxwww
+    #systemctl list-units --type=service
 fi
 
 # This is done by Travis automatically...

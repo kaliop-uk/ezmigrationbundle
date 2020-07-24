@@ -86,6 +86,7 @@ build() {
 
     if [ ${PULL_IMAGES} = 'true' ]; then
         echo "[`date`] Pulling base Docker images..."
+        # @todo fix this for variable base Debian images
         IMAGES=$(find . -name Dockerfile | xargs fgrep -h 'FROM' | sort -u | sed 's/FROM //g')
         for IMAGE in $IMAGES; do
             docker pull $IMAGE
@@ -95,6 +96,10 @@ build() {
     echo "[`date`] Building Containers..."
 
     docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
+    RETCODE=$?
+    if [ ${RETCODE} -ne 0 ]; then
+        exit ${RETCODE}
+    fi
 
     # q: do we really need to have 2 different env vars and an EXPORT call?
     if [ "${SETUP_APP_ON_BOOT}" != '' ]; then
@@ -234,6 +239,10 @@ dotenv() {
 load_config() {
     if [ -z "${CONFIG_FILE}" ]; then
         CONFIG_FILE=${DEFAULT_CONFIG_FILE}
+    else
+        if [ -n "${VERBOSITY}" ]; then
+            echo "Using config file: ${CONFIG_FILE}"
+        fi
     fi
 
     dotenv ${CONFIG_FILE}
@@ -295,6 +304,7 @@ wait_for_bootstrap() {
         BOOTSTRAP_OK=''
         for BS_CONTAINER in ${BOOTSTRAP_CONTAINERS}; do
             printf "Waiting for ${BS_CONTAINER} ... "
+            # @todo fix this check for the case of container not running...
             # @todo speed this up... maybe go back to generating and checking files mounted on the host?
             docker-compose exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
             RETCODE=$?
