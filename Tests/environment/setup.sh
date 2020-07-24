@@ -67,8 +67,11 @@ else
     if [ -f composer.lock ]; then
         rm composer.lock
     fi
+    cp composer.json composer.json.bak
     composer require --dev --no-update ${EZ_PACKAGES}
+    cp composer.json composer_last.json
     composer update --dev
+    cp composer.json.bak composer.json
 fi
 
 if [ "${TRAVIS}" = "true" ]; then

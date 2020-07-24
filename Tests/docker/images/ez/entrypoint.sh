@@ -78,7 +78,7 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
         echo "[`date`] Setting up eZ..."
         su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
         # back up composer config
-        su test -c "cp /home/test/ezmigrationbundle/composer.json /home/test/ezmigrationbundle/composer_${HASH}.json; cp /home/test/ezmigrationbundle/composer.lock /home/test/ezmigrationbundle/composer_${HASH}.lock"
+        su test -c "mv /home/test/ezmigrationbundle/composer_last.json /home/test/ezmigrationbundle/composer_${HASH}.json; cp /home/test/ezmigrationbundle/composer.lock /home/test/ezmigrationbundle/composer_${HASH}.lock"
     fi
 fi
 

@@ -1,5 +1,7 @@
-FROM mysql:5.6
-LABEL mysql.version=5.6
+ARG mysql_version=5.6
+
+FROM mysql:${mysql_version}
+LABEL mysql.version=${mysql_version}
 
 ARG do_update_os=true
 ARG timezone=none

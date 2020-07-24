@@ -1,3 +1,11 @@
+Version 5.XX (unreleased yet)
+=============================
+
+* Fixed issues using the bundle with PHP 7.4
+
+* Improved: made it easier to run the test suite locally using multiple Docker stacks for different php/mysql versions
+
+
 Version 5.11.0
 ==============
 

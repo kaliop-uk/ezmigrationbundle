@@ -1,6 +1,9 @@
-FROM debian:buster-slim
+ARG debian_version=buster
+
+FROM debian:${debian_version}
 
 ARG debian_mirror=none
+ARG debian_version=buster
 ARG do_update_os=true
 ARG timezone=none
 
@@ -18,30 +21,14 @@ RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && d
 # Required packages
 # -----------------------------------------------------------------------------
 RUN mkdir -p /usr/share/man/man1
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    apache2 \
-    default-jre-headless \
-    default-mysql-client \
-    git \
-    memcached \
-    php \
-    php-cli \
-    php-curl \
-    php-gd \
-    php-intl \
-    php-json \
-    php-memcached \
-    php-mbstring \
-    php-mysql \
-    php-xml \
-    sudo \
-    unzip \
-    wget \
-    zip
+# depending on Debian version, the package list will be different
+COPY getpackages_${debian_version}.sh /root/getpackages.sh
+RUN chmod 755 /root/getpackages.sh
+RUN cd /root && ./getpackages.sh
 
 # Install Composer (a more recent version than the Debian one)
 # -----------------------------------------------------------------------------
-RUN apt-get remove -y composer
+RUN apt-get remove -y composer || echo An error on the line above is ok
 COPY getcomposer.sh /root/getcomposer.sh
 RUN chmod 755 /root/getcomposer.sh
 RUN cd /root && ./getcomposer.sh
