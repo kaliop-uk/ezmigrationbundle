@@ -4,6 +4,7 @@ FROM debian:${debian_version}
 
 ARG debian_mirror=none
 ARG debian_version=buster
+ARG php_version=default
 ARG do_update_os=true
 ARG timezone=none
 
@@ -16,15 +17,15 @@ RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buste
 # -----------------------------------------------------------------------------
 RUN if [ "${timezone}" != "none" ]; then echo "${timezone}" > /etc/timezone && dpkg-reconfigure -f noninteractive tzdata; fi
 
-# @todo Buster comes with php 7.3. Allow usage of an ARG to decide if we want to install instead php 7.4 (from SURY repos)
-
 # Required packages
 # -----------------------------------------------------------------------------
 RUN mkdir -p /usr/share/man/man1
 # depending on Debian version, the package list will be different
-COPY getpackages_${debian_version}.sh /root/getpackages.sh
-RUN chmod 755 /root/getpackages.sh
-RUN cd /root && ./getpackages.sh
+COPY getpackages.sh /root/getpackages.sh
+COPY getphp_sury.sh /root/getphp_sury.sh
+COPY getphp_sury.sh /root/getphp_default.sh
+RUN chmod 755 /root/getpackages.sh && chmod 755 /root/getphp_default.sh && chmod 755 /root/getphp_sury.sh
+RUN cd /root && ./getpackages.sh "${php_version}"
 
 # Install Composer (a more recent version than the Debian one)
 # -----------------------------------------------------------------------------

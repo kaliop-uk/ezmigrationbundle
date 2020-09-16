@@ -268,6 +268,7 @@ setup_app() {
     echo "[`date`] Setting up eZ..."
     docker exec ${WEB_CONTAINER} su ${WEB_USER} -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
 
+    # @bug WEB_CONTAINER is not defined in subshell ?
     echo "[`date`] Setup finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
 }
 

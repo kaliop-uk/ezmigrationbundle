@@ -8,6 +8,7 @@ services:
             args:
                 debian_mirror: ${COMPOSE_DEBIAN_MIRROR:-none}
                 debian_version: ${COMPOSE_DEBIAN_VERSION:-buster}
+                php_version: ${COMPOSE_PHP_VERSION:-default}
                 timezone: ${COMPOSE_TZ:-none}
                 do_update_os: ${COMPOSE_DO_UPDATE_OS:-true}
         hostname: ez
@@ -22,6 +23,7 @@ services:
             # to be kept in sync with the hostname of the mysql container a few lines below
             - MYSQL_HOST=${MYSQL_HOST:-mysql}
             - COMPOSE_SETUP_APP_ON_BOOT
+            ###- PHP_VERSION=${COMPOSE_PHP_VERSION:-default}
             # Configuration for the eZ test env to build
             - CODE_COVERAGE=${CODE_COVERAGE:-0}
             - EZ_PACKAGES=${EZ_PACKAGES:-ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle}
