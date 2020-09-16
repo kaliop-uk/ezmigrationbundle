@@ -462,8 +462,18 @@ In case you want to run manual commands, eg. the symfony console:
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
 Note: make sure to have enough disk space available.
-Note: the tests in the Docker container run against the version of eZPlatform kernel specified in the file `.env`.
-If you want to test against another version, feel free to modify it and _rebuild the containers_.
+
+The tests in the Docker container run using the version of debian/php/eZPlatform kernel specified in the file
+`Tests/docker/docker-compose.yml`.
+If you want to test against a different version, feel free to:
+- create a file `Tests/docker/.env` and add to it any required env var (see file `.env.example` as guidance)
+- rebuild the test stack
+- run tests the usual way
+
+You can even keep multiple test stacks available in parallel, by using different env files, eg:
+- create a file `Tests/docker/.env.local` and add to it any required env var, starting with a unique `COMPOSE_PROJECT_NAME`
+- build the new test stack via `./Tests/teststack.sh -e .env.local build`
+- run the tests via: `./Tests/teststack.sh -e .env.local runtests`
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)
