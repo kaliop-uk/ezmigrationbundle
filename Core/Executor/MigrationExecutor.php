@@ -135,6 +135,9 @@ class MigrationExecutor extends AbstractExecutor
     protected function matchConditions($conditions)
     {
         $match = $this->referenceMatcher->match($conditions);
+        if ($match instanceof \ArrayObject) {
+            $match = $match->getArrayCopy();
+        }
         return reset($match);
     }
 
