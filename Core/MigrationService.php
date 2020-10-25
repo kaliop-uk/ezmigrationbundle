@@ -116,6 +116,7 @@ class MigrationService implements ContextProviderInterface
      *
      * @param string[] $paths
      * @return MigrationDefinitionCollection key: migration name, value: migration definition as binary string
+     * @throws \Exception
      */
     public function getMigrationsDefinitions(array $paths = array())
     {
