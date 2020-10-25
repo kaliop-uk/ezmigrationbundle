@@ -71,6 +71,7 @@ else
     composer require --dev --no-update ${EZ_PACKAGES}
     cp composer.json composer_last.json
     composer update --dev
+    # @todo remove composer.json.bak ? (we should also check that no-one has modified it since we saved it...)
     cp composer.json.bak composer.json
 fi
 
