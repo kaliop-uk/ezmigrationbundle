@@ -322,7 +322,7 @@ EOT
      * @param bool $force when true, look not only for TODO migrations, but also DONE, SKIPPED, FAILED ones (we still omit STARTED and SUSPENDED ones)
      * @return MigrationDefinition[]
      *
-     * @todo this does not scale well with many definitions or migrations
+     * @todo optimize. This does not scale well with many definitions or migrations
      */
     protected function buildMigrationsList($paths, $migrationService, $force = false)
     {
@@ -342,17 +342,22 @@ EOT
             }
         }
 
-        // if user wants to execute 'all' migrations: look for some which are registered in the database even if not
+        // if user wants to execute 'all' migrations: look for those which are registered in the database even if not
         // found by the loader
         if (empty($paths)) {
             foreach ($migrations as $migration) {
                 if (in_array($migration->status, $allowedStatuses) && !isset($toExecute[$migration->name])) {
-                    $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
-                    if (count($migrationDefinitions)) {
-                        $migrationDefinition = $migrationDefinitions->reset();
-                        $toExecute[$migration->name] = $migrationService->parseMigrationDefinition($migrationDefinition);
-                    } else {
-                        // q: shall we raise a warning here ?
+                    try {
+                        $migrationDefinitions = $migrationService->getMigrationsDefinitions(array($migration->path));
+                        if (count($migrationDefinitions)) {
+                            // q: shall we raise a warning here if migrations found > 1?
+                            $migrationDefinition = $migrationDefinitions->reset();
+                            $toExecute[$migration->name] = $migrationService->parseMigrationDefinition($migrationDefinition);
+                        } else {
+                            throw new \Exception("Migration definition not found at path '$migration->path'");
+                        }
+                    } catch (\Exception $e) {
+                        $this->writeErrorln("Error while loading definition for migration '{$migration->name}' registered in the database, skipping it: " . $e->getMessage());
                     }
                 }
             }
