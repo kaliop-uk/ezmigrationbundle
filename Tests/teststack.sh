@@ -86,8 +86,21 @@ build() {
 
     if [ ${PULL_IMAGES} = 'true' ]; then
         echo "[`date`] Pulling base Docker images..."
-        # @todo fix this for variable base Debian images
-        IMAGES=$(find . -name Dockerfile | xargs fgrep -h 'FROM' | sort -u | sed 's/FROM //g')
+        # @todo make this flexible enough to accommodate any base image
+        # 1 get list of images
+        # 2 for each, run 'docker image history $img', remove <missing>
+        # 3 take last image id, run `docker image ls | grep f6dcff9b59af`, take the first 2 cols (or use `docker image inspect --format='{{index .RepoTags 0}}`)
+        if [ -n "${COMPOSE_DEBIAN_VERSION}"]; then
+            DIMG="debian:${COMPOSE_DEBIAN_VERSION}"
+        else
+            DIMG="debian:buster"
+        fi
+        if [ -n "${MYSQL_VERSION}"]; then
+            MIMG="mysql:${MYSQL_VERSION}"
+        else
+            MIMG="mysql:5.6"
+        fi
+        IMAGES="${DIMG} ${MIMG}"
         for IMAGE in $IMAGES; do
             docker pull $IMAGE
         done
