@@ -794,7 +794,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $fieldTypeIdentifier = $fieldDefinition->fieldTypeIdentifier;
 
         if (is_array($value) || $this->fieldHandlerManager->managesField($fieldTypeIdentifier, $contentTypeIdentifier)) {
-            // since we now allow refs to be arrays, let's attempt a 1st pass at resolving them here instead of every single fieldHandler...
+            // since we now allow ref values to be arrays, let's attempt a 1st pass at resolving them here instead of every single fieldHandler...
             if (is_string($value) && $this->fieldHandlerManager->doPreResolveStringReferences($fieldTypeIdentifier, $contentTypeIdentifier)) {
                 $value = $this->referenceResolver->resolveReference($value);
             }

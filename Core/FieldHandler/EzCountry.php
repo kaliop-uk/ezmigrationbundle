@@ -33,8 +33,18 @@ class EzCountry extends AbstractFieldHandler implements FieldValueImporterInterf
             return new CountryValue();
         }
 
+        $refsResolved = false;
         if (is_string($fieldValue)) {
+            $fieldValue = $this->referenceResolver->resolveReference($fieldValue);
+            $refsResolved = true;
+        }
+        if (!is_array($fieldValue)) {
             $fieldValue = array($fieldValue);
+        }
+        if (!$refsResolved) {
+            foreach($fieldValue as $key => $countryValue) {
+                $fieldValue[$key] = $this->referenceResolver->resolveReference($countryValue);
+            }
         }
 
         $contentType = $this->contentTypeService->loadContentTypeByIdentifier($context['contentTypeIdentifier']);
@@ -42,5 +52,11 @@ class EzCountry extends AbstractFieldHandler implements FieldValueImporterInterf
         $fieldType = $this->fieldTypeService->getFieldType($field->fieldTypeIdentifier);
 
         return $fieldType->fromHash($fieldValue);
+    }
+
+    // To avoid recursive expansion of references, we have to implement resolving logic only within this class
+    public function doPreResolveStringReferences()
+    {
+        return false;
     }
 }

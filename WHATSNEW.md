@@ -1,3 +1,14 @@
+Version 5.13.0
+==============
+
+* Improved: a single value for a field of type ezcountry can be specified with a string instead of an array
+
+* Improved: make console command `kaliop:migration:migrate` survive the case of migrations registered in the database
+  as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
+
+* Fixed: a regression in test-execution command `teststack.sh -u build`
+
+
 Version 5.12.0
 ==============
 
