@@ -5,7 +5,6 @@ namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\Core\FieldType\Country\Value as CountryValue;
-use eZ\Publish\Core\FieldType\Selection\Value as SelectionValue;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 
 class EzCountry extends AbstractFieldHandler implements FieldValueImporterInterface
