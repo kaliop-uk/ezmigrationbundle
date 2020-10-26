@@ -1,7 +1,9 @@
 Version 5.13.0
 ==============
 
-* Improved: a single value for a field of type ezcountry can be specified with a string instead of an array
+* New: taught the `kaliop:migration:status` command to sort migrations by execution date (issue #224)
+
+* Improved: a single value for a field of type ezcountry can be specified with a string instead of an array (issue #190)
 
 * Improved: make console command `kaliop:migration:migrate` survive the case of migrations registered in the database
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
