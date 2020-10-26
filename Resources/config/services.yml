@@ -99,6 +99,7 @@ parameters:
     ez_migration_bundle.complex_field.ezauthor.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzAuthor
     ez_migration_bundle.complex_field.ezbinaryfile.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzBinaryFile
     ez_migration_bundle.complex_field.ezboolean.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzBoolean
+    ez_migration_bundle.complex_field.country.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzCountry
     ez_migration_bundle.complex_field.ezdate.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzDate
     ez_migration_bundle.complex_field.ezdatetime.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzDateAndTime
     ez_migration_bundle.complex_field.ezimage.class: Kaliop\eZMigrationBundle\Core\FieldHandler\EzImage
@@ -631,6 +632,15 @@ services:
         class: '%ez_migration_bundle.complex_field.ezboolean.class%'
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezboolean, priority: 0 }
+
+    ez_migration_bundle.complex_field.ezcountry:
+        parent: ez_migration_bundle.complex_field
+        class: '%ez_migration_bundle.complex_field.country.class%'
+        arguments:
+            - '@ezpublish.api.service.content_type'
+            - '@ezpublish.api.service.field_type'
+        tags:
+            - { name: ez_migration_bundle.complex_field, fieldtype: ezcountry, priority: 0 }
 
     ez_migration_bundle.complex_field.ezdate:
         parent: ez_migration_bundle.complex_field
