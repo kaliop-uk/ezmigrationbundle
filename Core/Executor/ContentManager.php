@@ -799,6 +799,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $value = $this->referenceResolver->resolveReference($value);
             }
             // inject info about the current content type and field into the context
+            // q: why not let the fieldHandlerManager do that ?
             $context['contentTypeIdentifier'] = $contentTypeIdentifier;
             $context['fieldIdentifier'] = $fieldDefinition->identifier;
             return $this->fieldHandlerManager->hashToFieldValue($fieldTypeIdentifier, $contentTypeIdentifier, $value, $context);

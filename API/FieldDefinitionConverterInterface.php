@@ -3,7 +3,7 @@
 namespace Kaliop\eZMigrationBundle\API;
 
 /**
- * Interface those complex fields that handle translation of ContentType Field definition settings
+ * Interface for field handlers that handle translation of ContentType Field definition settings
  */
 interface FieldDefinitionConverterInterface
 {

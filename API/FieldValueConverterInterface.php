@@ -3,7 +3,7 @@
 namespace Kaliop\eZMigrationBundle\API;
 
 /**
- * Interface for all classes dealing with the conversion of field values from hash representation to/from repo values
+ * Interface for all classes dealing with the conversion of field values from/to hash representation to/from repo values
  */
 interface FieldValueConverterInterface extends FieldValueImporterInterface
 {

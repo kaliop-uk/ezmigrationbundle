@@ -26,6 +26,6 @@ class EzDate extends AbstractFieldHandler implements FieldValueConverterInterfac
     public function fieldValueToHash($fieldValue, array $context = array())
     {
         $date = $fieldValue->date;
-        return $date == null ? null: $date->getTimestamp();
+        return $date == null ? null : $date->getTimestamp();
     }
 }

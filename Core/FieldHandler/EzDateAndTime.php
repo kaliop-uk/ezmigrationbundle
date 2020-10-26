@@ -20,12 +20,12 @@ class EzDateAndTime extends AbstractFieldHandler implements FieldValueConverterI
     /**
      * @param \eZ\Publish\Core\FieldType\DateAndTime\Value $fieldValue
      * @param array $context
-     * @return int timestamp
+     * @return int|null timestamp
      */
     public function fieldValueToHash($fieldValue, array $context = array())
     {
         $date = $fieldValue->value;
-        return $date == null ? null: $date->getTimestamp();
+        return $date == null ? null : $date->getTimestamp();
     }
 
     public function fieldSettingsToHash($settingsValue, array $context = array())
