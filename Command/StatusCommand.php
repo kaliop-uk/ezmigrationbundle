@@ -24,6 +24,7 @@ class StatusCommand extends AbstractCommand
         $this->setName('kaliop:migration:status')
             ->setDescription('View the status of all (or a set of) migrations.')
             ->addOption('path', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "The directory or file to load the migration definitions from")
+            ->addOption('sort-by', null, InputOption::VALUE_REQUIRED, "Supported sorting order: name, execution", 'name')
             ->addOption('summary', null, InputOption::VALUE_NONE, "Only print summary information")
             ->addOption('todo', null, InputOption::VALUE_NONE, "Only print list of migrations to execute (full path to each)")
             ->setHelp(<<<EOT
@@ -53,7 +54,7 @@ EOT
             return;
         }
 
-        // create a unique ist of all migrations (coming from db) and definitions (coming from disk)
+        // create a unique list of all migrations (coming from db) and definitions (coming from disk)
         $index = array();
         foreach ($migrationDefinitions as $migrationDefinition) {
             $index[$migrationDefinition->name] = array('definition' => $migrationDefinition);
@@ -78,7 +79,10 @@ EOT
                 }
             }
         }
-        ksort($index);
+
+        if (!$input->getOption('summary')) {
+            $this->sortMigrationIndex($index, $input->getOption('sort-by'));
+        }
 
         if (!$input->getOption('summary') && !$input->getOption('todo')) {
             if (count($index) > 50000) {
@@ -213,5 +217,44 @@ EOT
             ->setHeaders($headers)
             ->setRows($data);
         $table->render();
+    }
+
+    /**
+     * @param array[] $index
+     * @param string $sortBy
+     * @throws \Exception
+     */
+    protected function sortMigrationIndex(array &$index, $sortBy)
+    {
+        switch($sortBy) {
+            case 'execution':
+                uasort($index, function($m1, $m2) {
+                    if (isset($m1['migration']) && $m1['migration']->executionDate !== null) {
+                        if (isset($m2['migration']) && $m2['migration']->executionDate !== null) {
+                            return $m1['migration']->executionDate - $m2['migration']->executionDate;
+                        } else {
+                            // m2 not executed: send to bottom
+                            return -1;
+                        }
+                    } else {
+                        if (isset($m2['migration']) && $m2['migration']->executionDate !== null) {
+                            // m1 not executed: send to bottom
+                            return 1;
+                        } else {
+                            // both not executed: compare by name
+                            return strcmp(
+                                isset($m1['migration']) ? $m1['migration']->name : $m1['definition']->name,
+                                isset($m2['migration']) ? $m2['migration']->name : $m2['definition']->name
+                            );
+                        }
+                    }
+                });
+                break;
+            case 'name':
+                ksort($index);
+                break;
+            default:
+                throw new \Exception("Unsupported sort order: '$sortBy'");
+        }
     }
 }
