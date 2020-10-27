@@ -1,0 +1,6 @@
+-
+    type: content
+    mode: load
+    match:
+        content_type_identifier: aquiteunexpectedcontenttype
+    expect: many
