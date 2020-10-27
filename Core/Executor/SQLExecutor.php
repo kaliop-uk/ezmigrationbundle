@@ -164,6 +164,7 @@ class SQLExecutor extends AbstractExecutor
                             throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
                         }
                         $value = array_column($result, $colName);
+/// @todo if we have expect: one, we should return a scalar, not an array...
                     } else {
                         // we should validate the requested column name, but we can't...
                         $value = array();

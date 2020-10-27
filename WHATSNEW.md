@@ -9,6 +9,10 @@ Version 5.13.0
             resolve_references: true
             mysql: "UPDATE emp SET job='sailor' WHERE ename='[reference:example_reference]'"
 
+* New migration step: `sql/query`, which can be used to run SELECT queries on the database.
+  Unlike the existing `sql/exec` step (previously known simply as `sql`), this step allows to set reference values with
+  the selected data. For more details, see the complete specification in file SQL.yml
+
 * New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
 
 * Improved: a single value for a content field of type ezcountry can be specified as a string instead of an array (issue #190)
