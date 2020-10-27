@@ -2,24 +2,23 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use eZ\Publish\API\Repository\Values\Content\VersionInfo;
-use eZ\Publish\API\Repository\Values\ContentType\ContentType;
-use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
-use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\ContentCreateStruct;
 use eZ\Publish\API\Repository\Values\Content\ContentUpdateStruct;
+use eZ\Publish\API\Repository\Values\Content\VersionInfo;
+use eZ\Publish\API\Repository\Values\ContentType\ContentType;
+use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
-use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
+use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
+use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
-use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
-use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
-use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 use JmesPath\Env as JmesPath;
 
 /**
