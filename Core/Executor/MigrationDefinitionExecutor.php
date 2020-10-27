@@ -166,7 +166,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
         foreach ($dsl['references'] as $reference) {
             // BC
-            if (isset($reference['json_path'])) {
+            if (isset($reference['json_path']) && !isset($reference['attribute'] )) {
                 $reference['attribute'] = $reference['json_path'];
             }
 
@@ -175,7 +175,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
                     $value = $result;
                     break;
                 default:
-                    $value = JmesPath::search($reference['json_path'], $result);
+                    $value = JmesPath::search($reference['attribute'], $result);
             }
 
             $overwrite = false;
