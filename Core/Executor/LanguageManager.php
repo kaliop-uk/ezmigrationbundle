@@ -59,6 +59,8 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
     {
         $languageCollection = $this->matchLanguages('load', $step);
 
+        $this->validateResultsCount($languageCollection, $step);
+
         $this->setReferences($languageCollection, $step);
 
         return $languageCollection;
@@ -76,9 +78,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
 
         $languageCollection = $this->matchLanguages('delete', $step);
 
-        if (count($languageCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Language update because multiple languages match, and a references section is specified in the dsl. References can be set when only 1 language matches");
-        }
+        $this->validateResultsCount($languageCollection, $step);
 
         $languageService = $this->repository->getContentLanguageService();
 
@@ -113,7 +113,10 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
             // BC
             $step->dsl['match'] = array('language_code' => $step->dsl['lang']);
         }
+
         $languageCollection = $this->matchLanguages('delete', $step);
+
+        $this->validateResultsCount($languageCollection, $step);
 
         $this->setReferences($languageCollection, $step);
 

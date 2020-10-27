@@ -10,7 +10,7 @@ Specific topics are covered below.
 
 ## Content language
 
-By default the bundle uses eng-GB for creating all multilingual entities (contents, contentTypes, users, etc...). 
+By default, the bundle uses eng-GB for creating all multilingual entities (contents, contentTypes, users, etc...).
 In order to create content in a different language, either specify it in your yml definition files (recommended), or
 use a command-line switch.
 
@@ -26,7 +26,7 @@ Below is an example snippet for creation/update of a content with a field of typ
             path: /path/to/the/image.jpg
             alt_text: 'Example alt text'
 
-A simplified form, which does not allow for setting the 'alt' attribute, is: 
+A simplified form, which does not allow for setting the 'alt' attribute, is:
 
     attributes:
         image: /path/to/the/image.jpg
@@ -115,7 +115,7 @@ associated to the reference found. Eg:
 > **Bad:** `some_key: reference:foo`<br>
 > **Good:** `some_key: 'reference:foo'`
 
-Note that, unlike variables in programming laguages, you can not change the value of an existing references by default.
+Note that, unlike variables in programming languages, you can not change the value of an existing references by default.
 This is done to prevent accidental overwrites of an existing reference with another one, as the most common use case
 for reference is set once, use multiple times.
 If you want to be able to change the value of a reference after having created it, use the `overwrite` tag:
@@ -129,7 +129,7 @@ If you want to be able to change the value of a reference after having created i
 *NB:* references are stored *in memory* only and will not propagate across different migrations, unless you
 execute the migrations in a single command (and without the 'separate processes' switch).
 
-*NB:* please do not use the character `]` in your reference names. See below for the reason. 
+*NB:* please do not use the character `]` in your reference names. See below for the reason.
 
 ### References in the XML for the eZXMLText Field
 

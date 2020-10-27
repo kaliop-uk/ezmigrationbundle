@@ -79,6 +79,8 @@ class UserGroupManager extends RepositoryExecutor
     {
         $userGroupCollection = $this->matchUserGroups('load', $step);
 
+        $this->validateResultsCount($userGroupCollection, $step);
+
         $this->setReferences($userGroupCollection, $step);
 
         return $userGroupCollection;
@@ -93,9 +95,7 @@ class UserGroupManager extends RepositoryExecutor
     {
         $userGroupCollection = $this->matchUserGroups('update', $step);
 
-        if (count($userGroupCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Group update because multiple groups match, and a references section is specified in the dsl. References can be set when only 1 group matches");
-        }
+        $this->validateResultsCount($userGroupCollection, $step);
 
         $userService = $this->repository->getUserService();
         $contentService = $this->repository->getContentService();
@@ -158,6 +158,8 @@ class UserGroupManager extends RepositoryExecutor
     protected function delete($step)
     {
         $userGroupCollection = $this->matchUserGroups('delete', $step);
+
+        $this->validateResultsCount($userGroupCollection, $step);
 
         $this->setReferences($userGroupCollection, $step);
 

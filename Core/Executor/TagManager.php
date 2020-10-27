@@ -94,6 +94,8 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
 
         $tagsCollection = $this->matchTags('load', $step);
 
+        $this->validateResultsCount($tagsCollection, $step);
+
         $this->setReferences($tagsCollection, $step);
 
         return $tagsCollection;
@@ -105,9 +107,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
 
         $tagsCollection = $this->matchTags('update', $step);
 
-        if (count($tagsCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Tag update because multiple tags match, and a references section is specified in the dsl. References can be set when only 1 matches");
-        }
+        $this->validateResultsCount($tagsCollection, $step);
 
         foreach ($tagsCollection as $key => $tag) {
 
@@ -156,6 +156,8 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
         $this->checkTagsBundleInstall();
 
         $tagsCollection = $this->matchTags('delete', $step);
+
+        $this->validateResultsCount($tagsCollection, $step);
 
         $this->setReferences($tagsCollection, $step);
 

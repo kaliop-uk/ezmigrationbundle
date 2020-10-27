@@ -16,6 +16,9 @@ abstract class RepositoryExecutor extends AbstractExecutor
 {
     use RepositoryUserSetterTrait;
     use IgnorableStepExecutorTrait;
+    use NonScalarReferenceSetterTrait;
+
+    protected $scalarReferences = array('count');
 
     /**
      * Constant defining the default language code (used if not specified by the migration or on the command line)
@@ -31,9 +34,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
     const USER_CONTENT_TYPE = 'user';
     /** Used if not specified by the migration */
     const USERGROUP_CONTENT_TYPE = 'user_group';
-
-    const REFERENCE_TYPE_SCALAR = 'scalar';
-    const REFERENCE_TYPE_ARRAY = 'array';
 
     /**
      * @var array $dsl The parsed DSL instruction array
@@ -217,13 +217,14 @@ abstract class RepositoryExecutor extends AbstractExecutor
             return false;
         }
 
-        $referencesDefs = $this->setReferencesCommon($item, $step->dsl['references']);
+        $referencesDefs = $this->setScalarReferences($item, $step->dsl['references']);
 
-        $this->insureEntityCountCompatibility($item, $referencesDefs, $step);
+        // this check is now done immediately after matching
+        //$this->insureResultsCountCompatibility($item, $referencesDefs, $step);
 
-        $multivalued = ($this->getReferencesType($step) == self::REFERENCE_TYPE_ARRAY);
+        $multivalued = ($this->getResultsType($step) == self::$RESULT_TYPE_MULTIPLE);
 
-        if ($item instanceof AbstractCollection) {
+        if ($item instanceof AbstractCollection  || is_array($item)) {
             $items = $item;
         } else {
             $items = array($item);
@@ -245,11 +246,12 @@ abstract class RepositoryExecutor extends AbstractExecutor
             }
         }
 
-        foreach($referencesDefs as $reference) {
+        foreach ($referencesDefs as $reference) {
             $overwrite = false;
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
+            // q: is the usage of count() and array() correct here ? esp for the case we want scalar refs ?
             $this->referenceResolver->addReference($reference['identifier'], count($referencesValues) ? $referencesValues[$reference['identifier']] : array(), $overwrite);
         }
 
@@ -261,7 +263,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @param array $referencesDefinition
      * @return array the same as $referencesDefinition, with the references already treated having been removed
      */
-    protected function setReferencesCommon($entity, $referencesDefinition)
+    protected function setScalarReferences($entity, $referencesDefinition)
     {
         // allow setting *some* refs even when we have 0 or N matches
         foreach ($referencesDefinition as $key => $reference) {
@@ -286,90 +288,25 @@ abstract class RepositoryExecutor extends AbstractExecutor
     }
 
     /**
-     * Verifies compatibility between the definition of the refences to be set and the data set to extarct them from,
+     * Verifies compatibility between the definition of the references to be set and the data set to extract them from,
      * and returns a single entity
      *
      * @param AbstractCollection|mixed $entity
      * @param array $referencesDefinition
      * @param MigrationStep $step
      * @return AbstractCollection|mixed
-     * @deprecated
+     * @deprecated use validateResultsCount instead
      */
-    protected function insureSingleEntity($entity, $referencesDefinition, $step)
+    /*protected function insureSingleEntity($entity, $referencesDefinition, $step)
     {
-        $this->insureEntityCountCompatibility($entity, $referencesDefinition, $step);
+        $this->insureResultsCountCompatibility($entity, $referencesDefinition, $step);
 
         if ($entity instanceof AbstractCollection) {
             return $entity->reset();
         }
 
         return $entity;
-    }
-
-    /**
-     * Verifies compatibility between the definition of the references to be set and the data set to extract them from.
-     * NB: for multivalued refs, we assume that the users always expect at least one value
-     * @param AbstractCollection|mixed $entity
-     * @param array $referencesDefinition
-     * @param MigrationStep $step
-     * @return void throws when incompatibility is found
-     * @todo should we allow to be passed in plain arrays as well as Collections?
-     */
-    protected function insureEntityCountCompatibility($entity, $referencesDefinition, $step)
-    {
-        if ($entity instanceof AbstractCollection) {
-
-            $minOneRef = count($referencesDefinition) > 0 && (!$this->allowEmptyReferences($step));
-            $maxOneRef = count($referencesDefinition) > 0 && $this->getReferencesType($step) == self::REFERENCE_TYPE_SCALAR;
-
-            if ($maxOneRef && count($entity) > 1) {
-                throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for multiple ' . $this->getCollectionName($entity) . 's');
-            }
-            if ($minOneRef && count($entity) == 0) {
-                throw new \InvalidArgumentException($this->getSelfName() . ' does not support setting references for no ' . $this->getCollectionName($entity) . 's');
-            }
-        }
-    }
-
-    /**
-     * @param array $step
-     * @return string
-     */
-    protected function getReferencesType($step)
-    {
-        return isset($step->dsl['references_type']) ? $step->dsl['references_type'] : self::REFERENCE_TYPE_SCALAR;
-    }
-
-    /**
-     * @param array $step
-     * @return bool
-     */
-    protected function allowEmptyReferences($step)
-    {
-        if (isset($step->dsl['references_type']) && $step->dsl['references_type'] == self::REFERENCE_TYPE_ARRAY &&
-            isset($step->dsl['references_allow_empty']) && $step->dsl['references_allow_empty'] == true
-        )
-            return true;
-        return false;
-    }
-
-    protected function getSelfName()
-    {
-        $className = get_class($this);
-        $array = explode('\\', $className);
-        $className = end($array);
-        // CamelCase to Camel Case using negative look-behind in regexp
-        return preg_replace('/(?<!^)[A-Z]/', ' $0', $className);
-    }
-
-    protected function getCollectionName($collection)
-    {
-        $className = get_class($collection);
-        $array = explode('\\', $className);
-        $className = str_replace('Collection', '', end($array));
-        // CamelCase to snake case using negative look-behind in regexp
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', ' $0', $className));
-    }
+    }*/
 
     /**
      * Courtesy code to avoid reimplementing it in every subclass
@@ -385,5 +322,14 @@ abstract class RepositoryExecutor extends AbstractExecutor
         } else {
             return $this->referenceResolver->resolveReference($match);
         }
+    }
+
+    /**
+     * @param array $referenceDefinition
+     * @return bool
+     */
+    protected function isScalarReference($referenceDefinition)
+    {
+        return in_array($referenceDefinition['attribute'], $this->scalarReferences);
     }
 }

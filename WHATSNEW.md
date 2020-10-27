@@ -1,15 +1,44 @@
 Version 5.13.0
 ==============
 
-* New: taught the `kaliop:migration:status` command to sort migrations by execution date (issue #224)
+* New: taught the SQL migration steps, when specified in yaml format, to resolve references embedded in the sql statement
+  (issue #199), eg:
 
-* Improved: a single value for a field of type ezcountry can be specified with a string instead of an array (issue #190)
+        -
+            type: "sql"
+            resolve_references: true
+            mysql: "UPDATE emp SET job='sailor' WHERE ename='[reference:example_reference]'"
 
-* Improved: make console command `kaliop:migration:migrate` survive the case of migrations registered in the database
+* New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
+
+* Improved: a single value for a content field of type ezcountry can be specified as a string instead of an array (issue #190)
+
+* Improved: made console command `kaliop:migration:migrate` survive the case of migrations registered in the database
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
+  in this case
 
-* Fixed: a regression in test-execution command `teststack.sh -u build`
+* Fixed: regressions when running the test-execution command `teststack.sh` with the `-u` option or `resetdb` action
 
+* Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
+
+* BC change: the `references_type` and `references_allow_empty` step elements have been replaced by a new element: `expect`
+
+  - use `expect: one` to enforce steps of type load/update/delete to only match one element, and set scalar values to references
+  - use `expect: any` to enforce steps of type load/update/delete to match any number of elements, and set array values to references
+  - use `expect: many` to enforce steps of type load/update/delete to match one or more elements, and set array values to references
+  - using `expect` enforces validation of the number of matched elements regardless of the fact that there are any reference
+    definitions in the step, whereas `references_type` and `references_allow_empty` only activated if there was at least one
+    reference definition
+  - also, the validation of the number of matched elements, when required, now happens _before_ any item deletion/update
+    action takes place. Up until now, for `update` steps, only a subset of the validation was enforced before the action,
+    and the rest was validated afterwards
+  - the `references_type` and `references_allow_empty` step elements are still handled correctly, but considered deprecated;
+    equivalence matrix:
+        `expect: one` <==> `references_type` not set or equal to `scalar`
+        `expect: any` <==> `references_type: array` and `references_allow_empty: true`
+        `expect: many` <==> `references_type: array` and `references_allow_empty` not set or equal to false
+  - for developers: the `RepositoryExecutor` class and its subclasses have dropped/changed methods that deal with setting
+    references. You will have to adapt your code if you had subclassed any of them
 
 Version 5.12.0
 ==============

@@ -65,6 +65,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     {
         $roleCollection = $this->matchRoles('load', $step);
 
+        $this->validateResultsCount($roleCollection, $step);
+
         $this->setReferences($roleCollection, $step);
 
         return $roleCollection;
@@ -77,9 +79,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     {
         $roleCollection = $this->matchRoles('update', $step);
 
-        if (count($roleCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Role update because multiple roles match, and a references section is specified in the dsl. References can be set when only 1 role matches");
-        }
+        $this->validateResultsCount($roleCollection, $step);
 
         if (count($roleCollection) > 1 && isset($step->dsl['new_name'])) {
             throw new \Exception("Can not execute Role update because multiple roles match, and a new_name is specified in the dsl.");
@@ -136,6 +136,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     protected function delete($step)
     {
         $roleCollection = $this->matchRoles('delete', $step);
+
+        $this->validateResultsCount($roleCollection, $step);
 
         $this->setReferences($roleCollection, $step);
 

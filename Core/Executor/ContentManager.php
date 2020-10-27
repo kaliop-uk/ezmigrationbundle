@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use eZ\Publish\API\Repository\Values\Content\VersionInfo;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Values\Content\Location;
@@ -204,6 +205,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $contentCollection = $this->matchContents('load', $step);
 
+        $this->validateResultsCount($contentCollection, $step);
+
         $this->setReferences($contentCollection, $step);
 
         return $contentCollection;
@@ -221,12 +224,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         $contentCollection = $this->matchContents('update', $step);
 
-        if (count($contentCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Content update because multiple contents match, and a references section is specified in the dsl. References can be set when only 1 content matches");
-        }
+        $this->validateResultsCount($contentCollection, $step);
 
         if (count($contentCollection) > 1 && isset($step->dsl['main_location'])) {
-            throw new \Exception("Can not execute Content update because multiple contents match, and a main_location section is specified in the dsl. References can be set when only 1 content matches");
+            throw new \Exception("Can not execute Content update because multiple contents match, and a main_location section is specified in the dsl.");
         }
 
         $contentType = array();
@@ -314,6 +315,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $contentCollection = $this->matchContents('delete', $step);
 
+        $this->validateResultsCount($contentCollection, $step);
+
         $this->setReferences($contentCollection, $step);
 
         $contentService = $this->repository->getContentService();
@@ -364,7 +367,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * @param Content $content
+     * @param Content|VersionInfo $content
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
      * @return array key: the reference names, values: the reference values

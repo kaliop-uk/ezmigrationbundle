@@ -131,6 +131,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     {
         $contentTypeCollection = $this->matchContentTypes('load', $step);
 
+        $this->validateResultsCount($contentTypeCollection, $step);
+
         $this->setReferences($contentTypeCollection, $step);
 
         return $contentTypeCollection;
@@ -143,12 +145,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     {
         $contentTypeCollection = $this->matchContentTypes('update', $step);
 
-        if (count($contentTypeCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Content Type update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 type matches");
-        }
+        $this->validateResultsCount($contentTypeCollection, $step);
 
         if (count($contentTypeCollection) > 1 && array_key_exists('new_identifier', $step->dsl)) {
-            throw new \Exception("Can not execute Content Type update because multiple roles match, and a new_identifier is specified in the dsl.");
+            throw new \Exception("Can not execute Content Type update because multiple Content Types match, and a new_identifier is specified in the dsl.");
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
@@ -313,6 +313,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     protected function delete($step)
     {
         $contentTypeCollection = $this->matchContentTypes('delete', $step);
+
+        $this->validateResultsCount($contentTypeCollection, $step);
 
         $this->setReferences($contentTypeCollection, $step);
 

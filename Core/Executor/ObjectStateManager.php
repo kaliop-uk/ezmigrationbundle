@@ -87,6 +87,8 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     {
         $stateCollection = $this->matchObjectStates('load', $step);
 
+        $this->validateResultsCount($stateCollection, $step);
+
         $this->setReferences($stateCollection, $step);
 
         return $stateCollection;
@@ -101,9 +103,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     {
         $stateCollection = $this->matchObjectStates('update', $step);
 
-        if (count($stateCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Object State update because multiple states match, and a references section is specified in the dsl. References can be set when only 1 state matches");
-        }
+        $this->validateResultsCount($stateCollection, $step);
 
         if (count($stateCollection) > 1 && isset($step->dsl['identifier'])) {
             throw new \Exception("Can not execute Object State update because multiple states match, and an identifier is specified in the dsl.");
@@ -141,6 +141,8 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     protected function delete($step)
     {
         $stateCollection = $this->matchObjectStates('delete', $step);
+
+        $this->validateResultsCount($stateCollection, $step);
 
         $this->setReferences($stateCollection, $step);
 

@@ -78,6 +78,8 @@ class UserManager extends RepositoryExecutor
     {
         $userCollection = $this->matchUsers('load', $step);
 
+        $this->validateResultsCount($userCollection, $step);
+
         $this->setReferences($userCollection, $step);
 
         return $userCollection;
@@ -92,9 +94,7 @@ class UserManager extends RepositoryExecutor
     {
         $userCollection = $this->matchUsers('user', $step);
 
-        if (count($userCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute User update because multiple users match, and a references section is specified in the dsl. References can be set when only 1 user matches");
-        }
+        $this->validateResultsCount($userCollection, $step);
 
         if (count($userCollection) > 1 && isset($step->dsl['email'])) {
             throw new \Exception("Can not execute User update because multiple users match, and an email section is specified in the dsl.");
@@ -169,6 +169,8 @@ class UserManager extends RepositoryExecutor
     protected function delete($step)
     {
         $userCollection = $this->matchUsers('delete', $step);
+
+        $this->validateResultsCount($userCollection, $step);
 
         $this->setReferences($userCollection, $step);
 

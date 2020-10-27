@@ -3,7 +3,8 @@
 # see the main README file for details about that
 
 -
-    type: 'sql'
+    type: sql
+    mode: exec
     # You can define different sql statements at the same time for different database types
     # NB: the sql statement should not be a SELECT one, at least for MySQL
     mysql: ""
@@ -11,6 +12,9 @@
     postgresql: ""
     sqlite: ""
     # etc...
+    resolve_references: true|false # Defaults to false. Set this to enable resolving references found within the sql code.
+                                   # The format to be used for specifying the reference is as in the following example:
+                                   # UPDATE A SET B='etc' WHERE C=[reference:example_reference]
 
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
@@ -18,6 +22,29 @@
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference (supports: affected_rows)
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    type: sql
+    mode: query
+    # You can define different sql SELECT statements at the same time for different database types
+    mysql: ""
+    oracle: ""
+    postgresql: ""
+    sqlite: ""
+    # etc...
+    resolve_references: true|false # Defaults to false. Set this to enable resolving references found within the sql code.
+                                   # The format to be used for specifying the reference is as in the following example:
+                                   # SELECT A.* FROM B WHERE C=[reference:example_reference]
+
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # The attribute to get the value of for the reference (supports: count, ...)
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

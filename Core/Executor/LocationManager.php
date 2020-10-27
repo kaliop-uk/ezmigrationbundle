@@ -62,6 +62,8 @@ class LocationManager extends RepositoryExecutor
 
         $contentCollection = $this->matchContents('create', $step);
 
+/// @todo enforce the expected number of contents
+
         $locations = array();
         foreach ($contentCollection as $content) {
             $contentInfo = $content->contentInfo;
@@ -112,6 +114,8 @@ class LocationManager extends RepositoryExecutor
     {
         $locationCollection = $this->matchLocations('load', $step);
 
+        $this->validateResultsCount($locationCollection, $step);
+
         $this->setReferences($locationCollection, $step);
 
         return $locationCollection;
@@ -128,9 +132,7 @@ class LocationManager extends RepositoryExecutor
 
         $locationCollection = $this->matchLocations('update', $step);
 
-        if (count($locationCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Location update because multiple locations match, and a references section is specified in the dsl. References can be set when only 1 location matches");
-        }
+        $this->validateResultsCount($locationCollection, $step);
 
         if (count($locationCollection) > 1 && isset($step->dsl['swap_with_location'])) {
             throw new \Exception("Can not execute Location update because multiple locations match, and a swap_with_location is specified in the dsl.");

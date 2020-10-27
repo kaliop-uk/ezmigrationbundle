@@ -52,6 +52,8 @@ class ContentVersionManager extends ContentManager
     {
         $versionCollection = $this->matchVersions('load', $step);
 
+        $this->validateResultsCount($versionCollection, $step);
+
         $this->setReferences($versionCollection, $step);
 
         return $versionCollection;
@@ -63,6 +65,8 @@ class ContentVersionManager extends ContentManager
     protected function delete($step)
     {
         $versionCollection = $this->matchVersions('delete', $step);
+
+        $this->validateResultsCount($versionCollection, $step);
 
         $this->setReferences($versionCollection, $step);
 

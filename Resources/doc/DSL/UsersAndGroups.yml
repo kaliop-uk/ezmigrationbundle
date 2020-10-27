@@ -23,8 +23,10 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports user_id, email, enabled, login, groups_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_id'
-    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+                     # 'one': only one element should be matched; reference values will be scalars
+                     # 'any': zero or more element should be matched; reference values will be arrays
+                     # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -93,8 +95,10 @@
                                  # Supports user_id, email, enabled, login, groups_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_id'
                                  # 'count' can be used to set a reference to the number of items matched
-    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+                     # 'one': only one element should be matched; reference values will be scalars
+                     # 'any': zero or more element should be matched; reference values will be arrays
+                     # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -177,8 +181,10 @@
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: user_group_id, parent_user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
-    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+                     # 'one': only one element should be matched; reference values will be scalars
+                     # 'any': zero or more element should be matched; reference values will be arrays
+                     # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -218,8 +224,10 @@
                                  # Supports: user_group_id, parent_user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
-    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+                     # 'one': only one element should be matched; reference values will be scalars
+                     # 'any': zero or more element should be matched; reference values will be arrays
+                     # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -254,8 +262,10 @@
                                  # Supports: user_group_id, parent_user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
-    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+                     # 'one': only one element should be matched; reference values will be scalars
+                     # 'any': zero or more element should be matched; reference values will be arrays
+                     # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -286,8 +296,10 @@
                                  # Supports: user_group_id, users_ids (the latter returns an array)
                                  # The shorthand 'id' can be used instead of 'user_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
-    references_type: "array" # Optional. If not set, created references values will be scalars. If set, they will be arrays
-    references_allow_empty: bool # optional. Set it to allow array references to be empty without it being considered an error
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+                     # 'one': only one element should be matched; reference values will be scalars
+                     # 'any': zero or more element should be matched; reference values will be arrays
+                     # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

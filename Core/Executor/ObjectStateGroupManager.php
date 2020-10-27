@@ -69,6 +69,8 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     {
         $groupsCollection = $this->matchObjectStateGroups('load', $step);
 
+        $this->validateResultsCount($groupsCollection, $step);
+
         $this->setReferences($groupsCollection, $step);
 
         return $groupsCollection;
@@ -85,9 +87,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
         $groupsCollection = $this->matchObjectStateGroups('update', $step);
 
-        if (count($groupsCollection) > 1 && isset($step->dsl['references'])) {
-            throw new \Exception("Can not execute Object State Group update because multiple groups match, and a references section is specified in the dsl. References can be set when only 1 state group matches");
-        }
+        $this->validateResultsCount($groupsCollection, $step);
 
         if (count($groupsCollection) > 1 && isset($step->dsl['identifier'])) {
             throw new \Exception("Can not execute Object State Group update because multiple groups match, and an identifier is specified in the dsl.");
@@ -123,6 +123,8 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     protected function delete($step)
     {
         $groupsCollection = $this->matchObjectStateGroups('delete', $step);
+
+        $this->validateResultsCount($groupsCollection, $step);
 
         $this->setReferences($groupsCollection, $step);
 

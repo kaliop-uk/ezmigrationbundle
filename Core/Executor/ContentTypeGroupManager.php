@@ -57,9 +57,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     {
         $groupsCollection = $this->matchContentTypeGroups('update', $step);
 
-        if (count($groupsCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Content Type Group update because multiple types match, and a references section is specified in the dsl. References can be set when only 1 matches");
-        }
+        $this->validateResultsCount($groupsCollection, $step);
 
         $contentTypeService = $this->repository->getContentTypeService();
 
@@ -87,6 +85,8 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     protected function delete($step)
     {
         $groupsCollection = $this->matchContentTypeGroups('delete', $step);
+
+        $this->validateResultsCount($groupsCollection, $step);
 
         $this->setReferences($groupsCollection, $step);
 

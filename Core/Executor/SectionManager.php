@@ -57,6 +57,8 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $sectionCollection = $this->matchSections('load', $step);
 
+        $this->validateResultsCount($sectionCollection, $step);
+
         $this->setReferences($sectionCollection, $step);
 
         return $sectionCollection;
@@ -69,9 +71,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $sectionCollection = $this->matchSections('update', $step);
 
-        if (count($sectionCollection) > 1 && array_key_exists('references', $step->dsl)) {
-            throw new \Exception("Can not execute Section update because multiple sections match, and a references section is specified in the dsl. References can be set when only 1 section matches");
-        }
+        $this->validateResultsCount($sectionCollection, $step);
 
         $sectionService = $this->repository->getSectionService();
         foreach ($sectionCollection as $key => $section) {
@@ -100,6 +100,8 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function delete($step)
     {
         $sectionCollection = $this->matchSections('delete', $step);
+
+        $this->validateResultsCount($sectionCollection, $step);
 
         $this->setReferences($sectionCollection, $step);
 
