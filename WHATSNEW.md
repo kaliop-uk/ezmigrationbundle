@@ -40,6 +40,7 @@ Version 5.13.0
   - for developers: the `RepositoryExecutor` class and its subclasses have dropped/changed methods that deal with setting
     references. You will have to adapt your code if you had subclassed any of them
 
+
 Version 5.12.0
 ==============
 

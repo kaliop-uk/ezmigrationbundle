@@ -15,7 +15,6 @@
     resolve_references: true|false # Defaults to false. Set this to enable resolving references found within the sql code.
                                    # The format to be used for specifying the reference is as in the following example:
                                    # UPDATE A SET B='etc' WHERE C=[reference:example_reference]
-
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
@@ -38,13 +37,20 @@
     resolve_references: true|false # Defaults to false. Set this to enable resolving references found within the sql code.
                                    # The format to be used for specifying the reference is as in the following example:
                                    # SELECT A.* FROM B WHERE C=[reference:example_reference]
-
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
         -
             identifier: referenceId # A string used to identify the reference
-            attribute: attributeId # The attribute to get the value of for the reference (supports: count, ...)
+            attribute: attributeId # The attribute to get the value of for the reference (supports: count, results.ColNameXX
+                                   # where ColNameXX is a column in the results set).
+                                   # NB: take care: if the query returns more than one row, setting a reference with
+                                   # the value of a result set column _will fail_, unless you set `expect: any` or `expect: many`,
+                                   # in which case the reference value will be an array
+    expect: one|any|many # Optional. If set, the number of matched rows will be validated, and the type of values set to created references will change
+                         # 'one': only one row should be matched; reference values will be scalars
+                         # 'any': zero or more rows should be matched; reference values will be arrays
+                         # 'many': one or more rows should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

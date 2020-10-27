@@ -155,8 +155,19 @@ class SQLExecutor extends AbstractExecutor
                     $value = count($result);
                     break;
                 default:
-/// @todo...
-                    throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
+                    if (strpos($reference['attribute'], 'results.') !== 0) {
+                        throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
+                    }
+                    if (count($result)) {
+                        $colName = substr($reference['attribute'], 8);
+                        if (!isset($result[0][$colName])) {
+                            throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
+                        }
+                        $value = array_column($result, $colName);
+                    } else {
+                        // we should validate the requested column name, but we can't...
+                        $value = array();
+                    }
             }
 
             $overwrite = false;
