@@ -20,7 +20,7 @@ class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
         // aliases
         'id', 'identifier'
     );
-    protected $returns = 'Role';
+    protected $returns = 'Section';
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]

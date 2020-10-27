@@ -6,7 +6,6 @@ use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
-
 class EzRichText extends AbstractFieldHandler implements FieldValueImporterInterface
 {
     public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
