@@ -5,3 +5,12 @@
         -
             identifier: affected_rows_num
             attribute: affected_rows
+
+# @todo use a mysql statement that affects at least one row instead of zero...
+
+-
+    type: assert
+    target: reference
+    identifier: reference:affected_rows_num
+    test:
+        equals: 0
