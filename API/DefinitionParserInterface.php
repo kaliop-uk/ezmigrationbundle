@@ -24,7 +24,7 @@ interface DefinitionParserInterface
      * The new definition should have either status STATUS_PARSED and some steps, or STATUS_INVALID and an error message
      *
      * @param MigrationDefinition $definition
-     * @return \Kaliop\eZMigrationBundle\API\Value\MigrationDefinition
+     * @return MigrationDefinition
      */
     public function parseMigrationDefinition(MigrationDefinition $definition);
 }
