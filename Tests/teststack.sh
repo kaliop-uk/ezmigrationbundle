@@ -38,6 +38,7 @@ Commands:
                         - docker-logs     NB: for this to work, you'll need to run this script as root
                         - logs            removes log files from the databases, webservers
     console \$cmd    run a Symfony console command in the test container
+    dbconsole       connect to the eZ database for an interactive session
     enter           enter the test container
     exec \$cmd       execute a single shell command in the test container
     images [\$svc]   list container images
@@ -444,8 +445,12 @@ case "${COMMAND}" in
         ${DOCKER_COMPOSE} config ${2}
     ;;
 
-    console)
+    console | sfconsole)
         docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/sfconsole.sh "$@"' -- "$@"
+    ;;
+
+    dbconsole | dbcli | dbclient)
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/dbconsole.sh "$@"' -- "$@"
     ;;
 
     # courtesy command alias - same as 'ps'
@@ -453,7 +458,7 @@ case "${COMMAND}" in
         ${DOCKER_COMPOSE} ps ${2}
     ;;
 
-    enter)
+    enter | shell | cli)
         docker exec -ti ${WEB_CONTAINER} su ${WEB_USER}
     ;;
 
@@ -490,7 +495,6 @@ case "${COMMAND}" in
     ;;
 
     runtests)
-        # @todo pass to phpunit any further cli options, or at least allow to specify a single test using --filter
         # q: do we need -ti ?
         docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c "./Tests/bin/runtests.sh ${RESET} ${VERBOSITY}"
     ;;
