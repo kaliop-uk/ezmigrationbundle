@@ -61,7 +61,7 @@
         #        mode: load
         #        match:
         #            contenttype_identifier: editor_user
-        #        references_type: array
+        #        expect: many
         #        references:
         #        -
         #            identifier: editor_user_ids
