@@ -470,13 +470,16 @@ case "${COMMAND}" in
     ;;
 
     resetdb)
+        # @todo allow this to be run from within the test container
         # q: do we need -ti ?
         docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/environment/create-db.sh'
     ;;
 
     runtests)
+        # @todo allow this to be run from within the test container
+        # @todo pass to phpunit any further cli options
         # q: do we need -ti ?
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './vendor/phpunit/phpunit/phpunit --stderr --colors Tests/phpunit'
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c "./vendor/phpunit/phpunit/phpunit --stderr --colors ${VERBOSITY} Tests/phpunit"
     ;;
 
     setup)
@@ -491,7 +494,7 @@ case "${COMMAND}" in
         if [ "${SETUP_APP_ON_BOOT}" != '' ]; then
             export COMPOSE_SETUP_APP_ON_BOOT=${SETUP_APP_ON_BOOT}
         fi
-        echo docker-compose ${VERBOSITY} up -d ${2}
+        #echo docker-compose ${VERBOSITY} up -d ${2}
         docker-compose ${VERBOSITY} up -d ${2}
         if [ -z "${2}" ]; then
             wait_for_bootstrap all
