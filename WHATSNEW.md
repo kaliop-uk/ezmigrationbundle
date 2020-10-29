@@ -11,7 +11,21 @@ Version 5.13.0
 
 * New migration step: `sql/query`, which can be used to run SELECT queries on the database.
   Unlike the existing `sql/exec` step (previously known simply as `sql`), this step allows to set reference values with
-  the selected data. For more details, see the complete specification in file SQL.yml
+  the selected data. Ex:
+
+          -
+              type: sql
+              mode: query
+              mysql: "SELECT login FROM ezuser WHERE email like '%@ez.no'"
+              expect: any
+              references:
+                  -
+                      identifier: ezsystems_users_count
+                      attribute: count
+                  -   identifier: ezsystems_users
+                      attribute: results.login
+
+  For more details, see the complete specification in file SQL.yml
 
 * New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
 

@@ -3,7 +3,7 @@
 -
     type: sql
     mode: query
-    mysql: "SELECT CURDATE() AS today UNION SELECT CURDATE()"
+    mysql: "SELECT CURDATE() AS today UNION SELECT CURDATE()+1"
     references:
         -   identifier: ref
             attribute: results.today

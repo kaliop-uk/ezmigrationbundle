@@ -39,7 +39,7 @@ Commands:
                         - logs            removes log files from the databases, webservers
     console \$cmd    run a Symfony console command in the test container
     enter           enter the test container
-    exec \$cmd       execute a shell command in the test container
+    exec \$cmd       execute a single shell command in the test container
     images [\$svc]   list container images
     kill [\$svc]     kill containers
     logs [\$svc]     view output from containers
