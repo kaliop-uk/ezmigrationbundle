@@ -13,12 +13,14 @@ BOOTSTRAP_TIMEOUT=300
 CLEANUP_UNUSED_IMAGES=false
 CONFIG_FILE=
 DEFAULT_CONFIG_FILE=.env
+DOCKER_COMPOSE=docker-compose
 DOCKER_NO_CACHE=
 PARALLEL_BUILD=
 PULL_IMAGES=false
 SILENT=false
 REBUILD=false
 RECREATE=false
+RESET=
 SETUP_APP_ON_BOOT=
 VERBOSITY=
 WEB_CONTAINER=
@@ -35,8 +37,9 @@ Commands:
                         - docker-images   removes only unused images. Can be quite beneficial to free up space
                         - docker-logs     NB: for this to work, you'll need to run this script as root
                         - logs            removes log files from the databases, webservers
+    console \$cmd    run a Symfony console command in the test container
     enter           enter the test container
-    exec \$cmd       execute a command in the test container
+    exec \$cmd       execute a shell command in the test container
     images [\$svc]   list container images
     kill [\$svc]     kill containers
     logs [\$svc]     view output from containers
@@ -52,17 +55,20 @@ Commands:
     unpause [\$svc]  unpause the containers
 
 Options:
-    -c              clean up docker images which have become useless - when running 'build'
     -e FILE         name of an environment file to use instead of .env (has to be used for 'start', not for 'exec' or 'enter').
                     Path relative to the docker folder.
                     The env var TESTSTACK_CONFIG_FILE can also be used as an alternative to this option.
     -h              print help
-    -f              force the app to be set up - when running 'build', 'start'
-    -n              do not set up the app - when running 'build', 'start'
-    -r              force containers to rebuild from scratch (this forces a full app set up as well) - when running 'build'
-    -s              force app set up (via resetting containers to clean-build status besides updating them if needed) - when running 'build'
-    -u              update containers by pulling the base images - when running 'build'
+    -r              reset eZ database and caches - when running 'runtests'. NB: this wipes all your data!
     -v              verbose mode
+
+Advanced Options:
+    -c              clean up docker images which have become useless - when running 'build'
+    -d              discard existing containers and force them to rebuild from scratch (this forces a full app set up as well) - when running 'build'
+    -f              freshen: force app set up via resetting containers to clean-build status besides updating them if needed - when running 'build'
+    -n              do not set up the app - when running 'build', 'start'
+    -s              force the app to be set up - when running 'build', 'start'
+    -u              update (pull) the container base images (this might force a rebuild) - when running 'build'
     -w SECONDS      wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
     -z              avoid using docker cache - when running 'build -r'
 "
@@ -76,12 +82,12 @@ build() {
 
     echo "[`date`] Stopping running Containers..."
 
-    docker-compose ${VERBOSITY} stop
+    ${DOCKER_COMPOSE} stop
 
     if [ ${REBUILD} = 'true' ]; then
         echo "[`date`] Removing existing Containers..."
 
-        docker-compose ${VERBOSITY} rm -f
+        ${DOCKER_COMPOSE} rm -f
     fi
 
     if [ ${PULL_IMAGES} = 'true' ]; then
@@ -108,7 +114,7 @@ build() {
 
     echo "[`date`] Building Containers..."
 
-    docker-compose ${VERBOSITY} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
+    ${DOCKER_COMPOSE} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
     RETCODE=$?
     if [ ${RETCODE} -ne 0 ]; then
         exit ${RETCODE}
@@ -122,9 +128,9 @@ build() {
     echo "[`date`] Starting Containers..."
 
     if [ ${RECREATE} = 'true' ]; then
-        docker-compose ${VERBOSITY} up -d --force-recreate
+        ${DOCKER_COMPOSE} up -d --force-recreate
     else
-        docker-compose ${VERBOSITY} up -d
+        ${DOCKER_COMPOSE} up -d
     fi
 
     wait_for_bootstrap all
@@ -270,7 +276,7 @@ setup_app() {
 
     # avoid automatic app setup being triggered here
     export COMPOSE_SETUP_APP_ON_BOOT=skip
-    docker-compose ${VERBOSITY} up -d
+    ${DOCKER_COMPOSE} up -d
 
     wait_for_bootstrap all
     RETCODE=$?
@@ -279,7 +285,7 @@ setup_app() {
     fi
 
     echo "[`date`] Setting up eZ..."
-    docker exec ${WEB_CONTAINER} su ${WEB_USER} -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
+    docker exec ${WEB_CONTAINER} su ${WEB_USER} -c "cd /home/test/ezmigrationbundle && ./Tests/b/setup.sh; echo \$? > /tmp/setup_ok"
 
     # @bug WEB_CONTAINER is not defined in subshell ?
     echo "[`date`] Setup finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
@@ -351,17 +357,20 @@ wait_for_bootstrap() {
 
 # @todo move to a function
 # @todo allow parsing of cli options after args -- see fe. https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
-while getopts ":ce:fhnrsuvwyz" opt
+while getopts ":cde:fhnrsuvwyz" opt
 do
     case $opt in
         c)
             CLEANUP_UNUSED_IMAGES=true
         ;;
+        d)
+            REBUILD=true
+        ;;
         e)
             CONFIG_FILE=${OPTARG}
         ;;
         f)
-            SETUP_APP_ON_BOOT=force
+            RECREATE=true
         ;;
         h)
             help
@@ -371,21 +380,22 @@ do
             SETUP_APP_ON_BOOT=skip
         ;;
         r)
-            REBUILD=true
+            RESET=-r
         ;;
         s)
-            RECREATE=true
+            SETUP_APP_ON_BOOT=force
         ;;
         u)
             PULL_IMAGES=true
         ;;
         v)
-            VERBOSITY=--verbose
+            VERBOSITY=-v
+            DOCKER_COMPOSE="${DOCKER_COMPOSE} --verbose"
         ;;
         w)
             BOOTSTRAP_TIMEOUT=${OPTARG}
         ;;
-        Y)
+        y)
             SILENT=true
         ;;
         z)
@@ -431,12 +441,16 @@ case "${COMMAND}" in
     ;;
 
     config)
-        docker-compose ${VERBOSITY} config ${2}
+        ${DOCKER_COMPOSE} config ${2}
+    ;;
+
+    console)
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/sfconsole.sh "$@"' -- "$@"
     ;;
 
     # courtesy command alias - same as 'ps'
     containers)
-        docker-compose ${VERBOSITY} ps ${2}
+        ${DOCKER_COMPOSE} ps ${2}
     ;;
 
     enter)
@@ -450,36 +464,35 @@ case "${COMMAND}" in
     ;;
 
     images)
-        docker-compose ${VERBOSITY} images ${2}
+        ${DOCKER_COMPOSE} images ${2}
     ;;
 
     kill)
-        docker-compose ${VERBOSITY} kill ${2}
+        ${DOCKER_COMPOSE} kill ${2}
     ;;
 
     logs)
-        docker-compose ${VERBOSITY} logs ${2}
+        ${DOCKER_COMPOSE} logs ${2}
     ;;
 
     pause)
-        docker-compose ${VERBOSITY} pause ${2}
+        ${DOCKER_COMPOSE} pause ${2}
     ;;
 
     ps)
-        docker-compose ${VERBOSITY} ps ${2}
+        ${DOCKER_COMPOSE} ps ${2}
     ;;
 
     resetdb)
         # @todo allow this to be run from within the test container
         # q: do we need -ti ?
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/environment/create-db.sh'
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/create-db.sh'
     ;;
 
     runtests)
-        # @todo allow this to be run from within the test container
-        # @todo pass to phpunit any further cli options
+        # @todo pass to phpunit any further cli options, or at least allow to specify a single test using --filter
         # q: do we need -ti ?
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c "./vendor/phpunit/phpunit/phpunit --stderr --colors ${VERBOSITY} Tests/phpunit"
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c "./Tests/bin/runtests.sh ${RESET} ${VERBOSITY}"
     ;;
 
     setup)
@@ -494,8 +507,7 @@ case "${COMMAND}" in
         if [ "${SETUP_APP_ON_BOOT}" != '' ]; then
             export COMPOSE_SETUP_APP_ON_BOOT=${SETUP_APP_ON_BOOT}
         fi
-        #echo docker-compose ${VERBOSITY} up -d ${2}
-        docker-compose ${VERBOSITY} up -d ${2}
+        ${DOCKER_COMPOSE} up -d ${2}
         if [ -z "${2}" ]; then
             wait_for_bootstrap all
             exit $?
@@ -506,15 +518,15 @@ case "${COMMAND}" in
     ;;
 
     stop)
-        docker-compose ${VERBOSITY} stop ${2}
+        ${DOCKER_COMPOSE} stop ${2}
     ;;
 
     top)
-        docker-compose ${VERBOSITY} top ${2}
+        ${DOCKER_COMPOSE} top ${2}
     ;;
 
     unpause)
-        docker-compose ${VERBOSITY} unpause ${2}
+        ${DOCKER_COMPOSE} unpause ${2}
     ;;
 
     *)

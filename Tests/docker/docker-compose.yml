@@ -33,8 +33,9 @@ services:
             # Configuration used by Symfony when running via phpunit
             - APP_ENV=${APP_ENV:-behat}
             - SYMFONY_ENV=${SYMFONY_ENV:-behat}
-            - KERNEL_CLASS=${KERNEL_CLASS:-AppKernel}
-            - KERNEL_DIR=${KERNEL_DIR:-vendor/ezsystems/ezplatform/app}
+            # the following two are set up by the shell scripts we use to run phpunit
+            #- KERNEL_CLASS=${KERNEL_CLASS:-AppKernel}
+            #- KERNEL_DIR=${KERNEL_DIR:-vendor/ezsystems/ezplatform/app}
             # As opposed to TRAVIS=true ;-)
             - DOCKER=true
         volumes:

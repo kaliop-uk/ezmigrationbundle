@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-# Set up fully the test environment (except for installing required sw packages).
+# Set up fully the test environment (except for installing required sw packages): php, mysql, eZ, etc...
 # Has to be useable from Docker as well as from Travis.
 #
-# Uses env vars: CODE_COVERAGE, EZ_PACKAGES, EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS_PHP_VERSION
+# Uses env vars: CODE_COVERAGE, EZ_COMPOSER_LOCK, EZ_PACKAGES, EZ_VERSION, TRAVIS_PHP_VERSION
 
 # @todo check if all required env vars have a value
+# @todo support a -v option
 
 set -ev
 
@@ -38,11 +39,11 @@ fi
 
 # Increase php memory limit (need to do this now or we risk composer failing)
 if [ "${TRAVIS}" = "true" ]; then
-    phpenv config-add Tests/environment/zzz_php.ini
+    phpenv config-add Tests/config/php/zzz_php.ini
 else
     INI_PATH=$(php -i | grep 'Scan this dir for additional .ini files')
     INI_PATH=${INI_PATH/Scan this dir for additional .ini files => /}
-    sudo cp Tests/environment/zzz_php.ini ${INI_PATH}
+    sudo cp Tests/config/php/zzz_php.ini ${INI_PATH}
 fi
 
 # Disable xdebug for speed (both for executing composer and running tests), but allow us to e-enable it later
@@ -90,10 +91,10 @@ if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
 fi
 
 # Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
-./Tests/environment/create-db.sh
+./Tests/bin/create-db.sh
 
 # Set up configuration files
-./Tests/environment/setup-ez-config.sh
+./Tests/bin/setup-ez-config.sh
 
 # TODO are these needed at all?
 #php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat assetic:dump

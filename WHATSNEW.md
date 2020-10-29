@@ -15,15 +15,20 @@ Version 5.13.0
 
 * New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
 
+* New: taught the test-execution command `teststack.sh` a new action: `console`, as well as new option `-r runtests`
+
 * Improved: a single value for a content field of type ezcountry can be specified as a string instead of an array (issue #190)
 
 * Improved: made console command `kaliop:migration:migrate` survive the case of migrations registered in the database
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
   in this case
 
+* Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
+
 * Fixed: regressions when running the test-execution command `teststack.sh` with the `-u` option or `resetdb` action
 
-* Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
+* BC change: some options for the test-execution command `teststack.sh` have been renamed, see `teststack.sh -h`
+  for the new list
 
 * BC change: the `references_type` and `references_allow_empty` step elements have been replaced by a new element: `expect`
 

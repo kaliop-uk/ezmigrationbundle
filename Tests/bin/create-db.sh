@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
-# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, MYSQL_DATABASE, MYSQL_HOST, MYSQL_PASSWORD, MYSQL_USER
+# Set up a pristine eZ database and accompanying user (mysql only)
+# NB: drops both the db and the user if they are pre-existing!
+#
+# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, MYSQL_DATABASE, MYSQL_HOST, MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, MYSQL_USER
+
+# @todo support a -v option
+
+set -e
+
+source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
 
 ROOT_DB_USER=root
 ROOT_DB_PWD=
@@ -25,7 +34,8 @@ if [ "${EZ_VERSION}" = "ezpublish-community" -a "${TRAVIS}" = "true" ]; then
 fi
 
 ${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${MYSQL_DATABASE};"
-# @todo drop user if it exists (easy on mysql 5.7 and later, not so much on 5.6...)
+# @todo drop user only if it exists (easy on mysql 5.7 and later, not so much on 5.6...)
+${ROOT_DB_COMMAND} -e "DROP USER '${MYSQL_USER}'@'%';" 2>/dev/null || :
 ${ROOT_DB_COMMAND} -e "CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';" 2>/dev/null
 ${ROOT_DB_COMMAND} -e "CREATE DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8mb4; GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%'"
 
@@ -42,11 +52,7 @@ elif [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" -o "${E
     fi
 
     # work around bug https://jira.ez.no/browse/EZP-31586: the db schema delivered in kernel 7.5.7 does not contain _all_ columns!
-    composer show | grep ezsystems/ezpublish-kernel | grep -q 7.5.7
-    OK=$?
-    if [ "${OK}" -eq 0 ]; then
-        ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/update/mysql/dbupdate-7.5.4-to-7.5.5.sql
-    fi
+    [[ $(composer show | grep ezsystems/ezpublish-kernel | grep -F -q 7.5.7) ]] && ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/update/mysql/dbupdate-7.5.4-to-7.5.5.sql
 fi
 
 if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then

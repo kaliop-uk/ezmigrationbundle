@@ -1,27 +1,26 @@
 #!/usr/bin/env bash
 
-# Set up configuration files
-
-# Uses env vars: EZ_VERSION, KERNEL_DIR, INSTALL_SOLRBUNDLE, INSTALL_TAGSBUNDLE
+# Set up eZ configuration files
+#
+# Uses env vars: EZ_VERSION, KERNEL_CLASS, KERNEL_DIR, INSTALL_SOLRBUNDLE, INSTALL_TAGSBUNDLE
 
 # @todo check if all required vars have a value
+# @todo use 'set -e' to insure a proper setup
+
+source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
 
 if [ "${EZ_VERSION}" = "ezplatform3" ]; then
     APP_DIR=vendor/ezsystems/ezplatform
     CONFIG_DIR=${APP_DIR}/config
-    EZ_KERNEL=Kernel
 elif [ "${EZ_VERSION}" = "ezplatform2" ]; then
     APP_DIR=vendor/ezsystems/ezplatform
     CONFIG_DIR=${APP_DIR}/app/config
-    EZ_KERNEL=AppKernel
 elif [ "${EZ_VERSION}" = "ezplatform" ]; then
     APP_DIR=vendor/ezsystems/ezplatform
     CONFIG_DIR=${APP_DIR}/app/config
-    EZ_KERNEL=AppKernel
 elif [ "${EZ_VERSION}" = "ezpublish-community" ]; then
     APP_DIR=vendor/ezsystems/ezpublish-community
     CONFIG_DIR=${APP_DIR}/ezpublish/config
-    EZ_KERNEL=EzPublishKernel
 else
     echo "Unsupported eZ version: ${EZ_VERSION}"
     exit 1
@@ -56,40 +55,40 @@ if [ -f Tests/config/${EZ_VERSION}/ezplatform.yml ]; then
 fi
 
 # Load the migration bundle in the Sf kernel
-fgrep -q 'new Kaliop\eZMigrationBundle\EzMigrationBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
+fgrep -q 'new Kaliop\eZMigrationBundle\EzMigrationBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
 if [ $? -ne 0 ]; then
-    sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${KERNEL_DIR}/${EZ_KERNEL}.php
-    sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    sed -i 's/$bundles = array(/$bundles = array(new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+    sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${KERNEL_DIR}/${KERNEL_CLASS}.php
 fi
 
 # And optionally the EzCoreExtraBundle bundle
 if [ "${EZ_VERSION}" = "ezplatform2" ]; then
-    fgrep -q 'new Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    fgrep -q 'new Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
     if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new Lolautruche\\\\\EzCoreExtraBundle\\\\\EzCoreExtraBundle()," ${KERNEL_DIR}/${EZ_KERNEL}.php
+        sed -i "/${LAST_BUNDLE}()/i new Lolautruche\\\\\EzCoreExtraBundle\\\\\EzCoreExtraBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
     fi
 fi
 
 # And optionally the Netgen tags bundle
 if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then
-    fgrep -q 'new Netgen\TagsBundle\NetgenTagsBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    fgrep -q 'new Netgen\TagsBundle\NetgenTagsBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
     if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new Netgen\\\\\TagsBundle\\\\\NetgenTagsBundle()," ${KERNEL_DIR}/${EZ_KERNEL}.php
+        sed -i "/${LAST_BUNDLE}()/i new Netgen\\\\\TagsBundle\\\\\NetgenTagsBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
     fi
 fi
 
 if [ "${INSTALL_SOLRBUNDLE}" = "1" ]; then
-    fgrep -q 'new EzSystems\EzPlatformSolrSearchEngineBundle\EzSystemsEzPlatformSolrSearchEngineBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    fgrep -q 'new EzSystems\EzPlatformSolrSearchEngineBundle\EzSystemsEzPlatformSolrSearchEngineBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
     if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformSolrSearchEngineBundle\\\\\EzSystemsEzPlatformSolrSearchEngineBundle()," ${KERNEL_DIR}/${EZ_KERNEL}.php
+        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformSolrSearchEngineBundle\\\\\EzSystemsEzPlatformSolrSearchEngineBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
     fi
 fi
 
 # For eZPlatform, load the xmltext bundle
 if [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" ]; then
-    fgrep -q 'new EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle()' ${KERNEL_DIR}/${EZ_KERNEL}.php
+    fgrep -q 'new EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
     if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformXmlTextFieldTypeBundle\\\\\EzSystemsEzPlatformXmlTextFieldTypeBundle()," ${KERNEL_DIR}/${EZ_KERNEL}.php
+        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformXmlTextFieldTypeBundle\\\\\EzSystemsEzPlatformXmlTextFieldTypeBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
     fi
 fi
 
