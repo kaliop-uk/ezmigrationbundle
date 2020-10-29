@@ -1,0 +1,7 @@
+# should fail
+
+-
+    type: sql
+    mode: query
+    mysql: "SELECT CURDATE() AS today FROM ezcontentobject WHERE 1 = 0"
+    expect: many

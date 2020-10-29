@@ -1,0 +1,9 @@
+# should fail
+
+-
+    type: sql
+    mode: query
+    mysql: "SELECT CURDATE() AS today UNION SELECT CURDATE()"
+    references:
+        -   identifier: ref
+            attribute: results.today
