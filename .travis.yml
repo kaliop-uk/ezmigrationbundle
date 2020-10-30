@@ -59,7 +59,7 @@ install:
   - travis_wait 30 ./Tests/bin/setup.sh
 
 script:
-  - if [ "$CODE_COVERAGE" = "1" ]; then ./Tests/bin/runtests.sh --coverage-clover=coverage.clover else ./Tests/bin/runtests.sh; fi
+  - if [ "$CODE_COVERAGE" = "1" ]; then ./Tests/bin/runtests.sh -c coverage.clover; else ./Tests/bin/runtests.sh; fi
 
 #after_failure:
   # Display as much info as we can to help developers

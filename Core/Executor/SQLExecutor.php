@@ -98,24 +98,30 @@ class SQLExecutor extends AbstractExecutor
             $sql = $this->referenceResolver->resolveEmbeddedReferences($sql);
         }
 
+        $singleResult = ($this->getResultsType($step) == self::$RESULT_TYPE_SINGLE);
         /** @var \Doctrine\DBAL\Driver\Statement $stmt */
         $stmt = $conn->query($sql);
-        if ($this->getResultsType($step) == self::$RESULT_TYPE_SINGLE) {
-            // fetch twice, to insure that we get only 1 row
+        if ($singleResult) {
+            // fetch only twice, to insure that we get only 1 row. This can save ram compared to fetching all rows
             $result = $stmt->fetch();
+            if ($result === false) {
+                throw new \Exception('Found no results but expect one');
+            }
             if ($stmt->fetch() !== false) {
+                $stmt->closeCursor();
                 throw new \Exception('Found two (or more) results but expect only one');
             }
             $stmt->closeCursor();
-
+            $result = array($result);
         } else {
             // fetch all rows
             $result = $stmt->fetchAll();
+            $stmt->closeCursor();
 
             $this->validateResultsCount($result, $step);
         }
 
-        $this->setQueryReferences($result, $step);
+        $this->setQueryReferences($result, $step, $singleResult);
 
         return $result;
     }
@@ -143,7 +149,7 @@ class SQLExecutor extends AbstractExecutor
         }
     }
 
-    protected function setQueryReferences($result, $step)
+    protected function setQueryReferences($result, $step, $singleResult)
     {
         if (!array_key_exists('references', $step->dsl)) {
             return false;
@@ -164,7 +170,9 @@ class SQLExecutor extends AbstractExecutor
                             throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
                         }
                         $value = array_column($result, $colName);
-/// @todo if we have expect: one, we should return a scalar, not an array...
+                        if ($singleResult) {
+                            $value = reset($value);
+                        }
                     } else {
                         // we should validate the requested column name, but we can't...
                         $value = array();
