@@ -100,7 +100,8 @@ class SQLExecutor extends AbstractExecutor
 
         $singleResult = ($this->getResultsType($step) == self::$RESULT_TYPE_SINGLE);
         /** @var \Doctrine\DBAL\Driver\Statement $stmt */
-        $stmt = $conn->query($sql);
+        // NB: we can't use `query()` because of https://jira.ez.no/browse/EZEE-3345
+        $stmt = $conn->executeQuery($sql);
         if ($singleResult) {
             // fetch only twice, to insure that we get only 1 row. This can save ram compared to fetching all rows
             $result = $stmt->fetch();
