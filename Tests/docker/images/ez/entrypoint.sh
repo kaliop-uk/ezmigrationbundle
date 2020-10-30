@@ -58,19 +58,31 @@ trap clean_up TERM
 
 if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
 
+    # @todo why not move handling of the 'vendor' symlink to setup.sh ?
+
     P_V=$(php -r 'echo PHP_VERSION;')
+    # @todo we should add to the hash calculation EZ_VERSION as well
     HASH=$(echo "${P_V} ${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
 
     # We hash the name of the vendor folder based on packages to install. This allows quick swaps
     if [ -L /home/test/ezmigrationbundle/vendor -o ! -d /home/test/ezmigrationbundle/vendor ]; then
+        echo "[`date`] Setting up vendor folder as symlink..."
         if [ ! -d /home/test/ezmigrationbundle/vendor_${HASH} ]; then
             mkdir /home/test/ezmigrationbundle/vendor_${HASH}
+
         fi
         chown -R test:test /home/test/ezmigrationbundle/vendor_${HASH}
         if [ -L /home/test/ezmigrationbundle/vendor ]; then
-            rm /home/test/ezmigrationbundle/vendor
+            TARGET=$(readlink -f /home/test/ezmigrationbundle/vendor)
+            if [ "${TARGET}" != "/home/test/ezmigrationbundle/vendor_${HASH}" ]; then
+                rm /home/test/ezmigrationbundle/vendor
+                ln -s /home/test/ezmigrationbundle/vendor_${HASH} /home/test/ezmigrationbundle/vendor
+                if [ -f /tmp/setup_ok ]; then rm /tmp/setup_ok; fi
+            fi
+        else
+            ln -s /home/test/ezmigrationbundle/vendor_${HASH} /home/test/ezmigrationbundle/vendor
+            if [ -f /tmp/setup_ok ]; then rm /tmp/setup_ok; fi
         fi
-        ln -s /home/test/ezmigrationbundle/vendor_${HASH} /home/test/ezmigrationbundle/vendor
     fi
 
     # @todo try to reinstall if last install did fail, even if /tmp/setup_ok does exist...

@@ -23,6 +23,7 @@ services:
             # to be kept in sync with the hostname of the mysql container a few lines below
             - MYSQL_HOST=${MYSQL_HOST:-mysql}
             - COMPOSE_SETUP_APP_ON_BOOT
+            # is this useful for something or just a leftover?
             ###- PHP_VERSION=${COMPOSE_PHP_VERSION:-default}
             # Configuration for the eZ test env to build
             - CODE_COVERAGE=${CODE_COVERAGE:-0}
@@ -39,7 +40,7 @@ services:
             # As opposed to TRAVIS=true ;-)
             - DOCKER=true
         volumes:
-            # @todo is there any value in using env vars for these folders?
+            # @todo would there be any value in using env vars for these folders?
             - ../../:/home/test/ezmigrationbundle
             - ./data/.composer/:/home/test/.composer
 
@@ -63,7 +64,7 @@ services:
             - DOCKER=true
         volumes:
             #- ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            # @todo is there any value in using env vars for these folders?
+            # @todo would there be any value in using env vars for these folders?
             - ./data/mysql/:/var/lib/mysql
             - ./logs/mysql/:/var/log/mysql
         #tmpfs:
