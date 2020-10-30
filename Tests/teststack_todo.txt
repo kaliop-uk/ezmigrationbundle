@@ -13,6 +13,7 @@
 - teststack.sh: add a check for min docker, docker-compose version (note: seems like we can use --env-file only since docker-compose 1.24)
 - also: give to the user a friendlier error message if he's not in the docker group
 - teststack.sh: add commands to clean up ez caches & logs (via rm, not ca:cl), dead container networks and volumes, etc...
+- allow to install different mysql clients (at least for debian versions which have them)
 - make installation of java in ez container optional
 - add more services? eg. redis, postgres
 

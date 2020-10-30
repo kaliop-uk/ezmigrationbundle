@@ -47,6 +47,11 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.12 ezsystems/ezplatform-xmltext-fieldtype:^1.9 ezsystems/behatbundle:^7.0 netgen/tagsbundle:^3.4 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
 before_install:
+  # Note: as of 2020/10/30, composer self-updates to rev. 2.0 for php 5.6-7.2, but not for 7.3 and 7.4... most likely
+  # because the starting revision is >= 1.10.10 for the latter envs (composer changelog for 1.10.10 includes:
+  # `Fixed self-update to avoid automatically upgrading to the next major version once it becomes stable`)
+  # So to make sure we use composer 2 on all envs, we should un comment the following:
+  #- composer --version | grep -q -F ' 1.' && composer self-update --2
   - sudo apt-get update
   - sudo apt-get install -y zip unzip
   # No need for a web server, until we start testing using Selenium

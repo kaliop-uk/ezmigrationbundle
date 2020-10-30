@@ -3,6 +3,7 @@
 # Uses env vars: MYSQL_DATABASE, MYSQL_HOST, MYSQL_PASSWORD, MYSQL_USER
 
 # @todo support a -v option
+# @todo add support for postregs
 
 set -e
 

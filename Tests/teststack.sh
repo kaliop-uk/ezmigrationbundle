@@ -36,6 +36,8 @@ Commands:
                         - data            NB: this removes all your data! Better done when containers are stopped
                         - docker-images   removes only unused images. Can be quite beneficial to free up space
                         - docker-logs     NB: for this to work, you'll need to run this script as root
+                        - ez-cache
+                        - ez-logs
                         - logs            removes log files from the databases, webservers
     console \$cmd    run a Symfony console command in the test container
     dbconsole       connect to the eZ database for an interactive session
@@ -195,14 +197,12 @@ cleanup() {
                 fi
             done
         ;;
-        # @todo clean up ez caches
-        #ez-cache)
-        #    find ../app/var/cache/ -type f ! -name .gitkeep -delete
-        #;;
-        # @todo clean up ez logs
-        #ez-logs)
-        #    find ../app/var/cache/ -type f ! -name .gitkeep -delete
-        #;;
+        ez-cache)
+            docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/cleanup.sh ez-cache'
+        ;;
+        ez-logs)
+            docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/cleanup.sh ez-cache'
+        ;;
         logs)
             find ./logs/ -type f ! -name .gitkeep -delete
             #find ../app/var/log/ -type f ! -name .gitkeep -delete
@@ -286,7 +286,7 @@ setup_app() {
     fi
 
     echo "[`date`] Setting up eZ..."
-    docker exec ${WEB_CONTAINER} su ${WEB_USER} -c "cd /home/test/ezmigrationbundle && ./Tests/b/setup.sh; echo \$? > /tmp/setup_ok"
+    docker exec ${WEB_CONTAINER} su ${WEB_USER} -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
 
     # @bug WEB_CONTAINER is not defined in subshell ?
     echo "[`date`] Setup finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"

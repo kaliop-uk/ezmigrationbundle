@@ -25,8 +25,13 @@ done
 shift $((OPTIND-1))
 
 if [ "${RESET}" = true ]; then
+    echo "Resetting the database..."
     $(dirname ${BASH_SOURCE[0]})/create-db.sh
-    $(dirname ${BASH_SOURCE[0]})/sfconsole.sh ${VERBOSITY} cache:clear
+    echo "Purging eZ caches..."
+    # Some manipulations make the SF console fail to run - that's why we prefer to clear the cache via file purge
+    #$(dirname ${BASH_SOURCE[0]})/sfconsole.sh ${VERBOSITY} cache:clear
+    $(dirname ${BASH_SOURCE[0]})/cleanup.sh ez-cache
+    echo "Running the tests..."
 fi
 
 # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014

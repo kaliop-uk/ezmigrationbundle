@@ -22,7 +22,7 @@ elif [ "${EZ_VERSION}" = "ezpublish-community" ]; then
     APP_DIR=vendor/ezsystems/ezpublish-community
     CONFIG_DIR=${APP_DIR}/ezpublish/config
 else
-    echo "Unsupported eZ version: ${EZ_VERSION}"
+    printf "\n\e[31mERROR: unsupported eZ version: ${EZ_VERSION}\e[0m\n\n" >&2
     exit 1
 fi
 

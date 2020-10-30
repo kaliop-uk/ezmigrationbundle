@@ -3,7 +3,7 @@
 # Set up fully the test environment (except for installing required sw packages): php, mysql, eZ, etc...
 # Has to be useable from Docker as well as from Travis.
 #
-# Uses env vars: CODE_COVERAGE, EZ_COMPOSER_LOCK, EZ_PACKAGES, EZ_VERSION, TRAVIS_PHP_VERSION
+# Uses env vars: CODE_COVERAGE, EZ_COMPOSER_LOCK, EZ_PACKAGES, EZ_VERSION, TRAVIS, TRAVIS_PHP_VERSION
 
 # @todo check if all required env vars have a value
 # @todo support a -v option
@@ -97,8 +97,8 @@ fi
 ./Tests/bin/setup-ez-config.sh
 
 # TODO are these needed at all?
-#php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat assetic:dump
-#php vendor/ezsystems/ezpublish-community/ezpublish/console --env=behat cache:clear --no-debug
+#$(dirname ${BASH_SOURCE[0]})/sfconsole.sh assetic:dump
+#$(dirname ${BASH_SOURCE[0]})/sfconsole.sh cache:clear --no-debug
 
 # TODO for eZPlatform, do we need to set up SOLR as well ?
 #if [ "$EZ_VERSION" != "ezpublish" ]; then ./vendor/ezsystems/ezplatform-solr-search-engine && bin/.travis/init_solr.sh; fi
