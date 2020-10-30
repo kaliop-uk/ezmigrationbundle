@@ -14,7 +14,7 @@
     match_limit: 0 # optional
     match_sort: # optional. If set, it has to be an array
         - { sort_field: content_id|content_name|modified|published|section_identifier|section_name, sort_order: ASC|DESC }
-    parent_location: y # The Location ID of the parent where the new location should be placed. When a non numeric string is used, it is assumed to be a location remote id
+    parent_location: y # The Location ID of the parent where the new location(s) should be placed. When a non numeric string is used, it is assumed to be a location remote id
     is_hidden: true|false # Optional
     is_main: true # Optional: make this the main location. NB: will *not* unset this location from being main if set to false
     priority: x # Optional
@@ -43,6 +43,7 @@
                                    # depth, is_hidden, main_language_code, main_location_id, main_language_code,
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
+    expect: one|any|many # Optional. If set, the number of _created locations_ will be validated, and the type of values set to created references will change
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -207,6 +208,8 @@
     mode: trash
     match: ... # The locations to delete. See location/delete for the description
     references: ... # Optional. See location/delete for the description
+    expect: one|any|many # Optional. See location/delete for the description
+    if: [] # Optional. See location/delete for the description
 
 -
     type: location

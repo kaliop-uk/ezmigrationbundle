@@ -62,8 +62,6 @@ class LocationManager extends RepositoryExecutor
 
         $contentCollection = $this->matchContents('create', $step);
 
-/// @todo enforce the expected number of contents
-
         $locations = array();
         foreach ($contentCollection as $content) {
             $contentInfo = $content->contentInfo;
@@ -104,6 +102,8 @@ class LocationManager extends RepositoryExecutor
         }
 
         $locationCollection = new LocationCollection($locations);
+
+        $this->validateResultsCount($locationCollection, $step);
 
         $this->setReferences($locationCollection, $step);
 
@@ -228,6 +228,8 @@ class LocationManager extends RepositoryExecutor
     {
         $locationCollection = $this->matchLocations('delete', $step);
 
+        $this->validateResultsCount($locationCollection, $step);
+
         $this->setReferences($locationCollection, $step);
 
         $locationService = $this->repository->getLocationService();
@@ -245,6 +247,8 @@ class LocationManager extends RepositoryExecutor
     protected function trash($step)
     {
         $locationCollection = $this->matchLocations('delete', $step);
+
+        $this->validateResultsCount($locationCollection, $step);
 
         $this->setReferences($locationCollection, $step);
 
