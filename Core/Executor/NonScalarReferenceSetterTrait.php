@@ -29,7 +29,7 @@ trait NonScalarReferenceSetterTrait
                 throw new \InvalidArgumentException($this->getSelfName() . ' found multiple matching ' . $this->getResultsName($results) . 's but expects one');
             }
             if (count($results) == 0 && !$this->allowEmptyResults($step)) {
-                throw new \InvalidArgumentException($this->getSelfName() . ' found no matching' . $this->getResultsName($results) . 's but expects at least one');
+                throw new \InvalidArgumentException($this->getSelfName() . ' found no matching ' . $this->getResultsName($results) . 's but expects at least one');
             }
         }
     }
