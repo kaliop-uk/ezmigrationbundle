@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
@@ -81,14 +82,14 @@ abstract class RepositoryExecutor extends AbstractExecutor
         parent::execute($step);
 
         if (!isset($step->dsl['mode'])) {
-            throw new \Exception("Invalid step definition: missing 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'mode'");
         }
 
         // q: should we convert snake_case to camelCase ?
         $action = $step->dsl['mode'];
 
         if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         if (method_exists($this, $action)) {
@@ -109,7 +110,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
             return $output;
         } else {
-            throw new \Exception("Invalid step definition: value '$action' is not a method of " . get_class($this));
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not a method of " . get_class($this));
         }
     }
 

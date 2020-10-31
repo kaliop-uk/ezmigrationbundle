@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
@@ -38,13 +39,13 @@ class MigrationExecutor extends AbstractExecutor
         parent::execute($step);
 
         if (!isset($step->dsl['mode'])) {
-            throw new \Exception("Invalid step definition: missing 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'mode'");
         }
 
         $action = $step->dsl['mode'];
 
         if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         return $this->$action($step->dsl, $step->context);
@@ -81,7 +82,7 @@ class MigrationExecutor extends AbstractExecutor
         $message = isset($dsl['message']) ? $dsl['message'] : '';
 
         if (!isset($dsl['until'])) {
-            throw new \Exception("An until condition is required to suspend a migration");
+            throw new InvalidStepDefinitionException("An until condition is required to suspend a migration");
         }
 
         if (isset($dsl['load'])) {
@@ -100,7 +101,7 @@ class MigrationExecutor extends AbstractExecutor
     protected function sleep($dsl, $context)
     {
         if (!isset($dsl['seconds'])) {
-            throw new \Exception("A 'seconds' element is required when putting a migration to sleep");
+            throw new InvalidStepDefinitionException("A 'seconds' element is required when putting a migration to sleep");
         }
 
         sleep($dsl['seconds']);
@@ -110,7 +111,7 @@ class MigrationExecutor extends AbstractExecutor
     protected function loadEntity($dsl, $context)
     {
         if (!isset($dsl['type']) || !isset($dsl['match'])) {
-            throw new \Exception("A 'type' and a 'match' are required to load entities when suspending a migration");
+            throw new InvalidStepDefinitionException("A 'type' and a 'match' are required to load entities when suspending a migration");
         }
 
         $dsl['mode'] = 'load';
@@ -153,7 +154,7 @@ class MigrationExecutor extends AbstractExecutor
                     return $this->matchConditions($values);
 
                 default:
-                    throw new \Exception("Unknown until condition: '$key' when suspending a migration ".var_export($conditions, true));
+                    throw new InvalidStepDefinitionException("Unknown until condition: '$key' when suspending a migration ".var_export($conditions, true));
             }
         }
     }

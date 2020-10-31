@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Symfony\Component\Process\Process;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
@@ -37,13 +38,13 @@ class ProcessExecutor extends AbstractExecutor
         parent::execute($step);
 
         if (!isset($step->dsl['mode'])) {
-            throw new \Exception("Invalid step definition: missing 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'mode'");
         }
 
         $action = $step->dsl['mode'];
 
         if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         $this->skipStepIfNeeded($step);
@@ -61,7 +62,7 @@ class ProcessExecutor extends AbstractExecutor
     protected function run($dsl, $context)
     {
         if (!isset($dsl['command'])) {
-            throw new \Exception("Can not run process: command missing");
+            throw new InvalidStepDefinitionException("Can not run process: command missing");
         }
 
         $builder = new ProcessBuilder();

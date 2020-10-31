@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
@@ -37,13 +38,13 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         parent::execute($step);
 
         if (!isset($step->dsl['mode'])) {
-            throw new \Exception("Invalid step definition: missing 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'mode'");
         }
 
         $action = $step->dsl['mode'];
 
         if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         $this->skipStepIfNeeded($step);
@@ -109,10 +110,10 @@ class MigrationDefinitionExecutor extends AbstractExecutor
     public function save($dsl, $context)
     {
         if (!isset($dsl['migration_steps'])) {
-            throw new \Exception("Invalid step definition: miss 'migration_steps'");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'migration_steps'");
         }
         if (!isset($dsl['file'])) {
-            throw new \Exception("Invalid step definition: miss 'file'");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'file'");
         }
 
         if (is_string($dsl['migration_steps'])) {
@@ -131,6 +132,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         /// @todo what to return ?
     }
 
+    /// @todo move to a Loader service
     protected function saveDefinition($definition, $fileName)
     {
         $ext = pathinfo(basename($fileName), PATHINFO_EXTENSION);

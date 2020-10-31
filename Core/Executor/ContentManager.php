@@ -11,6 +11,7 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
@@ -340,7 +341,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function matchContents($action, $step)
     {
         if (!isset($step->dsl['object_id']) && !isset($step->dsl['remote_id']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The id or remote id of an object or a match condition is required to $action a content");
+            throw new InvalidStepDefinitionException("The id or remote id of an object or a match condition is required to $action a content");
         }
 
         // Backwards compat

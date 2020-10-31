@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use Kaliop\eZMigrationBundle\API\Collection\TrashedItemCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\TrashMatcher;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
 
@@ -92,7 +93,7 @@ class TrashManager extends RepositoryExecutor
     protected function matchItems($action, $step)
     {
         if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action trash items");
+            throw new InvalidStepDefinitionException("A match condition is required to $action trash items");
         }
 
         // convert the references passed in the match

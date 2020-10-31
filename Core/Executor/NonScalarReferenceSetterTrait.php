@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 /**
@@ -26,10 +27,10 @@ trait NonScalarReferenceSetterTrait
         // q: what if we get a scalar result but we expect an array/collection ?
         if (is_array($results) || $results instanceof AbstractCollection) {
             if (count($results) > 1 && !$this->allowMultipleResults($step)) {
-                throw new \InvalidArgumentException($this->getSelfName() . ' found multiple matching ' . $this->getResultsName($results) . 's but expects one');
+                throw new InvalidMatchResultsNumberException($this->getSelfName() . ' found multiple matching ' . $this->getResultsName($results) . 's but expects one');
             }
             if (count($results) == 0 && !$this->allowEmptyResults($step)) {
-                throw new \InvalidArgumentException($this->getSelfName() . ' found no matching ' . $this->getResultsName($results) . 's but expects at least one');
+                throw new InvalidMatchResultsNumberException($this->getSelfName() . ' found no matching ' . $this->getResultsName($results) . 's but expects at least one');
             }
         }
     }

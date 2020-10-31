@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Netgen\TagsBundle\API\Repository\Values\Tags\Tag;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
@@ -183,7 +184,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
     protected function matchTags($action, $step)
     {
         if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action a Tag");
+            throw new InvalidStepDefinitionException("A match condition is required to $action a Tag");
         }
 
         // convert the references passed in the match

@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Language;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\LanguageMatcher;
@@ -37,7 +38,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
         $languageService = $this->repository->getContentLanguageService();
 
         if (!isset($step->dsl['lang'])) {
-            throw new \Exception("The 'lang' key is required to create a new language.");
+            throw new InvalidStepDefinitionException("The 'lang' key is required to create a new language.");
         }
 
         $languageCreateStruct = $languageService->newLanguageCreateStruct();
@@ -137,7 +138,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
     protected function matchLanguages($action, $step)
     {
         if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action a language");
+            throw new InvalidStepDefinitionException("A match condition is required to $action a language");
         }
 
         // convert the references passed in the match

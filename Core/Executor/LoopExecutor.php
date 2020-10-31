@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\MigrationService;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\LoopResolver;
@@ -39,19 +40,19 @@ class LoopExecutor extends AbstractExecutor
         parent::execute($step);
 
         if (!isset($step->dsl['repeat']) && !isset($step->dsl['over'])) {
-            throw new \Exception("Invalid step definition: missing 'repeat' or 'over'");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'repeat' or 'over'");
         }
 
         if (isset($step->dsl['repeat']) && isset($step->dsl['over'])) {
-            throw new \Exception("Invalid step definition: can not have both 'repeat' and 'over'");
+            throw new InvalidStepDefinitionException("Invalid step definition: can not have both 'repeat' and 'over'");
         }
 
         if (isset($step->dsl['repeat']) && $step->dsl['repeat'] < 0) {
-            throw new \Exception("Invalid step definition: 'repeat' is not a positive integer");
+            throw new InvalidStepDefinitionException("Invalid step definition: 'repeat' is not a positive integer");
         }
 
         if (!isset($step->dsl['steps']) || !is_array($step->dsl['steps'])) {
-            throw new \Exception("Invalid step definition: missing 'steps' or not an array");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'steps' or not an array");
         }
 
         $this->skipStepIfNeeded($step);

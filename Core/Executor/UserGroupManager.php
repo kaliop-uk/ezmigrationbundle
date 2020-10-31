@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\User\UserGroup;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\UserGroupCollection;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
@@ -180,7 +181,7 @@ class UserGroupManager extends RepositoryExecutor
     protected function matchUserGroups($action, $step)
     {
         if (!isset($step->dsl['id']) && !isset($step->dsl['group']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The id of a user group or a match condition is required to $action it");
+            throw new InvalidStepDefinitionException("The id of a user group or a match condition is required to $action it");
         }
 
         // Backwards compat

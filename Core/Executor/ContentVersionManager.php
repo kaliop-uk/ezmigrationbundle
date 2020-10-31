@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\Content\VersionInfo;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\VersionInfoCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentVersionMatcher;
 use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
@@ -92,11 +93,11 @@ class ContentVersionManager extends ContentManager
     protected function matchVersions($action, $step)
     {
         if (!isset($step->dsl['object_id']) && !isset($step->dsl['remote_id']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The id or remote id of an object or a match condition is required to $action a content version");
+            throw new InvalidStepDefinitionException("The id or remote id of an object or a match condition is required to $action a content version");
         }
 
         if (!isset($step->dsl['match_versions']) && !isset($step->dsl['versions'])) {
-            throw new \Exception("A verision match condition is required to $action a content version");
+            throw new InvalidStepDefinitionException("A version match condition is required to $action a content version");
         }
 
         // Backwards compat

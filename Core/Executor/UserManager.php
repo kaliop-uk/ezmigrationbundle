@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\User\User;
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 
@@ -33,7 +34,7 @@ class UserManager extends RepositoryExecutor
     protected function create($step)
     {
         if (!isset($step->dsl['groups'])) {
-            throw new \Exception('No user groups set to create user in.');
+            throw new InvalidStepDefinitionException('No user groups set to create user in.');
         }
 
         if (!is_array($step->dsl['groups'])) {
@@ -191,7 +192,7 @@ class UserManager extends RepositoryExecutor
     protected function matchUsers($action, $step)
     {
         if (!isset($step->dsl['id']) && !isset($step->dsl['user_id']) && !isset($step->dsl['email']) && !isset($step->dsl['username']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The id, email or username of a user or a match condition is required to $action it");
+            throw new InvalidStepDefinitionException("The id, email or username of a user or a match condition is required to $action it");
         }
 
         // Backwards compat

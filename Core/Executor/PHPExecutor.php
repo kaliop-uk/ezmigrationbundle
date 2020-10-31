@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
@@ -30,7 +31,7 @@ class PHPExecutor extends AbstractExecutor
         $dsl = $step->dsl;
 
         if (!isset($dsl['class'])) {
-            throw new \Exception("Missing 'class' for php migration step");
+            throw new InvalidStepDefinitionException("Missing 'class' for php migration step");
         }
         $class = $dsl['class'];
 

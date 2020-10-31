@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Section;
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
@@ -34,7 +35,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         foreach (array('name', 'identifier') as $key) {
             if (!isset($step->dsl[$key])) {
-                throw new \Exception("The '$key' key is missing in a section creation definition");
+                throw new InvalidStepDefinitionException("The '$key' key is missing in a section creation definition");
             }
         }
 
@@ -122,7 +123,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function matchSections($action, $step)
     {
         if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action a section");
+            throw new InvalidStepDefinitionException("A match condition is required to $action a section");
         }
 
         // convert the references passed in the match

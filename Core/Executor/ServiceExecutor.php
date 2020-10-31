@@ -3,8 +3,9 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 class ServiceExecutor extends AbstractExecutor
 {
@@ -34,13 +35,13 @@ class ServiceExecutor extends AbstractExecutor
         parent::execute($step);
 
         if (!isset($step->dsl['mode'])) {
-            throw new \Exception("Invalid step definition: missing 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'mode'");
         }
 
         $action = $step->dsl['mode'];
 
         if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         $this->skipStepIfNeeded($step);
@@ -57,20 +58,20 @@ class ServiceExecutor extends AbstractExecutor
     protected function call($dsl, $context)
     {
         if (!isset($dsl['service'])) {
-            throw new \Exception("Can not call service method: 'service' missing");
+            throw new InvalidStepDefinitionException("Can not call service method: 'service' missing");
         }
         if (!isset($dsl['method'])) {
-            throw new \Exception("Can not call service method: 'method' missing");
+            throw new InvalidStepDefinitionException("Can not call service method: 'method' missing");
         }
         if (isset($dsl['arguments']) && !is_array($dsl['arguments'])) {
-            throw new \Exception("Can not call service method: 'arguments' is not an array");
+            throw new InvalidStepDefinitionException("Can not call service method: 'arguments' is not an array");
         }
 
         $service = $this->container->get($this->referenceResolver->resolveReference($dsl['service']));
         $method = $this->referenceResolver->resolveReference($dsl['method']);
         $callable = array($service, $method);
         if (!is_callable($callable)) {
-            throw new \Exception("Can not call service method: $method is not a method of " . get_class($service));
+            throw new InvalidStepDefinitionException("Can not call service method: $method is not a method of " . get_class($service));
         }
 
         if (isset($dsl['arguments'])) {

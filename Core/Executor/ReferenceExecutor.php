@@ -3,6 +3,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\VarDumper\VarDumper;
@@ -37,13 +38,13 @@ class ReferenceExecutor extends AbstractExecutor
         parent::execute($step);
 
         if (!isset($step->dsl['mode'])) {
-            throw new \Exception("Invalid step definition: missing 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'mode'");
         }
 
         $action = $step->dsl['mode'];
 
         if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         $this->skipStepIfNeeded($step);
@@ -54,10 +55,10 @@ class ReferenceExecutor extends AbstractExecutor
     protected function set($dsl, $context)
     {
         if (!isset($dsl['identifier'])) {
-            throw new \Exception("Invalid step definition: miss 'identifier' for setting reference");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'identifier' for setting reference");
         }
         if (!isset($dsl['value'])) {
-            throw new \Exception("Invalid step definition: miss 'value' for setting reference");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'value' for setting reference");
         }
         // this makes sense since we started supporting embedded refs...
         $value = $this->referenceResolver->resolveReference($dsl['value']);
@@ -76,7 +77,7 @@ class ReferenceExecutor extends AbstractExecutor
     protected function load($dsl, $context)
     {
         if (!isset($dsl['file'])) {
-            throw new \Exception("Invalid step definition: miss 'file' for loading references");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'file' for loading references");
         }
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
@@ -88,7 +89,7 @@ class ReferenceExecutor extends AbstractExecutor
         }
 
         if (!is_file($fileName)) {
-            throw new \Exception("Invalid step definition: invalid file '$fileName' for loading references");
+            throw new InvalidStepDefinitionException("Invalid step definition: invalid file '$fileName' for loading references");
         }
         $data = file_get_contents($fileName);
 
@@ -102,7 +103,7 @@ class ReferenceExecutor extends AbstractExecutor
                 $data = Yaml::parse($data);
                 break;
             default:
-                throw new \Exception("Invalid step definition: unsupported file extension '$ext' for loading references from");
+                throw new InvalidStepDefinitionException("Invalid step definition: unsupported file extension '$ext' for loading references from");
         }
 
         if (!is_array($data)) {
@@ -128,7 +129,7 @@ class ReferenceExecutor extends AbstractExecutor
     protected function save($dsl, $context)
     {
         if (!isset($dsl['file'])) {
-            throw new \Exception("Invalid step definition: miss 'file' for saving references");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'file' for saving references");
         }
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
@@ -156,7 +157,7 @@ class ReferenceExecutor extends AbstractExecutor
                 $data = Yaml::dump($data);
                 break;
             default:
-                throw new \Exception("Invalid step definition: unsupported file extension '$ext' for saving references to");
+                throw new InvalidStepDefinitionException("Invalid step definition: unsupported file extension '$ext' for saving references to");
         }
 
         file_put_contents($fileName, $data);
@@ -167,7 +168,7 @@ class ReferenceExecutor extends AbstractExecutor
     protected function dump($dsl, $context)
     {
         if (!isset($dsl['identifier'])) {
-            throw new \Exception("Invalid step definition: miss 'identifier' for dumping reference");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'identifier' for dumping reference");
         }
         if (!$this->referenceResolver->isReference($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");

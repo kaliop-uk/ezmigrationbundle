@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
@@ -158,7 +159,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     protected function matchRoles($action, $step)
     {
         if (!isset($step->dsl['name']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The name of a role or a match condition is required to $action it");
+            throw new InvalidStepDefinitionException("The name of a role or a match condition is required to $action it");
         }
 
         // Backwards compat

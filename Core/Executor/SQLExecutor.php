@@ -4,6 +4,8 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 class SQLExecutor extends AbstractExecutor
@@ -53,7 +55,7 @@ class SQLExecutor extends AbstractExecutor
         }
 
         if (!in_array($action, $this->supportedActions)) {
-            throw new \Exception("Invalid step definition: value '$action' is not allowed for 'mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
         $this->skipStepIfNeeded($step);
@@ -106,11 +108,11 @@ class SQLExecutor extends AbstractExecutor
             // fetch only twice, to insure that we get only 1 row. This can save ram compared to fetching all rows
             $result = $stmt->fetch();
             if ($result === false) {
-                throw new \Exception('Found no results but expect one');
+                throw new InvalidMatchResultsNumberException('Found no results but expect one');
             }
             if ($stmt->fetch() !== false) {
                 $stmt->closeCursor();
-                throw new \Exception('Found two (or more) results but expect only one');
+                throw new InvalidMatchResultsNumberException('Found two (or more) results but expect only one');
             }
             $stmt->closeCursor();
             $result = array($result);

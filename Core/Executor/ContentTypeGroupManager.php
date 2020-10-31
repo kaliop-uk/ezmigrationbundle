@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
@@ -34,7 +35,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     protected function create($step)
     {
         if (!isset($step->dsl['identifier'])) {
-            throw new \Exception("The 'identifier' key is required to create a new content type group.");
+            throw new InvalidStepDefinitionException("The 'identifier' key is required to create a new content type group.");
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
@@ -107,7 +108,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
     protected function matchContentTypeGroups($action, $step)
     {
         if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action an object state group");
+            throw new InvalidStepDefinitionException("A match condition is required to $action an object state group");
         }
 
         // convert the references passed in the match

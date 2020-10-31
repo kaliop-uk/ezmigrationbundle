@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
@@ -39,7 +40,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     {
         foreach (array('names', 'identifier') as $key) {
             if (!isset($step->dsl[$key])) {
-                throw new \Exception("The '$key' key is missing in a object state group creation definition");
+                throw new InvalidStepDefinitionException("The '$key' key is missing in a object state group creation definition");
             }
         }
 
@@ -145,7 +146,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     protected function matchObjectStateGroups($action, $step)
     {
         if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action an object state group");
+            throw new InvalidStepDefinitionException("A match condition is required to $action an object state group");
         }
 
         // convert the references passed in the match

@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
@@ -36,7 +37,7 @@ class LocationManager extends RepositoryExecutor
         $locationService = $this->repository->getLocationService();
 
         if (!isset($step->dsl['parent_location']) && !isset($step->dsl['parent_location_id'])) {
-            throw new \Exception('Missing parent location id. This is required to create the new location.');
+            throw new InvalidStepDefinitionException('Missing parent location id. This is required to create the new location.');
         }
 
         // support legacy tag: parent_location_id
@@ -51,7 +52,7 @@ class LocationManager extends RepositoryExecutor
         }
 
         if (isset($step->dsl['is_main']) && count($parentLocationIds) > 1) {
-            throw new \Exception('Can not set more than one new location as main.');
+            throw new InvalidStepDefinitionException('Can not set more than one new location as main.');
         }
 
         // resolve references and remote ids
@@ -140,7 +141,7 @@ class LocationManager extends RepositoryExecutor
 
         // support legacy tag: parent_location_id
         if (isset($step->dsl['swap_with_location']) && (isset($step->dsl['parent_location']) || isset($step->dsl['parent_location_id']))) {
-            throw new \Exception('Cannot move location to a new parent and swap location with another location at the same time.');
+            throw new InvalidStepDefinitionException('Cannot move location to a new parent and swap location with another location at the same time.');
         }
 
         foreach ($locationCollection as $key => $location) {
@@ -269,7 +270,7 @@ class LocationManager extends RepositoryExecutor
     protected function matchLocations($action, $step)
     {
         if (!isset($step->dsl['location_id']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The id or a match condition is required to $action a location");
+            throw new InvalidStepDefinitionException("The id or a match condition is required to $action a location");
         }
 
         // Backwards compat
@@ -404,7 +405,7 @@ class LocationManager extends RepositoryExecutor
     protected function matchContents($action, $step)
     {
         if (!isset($step->dsl['object_id']) && !isset($step->dsl['remote_id']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
+            throw new InvalidStepDefinitionException("The ID or remote ID of an object or a Match Condition is required to $action a new location.");
         }
 
         // Backwards compat

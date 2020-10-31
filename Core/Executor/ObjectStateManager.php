@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ObjectState\ObjectState;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
@@ -49,12 +50,12 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     {
         foreach (array('object_state_group', 'names', 'identifier') as $key) {
             if (!isset($step->dsl[$key])) {
-                throw new \Exception("The '$key' key is missing in a object state creation definition");
+                throw new InvalidStepDefinitionException("The '$key' key is missing in a object state creation definition");
             }
         }
 
         if (!count($step->dsl['names'])) {
-            throw new \Exception('No object state names have been defined. Need to specify at least one to create the state.');
+            throw new InvalidStepDefinitionException('No object state names have been defined. Need to specify at least one to create the state.');
         }
 
         $objectStateService = $this->repository->getObjectStateService();
@@ -163,7 +164,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     protected function matchObjectStates($action, $step)
     {
         if (!isset($step->dsl['match'])) {
-            throw new \Exception("A match condition is required to $action an object state");
+            throw new InvalidStepDefinitionException("A match condition is required to $action an object state");
         }
 
         // convert the references passed in the match

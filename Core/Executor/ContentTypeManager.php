@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
@@ -49,7 +50,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     {
         foreach (array('identifier', 'content_type_group', 'name_pattern', 'name', 'attributes') as $key) {
             if (!isset($step->dsl[$key])) {
-                throw new \Exception("The '$key' key is missing in a content type creation definition");
+                throw new InvalidStepDefinitionExceptionn("The '$key' key is missing in a content type creation definition");
             }
         }
 
@@ -335,7 +336,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     protected function matchContentTypes($action, $step)
     {
         if (!isset($step->dsl['identifier']) && !isset($step->dsl['match'])) {
-            throw new \Exception("The identifier of a content type or a match condition is required to $action it");
+            throw new InvalidStepDefinitionException("The identifier of a content type or a match condition is required to $action it");
         }
 
         // Backwards compat
@@ -596,7 +597,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     protected function createFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $contentTypeIdentifier, $lang)
     {
         if (!isset($attribute['identifier']) || !isset($attribute['type'])) {
-            throw new \Exception("Keys 'type' and 'identifier' are mandatory to define a new field in a field type");
+            throw new InvalidStepDefinitionException("Keys 'type' and 'identifier' are mandatory to define a new field in a field type");
         }
 
         $fieldDefinition = $contentTypeService->newFieldDefinitionCreateStruct(
@@ -663,7 +664,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     protected function updateFieldDefinition(ContentTypeService $contentTypeService, array $attribute, $fieldTypeIdentifier, $contentTypeIdentifier, $lang, FieldDefinition $existingFieldDefinition)
     {
         if (!isset($attribute['identifier'])) {
-            throw new \Exception("The 'identifier' of an attribute is missing in the content type update definition.");
+            throw new InvalidStepDefinitionException("The 'identifier' of an attribute is missing in the content type update definition.");
         }
 
         $fieldDefinitionUpdateStruct = $contentTypeService->newFieldDefinitionUpdateStruct();
