@@ -22,6 +22,11 @@ trait NonScalarReferenceSetterTrait
     static $EXPECT_ANY = 'any';
     static $EXPECT_MANY = 'many';
 
+    /**
+     * @param mixed $results
+     * @param MigrationStep $step
+     * @throws InvalidMatchResultsNumberException
+     */
     protected function validateResultsCount($results, $step)
     {
         // q: what if we get a scalar result but we expect an array/collection ?
@@ -36,7 +41,7 @@ trait NonScalarReferenceSetterTrait
     }
 
     /**
-     * @param $step
+     * @param MigrationStep $step
      * @return bool
      */
     protected function allowEmptyResults($step)
@@ -65,13 +70,17 @@ trait NonScalarReferenceSetterTrait
         return true;
     }
 
+    /**
+     * @param MigrationStep $step
+     * @return bool
+     */
     protected function allowMultipleResults($step)
     {
         return in_array($this->getResultsType($step), array(self::$RESULT_TYPE_MULTIPLE, self::$RESULT_TYPE_ANY));
     }
 
     /**
-     * @param $step
+     * @param MigrationStep $step
      * @return int
      */
     protected function getResultsType($step)
@@ -162,7 +171,7 @@ trait NonScalarReferenceSetterTrait
     }
 
     /**
-     * @param $collection
+     * @param array|object $collection
      * @return string
      */
     protected function getResultsName($collection)

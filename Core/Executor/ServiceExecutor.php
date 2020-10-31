@@ -28,7 +28,7 @@ class ServiceExecutor extends AbstractExecutor
     /**
      * @param MigrationStep $step
      * @return mixed
-     * @throws \Exception
+     * @throws InvalidStepDefinitionException
      */
     public function execute(MigrationStep $step)
     {
@@ -53,7 +53,7 @@ class ServiceExecutor extends AbstractExecutor
      * @param $dsl
      * @param $context
      * @return mixed
-     * @throws \Exception
+     * @throws InvalidStepDefinitionException
      */
     protected function call($dsl, $context)
     {
