@@ -2,7 +2,9 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use eZ\Publish\API\Repository\Exceptions\NotImplementedException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
@@ -37,13 +39,16 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
      * @param array $sort
      * @param int $offset
      * @param int $limit
+     * @param bool $tolerateMisses
      * @return ContentCollection
+     * @throws InvalidArgumentException
      * @throws InvalidMatchConditionsException
      * @throws InvalidSortConditionsException
+     * @throws UnauthorizedException
      */
-    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
     {
-        return $this->matchContent($conditions, $sort, $offset, $limit);
+        return $this->matchContent($conditions, $sort, $offset, $limit, $tolerateMisses);
     }
 
     /**
@@ -51,9 +56,11 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
      * @param array $sort
      * @param int $offset
      * @return Content
+     * @throws InvalidArgumentException
      * @throws InvalidMatchResultsNumberException
      * @throws InvalidMatchConditionsException
      * @throws InvalidSortConditionsException
+     * @throws UnauthorizedException
      */
     public function matchOne(array $conditions, array $sort = array(), $offset = 0)
     {
@@ -71,15 +78,19 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
     }
 
     /**
+     * NB: does NOT throw if no contents are matching...
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @param array $sort
      * @param int $offset
      * @param int $limit
+     * @param bool $tolerateMisses
      * @return ContentCollection
+     * @throws InvalidArgumentException
      * @throws InvalidMatchConditionsException
      * @throws InvalidSortConditionsException
+     * @throws UnauthorizedException
      */
-    public function matchContent(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    public function matchContent(array $conditions, array $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 
@@ -91,7 +102,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
                     $contentService = $this->repository->getContentService();
                     $contents = array();
                     // allow to specify the objects to relate to using different ways
-                    $relatedContents = $this->match($values);
+                    $relatedContents = $this->match($values, $tolerateMisses);
                     foreach ($relatedContents as $relatedContent) {
                         foreach ($contentService->loadReverseRelations($relatedContent->contentInfo) as $relatingContent) {
                             $contents[$relatingContent->contentInfo->id] = $relatingContent;
@@ -103,7 +114,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
                     $contentService = $this->repository->getContentService();
                     $contents = array();
                     // allow to specify the objects we relate to using different ways
-                    $relatingContents = $this->match($values);
+                    $relatingContents = $this->match($values, $tolerateMisses);
                     foreach ($relatingContents as $relatingContent) {
                         foreach ($contentService->loadRelations($relatingContent->contentInfo) as $relatedContent) {
                             $contents[$relatedContent->contentInfo->id] = $relatedContent;
@@ -137,6 +148,7 @@ class ContentMatcher extends QueryBasedMatcher implements SortingMatcherInterfac
                             case self::MATCH_CONTENT_TYPE_IDENTIFIER:
                                 // sort objects by depth, lower to higher, so that deleting them has less chances of failure
                                 // NB: we only do this in eZP versions that allow depth sorting on content queries
+                                // NB: assignment instead of comparison is correct
                                 if ($sortClauses = $this->getDefaultSortClauses()) {
                                     $query->sortClauses = $sortClauses;
                                 }

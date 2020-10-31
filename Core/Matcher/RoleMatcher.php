@@ -2,6 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use eZ\Publish\API\Repository\Values\User\Role;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
@@ -24,20 +26,25 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return RoleCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
-    public function match(array $conditions)
+    public function match(array $conditions, $tolerateMisses = false)
     {
-        return $this->matchRole($conditions);
+        return $this->matchRole($conditions, $tolerateMisses);
     }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return RoleCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
-    public function matchRole(array $conditions)
+    public function matchRole(array $conditions, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 
@@ -50,23 +57,23 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
             switch ($key) {
                 case 'id':
                 case self::MATCH_ROLE_ID:
-                   return new RoleCollection($this->findRolesById($values));
+                   return new RoleCollection($this->findRolesById($values, $tolerateMisses));
 
                 case 'identifier':
                 case self::MATCH_ROLE_IDENTIFIER:
-                    return new RoleCollection($this->findRolesByIdentifier($values));
+                    return new RoleCollection($this->findRolesByIdentifier($values, $tolerateMisses));
 
                 case self::MATCH_ALL:
                     return new RoleCollection($this->findAllRoles());
 
                 case self::MATCH_AND:
-                    return $this->matchAnd($values);
+                    return $this->matchAnd($values, $tolerateMisses);
 
                 case self::MATCH_OR:
-                    return $this->matchOr($values);
+                    return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new RoleCollection(array_diff_key($this->findAllRoles(), $this->matchRole($values)->getArrayCopy()));
+                    return new RoleCollection(array_diff_key($this->findAllRoles(), $this->matchRole($values, $tolerateMisses)->getArrayCopy()));
             }
         }
     }
@@ -81,16 +88,26 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
     /**
      * @param int[] $roleIds
+     * @param bool $tolerateMisses
      * @return Role[]
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
-    protected function findRolesById(array $roleIds)
+    protected function findRolesById(array $roleIds, $tolerateMisses = false)
     {
         $roles = [];
 
         foreach ($roleIds as $roleId) {
-            // return unique contents
-            $role = $this->repository->getRoleService()->loadRole($roleId);
-            $roles[$role->id] = $role;
+            try {
+                // return unique contents
+                $role = $this->repository->getRoleService()->loadRole($roleId);
+                $roles[$role->id] = $role;
+            /// @todo should we survive as well UnauthorizedException ? It seems to be a different kind of error than non-existing roles...
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $roles;
@@ -98,16 +115,26 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
     /**
      * @param string[] $roleIdentifiers
+     * @param bool $tolerateMisses
      * @return Role[]
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
-    protected function findRolesByIdentifier(array $roleIdentifiers)
+    protected function findRolesByIdentifier(array $roleIdentifiers, $tolerateMisses = false)
     {
         $roles = [];
 
         foreach ($roleIdentifiers as $roleIdentifier) {
-            // return unique contents
-            $role = $this->repository->getRoleService()->loadRoleByIdentifier($roleIdentifier);
-            $roles[$role->id] = $role;
+            try {
+                // return unique contents
+                $role = $this->repository->getRoleService()->loadRoleByIdentifier($roleIdentifier);
+                $roles[$role->id] = $role;
+            /// @todo should we survive as well UnauthorizedException ? It seems to be a different kind of error than non-existing roles...
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $roles;

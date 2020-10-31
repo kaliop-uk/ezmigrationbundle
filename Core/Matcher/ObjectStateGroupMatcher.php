@@ -2,11 +2,12 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
+use eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
+use eZ\Publish\Core\Base\Exceptions\NotFoundException as CoreNotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
-use \eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
-use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
-use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -25,10 +26,12 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return ObjectStateGroupCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function match(array $conditions)
+    public function match(array $conditions, $tolerateMisses = false)
     {
         return $this->matchObjectStateGroup($conditions);
     }
@@ -43,10 +46,12 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return ObjectStateGroupCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function matchObjectStateGroup($conditions)
+    public function matchObjectStateGroup($conditions, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 
@@ -59,39 +64,47 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
             switch ($key) {
                 case 'id':
                 case self::MATCH_OBJECTSTATEGROUP_ID:
-                    return new ObjectStateGroupCollection($this->findObjectStateGroupsById($values));
+                    return new ObjectStateGroupCollection($this->findObjectStateGroupsById($values, $tolerateMisses));
 
                 case 'identifier':
                 case self::MATCH_OBJECTSTATEGROUP_IDENTIFIER:
-                    return new ObjectStateGroupCollection($this->findObjectStateGroupsByIdentifier($values));
+                    return new ObjectStateGroupCollection($this->findObjectStateGroupsByIdentifier($values, $tolerateMisses));
 
                 case self::MATCH_ALL:
                     return new ObjectStateGroupCollection($this->findAllObjectStateGroups());
 
                 case self::MATCH_AND:
-                    return $this->matchAnd($values);
+                    return $this->matchAnd($values, $tolerateMisses);
 
                 case self::MATCH_OR:
-                    return $this->matchOr($values);
+                    return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ObjectStateGroupCollection(array_diff_key($this->findAllObjectStateGroups(), $this->matchObjectStateGroup($values)->getArrayCopy()));
+                    return new ObjectStateGroupCollection(array_diff_key($this->findAllObjectStateGroups(), $this->matchObjectStateGroup($values, $tolerateMisses)->getArrayCopy()));
             }
         }
     }
 
     /**
      * @param int[] $objectStateGroupIds
+     * @param bool $tolerateMisses
      * @return ObjectStateGroup[]
+     * @throws NotFoundException
      */
-    protected function findObjectStateGroupsById(array $objectStateGroupIds)
+    protected function findObjectStateGroupsById(array $objectStateGroupIds, $tolerateMisses = false)
     {
         $objectStateGroups = [];
 
         foreach ($objectStateGroupIds as $objectStateGroupId) {
-            // return unique contents
-            $objectStateGroup = $this->repository->getObjectStateService()->loadObjectStateGroup($objectStateGroupId);
-            $objectStateGroups[$objectStateGroup->id] = $objectStateGroup;
+            try {
+                // return unique contents
+                $objectStateGroup = $this->repository->getObjectStateService()->loadObjectStateGroup($objectStateGroupId);
+                $objectStateGroups[$objectStateGroup->id] = $objectStateGroup;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $objectStateGroups;
@@ -99,9 +112,11 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
         /**
          * @param int[] $objectStateGroupIdentifiers
+         * @param bool $tolerateMisses
          * @return ObjectStateGroup[]
+         * @throws NotFoundException
          */
-    protected function findObjectStateGroupsByIdentifier(array $objectStateGroupIdentifiers)
+    protected function findObjectStateGroupsByIdentifier(array $objectStateGroupIdentifiers, $tolerateMisses = false)
     {
         $objectStateGroups = [];
 
@@ -109,7 +124,10 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
         foreach ($objectStateGroupIdentifiers as $objectStateGroupIdentifier) {
             if (!array_key_exists($objectStateGroupIdentifier, $groupsByIdentifier)) {
-                throw new NotFoundException("ObjectStateGroup", $objectStateGroupIdentifier);
+                if ($tolerateMisses) {
+                    continue;
+                }
+                throw new CoreNotFoundException("ObjectStateGroup", $objectStateGroupIdentifier);
             }
             // return unique contents
             $objectStateGroups[$groupsByIdentifier[$objectStateGroupIdentifier]->id] = $groupsByIdentifier[$objectStateGroupIdentifier];

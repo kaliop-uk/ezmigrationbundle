@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Location;
@@ -38,13 +39,15 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
      * @param array $sort
      * @param int $offset
      * @param int $limit
+     * @param bool $tolerateMisses
      * @return LocationCollection
+     * @throws InvalidArgumentException
      * @throws InvalidMatchConditionsException
      * @throws InvalidSortConditionsException
      */
-    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
     {
-        return $this->matchLocation($conditions, $sort, $offset, $limit);
+        return $this->matchLocation($conditions, $sort, $offset, $limit, $tolerateMisses);
     }
 
     /**
@@ -52,6 +55,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
      * @param array $sort
      * @param int $offset
      * @return Location
+     * @throws InvalidArgumentException
      * @throws InvalidMatchConditionsException
      * @throws InvalidSortConditionsException
      * @throws InvalidMatchResultsNumberException
@@ -76,11 +80,13 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
      * @param array $sort
      * @param int $offset
      * @param int $limit
+     * @param bool $tolerateMisses
      * @return LocationCollection
+     * @throws InvalidArgumentException
      * @throws InvalidMatchConditionsException
      * @throws InvalidSortConditionsException
      */
-    public function matchLocation(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    public function matchLocation(array $conditions, array $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 

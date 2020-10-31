@@ -2,11 +2,12 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\ObjectState\ObjectState;
+use eZ\Publish\Core\Base\Exceptions\NotFoundException as CoreNotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
-use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
-use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -25,20 +26,24 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return ObjectStateCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function match(array $conditions)
+    public function match(array $conditions, $tolerateMisses = false)
     {
-        return $this->matchObjectState($conditions);
+        return $this->matchObjectState($conditions, $tolerateMisses);
     }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return ObjectStateCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function matchObjectState(array $conditions)
+    public function matchObjectState(array $conditions, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 
@@ -51,23 +56,23 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
             switch ($key) {
                 case 'id':
                 case self::MATCH_OBJECTSTATE_ID:
-                   return new ObjectStateCollection($this->findObjectStatesById($values));
+                   return new ObjectStateCollection($this->findObjectStatesById($values, $tolerateMisses));
 
                 case 'identifier':
                 case self::MATCH_OBJECTSTATE_IDENTIFIER:
-                    return new ObjectStateCollection($this->findObjectStatesByIdentifier($values));
+                    return new ObjectStateCollection($this->findObjectStatesByIdentifier($values, $tolerateMisses));
 
                 case self::MATCH_ALL:
                     return new ObjectStateCollection($this->findAllObjectStates());
 
                 case self::MATCH_AND:
-                    return $this->matchAnd($values);
+                    return $this->matchAnd($values, $tolerateMisses);
 
                 case self::MATCH_OR:
-                    return $this->matchOr($values);
+                    return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ObjectStateCollection(array_diff_key($this->findAllObjectStates(), $this->matchObjectState($values)->getArrayCopy()));
+                    return new ObjectStateCollection(array_diff_key($this->findAllObjectStates(), $this->matchObjectState($values, $tolerateMisses)->getArrayCopy()));
             }
         }
     }
@@ -82,16 +87,24 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
     /**
      * @param int[] $objectStateIds
+     * @param bool $tolerateMisses
      * @return ObjectState[]
+     * @throws NotFoundException
      */
-    protected function findObjectStatesById(array $objectStateIds)
+    protected function findObjectStatesById(array $objectStateIds, $tolerateMisses = false)
     {
         $objectStates = [];
 
         foreach ($objectStateIds as $objectStateId) {
-            // return unique contents
-            $objectState = $this->repository->getObjectStateService()->loadObjectState($objectStateId);
-            $objectStates[$objectState->id] = $objectState;
+            try {
+                // return unique contents
+                $objectState = $this->repository->getObjectStateService()->loadObjectState($objectStateId);
+                $objectStates[$objectState->id] = $objectState;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $objectStates;
@@ -99,10 +112,11 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
     /**
      * @param string[] $stateIdentifiers Accepts the state identifier if unique, otherwise "group-identifier/state-identifier"
+     * @param bool $tolerateMisses
      * @return ObjectState[]
      * @throws NotFoundException
      */
-    protected function findObjectStatesByIdentifier(array $stateIdentifiers)
+    protected function findObjectStatesByIdentifier(array $stateIdentifiers, $tolerateMisses = false)
     {
         // we have to build this list, as the ObjectStateService does not allow to load a State by identifier...
         $statesList = $this->loadAvailableStates();
@@ -111,8 +125,11 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
         foreach ($stateIdentifiers as $stateIdentifier) {
             if (!isset($statesList[$stateIdentifier])) {
+                if ($tolerateMisses) {
+                    continue;
+                }
                 // a quick and dirty way of letting the user know that he/she might be using a non-unique identifier
-                throw new NotFoundException("ObjectState", $stateIdentifier . "' (either missing or non unique)");
+                throw new CoreNotFoundException("ObjectState", $stateIdentifier . "' (either missing or non unique)");
             }
             $states[$statesList[$stateIdentifier]->id] = $statesList[$stateIdentifier];
         }

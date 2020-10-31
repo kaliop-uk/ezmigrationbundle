@@ -2,6 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\API;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException;
+
 interface SortingMatcherInterface extends MatcherInterface
 {
     /**
@@ -12,8 +16,8 @@ interface SortingMatcherInterface extends MatcherInterface
      * @param int $offset
      * @param int $limit
      * @return array|\ArrayObject
-     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
-     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
      */
     public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0);
 
@@ -24,9 +28,9 @@ interface SortingMatcherInterface extends MatcherInterface
      * @param array $sort
      * @param int $offset
      * @return mixed
-     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
-     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException
-     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
+     * @throws InvalidMatchResultsNumberException
      */
     public function matchOne(array $conditions, array $sort = array(), $offset = 0);
 }

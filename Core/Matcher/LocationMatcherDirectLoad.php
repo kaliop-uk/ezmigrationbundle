@@ -2,7 +2,12 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException;
 
 class LocationMatcherDirectLoad extends LocationMatcher
 {
@@ -15,10 +20,15 @@ class LocationMatcherDirectLoad extends LocationMatcher
      * @param array $sort
      * @param int $offset
      * @param int $limit
-
+     * @param bool $tolerateMisses
      * @return LocationCollection
+     * @throws InvalidArgumentException
+     * @throws InvalidMatchConditionsException
+     * @throws InvalidSortConditionsException
+     * @throws NotFoundException
+     * @throws UnauthorizedException
      */
-    public function matchLocation(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    public function matchLocation(array $conditions, array $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
     {
         $match = reset($conditions);
         if (count($conditions) === 1 && in_array(($key = key($conditions)), array(self::MATCH_LOCATION_ID, self::MATCH_LOCATION_REMOTE_ID))) {
@@ -27,14 +37,26 @@ class LocationMatcherDirectLoad extends LocationMatcher
             switch ($key) {
                 case self::MATCH_LOCATION_ID:
                     foreach($match as $locationId) {
-                        $location = $this->repository->getLocationService()->loadLocation($locationId);
-                        $locations[$location->id] = $location;
+                        try {
+                            $location = $this->repository->getLocationService()->loadLocation($locationId);
+                            $locations[$location->id] = $location;
+                        } catch(NotFoundException $e) {
+                            if (!$tolerateMisses) {
+                                throw $e;
+                            }
+                        }
                     }
                     break;
                 case self::MATCH_LOCATION_REMOTE_ID:
                     foreach($match as $locationRemoteId) {
-                        $location = $this->repository->getLocationService()->loadLocationByRemoteId($locationRemoteId);
-                        $locations[$location->id] = $location;
+                        try {
+                            $location = $this->repository->getLocationService()->loadLocationByRemoteId($locationRemoteId);
+                            $locations[$location->id] = $location;
+                        } catch(NotFoundException $e) {
+                            if (!$tolerateMisses) {
+                                throw $e;
+                            }
+                        }
                     }
                     break;
             }

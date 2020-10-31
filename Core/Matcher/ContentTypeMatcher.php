@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
-use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 /**
  * Note: disallowing matches by remote_id allows us to implement KeyMatcherInterface without the risk of users getting
@@ -29,20 +30,24 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return ContentTypeCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function match(array $conditions)
+    public function match(array $conditions, $tolerateMisses = false)
     {
-        return $this->matchContentType($conditions);
+        return $this->matchContentType($conditions, $tolerateMisses);
     }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return ContentTypeCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function matchContentType(array $conditions)
+    public function matchContentType(array $conditions, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 
@@ -55,11 +60,11 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
             switch ($key) {
                 case 'id':
                 case self::MATCH_CONTENTTYPE_ID:
-                   return new ContentTypeCollection($this->findContentTypesById($values));
+                   return new ContentTypeCollection($this->findContentTypesById($values, $tolerateMisses));
 
                 case 'identifier':
                 case self::MATCH_CONTENTTYPE_IDENTIFIER:
-                    return new ContentTypeCollection($this->findContentTypesByIdentifier($values));
+                    return new ContentTypeCollection($this->findContentTypesByIdentifier($values, $tolerateMisses));
 
                 /*case 'remote_id':
                 case self::MATCH_CONTENTTYPE_REMOTE_ID:
@@ -69,13 +74,13 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                     return new ContentTypeCollection($this->findAllContentTypes());
 
                 case self::MATCH_AND:
-                    return $this->matchAnd($values);
+                    return $this->matchAnd($values, $tolerateMisses);
 
                 case self::MATCH_OR:
-                    return $this->matchOr($values);
+                    return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ContentTypeCollection(array_diff_key($this->findAllContentTypes(), $this->matchContentType($values)->getArrayCopy()));
+                    return new ContentTypeCollection(array_diff_key($this->findAllContentTypes(), $this->matchContentType($values, $tolerateMisses)->getArrayCopy()));
             }
         }
     }
@@ -90,16 +95,24 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
     /**
      * @param int[] $contentTypeIds
+     * @param bool $tolerateMisses
      * @return ContentType[]
+     * @throws NotFoundException
      */
-    protected function findContentTypesById(array $contentTypeIds)
+    protected function findContentTypesById(array $contentTypeIds, $tolerateMisses = false)
     {
         $contentTypes = [];
 
         foreach ($contentTypeIds as $contentTypeId) {
-            // return unique contents
-            $contentType = $this->repository->getContentTypeService()->loadContentType($contentTypeId);
-            $contentTypes[$contentType->id] = $contentType;
+            try {
+                // return unique contents
+                $contentType = $this->repository->getContentTypeService()->loadContentType($contentTypeId);
+                $contentTypes[$contentType->id] = $contentType;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $contentTypes;
@@ -107,16 +120,24 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
     /**
      * @param string[] $contentTypeIdentifiers
+     * @param bool $tolerateMisses
      * @return ContentType[]
+     * @throws NotFoundException
      */
-    protected function findContentTypesByIdentifier(array $contentTypeIdentifiers)
+    protected function findContentTypesByIdentifier(array $contentTypeIdentifiers, $tolerateMisses = false)
     {
         $contentTypes = [];
 
         foreach ($contentTypeIdentifiers as $contentTypeIdentifier) {
-            // return unique contents
-            $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($contentTypeIdentifier);
-            $contentTypes[$contentType->id] = $contentType;
+            try {
+                // return unique contents
+                $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($contentTypeIdentifier);
+                $contentTypes[$contentType->id] = $contentType;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $contentTypes;
@@ -124,16 +145,23 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
     /**
      * @param int[] $contentTypeRemoteIds
+     * @param bool $tolerateMisses
      * @return ContentType[]
      */
-    protected function findContentTypesByRemoteId(array $contentTypeRemoteIds)
+    protected function findContentTypesByRemoteId(array $contentTypeRemoteIds, $tolerateMisses = false)
     {
         $contentTypes = [];
 
         foreach ($contentTypeRemoteIds as $contentTypeRemoteId) {
-            // return unique contents
-            $contentType = $this->repository->getContentTypeService()->loadContentTypeByRemoteId($contentTypeRemoteId);
-            $contentTypes[$contentType->id] = $contentType;
+            try {
+                // return unique contents
+                $contentType = $this->repository->getContentTypeService()->loadContentTypeByRemoteId($contentTypeRemoteId);
+                $contentTypes[$contentType->id] = $contentType;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $contentTypes;

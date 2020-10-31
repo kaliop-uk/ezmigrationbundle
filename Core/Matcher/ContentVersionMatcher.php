@@ -47,10 +47,11 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
      * @param array $sort
      * @param int $offset
      * @param int $limit
+     * @param bool $tolerateMisses
      * @return VersionInfoCollection
      * @throws InvalidMatchConditionsException
      */
-    public function match(array $contentConditions, array $versionConditions = array(), $sort = array(), $offset = 0, $limit = 0)
+    public function match(array $contentConditions, array $versionConditions = array(), $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
     {
         $versions = array();
 

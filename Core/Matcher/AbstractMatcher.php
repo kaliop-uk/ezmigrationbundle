@@ -2,10 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
-use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\MatcherInterface;
 
 abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInterface
 {
@@ -50,10 +50,11 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
 
     /**
      * @param $conditionsArray
+     * @param bool $tolerateMisses
      * @return array|\ArrayObject
      * @throws InvalidMatchConditionsException
      */
-    protected function matchAnd($conditionsArray)
+    protected function matchAnd($conditionsArray, $tolerateMisses = false)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
@@ -62,7 +63,7 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
 
         $class = null;
         foreach ($conditionsArray as $conditions) {
-            $out = $this->match($conditions);
+            $out = $this->match($conditions, $tolerateMisses);
             if ($out instanceof \ArrayObject) {
                 $class = get_class($out);
                 $out = $out->getArrayCopy();
@@ -83,10 +84,11 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
 
     /**
      * @param $conditionsArray
+     * @param bool $tolerateMisses
      * @return array
      * @throws InvalidMatchConditionsException
      */
-    protected function matchOr($conditionsArray)
+    protected function matchOr($conditionsArray, $tolerateMisses = false)
     {
         /// @todo introduce proper re-validation of all child conditions
         if (!is_array($conditionsArray) || !count($conditionsArray)) {
@@ -96,7 +98,7 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
         $class = null;
         $results = array();
         foreach ($conditionsArray as $conditions) {
-            $out = $this->match($conditions);
+            $out = $this->match($conditions, $tolerateMisses);
             if ($out instanceof \ArrayObject) {
                 $class = get_class($out);
                 $out = $out->getArrayCopy();
@@ -134,6 +136,7 @@ abstract class AbstractMatcher implements MatcherInterface, EnumerableMatcherInt
 
     /**
      * @param array $conditions
+     * @param bool $tolerateMisses
      * @return array|\ArrayObject the keys must be a unique identifier of the matched entities
      * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
      */

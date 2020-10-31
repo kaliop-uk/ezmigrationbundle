@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
-use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -24,20 +25,24 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return ContentTypeGroupCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function match(array $conditions)
+    public function match(array $conditions, $tolerateMisses = false)
     {
-        return $this->matchContentTypeGroup($conditions);
+        return $this->matchContentTypeGroup($conditions, $tolerateMisses);
     }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @return ContentTypeGroupCollection
+     * @param bool $tolerateMisses
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function matchContentTypeGroup(array $conditions)
+    public function matchContentTypeGroup(array $conditions, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 
@@ -50,23 +55,23 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
             switch ($key) {
                 case 'id':
                 case self::MATCH_CONTENTTYPEGROUP_ID:
-                    return new ContentTypeGroupCollection($this->findContentTypeGroupsById($values));
+                    return new ContentTypeGroupCollection($this->findContentTypeGroupsById($values, $tolerateMisses));
 
                 case 'identifier':
                 case self::MATCH_CONTENTTYPEGROUP_IDENTIFIER:
-                    return new ContentTypeGroupCollection($this->findContentTypeGroupsByIdentifier($values));
+                    return new ContentTypeGroupCollection($this->findContentTypeGroupsByIdentifier($values, $tolerateMisses));
 
                 case self::MATCH_ALL:
                     return new ContentTypeGroupCollection($this->findAllContentTypeGroups());
 
                 case self::MATCH_AND:
-                    return $this->matchAnd($values);
+                    return $this->matchAnd($values, $tolerateMisses);
 
                 case self::MATCH_OR:
-                    return $this->matchOr($values);
+                    return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ContentTypeGroupCollection(array_diff_key($this->findAllContentTypeGroups(), $this->matchContentTypeGroup($values)->getArrayCopy()));
+                    return new ContentTypeGroupCollection(array_diff_key($this->findAllContentTypeGroups(), $this->matchContentTypeGroup($values, $tolerateMisses)->getArrayCopy()));
 
             }
         }
@@ -82,16 +87,24 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
     /**
      * @param int[] $contentTypeGroupIds
+     * @param bool $tolerateMisses
      * @return ContentTypeGroup[]
+     * @throws NotFoundException
      */
-    protected function findContentTypeGroupsById(array $contentTypeGroupIds)
+    protected function findContentTypeGroupsById(array $contentTypeGroupIds, $tolerateMisses = false)
     {
         $contentTypeGroups = [];
 
         foreach ($contentTypeGroupIds as $contentTypeGroupId) {
-            // return unique contents
-            $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroup($contentTypeGroupId);
-            $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
+            try {
+                // return unique contents
+                $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroup($contentTypeGroupId);
+                $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $contentTypeGroups;
@@ -99,16 +112,24 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
     /**
      * @param string[] $contentTypeGroupIdentifiers
+     * @param bool $tolerateMisses
      * @return ContentTypeGroup[]
+     * @throws NotFoundException
      */
-    protected function findContentTypeGroupsByIdentifier(array $contentTypeGroupIdentifiers)
+    protected function findContentTypeGroupsByIdentifier(array $contentTypeGroupIdentifiers, $tolerateMisses = false)
     {
         $contentTypeGroups = [];
 
         foreach ($contentTypeGroupIdentifiers as $contentTypeGroupIdentifier) {
-            // return unique contents
-            $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroupByIdentifier($contentTypeGroupIdentifier);
-            $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
+            try {
+                // return unique contents
+                $contentTypeGroup = $this->repository->getContentTypeService()->loadContentTypeGroupByIdentifier($contentTypeGroupIdentifier);
+                $contentTypeGroups[$contentTypeGroup->id] = $contentTypeGroup;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $contentTypeGroups;

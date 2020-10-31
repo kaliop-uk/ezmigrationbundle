@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\Content\Language;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
-use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
@@ -24,20 +25,24 @@ class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return LanguageCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function match(array $conditions)
+    public function match(array $conditions, $tolerateMisses = false)
     {
-        return $this->matchLanguage($conditions);
+        return $this->matchLanguage($conditions, $tolerateMisses);
     }
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
+     * @param bool $tolerateMisses
      * @return LanguageCollection
      * @throws InvalidMatchConditionsException
+     * @throws NotFoundException
      */
-    public function matchLanguage(array $conditions)
+    public function matchLanguage(array $conditions, $tolerateMisses = false)
     {
         $this->validateConditions($conditions);
 
@@ -50,23 +55,23 @@ class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
             switch ($key) {
                 case 'id':
                 case self::MATCH_LANGUAGE_ID:
-                    return new LanguageCollection($this->findLanguagesById($values));
+                    return new LanguageCollection($this->findLanguagesById($values, $tolerateMisses));
 
                 case 'langauge_code':
                 case self::MATCH_LANGUAGE_CODE:
-                    return new LanguageCollection($this->findLanguagesByCode($values));
+                    return new LanguageCollection($this->findLanguagesByCode($values, $tolerateMisses));
 
                 case self::MATCH_ALL:
                     return new LanguageCollection($this->findAllLanguages());
 
                 case self::MATCH_AND:
-                    return $this->matchAnd($values);
+                    return $this->matchAnd($values, $tolerateMisses = false);
 
                 case self::MATCH_OR:
-                    return $this->matchOr($values);
+                    return $this->matchOr($values, $tolerateMisses = false);
 
                 case self::MATCH_NOT:
-                    return new LanguageCollection(array_diff_key($this->findAllLanguages(), $this->matchLanguage($values)->getArrayCopy()));
+                    return new LanguageCollection(array_diff_key($this->findAllLanguages(), $this->matchLanguage($values, $tolerateMisses)->getArrayCopy()));
             }
         }
     }
@@ -81,16 +86,24 @@ class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
     /**
      * @param int[] $languageIds
+     * @param bool $tolerateMisses
      * @return Language[]
+     * @throws NotFoundException
      */
-    protected function findLanguagesById(array $languageIds)
+    protected function findLanguagesById(array $languageIds, $tolerateMisses = false)
     {
         $languages = [];
 
         foreach ($languageIds as $languageId) {
-            // return unique contents
-            $language = $this->repository->getContentLanguageService()->loadLanguageById($languageId);
-            $languages[$language->id] = $language;
+            try {
+                // return unique contents
+                $language = $this->repository->getContentLanguageService()->loadLanguageById($languageId);
+                $languages[$language->id] = $language;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $languages;
@@ -98,16 +111,24 @@ class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
     /**
      * @param string[] $languageIdentifiers
+     * @param bool $tolerateMisses
      * @return Language[]
+     * @throws NotFoundException
      */
-    protected function findLanguagesByCode(array $languageIdentifiers)
+    protected function findLanguagesByCode(array $languageIdentifiers, $tolerateMisses = false)
     {
         $languages = [];
 
         foreach ($languageIdentifiers as $languageIdentifier) {
-            // return unique contents
-            $language = $this->repository->getContentLanguageService()->loadLanguage($languageIdentifier);
-            $languages[$language->id] = $language;
+            try {
+                // return unique contents
+                $language = $this->repository->getContentLanguageService()->loadLanguage($languageIdentifier);
+                $languages[$language->id] = $language;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
         }
 
         return $languages;
