@@ -223,7 +223,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
         // this check is now done immediately after matching
         //$this->insureResultsCountCompatibility($item, $referencesDefs, $step);
 
-        $multivalued = ($this->getResultsType($step) == self::$RESULT_TYPE_MULTIPLE);
+        $multivalued = ($this->expectedResultsType($step) == self::$RESULT_TYPE_MULTIPLE);
 
         if ($item instanceof AbstractCollection  || is_array($item)) {
             $items = $item;

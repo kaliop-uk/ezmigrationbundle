@@ -1,7 +1,7 @@
 Version 5.13.0
 ==============
 
-* New: taught the SQL migration steps, when specified in yaml format, to resolve references embedded in the sql statement
+* New: taught the SQL migration step, when specified in yaml format, to resolve references embedded in the sql statement
   (issue #199), eg:
 
         -
@@ -20,12 +20,24 @@ Version 5.13.0
               expect: any
               references:
                   -
-                      identifier: ezsystems_users_count
+                      identifier: users_count
                       attribute: count
-                  -   identifier: ezsystems_users
+                  -   identifier: users_login
                       attribute: results.login
 
   For more details, see the complete specification in file SQL.yml
+
+* New: all load/update/delete steps, as well as a couple non-repository-related steps, support the optional `expect` element.
+  This is used to validate the number of matched items, as well as altering the value of the references created.
+  - use `expect: one` to enforce matching of exactly one element, and set scalar values to references
+  - use `expect: any` to allow steps matching of any number of elements, and set array values to references
+  - use `expect: many` to enforce matching of one or more elements, and set array values to references
+  - using `expect` enforces validation of the number of matched elements regardless of the fact that there are any reference
+    definitions in the step, whereas `references_type` and `references_allow_empty` only activated if there was at least one
+    reference defined
+  - also, the validation of the number of matched elements, when required, now happens _before_ any item deletion/update
+    action takes place. Up until now, for `update` steps, only a subset of the validation was enforced before the action,
+    and the rest was validated afterwards
 
 * New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
 
@@ -45,24 +57,17 @@ Version 5.13.0
 * BC change: some options for the test-execution command `teststack.sh` have been renamed, see `teststack.sh -h`
   for the new list
 
-* BC change: the `references_type` and `references_allow_empty` step elements have been replaced by a new element: `expect`
+* BC change: when matching users by email in steps `user/update`, `user/delete`, `user/update` the migration will now
+  be halted if there is no matching user found
 
-  - use `expect: one` to enforce steps of type load/update/delete to only match one element, and set scalar values to references
-  - use `expect: any` to enforce steps of type load/update/delete to match any number of elements, and set array values to references
-  - use `expect: many` to enforce steps of type load/update/delete to match one or more elements, and set array values to references
-  - using `expect` enforces validation of the number of matched elements regardless of the fact that there are any reference
-    definitions in the step, whereas `references_type` and `references_allow_empty` only activated if there was at least one
-    reference definition
-  - also, the validation of the number of matched elements, when required, now happens _before_ any item deletion/update
-    action takes place. Up until now, for `update` steps, only a subset of the validation was enforced before the action,
-    and the rest was validated afterwards
-  - the `references_type` and `references_allow_empty` step elements are still handled correctly, but considered deprecated;
+* BC change: the `references_type` and `references_allow_empty` step elements have been replaced by a new element: `expect`.
+  The `references_type` and `references_allow_empty` step elements are still handled correctly, but considered deprecated;
     equivalence matrix:
         `expect: one` <==> `references_type` not set or equal to `scalar`
         `expect: any` <==> `references_type: array` and `references_allow_empty: true`
         `expect: many` <==> `references_type: array` and `references_allow_empty` not set or equal to false
-  - for developers: the `RepositoryExecutor` class and its subclasses have dropped/changed methods that deal with setting
-    references. You will have to adapt your code if you had subclassed any of them
+  For developers: the `RepositoryExecutor` class and its subclasses have dropped/changed methods that deal with setting
+  references. You will have to adapt your code if you had subclassed any of them
 
 
 Version 5.12.0
@@ -366,7 +371,7 @@ Version 5.5.1
     - classes ContentMatcher and LocationMatcher now implement a different interface. If you have subclassed them, you
         will need to adjust the definition of methods `Math` and `MatchOne`
 
-    - when migrations are generated that specify a Location, tag `content_id` is now used where `contentobject_id` was
+    - when migrations are generated that specify a Location, element `content_id` is now used where `contentobject_id` was
         beforehand for indicating a sort order, and `location_id` is used where `node_id` was
 
 
@@ -585,7 +590,7 @@ Version 4.7
     disk besides having it inline in the migration definition
 
 * New: all migration steps that deal with the content repository, as well as sql, php class, sf services, files, mail,
-    http calls, process execution have gained support for being skipped via an `if` tag. The semantics are the same
+    http calls, process execution have gained support for being skipped via an `if` element. The semantics are the same
     as for the existing step `migration/cancel`:
 
     ```

@@ -100,7 +100,8 @@ class SQLExecutor extends AbstractExecutor
             $sql = $this->referenceResolver->resolveEmbeddedReferences($sql);
         }
 
-        $singleResult = ($this->getResultsType($step) == self::$RESULT_TYPE_SINGLE);
+        $singleResult = ($this->expectedResultsType($step) == self::$RESULT_TYPE_SINGLE);
+
         /** @var \Doctrine\DBAL\Driver\Statement $stmt */
         // NB: we can't use `query()` because of https://jira.ez.no/browse/EZEE-3345
         $stmt = $conn->executeQuery($sql);

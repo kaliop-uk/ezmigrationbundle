@@ -39,7 +39,8 @@
         # Possible values for matching. only one of them is allowed at a time. All of them can be single or array
         id: # the id(s) of the tag(s) we want to update
         remote_id: # the remote id(s) of the tag(s) we want to update
-        keyword: # the keyword(s) of the tag(s) we want to update
+        keyword: # the keyword(s) of the tag(s) we want to update.
+                 # NB: unlike when matching by Id/RemoteId, migrations won't fail if no tag is matched by keyowrd
         parent_tag_id: # the id of the parent tag
         or: # match any of the conditions below. *NB:* less efficient that using the array notation for a single condition
             -

@@ -111,6 +111,10 @@
     type: content
     mode: update
     match: # Specify ONLY ONE of the following, to match a content or a set of contents to update
+        # NB: matching by content_id or content_remote_id will make the migration fail in case of a miss. However,
+        #     matching by any other criterion will _not_ make the migration fail even if there are no matches.
+        #     If you want to make sure that the migration aborts in case of a miss, use `expect: one` or `expect: many`
+        #     as described below
         content_id: x # int|int[]
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
@@ -182,6 +186,10 @@
                                    # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
                                    # (for the full syntax supported, see jmespath)
                                    # 'count' can be used to set a reference to the number of items matched
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+                         # 'one': only one element should be matched; reference values will be scalars
+                         # 'any': zero or more element should be matched; reference values will be arrays
+                         # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -248,6 +256,7 @@
     match_sort: # optional. If set, it has to be an array
         - { sort_field: content_id|content_name|modified|published|section_identifier|section_name, sort_order: ASC|DESC }
     references: # Optional. See above for allowed values
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -313,6 +322,7 @@
                                    # attributes.objectrelationlistattr.destinationContentIds.length(@) (nr. of elements in an object-relation)
                                    # (for the full syntax supported, see jmespath)
                                    # 'count' can be used to set a reference to the number of items matched
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

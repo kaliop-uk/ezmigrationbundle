@@ -44,6 +44,9 @@
                                    # modification_date, name, owner_id, parent_location_id, path, priority,
                                    # publication_date, section_id, sort_field, sort_order)
     expect: one|any|many # Optional. If set, the number of _created locations_ will be validated, and the type of values set to created references will change
+                         # 'one': only one element should be matched; reference values will be scalars
+                         # 'any': zero or more element should be matched; reference values will be arrays
+                         # 'many': one or more element should be matched; reference values will be arrays
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -52,12 +55,17 @@
     type: location
     mode: create
     match: ... # See above
+    match_offset: ... # See above
+    match_limit: ... # See above
+    match_sort: ... # See above
     parent_location: [x, y, z] # Multiple locations can be added in a single step using an array
     is_hidden: ... # See above
     priority: x # Optional
     sort_field: ... # See above
     sort_order: ... # See above
     references: ... # See above
+    expect: ... # See above
+    if: ... # See above
 
 -
     type: location
@@ -208,8 +216,8 @@
     mode: trash
     match: ... # The locations to delete. See location/delete for the description
     references: ... # Optional. See location/delete for the description
-    expect: one|any|many # Optional. See location/delete for the description
-    if: [] # Optional. See location/delete for the description
+    expect: ... # Optional. See location/delete for the description
+    if: ... # Optional. See location/delete for the description
 
 -
     type: location
