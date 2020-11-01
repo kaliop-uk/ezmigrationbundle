@@ -12,7 +12,7 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 * PHP 5.6 or later.
 
-* eZPlatform or eZPublish Enterprise 5.4 or eZPublish Community 2014.11 or later.
+* eZPlatform 1, eZPlatform 2 or eZPublish Enterprise 5.4 or eZPublish Community 2014.11 or later.
 
 
 ## Installation
@@ -45,9 +45,11 @@ If you run `php bin/console` (for eZPublish `php ezpublish/console`) you should 
 
     kaliop
       kaliop:migration:generate
-      kaliop:migration:status
+      kaliop:migration:mass_migrate
       kaliop:migration:migrate
       kaliop:migration:migration
+      kaliop:migration:resume
+      kaliop:migration:status
 
 This indicates that the bundle has been installed and registered correctly.
 
@@ -186,9 +188,10 @@ In a Yaml migration, you can define the following types of actions:
 - creation, appending, copy, renaming and deletion of files
 - execution of SQL queries
 - execution of command-line scripts
-- execution of methods of symfony services
+- execution of methods of Symfony services
 - execution of http calls
 - sending of email
+- looping over arrays and executing one of the above actions on each element
 - canceling, snoozing or suspending the migration itself
 
 The docs describing all supported parameters are in the [DSL Language description](Resources/doc/DSL/README.md)
@@ -217,7 +220,10 @@ will fail. You are of course free to create a specific SQL migration for a diffe
 The Migration bundle itself imposes no limitations on the type of databases supported, but as it is based on the
 Doctrine DBAL, it will only work on the databases that Doctrine supports.
 
-*NB* if the SQL command (or commands) in your migration is too long, the migration might fail or be only partially
+*NB* you can also save the SQL statement to execute in a yml-formatted migration file. This gives you access to more
+options, such as setting and resolving references. Yml-formatted migration files do not need to have the db type in their name.
+
+*NB* if the SQL statement (or statements) in your migration is too long, the migration might fail or be only partially
 applied, in some cases (such as when using MySQL) without even reporting an error. If you need to execute multiple, long
 queries, you are better off splitting them, either in many .sql migrations, or in a single .yml migration with sql steps.
 
@@ -242,8 +248,8 @@ For a more detailed example of a migration definition done in PHP, look in the M
 standard autoloading mechanism of the application does not apply when loading the migration definition. This is also
 the reason why the php classes used as migrations should not use namespaces.
 
-*NB* since version 4.5, it is also possible to run any method of any existing Symfony service just by declaring it as
-migration step in a yaml migration. See the [relevant DSL](Resources/doc/DSL/Service.yml) for details.
+*NB* it is also possible to run any method of any existing Symfony service just by declaring it as migration step
+in a yaml migration. See the [relevant DSL](Resources/doc/DSL/Service.yml) for details.
 
 ### Re-executing failed migrations
 
@@ -251,7 +257,7 @@ The easiest way to re-execute a migration in 'failed' status, is to remove it fr
 
     php ezpublish/console kaliop:migration:migration migration_name --delete
 
-After removing the information about the migration form the migrations table, running the `migrate` command will execute it again.
+After removing the information about the migration from the migrations table, running the `migrate` command will execute it again.
 
 
 ## Usage of transactions / rolling back changes
@@ -313,7 +319,7 @@ and the corresponding php class:
 
 ## Known Issues and limitations
 
-* unlike the Doctrine Migrations Bundle, this bundle does not support rollback of changes. Read above for the reason.
+* unlike the Doctrine Migrations Bundle, this bundle does not support rollback of changes. Read above for the reason why.
 
 * if you are using the Doctrine Migrations Bundle to manage your schema, you will get spurious sql created to handle the
     database tables belonging to Kaliop Migrations Bundle.
@@ -447,7 +453,7 @@ suite is run on Travis.
 The advantages are multiple: on one hand you can start with any version of eZPublish you want; on the other you will
 be more confident that the tests will still pass on Travis.
 The disadvantages are that you will need Docker and Docker-compose, and that the environment you will use will look
-quite unlike a standard eZPublish setup!
+quite unlike a standard eZPublish setup! Also, it will take a considerable amount of disk space and time to build.
 
 Steps to set up a dedicated test environment and run the tests in it:
 
@@ -458,7 +464,7 @@ Steps to set up a dedicated test environment and run the tests in it:
 
 In case you want to run manual commands, eg. the symfony console:
 
-    ./Tests/teststack.sh exec php vendor/ezsystems/ezplatform/bin/console cache:clear
+    ./Tests/teststack.sh console cache:clear
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
 Note: make sure to have enough disk space available.

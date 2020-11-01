@@ -10,7 +10,8 @@ Specific topics are covered below.
 
 ## Content language
 
-By default, the bundle uses eng-GB for creating all multilingual entities (contents, contentTypes, users, etc...).
+By default, the bundle uses the first language in the list of languages set up for the current siteaccess for creating
+all multilingual entities (contents, contentTypes, users, etc...).
 In order to create content in a different language, either specify it in your yml definition files (recommended), or
 use a command-line switch.
 
@@ -51,12 +52,12 @@ You will be able to create content with a field of type eZPage, but not add or e
 
 ## Using references in your migration files
 
-The Yaml definitions support setting references of values of certain attributes, that you can retrieve in the subsequent
-migration steps.
+The Yaml definitions support setting 'references' to the results of the execution of a migration step, that can be retrieved
+and used in the subsequent migration steps.
 
 Setting a reference is the same as creating a new variable - you decide its name, and which value it will hold (the value
-is taken from the entity currently being created / updated). Once the reference is set, you can use make use of its value
-in other steps.
+is taken from the entity currently being created / updated / deleted / loaded). Once the reference is set, you can make
+use of its value in other steps.
 
 For example, you could set a reference to the location id of a folder that you create and then use that as the parent
 location for creating articles in that folder.
@@ -115,7 +116,7 @@ associated to the reference found. Eg:
 > **Bad:** `some_key: reference:foo`<br>
 > **Good:** `some_key: 'reference:foo'`
 
-Note that, unlike variables in programming languages, you can not change the value of an existing references by default.
+Note that, unlike variables in programming languages, you can not change the value of an existing reference by default.
 This is done to prevent accidental overwrites of an existing reference with another one, as the most common use case
 for reference is set once, use multiple times.
 If you want to be able to change the value of a reference after having created it, use the `overwrite` tag:
@@ -149,6 +150,43 @@ when using them as part of other elements in the yml file.
 This is done to minimize the chances that some random bits of text get modified by error (and because we need an
 end-of-reference identifier character).
 
+### Scalar vs array references
+
+By default the migration engine expect reference values to be scalars. This means that the following migration will fail:
+
+    # FAIL
+    -
+        mode: load
+        type: content_type
+        match:
+            not:
+                content_type_identifier: whatever
+        references:
+            -
+                identifier: my_ref
+                attribute: content_type_identifier
+
+(every eZ installation has by least one ContentType for users and one for UserGroups, generally more)
+
+In order to be able to create references whose values are arrays, you have to explictly say so in the migration step
+
+    # FAIL
+    -
+        mode: load
+        type: content_type
+        match:
+            not:
+                content_type_identifier: whatever
+        expect: any
+        references:
+            -
+                identifier: my_ref
+                attribute: content_type_identifier
+
+Valid values for `expect` also include positive numbers and the string `many`, used to indicate 'one or more'.
+When those are used, besides having an effect on the type of values set to references, the number of items matched
+is also validated.
+
 ### Complete list of available references
 
 Look in the single DSL files for the complete set of attributes which can be used to set reference values, as well as
@@ -156,13 +194,13 @@ the places where references will be substituted if found.
 
 ### Setting references manually
 
-It is possible since version 3.5 to create references manually using a dedicated migration step, and even bulk-load them
-from a file.
+It is possible to create references manually using a dedicated migration step, and even bulk-load them
+from a file. See [References.yml](References.yml) for more details.
 Symfony configuration parameters can be used as values for these manually-created references.
 
 ### Debugging references
 
-It is possible since version 3.5 to dump references to screen for debug purposes. See [References.yml](References.yml)
+It is possible to dump references to screen for debug purposes. See [References.yml](References.yml)
 
 
 ## Other
