@@ -112,7 +112,7 @@
     mode: update
     match: # Specify ONLY ONE of the following, to match a content or a set of contents to update
         # NB: matching by content_id or content_remote_id will make the migration fail in case of a miss. However,
-        #     matching by any other criterion will _not_ make the migration fail even if there are no matches.
+        #     matching by any other criterion will _not_ make the migration fail even when there are no matches.
         #     If you want to make sure that the migration aborts in case of a miss, use `expect: one` or `expect: many`
         #     as described below
         content_id: x # int|int[]
@@ -213,6 +213,10 @@
     type: content
     mode: delete
     match: # Specify ONLY ONE of the following, to match a content or a set of contents to remove
+        # NB: matching by content_id or content_remote_id will make the migration fail in case of a miss. However,
+        #     matching by any other criterion will _not_ make the migration fail even when there are no matches.
+        #     If you want to make sure that the migration aborts in case of a miss, use `expect: one` or `expect: many`
+        #     as described below
         content_id: x # int|int[]
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]
@@ -265,6 +269,10 @@
     type: content
     mode: load
     match: # Specify ONLY ONE of the following, to match a content or a set of contents to load
+        # NB: matching by content_id or content_remote_id will make the migration fail in case of a miss. However,
+        #     matching by any other criterion will _not_ make the migration fail even when there are no matches.
+        #     If you want to make sure that the migration aborts in case of a miss, use `expect: one` or `expect: many`
+        #     as described below
         content_id: x # int|int[]
         content_remote_id: xxx # string|string[]
         location_id: x # int|int[]

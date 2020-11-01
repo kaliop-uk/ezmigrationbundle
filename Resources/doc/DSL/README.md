@@ -1,7 +1,7 @@
 About the Migration Domain Specific Language (DSL)
 ==================================================
 
-This directory contains the definitions of each action in the migration DSL, in the form of a commented Yaml file.
+This directory contains the definitions of every supported action in the migration DSL, in the form of a commented Yaml file.
 
 Specific topics are covered below.
 
