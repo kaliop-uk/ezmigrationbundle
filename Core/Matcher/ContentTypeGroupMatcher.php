@@ -71,7 +71,7 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
                     return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ContentTypeGroupCollection(array_diff_key($this->findAllContentTypeGroups(), $this->matchContentTypeGroup($values, $tolerateMisses)->getArrayCopy()));
+                    return new ContentTypeGroupCollection(array_diff_key($this->findAllContentTypeGroups(), $this->matchContentTypeGroup($values, true)->getArrayCopy()));
 
             }
         }

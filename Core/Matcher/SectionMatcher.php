@@ -74,7 +74,7 @@ class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
                     return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new SectionCollection(array_diff_key($this->findAllSections(), $this->matchSection($values, $tolerateMisses)->getArrayCopy()));
+                    return new SectionCollection(array_diff_key($this->findAllSections(), $this->matchSection($values, true)->getArrayCopy()));
             }
         }
     }

@@ -72,7 +72,7 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                     return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ObjectStateCollection(array_diff_key($this->findAllObjectStates(), $this->matchObjectState($values, $tolerateMisses)->getArrayCopy()));
+                    return new ObjectStateCollection(array_diff_key($this->findAllObjectStates(), $this->matchObjectState($values, true)->getArrayCopy()));
             }
         }
     }

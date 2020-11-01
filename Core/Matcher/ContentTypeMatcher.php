@@ -80,7 +80,7 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                     return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ContentTypeCollection(array_diff_key($this->findAllContentTypes(), $this->matchContentType($values, $tolerateMisses)->getArrayCopy()));
+                    return new ContentTypeCollection(array_diff_key($this->findAllContentTypes(), $this->matchContentType($values, true)->getArrayCopy()));
             }
         }
     }

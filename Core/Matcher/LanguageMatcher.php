@@ -71,7 +71,7 @@ class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
                     return $this->matchOr($values, $tolerateMisses = false);
 
                 case self::MATCH_NOT:
-                    return new LanguageCollection(array_diff_key($this->findAllLanguages(), $this->matchLanguage($values, $tolerateMisses)->getArrayCopy()));
+                    return new LanguageCollection(array_diff_key($this->findAllLanguages(), $this->matchLanguage($values, true)->getArrayCopy()));
             }
         }
     }

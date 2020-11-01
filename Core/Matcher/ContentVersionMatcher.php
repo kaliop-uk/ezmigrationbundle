@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException ;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use \eZ\Publish\API\Repository\Values\Content\VersionInfo;
@@ -55,7 +56,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
     {
         $versions = array();
 
-        $contentCollection = $this->contentMatcher->match($contentConditions, $sort, $offset, $limit);
+        $contentCollection = $this->contentMatcher->match($contentConditions, $sort, $offset, $limit, $tolerateMisses);
         foreach($contentCollection as $content) {
             $versions = array_merge($versions, $this->matchContentVersions($versionConditions, $content));
         }
@@ -168,9 +169,11 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
     }
 
     /**
+     * NB: does not throw when matching no version
      * @param Content $content
      * @param string[] $values
      * @return VersionInfo[] key: obj_id/version_no, sorted in increasing version no.
+     * @throws UnauthorizedException
      */
     protected function findContentVersionsByStatus(Content $content, array $values)
     {
@@ -187,9 +190,11 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
     }
 
     /**
+     * NB: does not throw when matching no version
      * @param Content $content
      * @param int[] $values
      * @return VersionInfo[] key: obj_id/version_no, sorted in increasing version no.
+     * @throws UnauthorizedException
      */
     protected function findContentVersionsByVersionNo(Content $content, array $values)
     {
@@ -221,6 +226,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
     /**
      * @param Content $content
      * @return VersionInfo[] key: obj_id/version_no, sorted in increasing version no.
+     * @throws UnauthorizedException
      */
     protected function findAllContentVersions(Content $content)
     {

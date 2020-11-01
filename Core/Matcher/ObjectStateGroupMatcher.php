@@ -80,7 +80,7 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
                     return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new ObjectStateGroupCollection(array_diff_key($this->findAllObjectStateGroups(), $this->matchObjectStateGroup($values, $tolerateMisses)->getArrayCopy()));
+                    return new ObjectStateGroupCollection(array_diff_key($this->findAllObjectStateGroups(), $this->matchObjectStateGroup($values, true)->getArrayCopy()));
             }
         }
     }

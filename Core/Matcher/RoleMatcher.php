@@ -73,7 +73,7 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
                     return $this->matchOr($values, $tolerateMisses);
 
                 case self::MATCH_NOT:
-                    return new RoleCollection(array_diff_key($this->findAllRoles(), $this->matchRole($values, $tolerateMisses)->getArrayCopy()));
+                    return new RoleCollection(array_diff_key($this->findAllRoles(), $this->matchRole($values, true)->getArrayCopy()));
             }
         }
     }
