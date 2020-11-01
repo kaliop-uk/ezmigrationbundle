@@ -29,14 +29,15 @@ class TrashMatcher extends ContentMatcher
      * @param array $sort
      * @param int $offset
      * @param int $limit
+     * @param bool $tolerateMisses
      * @return TrashedItemCollection
      * @throws InvalidMatchConditionsException
      */
-    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
+    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
     {
         /// @todo throw if we get passed sorting or offset
 
-        return $this->matchItem($conditions);
+        return $this->matchItem($conditions, $tolerateMisses);
     }
 
     /**
