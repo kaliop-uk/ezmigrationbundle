@@ -501,6 +501,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     {
         $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
         $contentCollection = $this->contentMatcher->match($matchCondition);
+        /// @todo throw if nothing is matched?
         $data = array();
 
         /** @var \eZ\Publish\API\Repository\Values\Content\Content $content */

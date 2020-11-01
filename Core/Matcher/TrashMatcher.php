@@ -29,20 +29,18 @@ class TrashMatcher extends ContentMatcher
      * @param array $sort
      * @param int $offset
      * @param int $limit
-     * @param bool $tolerateMisses
      * @return TrashedItemCollection
      * @throws InvalidMatchConditionsException
      */
-    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0, $tolerateMisses = false)
+    public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0)
     {
         /// @todo throw if we get passed sorting or offset
 
-        return $this->matchItem($conditions, $tolerateMisses);
+        return $this->matchItem($conditions);
     }
 
     /**
      * @param array $conditions
-     * @param bool $tolerateMisses
      * @return TrashedItemCollection
      * @throws InvalidMatchConditionsException
      *
@@ -50,7 +48,7 @@ class TrashMatcher extends ContentMatcher
      * @todo support matching by item_id
      * @todo test if sorting and offset,limit do work
      */
-    public function matchItem(array $conditions, $tolerateMisses = false)
+    public function matchItem(array $conditions)
     {
         $this->validateConditions($conditions);
 

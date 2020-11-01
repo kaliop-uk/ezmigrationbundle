@@ -78,11 +78,10 @@ class ReferenceMatcher extends AbstractMatcher
 
     /**
      * @param array $conditions key: condition, value: int / string / int[] / string[]
-     * @param bool $tolerateMisses
      * @return array 1 element with the value true/false
      * @throws InvalidMatchConditionsException
      */
-    public function match(array $conditions, $tolerateMisses = false)
+    public function match(array $conditions)
     {
         $this->validateConditions($conditions);
 
