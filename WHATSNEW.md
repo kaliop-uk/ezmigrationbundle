@@ -50,8 +50,9 @@ Version 5.13.0
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
   in this case
 
-* Fixed: using the `not` element in matching clauses would not work for most types of steps, when the element not-to-be-matched
-  was not present in the repository. Notable exceptions being Content and Locations matches.
+* Improved: using the `not` element in matching clauses would not work for most types of steps, when the element
+  not-to-be-matched was not present in the repository. Notable exceptions being Content and Locations matches.
+  This case now works.
   Example of a migration that would fail: find all content types except the one 'philosophers_stone'
 
           -
@@ -68,7 +69,7 @@ Version 5.13.0
 * BC change: some options for the test-execution command `teststack.sh` have been renamed, see `teststack.sh -h`
   for the new list
 
-* BC change: when matching users by email in steps `user/update`, `user/delete`, `user/update` the migration will now
+* BC change: when matching users by email in steps `user/update`, `user/delete`, `user/load` the migration will now
   be halted if there is no matching user found
 
 * BC change: the `references_type` and `references_allow_empty` step elements have been replaced by a new element: `expect`.
@@ -79,6 +80,8 @@ Version 5.13.0
         `expect: many` <==> `references_type: array` and `references_allow_empty` not set or equal to false
   For developers: the `RepositoryExecutor` class and its subclasses have dropped/changed methods that deal with setting
   references. You will have to adapt your code if you had subclassed any of them
+
+* BC change: some cases of \InvalidArgumentException being thrown have been replaced with Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException
 
 
 Version 5.12.0
