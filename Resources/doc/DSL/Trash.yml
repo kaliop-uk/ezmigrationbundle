@@ -11,7 +11,7 @@
     type: trash
     mode: recover
     match:
-        xxx # See the conditions for content/update
+        xxx # See the conditions for content/update. NB: the migration will not fail if nothing is matched
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
@@ -30,7 +30,7 @@
     type: trash
     mode: delete
     match:
-        xxx # See the conditions for content/update
+        xxx # See the conditions for content/update. NB: the migration will not fail if nothing is matched
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference

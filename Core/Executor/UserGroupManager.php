@@ -199,7 +199,9 @@ class UserGroupManager extends RepositoryExecutor
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        return $this->userGroupMatcher->match($match);
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+
+        return $this->userGroupMatcher->match($match, $tolerateMisses);
     }
 
     /**

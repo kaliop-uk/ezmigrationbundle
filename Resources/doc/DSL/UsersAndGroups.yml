@@ -76,6 +76,7 @@
         #                first_name: "faker: firstName"
         #                last_name: "faker: lastName"
 
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id, email or login
     email: xyz # Optional. NB: can only be set if the match definition latches a single user
     password: xyz # Optional. NB: The given password string is the plaintext version; it will be automatically hashed in the cms. PLEASE DON'T LET CLEARTEXT PASSWORDS BE STORED IN YOUR SOURCE CODE VERSIONING SYSTEMS
     enabled: true|false # Optional
@@ -117,9 +118,8 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
-
         # NB: if you need more complex matching conditions to select a set of users, see user/update above
-
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id, email or login
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
@@ -149,6 +149,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id, email or login
     references: # Optional
          -
             identifier: referenceId # A string used to identify the reference
@@ -201,6 +202,7 @@
 
         # NB: if you need more complex matching conditions to select a set of usergroups, see user/update above
 
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id, remote_id or parent id
     name: xyz # Optional. Can only be used when the group to be updated is single
     description: xyz # Optional
     parent_group_id: x # Optional, the new parent user group ID or group's remote_id
@@ -245,6 +247,7 @@
 
         # NB: if you need more complex matching conditions to select a set of usergroups, see user/update above
 
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id, remote_id or parent id
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
@@ -279,6 +282,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id, remote_id or parent id
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

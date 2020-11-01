@@ -126,7 +126,9 @@ class ContentVersionManager extends ContentManager
         $offset = isset($step->dsl['match_offset']) ? $this->referenceResolver->resolveReference($step->dsl['match_offset']) : 0;
         $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
 
-        return $this->versionMatcher->match($match, $matchVersions, $sort, $offset, $limit);
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+
+        return $this->versionMatcher->match($match, $matchVersions, $sort, $offset, $limit, $tolerateMisses);
     }
 
     /**

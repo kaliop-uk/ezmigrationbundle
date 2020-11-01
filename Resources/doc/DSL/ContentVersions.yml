@@ -2,6 +2,7 @@
     type: content_version
     mode: delete
     match: # Same as for Content update/delete/load actions
+    match_tolerate_misses: false # Same too
     match_versions:
         # NB: the migration will not fail if there are no matching versions found for the currently matched Contents
         status: string|array # accepted values: draft, archived, published
@@ -24,6 +25,7 @@
     type: content_version
     mode: load
     match: # Same as for Content update/delete/load actions
+    match_tolerate_misses: false # Same too
     match_versions:
         # NB: the migration will not fail if there are no matching versions found for the currently matched Contents
         status: string|array # accepted values: draft, archived, published

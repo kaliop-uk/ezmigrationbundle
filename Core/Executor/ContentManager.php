@@ -363,7 +363,9 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
         $sort = isset($step->dsl['match_sort']) ? $this->referenceResolver->resolveReference($step->dsl['match_sort']) : array();
 
-        return $this->contentMatcher->match($match, $sort, $offset, $limit);
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+
+        return $this->contentMatcher->match($match, $sort, $offset, $limit, $tolerateMisses);
     }
 
     /**

@@ -287,7 +287,9 @@ class LocationManager extends RepositoryExecutor
         $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
         $sort = isset($step->dsl['match_sort']) ? $this->referenceResolver->resolveReference($step->dsl['match_sort']) : array();
 
-        return $this->locationMatcher->match($match, $sort, $offset, $limit);
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+
+        return $this->locationMatcher->match($match, $sort, $offset, $limit, $tolerateMisses);
     }
 
     /**

@@ -39,6 +39,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     identifier: x # Optional String: new identifier of the object state group
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -83,6 +84,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     references: # Optional. See above for allowed values
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
@@ -111,6 +113,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     references: # Optional. See above for allowed values
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
@@ -162,6 +165,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     identifier: x # Optional String: new identifier of the object state
     names: # Optional: array of names keyed by language code.
         languageCodeA: name
@@ -205,6 +209,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     references: # Optional. See above for allowed values
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
@@ -233,6 +238,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     references: # Optional. See above for allowed values
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars

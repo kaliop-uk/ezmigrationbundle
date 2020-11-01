@@ -1,6 +1,10 @@
 Version 5.13.0
 ==============
 
+* Improved: a single value for a content field of type ezcountry can be specified as a string instead of an array (issue #190)
+
+* New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
+
 * New: taught the SQL migration step, when specified in yaml format, to resolve references embedded in the sql statement
   (issue #199), eg:
 
@@ -9,7 +13,7 @@ Version 5.13.0
             resolve_references: true
             mysql: "UPDATE emp SET job='sailor' WHERE ename='[reference:example_reference]'"
 
-* New migration step: `sql/query`, which can be used to run SELECT queries on the database.
+* New migration step: `sql/query`, which can be used to run SELECT queries on the database (issue #199).
   Unlike the existing `sql/exec` step (previously known simply as `sql`), this step allows to set reference values with
   the selected data. Ex:
 
@@ -39,17 +43,6 @@ Version 5.13.0
     action takes place. Up until now, for `update` steps, only a subset of the validation was enforced before the action,
     and the rest was validated afterwards
 
-* New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
-
-* New: taught the test-execution command `teststack.sh` two new actions: `console` and `dbconsole`, as well as a few new
-  options: `-r runtests`, `cleanup ez-cache` and `cleanup ez-logs`
-
-* Improved: a single value for a content field of type ezcountry can be specified as a string instead of an array (issue #190)
-
-* Improved: made console command `kaliop:migration:migrate` survive the case of migrations registered in the database
-  as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
-  in this case
-
 * Improved: using the `not` element in matching clauses would not work for most types of steps, when the element
   not-to-be-matched was not present in the repository. Notable exceptions being Content and Locations matches.
   This case now works.
@@ -62,15 +55,35 @@ Version 5.13.0
                   not:
                       identifier: philosophers_stone
 
+* New: most load/update/delete steps support the optional `match_tolerate_misses` element (issue #235).
+  When setting it to true, the migration will not abort if there are no items in the repository matching the specified
+  conditions.
+  Example of a migration that would previously always fail: update non-existing content type 'philosophers_stone'
+
+          -
+              type: content_type
+              mode: update
+              match:
+                      identifier: philosophers_stone
+              # make this step successful in case we have not found the stone yet...
+              match_tolerate_misses: true
+
+* BC change: when matching users by email in steps `user/update`, `user/delete`, `user/load` the migration will now
+  be halted if there is no matching user found. This can be worked around by usage of `match_tolerate_misses: true`
+
+* Improved: made console command `kaliop:migration:migrate` survive the case of migrations registered in the database
+  as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
+  in this case
+
 * Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
+
+* New: taught the test-execution command `teststack.sh` two new actions: `console` and `dbconsole`, as well as a few new
+  options: `-r runtests`, `cleanup ez-cache` and `cleanup ez-logs`
 
 * Fixed: regressions when running the test-execution command `teststack.sh` with the `-u` option or `resetdb` action
 
 * BC change: some options for the test-execution command `teststack.sh` have been renamed, see `teststack.sh -h`
   for the new list
-
-* BC change: when matching users by email in steps `user/update`, `user/delete`, `user/load` the migration will now
-  be halted if there is no matching user found
 
 * BC change: the `references_type` and `references_allow_empty` step elements have been replaced by a new element: `expect`.
   The `references_type` and `references_allow_empty` step elements are still handled correctly, but considered deprecated;

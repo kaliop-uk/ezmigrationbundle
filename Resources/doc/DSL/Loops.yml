@@ -1,6 +1,6 @@
 # Loop steps allow to execute multiple times in a row (a sequence of) other steps.
 # Nested loops are supported.
-# NB: step execution events are triggered only for the outhermost loop step
+# NB: step execution events are triggered only for the outermost loop step
 
 -
     type: loop

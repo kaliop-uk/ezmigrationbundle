@@ -151,6 +151,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     content_type_group: x # Id or identifier of a new group we want to put the new content type into (this will not remove it from the current group)
     remove_content_type_group: x # Id or identifier of a group we want to remove this content type from
     default_always_available: true|false # Optional
@@ -227,6 +228,7 @@
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or identifier
     references: # Optional. See above for allowed values
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars

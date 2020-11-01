@@ -190,7 +190,9 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
-        return $this->tagMatcher->match($match);
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+
+        return $this->tagMatcher->match($match, $tolerateMisses);
     }
 
     /**
