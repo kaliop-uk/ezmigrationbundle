@@ -50,6 +50,17 @@ Version 5.13.0
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
   in this case
 
+* Fixed: using the `not` element in matching clauses would not work for most types of steps, when the element not-to-be-matched
+  was not present in the repository. Notable exceptions being Content and Locations matches.
+  Example of a migration that would fail: find all content types except the one 'philosophers_stone'
+
+          -
+              type: content_type
+              mode: load
+              match:
+                  not:
+                      identifier: philosophers_stone
+
 * Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
 
 * Fixed: regressions when running the test-execution command `teststack.sh` with the `-u` option or `resetdb` action

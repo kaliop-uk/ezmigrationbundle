@@ -3,6 +3,7 @@
     mode: delete
     match: # Same as for Content update/delete/load actions
     match_versions:
+        # NB: the migration will not fail if there are no matching versions found for the currently matched Contents
         status: string|array # accepted values: draft, archived, published
         version: xxx # If an integer or array of integers: remove those specific versions
         or: # match any of the conditions below
@@ -14,6 +15,7 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See Contents.yml for allowed values, except 'attributes', plus: version_no, version_status
+    expect:  # Optional. See Contents.yml for details
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -23,8 +25,9 @@
     mode: load
     match: # Same as for Content update/delete/load actions
     match_versions:
+        # NB: the migration will not fail if there are no matching versions found for the currently matched Contents
         status: string|array # accepted values: draft, archived, published
-        version: xxx # If an integer or array of integers: remove those specific versions
+        version: xxx # If an integer or array of integers: match those specific versions
         or: # match any of the conditions below
             -   _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
             -   _condition_: value # where _condition can be any of ones specified above, including 'and' and 'or'
@@ -34,6 +37,7 @@
         not: # matches elements NOT satisfying the wrapped condition
             _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional. See Contents.yml for allowed values, except 'attributes', plus: version_no, version_status
+    expect:  # Optional. See Contents.yml for details
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
