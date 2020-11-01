@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 
@@ -28,7 +29,7 @@ class EzTags extends AbstractFieldHandler implements FieldValueImporterInterface
         foreach ($fieldValue as $def)
         {
             if (!is_array($def) || count($def) != 1) {
-                throw new \Exception('Definition of EzTags field is incorrect: each element of the tags array must be an array with one element');
+                throw new InvalidStepDefinitionException('Definition of EzTags field is incorrect: each element of the tags array must be an array with one element');
             }
 
             $identifier = reset($def);
