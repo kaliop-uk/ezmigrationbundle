@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\DBAL\Schema\Schema;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
+use eZ\Publish\Core\Persistence\Database\QueryException;
 use eZ\Publish\Core\Persistence\Database\SelectQuery;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationCollection;
@@ -26,11 +27,12 @@ class Migration extends TableStorage implements StorageHandlerInterface
      * @param DatabaseHandler $dbHandler
      * @param string $tableNameParameter
      * @param ConfigResolverInterface $configResolver
+     * @param array $tableCreationOptions
      * @throws \Exception
      */
-    public function __construct(DatabaseHandler $dbHandler, $tableNameParameter = 'kaliop_migrations', ConfigResolverInterface $configResolver = null)
+    public function __construct(DatabaseHandler $dbHandler, $tableNameParameter = 'kaliop_migrations', ConfigResolverInterface $configResolver = null, $tableCreationOptions = array())
     {
-        parent::__construct($dbHandler, $tableNameParameter, $configResolver);
+        parent::__construct($dbHandler, $tableNameParameter, $configResolver, $tableCreationOptions);
     }
 
     /**
@@ -427,8 +429,19 @@ class Migration extends TableStorage implements StorageHandlerInterface
         // and 767 bytes can be either 255 chars or 191 chars depending on charset utf8 or utf8mb4...
         //$t->addIndex(array('path'));
 
+        $this->injectTableCreationOptions($t);
+
         foreach ($schema->toSql($dbPlatform) as $sql) {
-            $this->dbHandler->exec($sql);
+            try {
+                $this->dbHandler->exec($sql);
+            } catch(QueryException $e) {
+                // work around limitations in both Mysql and Doctrine
+                // @see https://github.com/kaliop-uk/ezmigrationbundle/issues/176
+                if (strpos($e->getMessage(), '1071 Specified key was too long; max key length is 767 bytes') !== false &&
+                    strpos($sql, 'PRIMARY KEY(migration)') !== false) {
+                    $this->dbHandler->exec(str_replace('PRIMARY KEY(migration)', 'PRIMARY KEY(migration(191))', $sql));
+                }
+            }
         }
     }
 

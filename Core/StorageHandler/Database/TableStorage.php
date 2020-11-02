@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 
+use Doctrine\DBAL\Schema\Table;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use Kaliop\eZMigrationBundle\API\ConfigResolverInterface;
 
@@ -27,19 +28,35 @@ abstract class TableStorage
      */
     protected $tableExists = false;
 
+    /** @var array $tableCreationOptions */
+    protected $tableCreationOptions;
+
     /**
      * @param DatabaseHandler $dbHandler
      * @param string $tableNameParameter name of table when $configResolver is null, name of parameter otherwise
      * @param ConfigResolverInterface $configResolver
+     * @param array $tableCreationOptions
      * @throws \Exception
      */
-    public function __construct(DatabaseHandler $dbHandler, $tableNameParameter, ConfigResolverInterface $configResolver = null)
+    public function __construct(DatabaseHandler $dbHandler, $tableNameParameter, ConfigResolverInterface $configResolver = null, $tableCreationOptions = array())
     {
         $this->dbHandler = $dbHandler;
         $this->tableName = $configResolver ? $configResolver->getParameter($tableNameParameter) : $tableNameParameter;
+        $this->tableCreationOptions = $tableCreationOptions;
     }
 
     abstract function createTable();
+
+    /**
+     * To be called from createTable to add to table definitions the common options (storage engine, charset, etc...)
+     * @param Table $table
+     */
+    protected function injectTableCreationOptions(Table $table)
+    {
+        foreach($this->tableCreationOptions as $key => $value) {
+            $table->addOption($key, $value);
+        }
+    }
 
     /**
      * @return mixed
