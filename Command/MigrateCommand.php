@@ -54,6 +54,7 @@ class MigrateCommand extends AbstractCommand
             ->addOption('separate-process', 'p', InputOption::VALUE_NONE, "Use a separate php process to run each migration. Safe if your migration leak memory. A tad slower")
             ->addOption('force-sigchild-enabled', null, InputOption::VALUE_NONE, "When using a separate php process to run each migration, tell Symfony that php was compiled with --enable-sigchild option")
             ->addOption('survive-disconnected-tty', null, InputOption::VALUE_NONE, "Keep on executing migrations even if the tty where output is written to gets removed. Useful if you run the command over an unstable ssh connection")
+            ->addOption('set-reference', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "Inject references into the migrations. Format: --set-reference refname:value --set-reference ref2name:value2")
             ->addOption('child', null, InputOption::VALUE_NONE, "*DO NOT USE* Internal option for when forking separate processes")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:migrate</info> command loads and executes migrations:
@@ -124,6 +125,17 @@ EOT
         // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
         if ($input->getOption('force-sigchild-enabled')) {
             Process::forceSigchildEnabled(true);
+        }
+
+        if ($input->getOption('set-reference') && !$input->getOption('separate-process')) {
+            $refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
+            foreach($input->getOption('set-reference') as $refSpec) {
+                $ref = explode(':', $refSpec, 2);
+                if (count($ref) < 2) {
+                    throw new \Exception("Invalid reference specification: '$refSpec'");
+                }
+                $refResolver->addReference($ref[0], $ref[1]);
+            }
         }
 
         $aborted = false;
@@ -471,14 +483,18 @@ EOT
         if ($input->getOption('force')) {
             $builderArgs[] = '--force';
         }
-        if ($input->getOption('no-transactions')) {
-            $builderArgs[] = '--no-transactions';
-        }
         // useful in case the subprocess has a migration step of type process/run
         if ($input->getOption('force-sigchild-enabled')) {
             $builderArgs[] = '--force-sigchild-enabled';
         }
-
+        if ($input->getOption('no-transactions')) {
+            $builderArgs[] = '--no-transactions';
+        }
+        if ($input->getOption('set-reference')) {
+            foreach($input->getOption('set-reference') as $refSpec) {
+                $builderArgs[] = '--set-reference=' . $refSpec;
+            }
+        }
         return $builderArgs;
     }
 

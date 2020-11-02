@@ -471,12 +471,6 @@ EOT
         if ($input->getOption('force')) {
             $builderArgs[] = '--force';
         }
-        if ($input->getOption('no-transactions')) {
-            $builderArgs[] = '--no-transactions';
-        }
-        if ($input->getOption('separate-process')) {
-            $builderArgs[] = '--separate-process';
-        }
         // useful in case the subprocess has a migration step of type process/run
         if ($input->getOption('force-sigchild-enabled')) {
             $builderArgs[] = '--force-sigchild-enabled';
@@ -484,7 +478,17 @@ EOT
         if ($input->getOption('ignore-failures')) {
             $builderArgs[] = '--ignore-failures';
         }
-
+        if ($input->getOption('no-transactions')) {
+            $builderArgs[] = '--no-transactions';
+        }
+        if ($input->getOption('separate-process')) {
+            $builderArgs[] = '--separate-process';
+        }
+        if ($input->getOption('set-reference')) {
+            foreach($input->getOption('set-reference') as $refSpec) {
+                $builderArgs[] = '--set-reference=' . $refSpec;
+            }
+        }
         return $builderArgs;
     }
 }

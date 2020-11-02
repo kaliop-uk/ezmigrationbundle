@@ -5,6 +5,18 @@ Version 5.13.0
 
 * New: taught the `kaliop:migration:status` command to sort migrations by execution date using `--sort-by` (issue #224)
 
+* New: taught the `kaliop:migration:migrate` command a new option: `--set-reference` (issue #162). This is allows to
+  inject any desired reference value into the migrations.
+
+* New: taught the `reference/set` migration step to resolve environment variables besides Symfony parameters (issue #199).
+  Eg:
+
+        -
+            type: reference
+            mode: set
+            identifier: myReference
+            value: '%env(PWD)%'
+
 * New: taught the SQL migration step, when specified in yaml format, to resolve references embedded in the sql statement
   (issue #199), eg:
 
@@ -93,6 +105,15 @@ Version 5.13.0
         `expect: many` <==> `references_type: array` and `references_allow_empty` not set or equal to false
   For developers: the `RepositoryExecutor` class and its subclasses have dropped/changed methods that deal with setting
   references. You will have to adapt your code if you had subclassed any of them
+
+* BC change: the database tables used by the bundle are now created by default with charset `utf8mb4` and collation
+  `utf8mb4_general_ci` (issue #176). They used to default to utf8 and utf8_unicode_ci.
+  This is in general not a big issue, as there are no queries with joins between our tables and the eZP ones, but in
+  case you have custom code that does those queries, those might fail if the charset or collation differ.
+  To fix that, you can set different values to the Symfony parameters `ez_migration_bundle.database_charset` and
+  `ez_migration_bundle.database_collation`.
+  Note that this 'change' only applies to new installations of the bundle - if the migration tables already existed
+  in your database before upgrading to the latest Migration Bundle version, they will not be modified.
 
 * BC change: some cases of \InvalidArgumentException being thrown have been replaced with Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException
 

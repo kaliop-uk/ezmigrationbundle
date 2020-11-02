@@ -1,9 +1,13 @@
 -
     # Set a new reference with a value specified manually
+    # (note that custom references can be set as well via options in the `migrate` command line)
     type: reference
     mode: set
     identifier: xxx # name of the reference to set
-    value: zzz # value for the reference. It can be a Symfony configuration parameter by using the syntax '%name%'
+    value: zzz # value for the reference.
+               # It can be a Symfony configuration parameter by using the syntax '%name%'
+               # It can be an environment variable by using the syntax '%env(name)%'
+               # NB: in this case variables set by Symfony's .env mechanism are not supported
     overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
 
 -
