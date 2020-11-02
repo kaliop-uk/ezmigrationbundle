@@ -33,6 +33,7 @@ parameters:
     # queries doing joins between migration tables and eZP tables.
     # eZPlatform uses utf8mb4 charset as default, whereas eZPublish used utf8
     ez_migration_bundle.database_charset: 'utf8mb4'
+    ez_migration_bundle.database_collation: 'utf8mb4_general_ci'
 
     # This is by default the max value for a 16-bit integer, which is what SOLR accepts as maximum nuber-of-results
     # limitation for its queries.
@@ -204,7 +205,7 @@ services:
             - '@ezpublish.connection'
             - 'ez_migration_bundle.table_name'
             - '@ez_migration_bundle.helper.config.resolver'
-            - { charset: '%ez_migration_bundle.database_charset%' }
+            - { charset: '%ez_migration_bundle.database_charset%', collate: '%ez_migration_bundle.database_collation%'}
 
     ez_migration_bundle.context_storage_handler:
         alias: ez_migration_bundle.context_storage_handler.database
@@ -215,7 +216,7 @@ services:
             - '@ezpublish.connection'
             - 'ez_migration_bundle.context_table_name'
             - '@ez_migration_bundle.helper.config.resolver'
-            - { charset: '%ez_migration_bundle.database_charset%' }
+            - { charset: '%ez_migration_bundle.database_charset%', collate: '%ez_migration_bundle.database_collation%' }
 
     ### executors
 
