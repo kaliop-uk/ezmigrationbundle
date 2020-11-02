@@ -440,6 +440,8 @@ class Migration extends TableStorage implements StorageHandlerInterface
                 if (strpos($e->getMessage(), '1071 Specified key was too long; max key length is 767 bytes') !== false &&
                     strpos($sql, 'PRIMARY KEY(migration)') !== false) {
                     $this->dbHandler->exec(str_replace('PRIMARY KEY(migration)', 'PRIMARY KEY(migration(191))', $sql));
+                } else {
+                    throw $e;
                 }
             }
         }
