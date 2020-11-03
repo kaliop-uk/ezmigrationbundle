@@ -14,6 +14,7 @@ use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
  */
 class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
+    protected $supportedActions = array('create', 'load', 'update', 'delete');
     protected $supportedStepTypes = array('content_type_group');
 
     /** @var ContentTypeGroupMatcher $contentTypeGroupMatcher */
@@ -52,6 +53,17 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
         $this->setReferences($group, $step);
 
         return $group;
+    }
+
+    protected function load($step)
+    {
+        $groupsCollection = $this->matchContentTypeGroups('load', $step);
+
+        $this->validateResultsCount($groupsCollection, $step);
+
+        $this->setReferences($groupsCollection, $step);
+
+        return $groupsCollection;
     }
 
     protected function update($step)
