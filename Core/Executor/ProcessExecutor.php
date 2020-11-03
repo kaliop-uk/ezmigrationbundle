@@ -101,6 +101,12 @@ class ProcessExecutor extends AbstractExecutor
 
         $process->run();
 
+        if (isset($dsl['fail_on_error']) && $dsl['fail_on_error']) {
+            if (($exitCode = $process->getExitCode()) != 0) {
+                throw new \Exception("Process failed with exit code: $exitCode", $exitCode);
+            }
+        }
+
         $this->setReferences($process, $dsl);
 
         return $process;

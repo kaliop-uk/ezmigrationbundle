@@ -43,6 +43,12 @@ Version 5.13.0
 
   For more details, see the complete specification in file SQL.yml
 
+* New migration step: `migration/fail`, which is similar to `migration/cancel`, but leaves the migration marked as
+  failed instead of executed
+
+* New: migration step `proces/run` now supports element `fail_on_error`, which triggers a migration failure if the
+  external process executed returns a non zero exit code
+
 * New: all load/update/delete steps, as well as a couple non-repository-related steps, support the optional `expect` element.
   This is used to validate the number of matched items, as well as altering the value of the references created.
   - use `expect: one` to enforce matching of exactly one element, and set scalar values to references

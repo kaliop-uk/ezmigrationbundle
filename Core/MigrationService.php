@@ -385,6 +385,7 @@ class MigrationService implements ContextProviderInterface
             }
 
         } catch (\Exception $e) {
+            /// @todo shall we emit a signal as well?
 
             $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
             $finalStatus = Migration::STATUS_FAILED;

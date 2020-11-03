@@ -9,6 +9,7 @@
         - '-type'
         - 'f'
     disable_output: false # bool, optional. Useful to save memory if the process creates a lot of output
+    fail_on_error: false # bool, optional. Abort the migration if the external process fails (exits with a non-zero code)
     environment: [] # array, optional
     timeout: 86400 # integer, optional. Max process execution time in seconds (1 day by default)
     working_directory: '/somedir' #string, optional
