@@ -34,6 +34,7 @@ trait NonScalarReferenceSetterTrait
     protected function validateResultsCount($results, $step)
     {
         // q: what if we get a scalar result but we expect an array/collection ?
+        // q2: why not just check for Countable interface instead of AbstractCollection? Or at least allow ArrayIterators and ObjectIterators
         if (is_array($results) || $results instanceof AbstractCollection) {
             $expectedResultsCount = $this->expectedResultsCount($step);
             switch($expectedResultsCount) {

@@ -17,6 +17,7 @@ interface MatcherInterface
      * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException
      *
      * @todo shall we add as 2nd argument: $tolerateMisses = false ? (note that it would affect child interfaces)
+     * @todo expand return type to include ArrayIterator
      */
     public function match(array $conditions);
 

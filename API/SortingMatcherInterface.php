@@ -18,6 +18,8 @@ interface SortingMatcherInterface extends MatcherInterface
      * @return array|\ArrayObject
      * @throws InvalidMatchConditionsException
      * @throws InvalidSortConditionsException
+     *
+     * @todo expand return type to include ArrayIterator
      */
     public function match(array $conditions, array $sort = array(), $offset = 0, $limit = 0);
 

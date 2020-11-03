@@ -210,7 +210,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @param MigrationStep $step
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
-     * @todo should we allow to be passed in plain arrays as well as Collections?
+     * @todo should we allow to be passed in plain arrays, ArrayIterators and ObjectIterators as well as Collections?
      */
     protected function setReferences($item, $step)
     {
