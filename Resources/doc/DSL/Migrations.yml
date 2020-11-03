@@ -9,13 +9,23 @@
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
 -
-    # Suspends a migration for a given number of seconds
+    # Abort execution of a migration: all steps following the current one will not be executed.
+    # The migrations will show up as 'failed' when checking ist status
+    type: migration
+    mode: fail
+    message: string # Optional. Will be part of the migration status stored in the database
+    if: # Optional. If set, the migration will be halted when the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    # Halt a migration for a given number of seconds
     type: migration
     mode: sleep
     seconds: xxx # integer
 
 -
-    # Suspend execution of a migration: 'freeze" execution at the current step.
+    # Suspend execution of a migration: 'freeze" execution at the current step and let the `migrate command finish.
     # The migration will be resumed when running the `command ka:mi:resume`, and the 'until' condition will be checked again,
     # at which point the migration will either keep executing or be re-suspended.
     # Note that the values of all references existing at the time of migration suspension will be preserved and restored

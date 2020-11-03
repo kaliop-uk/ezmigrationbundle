@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
@@ -12,7 +13,7 @@ use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 class MigrationExecutor extends AbstractExecutor
 {
     protected $supportedStepTypes = array('migration');
-    protected $supportedActions = array('cancel', 'suspend', 'sleep');
+    protected $supportedActions = array('cancel', 'fail', 'suspend', 'sleep');
 
     protected $referenceMatcher;
     protected $referenceResolver;
@@ -69,6 +70,20 @@ class MigrationExecutor extends AbstractExecutor
         }
 
         throw new MigrationAbortedException($message);
+    }
+
+    protected function fail($dsl, $context)
+    {
+        $message = isset($dsl['message']) ? $dsl['message'] : '';
+
+        if (isset($dsl['if'])) {
+            if (!$this->matchConditions($dsl['if'])) {
+                // q: return timestamp, matched condition or ... ?
+                return true;
+            }
+        }
+
+        throw new MigrationAbortedException($message, Migration::STATUS_FAILED);
     }
 
     /**
