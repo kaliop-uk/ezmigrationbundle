@@ -2,6 +2,9 @@
 
 namespace Kaliop\eZMigrationBundle\API;
 
+use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 /**
@@ -24,6 +27,9 @@ interface ExecutorInterface
      *
      * @param MigrationStep $step
      * @return mixed the results of the execution step are wrapped in an event which can be listened to
+     * @throws MigrationAbortedException
+     * @throws MigrationStepSkippedException
+     * @throws MigrationSuspendedException
      * @throws \Exception
      */
     public function execute(MigrationStep $step);

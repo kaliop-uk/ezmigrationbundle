@@ -55,6 +55,7 @@ EOT
         $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
 
         $migrationService = $this->getMigrationService();
+        $migrationService->setOutput($output);
 
         $migrationName = $input->getOption('migration');
         if ($migrationName != null) {

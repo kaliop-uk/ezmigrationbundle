@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core;
 
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
@@ -62,6 +63,9 @@ class MigrationService implements ContextProviderInterface
 
     protected $migrationContext = array();
 
+    /** @var  OutputInterface $output */
+    protected $output;
+
     public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository,
         EventDispatcherInterface $eventDispatcher, $contextHandler)
     {
@@ -109,6 +113,15 @@ class MigrationService implements ContextProviderInterface
     public function setLoader(LoaderInterface $loader)
     {
         $this->loader = $loader;
+    }
+
+    /**
+     * @todo we could get rid of this by getting $output passed as argument to self::executeMigration. We are not doing
+     *       that for BC for the moment (self::executeMigration api should be redone, but it is used in WorkfloBundle too)
+     */
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
     }
 
     /**
@@ -255,7 +268,7 @@ class MigrationService implements ContextProviderInterface
      *
      * @todo treating a null and false $adminLogin values differently is prone to hard-to-track errors.
      *       Shall we use instead -1 to indicate the desire to not-login-as-admin-user-at-all ?
-     * @todo refactor there start to be too many parameters here. Move to an single parameter: array of options or value-object
+     * @todo refactor. There are too many parameters here to add more. Move to a single parameter: array of options or value-object
      */
     public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
         $defaultLanguageCode = null, $adminLogin = null, $force = false, $forceSigchildEnabled = null)
@@ -309,7 +322,7 @@ class MigrationService implements ContextProviderInterface
                     // save enough data in the context to be able to successfully suspend/resume
                     $this->migrationContext[$migration->name]['step'] = $i;
 
-                    $step = $this->injectContextIntoStep($step, $migrationContext);
+                    $step = $this->injectContextIntoStep($step, array_merge($migrationContext, array('step' => $i)));
 
                     // we validated the fact that we have a good executor at parsing time
                     $executor = $this->executors[$step->type];
@@ -495,6 +508,10 @@ class MigrationService implements ContextProviderInterface
             $properties['forceSigchildEnabled'] = $forceSigchildEnabled;
         }
 
+        if ($this->output) {
+            $properties['output'] = $this->output;
+        }
+
         return $properties;
     }
 
@@ -581,7 +598,14 @@ class MigrationService implements ContextProviderInterface
      */
     public function getCurrentContext($migrationName)
     {
-        return isset($this->migrationContext[$migrationName]) ? $this->migrationContext[$migrationName] : null;
+        if (!isset($this->migrationContext[$migrationName]))
+            return null;
+        $context = $this->migrationContext[$migrationName];
+        // avoid attempting to store the current outputInterafce when saving the context
+        if (isset($context['output'])) {
+            unset($context['output']);
+        }
+        return $context;
     }
 
     /**
@@ -591,6 +615,9 @@ class MigrationService implements ContextProviderInterface
     public function restoreContext($migrationName, array $context)
     {
         $this->migrationContext[$migrationName] = $context;
+        if ($this->output) {
+            $this->migrationContext['output'] = $this->output;
+        }
     }
 
     protected function getEntityName($migration)

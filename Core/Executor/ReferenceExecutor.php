@@ -187,6 +187,7 @@ class ReferenceExecutor extends AbstractExecutor
         if (!$this->referenceResolver->isReference($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");
         }
+        /// @todo if $context['output'] is set, use that for writing output instead of doing it directly
         if (isset($dsl['label'])) {
             echo $dsl['label'];
         } else {

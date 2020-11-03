@@ -87,6 +87,12 @@ Version 5.13.0
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
   in this case
 
+* Improved: made console command `kaliop:migration:migrate -vv` more verbose than  `kaliop:migration:migrate -v`.
+  Also, improved the output of `kaliop:migration:migrate -v` by printing step numbers
+
+* New: migration steps can now take advantage of `$context['output]` to echo debug/warning messages (issue #201).
+  When set, it is set to an OutputInterface object.
+
 * Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
 
 * New: taught the test-execution command `teststack.sh` two new actions: `console` and `dbconsole`, as well as a few new

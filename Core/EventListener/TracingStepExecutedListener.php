@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\EventListener;
 
+use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationSuspendedEvent;
@@ -51,6 +52,24 @@ class TracingStepExecutedListener
         $this->enabled = false;
     }
 
+    public function onBeforeStepExecution(BeforeStepExecutionEvent $event) {
+        if (!$this->enabled) {
+            return;
+        }
+        $type = $event->getStep()->type;
+        $dsl = $event->getStep()->dsl;
+        $context = $event->getStep()->context;
+        $stepNr = '';
+        if (isset($context['step'])) {
+            $stepNr = "{$context['step']} ";
+        }
+        if (isset($dsl['mode'])) {
+            $type .= ' / ' . $dsl['mode'];
+        }
+        $out = $this->entity . " step $stepNr'$type' will be executed...";
+        $this->echoMessage($out, OutputInterface::VERBOSITY_VERY_VERBOSE);
+    }
+
     public function onStepExecuted(StepExecutedEvent $event)
     {
         if (!$this->enabled) {
@@ -60,6 +79,11 @@ class TracingStepExecutedListener
         $obj = $event->getResult();
         $type = $event->getStep()->type;
         $dsl = $event->getStep()->dsl;
+        $context = $event->getStep()->context;
+        $stepNr = '';
+        if (isset($context['step'])) {
+            $stepNr = "{$context['step']} ";
+        }
 
         switch ($type) {
             case 'content':
@@ -74,20 +98,25 @@ class TracingStepExecutedListener
             case 'user':
             case 'user_group':
                 $action = isset($dsl['mode']) ? ($dsl['mode'] == 'load' ? 'loaded' : ($dsl['mode'] . 'd')) : 'acted upon';
-                $out = $type . ' ' . $this->getObjectIdentifierAsString($obj) . ' has been ' . $action;
+                if (($obj instanceof AbstractCollection || is_array($obj)) && count($obj) > 1) {
+                    $verb = 'have';
+                } else {
+                    $verb = 1;
+                }
+                $out = $this->entity . " step {$stepNr}$type " . $this->getObjectIdentifierAsString($obj) . "$verb been " . $action;
                 break;
             case 'sql':
-                $out = 'sql has been executed';
+                $out = $this->entity . " step {$stepNr}sql has been executed";
                 break;
             case 'php':
-                $out = "class '{$dsl['class']}' has been executed";
+                $out = $this->entity . " step {$stepNr}class '{$dsl['class']}' has been executed";
                 break;
             default:
                 // custom migration step types...
                 if (isset($dsl['mode'])) {
                     $type .= ' / ' . $dsl['mode'];
                 }
-                $out = $this->entity . " step '$type' has been executed";
+                $out = $this->entity . " step $stepNr'$type' has been executed";
         }
 
         $this->echoMessage($out);
@@ -127,10 +156,10 @@ class TracingStepExecutedListener
         $this->echoMessage($out);
     }
 
-    protected function echoMessage($out)
+    protected function echoMessage($out, $verbosity = null)
     {
         if ($this->output) {
-            if ($this->output->getVerbosity() >= $this->minVerbosityLevel) {
+            if ($this->output->getVerbosity() >= ($verbosity ? $verbosity : $this->minVerbosityLevel)) {
                 $this->output->writeln($out);
             }
         } else {

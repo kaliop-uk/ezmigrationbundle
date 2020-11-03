@@ -89,6 +89,7 @@ EOT
         $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
 
         $migrationService = $this->getMigrationService();
+        $migrationService->setOutput($output);
 
         $force = $input->getOption('force');
 
@@ -154,7 +155,11 @@ EOT
                 continue;
             }
 
-            $this->writeln("<info>Processing $name</info>");
+            if ($this->verbosity >= OutputInterface::VERBOSITY_VERBOSE) {
+                $this->writeln("<info>Processing $name (from definition $migrationDefinition->path)</info>");
+            } else {
+                $this->writeln("<info>Processing $name</info>");
+            }
 
             if ($input->getOption('separate-process')) {
 
