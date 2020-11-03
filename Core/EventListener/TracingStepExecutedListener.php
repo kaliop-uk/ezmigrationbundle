@@ -112,6 +112,7 @@ class TracingStepExecutedListener
         switch ($type) {
             case 'content':
             case 'content_type':
+            case 'content_type_group':
             case 'language':
             case 'location':
             case 'object_state':
