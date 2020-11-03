@@ -47,7 +47,7 @@ Version 5.13.0
   failed instead of executed
 
 * New: migration step `proces/run` now supports element `fail_on_error`, which triggers a migration failure if the
-  external process executed returns a non zero exit code
+  external process executed returns a non zero exit code (issue #234)
 
 * New: all load/update/delete steps, as well as a couple non-repository-related steps, support the optional `expect` element.
   This is used to validate the number of matched items, as well as altering the value of the references created.
