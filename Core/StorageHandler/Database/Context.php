@@ -88,6 +88,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
      * Removes a migration context from storage
      *
      * @param string $migrationName
+     * @throws \Doctrine\DBAL\Exception
      */
     public function deleteMigrationContext($migrationName)
     {
@@ -104,6 +105,9 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         $this->truncate();
     }
 
+    /**
+     * @throws QueryException
+     */
     public function createTable()
     {
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
@@ -130,7 +134,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
                     strpos($sql, 'PRIMARY KEY(migration)') !== false) {
                     $this->dbHandler->exec(str_replace('PRIMARY KEY(migration)', 'PRIMARY KEY(migration(191))', $sql));
                 } else {
-                        throw $e;
+                    throw $e;
                 }
             }
         }

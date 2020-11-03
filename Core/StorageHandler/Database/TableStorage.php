@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\StorageHandler\Database;
 
 use Doctrine\DBAL\Schema\Table;
+use eZ\Publish\Core\Persistence\Database\QueryException;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use Kaliop\eZMigrationBundle\API\ConfigResolverInterface;
 
@@ -59,7 +60,7 @@ abstract class TableStorage
     }
 
     /**
-     * @return mixed
+     * @return \Doctrine\DBAL\Connection|mixed
      */
     protected function getConnection()
     {
@@ -112,6 +113,7 @@ abstract class TableStorage
 
     /**
      * Removes all data from storage as well as removing the tables itself
+     * @throws QueryException
      */
     protected function drop()
     {
@@ -122,6 +124,7 @@ abstract class TableStorage
 
     /**
      * Removes all data from storage
+     * @throws QueryException
      */
     public function truncate()
     {

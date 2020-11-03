@@ -408,6 +408,9 @@ class Migration extends TableStorage implements StorageHandlerInterface
         $this->drop();
     }
 
+    /**
+     * @throws QueryException
+     */
     public function createTable()
     {
         /** @var \Doctrine\DBAL\Schema\AbstractSchemaManager $sm */
@@ -473,6 +476,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
 
     protected function getEntityName($migration)
     {
-        return end(explode('\\', get_class($migration)));
+        $arr = explode('\\', get_class($migration));
+        return end($arr);
     }
 }
