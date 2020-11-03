@@ -116,7 +116,7 @@ EOT
 
         $time = microtime(true) - $start;
         $output->writeln("Resumed $executed migrations, failed $failed");
-        $output->writeln("Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
+        $output->writeln("Time taken: ".sprintf('%.3f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB');
 
         if ($failed) {
             return 2;

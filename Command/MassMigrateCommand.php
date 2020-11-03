@@ -186,7 +186,7 @@ EOT
 
         $time = microtime(true) - $start;
         // since we use subprocesses, we can not measure max memory used
-        $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
+        $this->writeln("<info>Time taken: ".sprintf('%.3f', $time)." secs</info>");
 
         return $subprocessesFailed + $this->migrationsDone[Migration::STATUS_FAILED] + $missed;
     }

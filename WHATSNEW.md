@@ -93,7 +93,9 @@ Version 5.13.0
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
   in this case
 
-* Improved: made console command `kaliop:migration:migrate -vv` more verbose than  `kaliop:migration:migrate -v`.
+* Improved: made console command `kaliop:migration:migrate -vv` more verbose than `kaliop:migration:migrate -v`.
+  Besides printing one message before each step begins execution, it also displays time taken and memory used for each
+  step (issue #200).
   Also, improved the output of `kaliop:migration:migrate -v` by printing step numbers
 
 * New: migration steps can now take advantage of `$context['output]` to echo debug/warning messages (issue #201).

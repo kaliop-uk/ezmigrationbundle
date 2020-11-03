@@ -64,6 +64,8 @@ The <info>kaliop:migration:migrate</info> command loads and executes migrations:
 You can optionally specify the path to migration definitions with <info>--path</info>:
 
     <info>./ezpublish/console kaliop:migrations:migrate --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
+
+Use -v and -vv options to get troubleshooting information on the execution of each step in the migration(s).
 EOT
             );
     }
@@ -230,9 +232,9 @@ EOT
         $time = microtime(true) - $start;
         if ($input->getOption('separate-process')) {
             // in case of using subprocesses, we can not measure max memory used
-            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs</info>");
+            $this->writeln("<info>Time taken: ".sprintf('%.3f', $time)." secs</info>");
         } else {
-            $this->writeln("<info>Time taken: ".sprintf('%.2f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB</info>');
+            $this->writeln("<info>Time taken: ".sprintf('%.3f', $time)." secs, memory: ".sprintf('%.2f', (memory_get_peak_usage(true) / 1000000)). ' MB</info>');
         }
 
         return $failed;
