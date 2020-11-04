@@ -135,6 +135,7 @@ class GenerateTest extends CommandTest
 
     protected function checkGeneratedFile($filePath, $mode)
     {
+        // Check that the generated file can be parsed as valid Migration Definition
         $input = new ArrayInput(array('command' => 'kaliop:migration:status'));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();

@@ -1,0 +1,29 @@
+- make one test run on postgres (both on travis and on docker)
+- make ez entrypoint.sh check contents of /tmp/setup_ok
+  also: make the hash for vendor folder name include EZ_VERSION; save in vendor folder the current env vars plus
+        the name of the external docker-compose env file (pass it down as a d-c var)
+- make it easy to have many different test envs installed and running in parallel:
+  - need to make data, logs docker mounts be driven by env vars
+  - need to add custom network subnets ?
+  - add ready-made stack config files corresponding as much as possible to the Travis test matrix
+    (maybe even parse .travis.yml automatically?)
+  - document it
+- after having set up the extra composer packages, revert composer.json to its previous state ? (is it not already done ?)
+- reduce the number of env vars needed for eZ:
+  - set APP_ENV and SYMFONY_ENV if unset
+  - derive INSTALL_TAGSBUNDLE and INSTALL_SOLRBUNDLE from the list of packages
+  - and/or have an env var for the list of bundles to enable in the sf kernel
+- teststack.sh: add a check for min docker, docker-compose version (note: seems like we can use --env-file only since docker-compose 1.24)
+- also: give to the user a friendlier error message if she's not in the docker group
+- teststack.sh: add commands to clean up dead container networks and volumes, etc...
+- allow to install different mysql clients (at least for debian versions which have them)
+- make installation of java in ez container optional
+- add more services? eg. redis
+
+- teststack.sh: use YELLOW for warnings, green for the date in output messages
+- rename COMPOSE_, CONTAINER_ env vars to STACK_ ?
+
+- remove all usages of 'migration' and externalize the whole docker + ez setup to its own git package
+  - folders: config, docker, environment
+  - make it easy to install on Travis - but keep in mind that we most likely can't install it as part of composer 'dev' deps,
+    as the docker stack needs to run 1st (split in 2 packages?)

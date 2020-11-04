@@ -148,7 +148,22 @@ class MigrateTest extends CommandTest
         $output = $this->fetchOutput();
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
 
-        /// @todo add some assertion that the output contains the expected 'hello world', unless in quiet mode
+        // check that the output contains the expected output, in quiet mode/verbose/very_verbose modes
+        /// @todo fix usage of output buffering and stream handlers to allow matching the reference dump
+        if (array_key_exists('-q', $options)) {
+            //$this->assertNotRegExp('/"hello world"/', $output, 'Migration output unexpected');
+            $this->assertNotRegExp('/Time taken:/', $output, 'Migration output unexpected');
+        } else if (array_key_exists('-v', $options)) {
+            //$this->assertRegExp('/"hello world"/', $output, 'Migration output unexpected');
+            $this->assertRegExp('/migration step.+has been executed/', $output, 'Migration output unexpected');
+            $this->assertRegExp('/Time taken:/', $output, 'Migration output unexpected');
+        } else if (array_key_exists('-vv', $options)) {
+            //$this->assertRegExp('/"hello world"/', $output, 'Migration output unexpected');
+            $this->assertRegExp('/migration step.+will be executed/', $output, 'Migration output unexpected');
+            $this->assertRegExp('/migration step.+has been executed/', $output, 'Migration output unexpected');
+            $this->assertRegExp('/memory delta:/', $output, 'Migration output unexpected');
+            $this->assertRegExp('/Time taken:/', $output, 'Migration output unexpected');
+        }
 
         /// @todo add some assertion on the output of `--info` (or move to a separate test?)
         $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--info' => true, '-n' => true));
@@ -231,10 +246,13 @@ class MigrateTest extends CommandTest
             array(array('--separate-process' => true)),
             array(array('--force-sigchild-enabled' => true)),
             array(array('--survive-disconnected-tty' => true)),
+            array(array('--set-reference' => 'hello:world')),
             array(array('-q' => true)),
             array(array('-v' => true)),
+            array(array('-vv' => true)),
             array(array('-q' => true, '-p' => true)),
             array(array('-v' => true, '-p' => true)),
+            array(array('-vv' => true, '-p' => true)),
             /// @todo add tests for `a`, `l` flags
         );
     }
