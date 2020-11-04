@@ -110,6 +110,9 @@ class TracingStepExecutedListener
         }
 
         switch ($type) {
+            case 'trash':
+                $type = 'trashed_item';
+                // fall through voluntarily
             case 'content':
             case 'content_type':
             case 'content_type_group':
@@ -239,7 +242,8 @@ class TracingStepExecutedListener
                 ) {
                     return "'" . $objOrCollection->identifier . "'";
                 }
-                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Location) {
+                if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Location ||
+                    $objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\TrashItem) {
                     return "'" . $objOrCollection->pathString . "'";
                 }
                 if ($objOrCollection instanceof \eZ\Publish\API\Repository\Values\Content\Language) {

@@ -43,7 +43,7 @@ Version 5.13.0
 
   For more details, see the complete specification in file SQL.yml
 
-* New migration step: `content_type_group/load`
+* New migration steps: `content_type_group/load` and `trash/load`
 
 * New migration step: `migration/fail`, which is similar to `migration/cancel`, but leaves the migration marked as
   failed instead of executed

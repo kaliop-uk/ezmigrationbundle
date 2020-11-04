@@ -6,7 +6,7 @@
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
-# Restores a Location that is in the trash
+# Restores one or more Locations that are in the trash
 -
     type: trash
     mode: recover
@@ -25,7 +25,7 @@
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
-# Deletes definitively a Location that is already in the trash
+# Deletes definitively one or more Locations that are already in the trash
 -
     type: trash
     mode: delete
@@ -43,3 +43,13 @@
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+# Loads trashed items, allowing to set references to their attributes
+-
+    type: trash
+    mode: load
+    match: # See docs above for update and delete
+    match_tolerate_misses: # Optional. See above for allowed values
+    references: # Optional. See above for allowed values
+    expect: # Optional. See above for allowed values
+    if:  # Optional. See above for allowed values

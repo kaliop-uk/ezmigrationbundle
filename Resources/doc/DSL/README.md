@@ -196,7 +196,8 @@ the places where references will be substituted if found.
 
 It is possible to create references manually using a dedicated migration step, and even bulk-load them
 from a file. See [References.yml](References.yml) for more details.
-Symfony configuration parameters can be used as values for these manually-created references.
+Symfony configuration parameters and environment variables can be used as values for these manually-created references.
+Last but not least, it is possible to create references via a command-line option for the `migrate` command.
 
 ### Debugging references
 

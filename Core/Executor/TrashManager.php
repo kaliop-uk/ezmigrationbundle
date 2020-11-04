@@ -13,7 +13,7 @@ use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
  */
 class TrashManager extends RepositoryExecutor
 {
-    protected $supportedActions = array('purge', 'recover', 'delete');
+    protected $supportedActions = array('purge', 'recover', 'load', 'delete');
     protected $supportedStepTypes = array('trash');
 
     /** @var TrashMatcher $trashMatcher */
@@ -60,6 +60,17 @@ class TrashManager extends RepositoryExecutor
         }
 
         $this->setReferences(new LocationCollection($locations), $step);
+
+        return $itemsCollection;
+    }
+
+    protected function load($step)
+    {
+        $itemsCollection = $this->matchItems('load', $step);
+
+        $this->validateResultsCount($itemsCollection, $step);
+
+        $this->setReferences($itemsCollection, $step);
 
         return $itemsCollection;
     }
