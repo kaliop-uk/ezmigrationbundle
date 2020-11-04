@@ -602,7 +602,7 @@ class MigrationService implements ContextProviderInterface
         if (!isset($this->migrationContext[$migrationName]))
             return null;
         $context = $this->migrationContext[$migrationName];
-        // avoid attempting to store the current outputInterafce when saving the context
+        // avoid attempting to store the current outputInterface when saving the context
         if (isset($context['output'])) {
             unset($context['output']);
         }
