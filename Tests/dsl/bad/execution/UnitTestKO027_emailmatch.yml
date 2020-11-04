@@ -1,0 +1,6 @@
+# User matcher is not tolerant of misses when matching by email (since 5.13)
+-
+    type: user
+    mode: load
+    match:
+        email: not_quite_exist_kmb_test_027_ko@tanoconsulting.com

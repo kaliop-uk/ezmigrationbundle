@@ -1,0 +1,6 @@
+# CT matcher is not tolerant of misses when matching by identifier
+-
+    type: content_type
+    mode: load
+    match:
+        content_type_identifier: not_quite_exist_kmb_test_026_ko

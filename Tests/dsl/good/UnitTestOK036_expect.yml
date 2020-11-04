@@ -1,0 +1,16 @@
+# Validate usage of expect with numeric values
+-
+    type: content_type
+    mode: load
+    match:
+        contenttype_identifier: not_quite_exist_kmb_test_036_ok
+    match_tolerate_misses: true
+    expect: 0
+    # disable unit-test check for null step results
+    allow_null_results: true
+-
+    type: content_type
+    mode: load
+    match:
+        contenttype_identifier: folder
+    expect: 1

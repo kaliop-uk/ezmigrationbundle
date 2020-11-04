@@ -1,0 +1,5 @@
+# should fail as it is not allowed to dump undefined refs
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_test_32_ref

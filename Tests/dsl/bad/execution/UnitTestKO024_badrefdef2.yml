@@ -1,0 +1,10 @@
+# ref def uses invalid attribute
+-
+    type: content
+    mode: load
+    match:
+        content_type_identifier: folder
+    references:
+        -
+            identifier: hello
+            attribute: there

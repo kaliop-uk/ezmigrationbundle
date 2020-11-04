@@ -11,6 +11,11 @@ class StepExecutedListener
 
     public function onStepExecuted(StepExecutedEvent $event)
     {
+        if (isset($event->getStep()->dsl['allow_null_results']) && $event->getStep()->dsl['allow_null_results']) {
+            self::$executions++;
+            return;
+        }
+
         $result = $event->getResult();
 
         if ($event->getResult() === null && $event->getStep()->type !== 'assert' && $event->getStep()->type !== 'void'
@@ -23,6 +28,7 @@ class StepExecutedListener
                 throw new \Exception('Step execution resulted in an empty collection. Step not applied?');
             }
         }
+
         self::$executions++;
     }
 

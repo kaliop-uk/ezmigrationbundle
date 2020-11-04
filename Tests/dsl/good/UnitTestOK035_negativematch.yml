@@ -1,0 +1,9 @@
+# CT matcher is not tolerant of misses when matching by identifier - but it should be for negative matches
+-
+    type: content_type
+    mode: load
+    match:
+        not:
+            contenttype_identifier: not_quite_exist_kmb_test_035_ok
+    # disable unit-test check for null step results
+    #allow_null_results: true

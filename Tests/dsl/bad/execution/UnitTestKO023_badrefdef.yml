@@ -1,0 +1,9 @@
+# ref def misses identifier
+-
+    type: content
+    mode: load
+    match:
+        content_type_identifier: folder
+    references:
+        -
+            attribute: content_id

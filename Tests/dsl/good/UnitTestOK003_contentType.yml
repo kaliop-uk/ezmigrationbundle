@@ -31,13 +31,13 @@
             attribute: creation_date
         -
             identifier: kmb_test_003_1_default_always_available
-            attribute: is_container
+            attribute: default_always_available
         -
             identifier: kmb_test_003_1_default_sort_field
-            attribute: is_container
+            attribute: default_sort_field
         -
             identifier: kmb_test_003_1_default_sort_order
-            attribute: is_container
+            attribute: default_sort_order
         -
             identifier: kmb_test_003_1_is_container
             attribute: is_container

@@ -1,0 +1,17 @@
+# CT matcher is not tolerant of misses when matching by identifier - but we can cope
+-
+    type: content_type
+    mode: load
+    match:
+        contenttype_identifier: not_quite_exist_kmb_test_034_ok
+    match_tolerate_misses: true
+    references:
+        kmb_test_033_c: count
+    # disable unit-test check for null step results
+    allow_null_results: true
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_033_c
+    test:
+        equals: 0
