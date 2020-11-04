@@ -64,7 +64,7 @@ class TracingStepExecutedListener
             return;
         }
 
-        if ($this->output && $this->output->isVerbose()) {
+        if ($this->output && $this->output->isVeryVerbose()) {
             $this->stepStartTime = microtime(true);
             $this->stepStartMemory = memory_get_usage(true);
         }
@@ -95,7 +95,7 @@ class TracingStepExecutedListener
             return;
         }
 
-        if ($this->output && $this->output->isVerbose()) {
+        if ($this->output && $this->output->isVeryVerbose()) {
             $stepTime = microtime(true) - $this->stepStartTime;
             $stepMemory = memory_get_usage(true) - $this->stepStartMemory;
         }
@@ -156,7 +156,7 @@ class TracingStepExecutedListener
                 $out = $this->entity . " step $stepNr'$type' has been executed";
         }
 
-        if ($this->output && $this->output->isVerbose()) {
+        if ($this->output && $this->output->isVeryVerbose()) {
            $out .= sprintf(". <info>Time taken: %.3f secs, memory delta: %d bytes</info>", $stepTime, $stepMemory);
         }
 
