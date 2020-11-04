@@ -51,6 +51,7 @@ class LimitationConverter
                     $section = $this->sectionMatcher->matchOneByKey($value);
                     $retValues[] = $section->identifier;
                 }
+                sort($retValues);
                 break;
             case 'SiteAccess':
                 foreach ($values as $value) {
@@ -60,6 +61,7 @@ class LimitationConverter
                     }
                     $retValues[] = $name;
                 }
+                sort($retValues);
                 break;
             case 'ParentClass':
             case 'Class':
@@ -67,6 +69,7 @@ class LimitationConverter
                     $contentType = $this->contentTypeMatcher->matchOneByKey($value);
                     $retValues[] = $contentType->identifier;
                 }
+                sort($retValues);
                 break;
             default:
                 $retValues = $values;

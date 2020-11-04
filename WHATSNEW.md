@@ -100,8 +100,13 @@ Version 5.13.0
               # make this step successful in case we have not found the stone yet...
               match_tolerate_misses: true
 
+* Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
+
 * BC change: when matching users by email in steps `user/update`, `user/delete`, `user/load` the migration will now
   be halted if there is no matching user found. This can be worked around by usage of `match_tolerate_misses: true`
+
+* Improved: when generating migrations for Role cretaion/update, the bundle now tries harder to sort the Role Policies
+  in a consistent way, which should make it easier to diff two Role definitions and spot changes
 
 * Improved: made console command `kaliop:migration:migrate` survive the case of migrations registered in the database
   as 'to do' but without a definition file on disk anymore - a warning message is echoed before other migrations are run
@@ -114,8 +119,6 @@ Version 5.13.0
 
 * New: migration steps can now take advantage of `$context['output]` to echo debug/warning messages (issue #201).
   When set, it is set to an OutputInterface object.
-
-* Fixed: setting references using jmespath syntax in migration steps `migration_definition/generate`
 
 * New: taught the test-execution command `teststack.sh` two new actions: `console` and `dbconsole`, as well as a few new
   options: `-r runtests`, `cleanup ez-cache` and `cleanup ez-logs`

@@ -263,6 +263,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                         }
                         $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
                     }
+                    // try to sort predictably to ease diffing
+                    $this->sortPolicyLimitationsDefinitions($limitations);
 
                     $policies[] = array(
                         'module' => $policy->module,
@@ -270,6 +272,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                         'limitations' => $limitations
                     );
                 }
+                // try to sort predictably to ease diffing
+                $this->sortPolicyDefinitions($policies);
 
                 $roleData = array_merge(
                     $roleData,
@@ -435,5 +439,67 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         }
 
         $roleService->addPolicy($role, $policyCreateStruct);
+    }
+
+    protected function sortPolicyLimitationsDefinitions(array &$limitations)
+    {
+        usort($limitations, function($l1, $l2) {
+            if (($iComp = strcmp($l1['identifier'], $l2['identifier'])) != 0 ) {
+                return $iComp;
+            }
+            if (is_int($l1['values']) || is_float($l1['values'])) {
+                return $l1['values'] - $l2['values'];
+            }
+            if (is_string($l1['values'])) {
+                return strcmp($l1['values'], $l2['values']);
+            }
+            if (is_array($l1['values'])) {
+                return $this->compareArraysForSorting($l1['values'], $l2['values']);
+            }
+        });
+    }
+
+    protected function sortPolicyDefinitions(array &$policies)
+    {
+        // try to sort predictably to ease diffing
+        usort($policies, function($p1, $p2) {
+            if (($mComp = strcmp($p1['module'], $p2['module'])) != 0) {
+                return $mComp;
+            }
+            if (($fComp = strcmp($p1['function'], $p2['function'])) != 0) {
+                return $fComp;
+            }
+            // ugly: sort by comparing limitations identifiers
+            return $this->compareArraysForSorting($p1['limitations'], $p2['limitations']);
+            $p1LimIds = array();
+            $p2LimIds = array();
+            foreach($p1['limitations'] as $lim) {
+                $p1LimIds = $lim['identifier'];
+            }
+            foreach($p2['limitations'] as $lim) {
+                $p2LimIds = $lim['identifier'];
+            }
+            /// @todo if limitations identifier are the same, sort by lim. values...
+            return $this->compareArraysForSorting($p1LimIds, $p2LimIds);
+        });
+    }
+
+    /**
+     * Comparison function useful when sorting arrays based only on their values
+     * @param string[] $a1
+     * @param string[] $a2
+     * @return bool|int
+     * @todo allow sorting properly int[] and float[] arrays
+     */
+    protected function compareArraysForSorting($a1, $a2)
+    {
+        $len = min(count($a1), count($a2));
+        for ($i = 0; $i < $len; $i++) {
+            if ($cmp = strcmp($a1[$i], $a2[$i]) != 0) {
+                return $cmp;
+            }
+        }
+        // the array with less elements wins
+        return count($a1) - count($a2);
     }
 }
