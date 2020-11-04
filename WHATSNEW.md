@@ -105,7 +105,9 @@ Version 5.13.0
 * BC change: when matching users by email in steps `user/update`, `user/delete`, `user/load` the migration will now
   be halted if there is no matching user found. This can be worked around by usage of `match_tolerate_misses: true`
 
-* Improved: when generating migrations for Role cretaion/update, the bundle now tries harder to sort the Role Policies
+* Improved: step `reference/dump` will not echo anything to stdout any more in case the `migrate` command is run with `-q`
+
+* Improved: when generating migrations for Role creation/update, the bundle now tries harder to sort the Role Policies
   in a consistent way, which should make it easier to diff two Role definitions and spot changes
 
 * Improved: made console command `kaliop:migration:migrate` survive the case of migrations registered in the database
