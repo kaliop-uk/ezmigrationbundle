@@ -4,6 +4,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\VarDumper\VarDumper;
@@ -187,7 +188,13 @@ class ReferenceExecutor extends AbstractExecutor
         if (!$this->referenceResolver->isReference($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");
         }
-        /// @todo if $context['output'] is set, use that for writing output instead of doing it directly
+        /// @todo improve handling of the case $context['output'] is set - atm it does not seem to work with unit tests...
+        if (isset($context['output']) && $context['output'] instanceof OutputInterface) {
+            if ($context['output']->isQuiet()) {
+                return $this->referenceResolver->resolveReference($dsl['identifier']);
+            }
+            ob_start();
+        }
         if (isset($dsl['label'])) {
             echo $dsl['label'];
         } else {
@@ -195,7 +202,10 @@ class ReferenceExecutor extends AbstractExecutor
         }
         $value = $this->referenceResolver->resolveReference($dsl['identifier']);
         VarDumper::dump($value);
-
+        if (isset($context['output']) && $context['output'] instanceof OutputInterface) {
+            $context['output']->write(ob_get_contents(), false, OutputInterface::OUTPUT_RAW|OutputInterface::VERBOSITY_NORMAL);
+            ob_end_clean();
+        }
         return $value;
     }
 }
