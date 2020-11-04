@@ -238,7 +238,8 @@ abstract class RepositoryExecutor extends AbstractExecutor
             }
         }
 
-        foreach ($referencesDefs as $reference) {
+        foreach ($referencesDefs as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             $overwrite = false;
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
