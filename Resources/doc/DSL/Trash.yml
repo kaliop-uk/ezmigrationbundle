@@ -13,10 +13,14 @@
     match:
         xxx # See the conditions for content/update. NB: the migration will not fail if nothing is matched
     references: # Optional
-         -
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
+        -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: see location/create
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
                          # 'any': zero or more element should be matched; reference values will be arrays
@@ -32,10 +36,14 @@
     match:
         xxx # See the conditions for content/update. NB: the migration will not fail if nothing is matched
     references: # Optional
-         -
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
+        -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: see location/create
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
                          # 'any': zero or more element should be matched; reference values will be arrays

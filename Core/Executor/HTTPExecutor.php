@@ -93,6 +93,7 @@ class HTTPExecutor extends AbstractExecutor
      * @param ResponseInterface $response
      * @param array $dsl
      * @return bool
+     * @throws InvalidStepDefinitionException
      * @todo use jmespath syntax to allow setting refs to response headers
      */
     protected function setReferences(ResponseInterface $response, $dsl)
@@ -101,7 +102,8 @@ class HTTPExecutor extends AbstractExecutor
             return false;
         }
 
-        foreach ($dsl['references'] as $reference) {
+        foreach ($dsl['references'] as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'status_code':
                     $value = $response->getStatusCode();
@@ -119,7 +121,7 @@ class HTTPExecutor extends AbstractExecutor
                     $value = $response->getBody()->getSize();
                     break;
                 default:
-                    throw new \InvalidArgumentException('HTTP executor does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('HTTP executor does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $overwrite = false;

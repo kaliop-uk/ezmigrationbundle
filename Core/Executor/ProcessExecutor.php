@@ -112,13 +112,20 @@ class ProcessExecutor extends AbstractExecutor
         return $process;
     }
 
+    /**
+     * @param Process $process
+     * @param $dsl
+     * @return bool
+     * @throws InvalidStepDefinitionException
+     */
     protected function setReferences(Process $process, $dsl)
     {
         if (!array_key_exists('references', $dsl)) {
             return false;
         }
 
-        foreach ($dsl['references'] as $reference) {
+        foreach ($dsl['references'] as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'error_output':
                     $value = rtrim($process->getErrorOutput(), "\r\n");
@@ -130,7 +137,7 @@ class ProcessExecutor extends AbstractExecutor
                     $value = rtrim($process->getOutput(), "\r\n");
                     break;
                 default:
-                    throw new \InvalidArgumentException('Process executor does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Process executor does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $overwrite = false;

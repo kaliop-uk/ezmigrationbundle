@@ -178,14 +178,15 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
     /**
      * @param ObjectState $objectState
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($objectState, array $references, $step)
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'object_state_id':
                 case 'id':
@@ -195,7 +196,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
                     $value = $objectState->priority;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Object State Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Object State Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

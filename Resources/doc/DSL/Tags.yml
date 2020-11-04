@@ -8,11 +8,15 @@
     keywords:
         _language_code_: "Keyword" # ex : eng-GB: "Test keyword"
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -49,11 +53,15 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
                          # 'any': zero or more element should be matched; reference values will be arrays
@@ -82,11 +90,15 @@
             -
                 _condition_: value # where _condition_ can be any of ones specified above, including 'and' and 'or'
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
                          # 'any': zero or more element should be matched; reference values will be arrays
@@ -100,11 +112,15 @@
     mode: load
     match: # The tag(s) to load; See above the description in the tag/delete operation for valid values
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attributeId # The attribute to get the value of for the reference
                                    # supports: always_available, depth, id, main_language_code, main_tag_id, modification_date,
                                    # path, parent_tag_id, remote_id, keyword
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
                          # 'any': zero or more element should be matched; reference values will be arrays

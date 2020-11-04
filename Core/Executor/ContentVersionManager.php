@@ -136,6 +136,7 @@ class ContentVersionManager extends ContentManager
      * @param array $references
      * @param $step
      * @return array
+     * @throws InvalidStepDefinitionException
      *
      * @todo allow setting more refs: creation date, modification date, creator id, langauge codes
      */
@@ -143,7 +144,8 @@ class ContentVersionManager extends ContentManager
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'version_no':
                     $value = $versionInfo->versionNo;

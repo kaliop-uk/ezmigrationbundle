@@ -160,14 +160,15 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
     /**
      * @param ObjectStateGroup $objectStateGroup
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($objectStateGroup, array $references, $step)
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'object_state_group_id':
                 case 'id':
@@ -175,10 +176,10 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
                     break;
                 case 'object_state_group_identifier':
                 case 'identifier':
-                    $value = $objectStateGroup->id;
+                    $value = $objectStateGroup->identifier;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Object State Group Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Object State Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

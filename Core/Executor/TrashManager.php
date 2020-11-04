@@ -116,14 +116,16 @@ class TrashManager extends RepositoryExecutor
     /**
      * @param \eZ\Publish\API\Repository\Values\Content\TrashItem|\eZ\Publish\API\Repository\Values\Content\Location $item
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @param $step
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($item, array $references, $step)
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 // a trashed item extends a location, so in theory everything 'location' here should work
                 case 'location_id':
@@ -198,7 +200,7 @@ class TrashManager extends RepositoryExecutor
                     $value = $this->sortConverter->sortOrder2Hash($item->sortOrder);
                     break;
                 default:
-                    throw new \InvalidArgumentException('Trash Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Trash Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

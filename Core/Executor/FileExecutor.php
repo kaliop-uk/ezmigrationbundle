@@ -305,6 +305,12 @@ class FileExecutor extends AbstractExecutor
         return true;
     }
 
+    /**
+     * @param $fileName
+     * @param $dsl
+     * @return bool
+     * @throws InvalidStepDefinitionException
+     */
     protected function setReferences($fileName, $dsl)
     {
         if (!array_key_exists('references', $dsl)) {
@@ -318,7 +324,8 @@ class FileExecutor extends AbstractExecutor
             throw new \Exception("Can not set references for file '$fileName': stat failed");
         }
 
-        foreach ($dsl['references'] as $reference) {
+        foreach ($dsl['references'] as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'body':
                     $value = file_get_contents($fileName);
@@ -342,7 +349,7 @@ class FileExecutor extends AbstractExecutor
                     $value = $stats[10];
                     break;
                 default:
-                    throw new \InvalidArgumentException('File executor does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('File executor does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $overwrite = false;

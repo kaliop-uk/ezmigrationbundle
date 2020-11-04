@@ -37,14 +37,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
     const USERGROUP_CONTENT_TYPE = 'user_group';
 
     /**
-     * @var array $dsl The parsed DSL instruction array
-     */
-    //protected $dsl;
-
-    /** @var array $context The context (configuration) for the execution of the current step */
-    //protected $context;
-
-    /**
      * The eZ Publish 5 API repository.
      *
      * @var \eZ\Publish\API\Repository\Repository
@@ -92,26 +84,25 @@ abstract class RepositoryExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not allowed for 'mode'");
         }
 
-        if (method_exists($this, $action)) {
-
-            $this->skipStepIfNeeded($step);
-
-            $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
-
-            try {
-                $output = $this->$action($step);
-            } catch (\Exception $e) {
-                $this->loginUser($previousUserId);
-                throw $e;
-            }
-
-            // reset the environment as much as possible as we had found it before the migration
-            $this->loginUser($previousUserId);
-
-            return $output;
-        } else {
+        if (!method_exists($this, $action)) {
             throw new InvalidStepDefinitionException("Invalid step definition: value '$action' is not a method of " . get_class($this));
         }
+
+        $this->skipStepIfNeeded($step);
+
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
+
+        try {
+            $output = $this->$action($step);
+        } catch (\Exception $e) {
+            $this->loginUser($previousUserId);
+            throw $e;
+        }
+
+        // reset the environment as much as possible as we had found it before the migration
+        $this->loginUser($previousUserId);
+
+        return $output;
     }
 
     /**
@@ -208,8 +199,8 @@ abstract class RepositoryExecutor extends AbstractExecutor
      *
      * @param \Object|AbstractCollection $item
      * @param MigrationStep $step
-     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @return boolean
+     * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @todo should we allow to be passed in plain arrays, ArrayIterators and ObjectIterators as well as Collections?
      */
     protected function setReferences($item, $step)
@@ -263,11 +254,13 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @param mixed $entity
      * @param array $referencesDefinition
      * @return array the same as $referencesDefinition, with the references already treated having been removed
+     * @throws InvalidStepDefinitionException
      */
     protected function setScalarReferences($entity, $referencesDefinition)
     {
         // allow setting *some* refs even when we have 0 or N matches
         foreach ($referencesDefinition as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch($reference['attribute']) {
 
                 case 'count':

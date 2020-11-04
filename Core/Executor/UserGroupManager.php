@@ -207,7 +207,7 @@ class UserGroupManager extends RepositoryExecutor
     /**
      * @param UserGroup $userGroup
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      *
      * @todo allow setting refs to all the attributes that can be gotten for Contents
@@ -216,7 +216,8 @@ class UserGroupManager extends RepositoryExecutor
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'object_id':
                 case 'content_id':
@@ -245,7 +246,7 @@ class UserGroupManager extends RepositoryExecutor
                     } while (count($users));
                     break;
                 default:
-                    throw new \InvalidArgumentException('User Group Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('User Group Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

@@ -8,6 +8,18 @@ Version 5.13.0
 * New: taught the `kaliop:migration:migrate` command a new option: `--set-reference` (issue #162). This is allows to
   inject any desired reference value into the migrations.
 
+* Improved: references can now be set using a simplified syntax. eg:
+
+          -
+              type: content_type
+              mode: load
+              match:
+                      identifier: philosophers_stone
+              references:
+                  my_ref_name: content_type_id
+
+  Note that you still need to use the old syntax for reference creation in order to be able specify `overwrite: true`
+
 * New: taught the `reference/set` migration step to resolve environment variables besides Symfony parameters (issue #199).
   Eg:
 

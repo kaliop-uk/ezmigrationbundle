@@ -152,14 +152,16 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
     /**
      * @param Language $language
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($language, array $references, $step)
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+
+            $reference = $this->parseReferenceDefinition($key, $reference);
 
             switch ($reference['attribute']) {
                 case 'language_id':
@@ -177,7 +179,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
                     $value = $language->name;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Language Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Language Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

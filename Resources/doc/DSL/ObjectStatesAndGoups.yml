@@ -11,11 +11,15 @@
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -50,12 +54,16 @@
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports: object_state_group_id, object_state_group_identifier
                                  # The shorthand 'id' can be used instead of 'object_state_group_id'
                                  # 'count' can be used to set a reference to the number of items matched
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
                          # 'any': zero or more element should be matched; reference values will be arrays
@@ -137,11 +145,15 @@ match_tolerate_misses: false # optional. Do not fail the execution if there is n
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports object_state_id, priority
                                  # The shorthand 'id' can be used instead of 'object_state_id'
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
@@ -176,12 +188,16 @@ match_tolerate_misses: false # optional. Do not fail the execution if there is n
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
         -
             identifier: referenceId # A string used to identify the reference
             attribute: attribute # An attribute to get the value of for the reference.
                                  # Supports object_state_id, priority
                                  # The shorthand 'id' can be used instead of 'object_state_id'
                                  # 'count' can be used to set a reference to the number of items matched
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
     expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
                          # 'one': only one element should be matched; reference values will be scalars
                          # 'any': zero or more element should be matched; reference values will be arrays

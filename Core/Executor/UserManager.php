@@ -226,7 +226,7 @@ class UserManager extends RepositoryExecutor
     /**
      * @param User $user
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      *
      * @todo allow setting refs to all the attributes that can be gotten for Contents
@@ -235,7 +235,9 @@ class UserManager extends RepositoryExecutor
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+
+            $reference = $this->parseReferenceDefinition($key, $reference);
 
             switch ($reference['attribute']) {
                 case 'user_id':
@@ -260,7 +262,7 @@ class UserManager extends RepositoryExecutor
                     }
                     break;
                 default:
-                    throw new \InvalidArgumentException('User Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('User Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

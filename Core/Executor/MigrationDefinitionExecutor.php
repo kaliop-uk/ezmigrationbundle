@@ -166,12 +166,12 @@ class MigrationDefinitionExecutor extends AbstractExecutor
             return false;
         }
 
-        foreach ($dsl['references'] as $reference) {
+        foreach ($dsl['references'] as $key => $reference) {
             // BC
-            if (isset($reference['json_path']) && !isset($reference['attribute'] )) {
+            if (is_array($reference) && isset($reference['json_path']) && !isset($reference['attribute'] )) {
                 $reference['attribute'] = $reference['json_path'];
             }
-
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'definition':
                     $value = $result;

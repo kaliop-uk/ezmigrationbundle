@@ -33,6 +33,7 @@ class LoopExecutor extends AbstractExecutor
     /**
      * @param MigrationStep $step
      * @return mixed
+     * @throws InvalidStepDefinitionException
      * @throws \Exception
      */
     public function execute(MigrationStep $step)
@@ -108,5 +109,4 @@ class LoopExecutor extends AbstractExecutor
         $this->loopResolver->endLoop();
         return $result;
     }
-
 }

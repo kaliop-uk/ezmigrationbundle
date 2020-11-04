@@ -198,7 +198,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
     /**
      * @param Tag $tag
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($tag, array $references, $step)
@@ -206,7 +206,8 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
         $lang = $this->getLanguageCode($step);
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'id':
                 case 'tag_id':
@@ -241,7 +242,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
                     break;
 
                 default:
-                    throw new \InvalidArgumentException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

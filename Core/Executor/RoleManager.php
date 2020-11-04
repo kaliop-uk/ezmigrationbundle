@@ -180,14 +180,15 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
     /**
      * @param Role $role
      * @param array $references the definitions of the references to set
-     * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($role, array $references, $step)
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'role_id':
                 case 'id':
@@ -198,7 +199,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     $value = $role->identifier;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Role Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Role Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

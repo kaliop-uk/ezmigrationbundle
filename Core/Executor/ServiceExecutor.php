@@ -116,13 +116,21 @@ class ServiceExecutor extends AbstractExecutor
         return $result;
     }
 
+    /**
+     * @param $result
+     * @param \Exception|null $exception
+     * @param $dsl
+     * @return bool
+     * @throws InvalidStepDefinitionException
+     */
     protected function setReferences($result, \Exception $exception = null, $dsl)
     {
         if (!array_key_exists('references', $dsl)) {
             return false;
         }
 
-        foreach ($dsl['references'] as $reference) {
+        foreach ($dsl['references'] as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'result':
                     $value = $result;
@@ -141,7 +149,7 @@ class ServiceExecutor extends AbstractExecutor
                     break;
 
                 default:
-                    throw new \InvalidArgumentException('Service executor does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Service executor does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $overwrite = false;

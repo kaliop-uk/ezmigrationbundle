@@ -136,13 +136,14 @@ class SQLExecutor extends AbstractExecutor
             return false;
         }
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'affected_rows':
                     $value = $result;
                     break;
                 default:
-                    throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $overwrite = false;
@@ -159,14 +160,15 @@ class SQLExecutor extends AbstractExecutor
             return false;
         }
 
-        foreach ($step->dsl['references'] as $reference) {
+        foreach ($step->dsl['references'] as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'count':
                     $value = count($result);
                     break;
                 default:
                     if (strpos($reference['attribute'], 'results.') !== 0) {
-                        throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
+                        throw new InvalidStepDefinitionException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
                     }
                     if (count($result)) {
                         $colName = substr($reference['attribute'], 8);

@@ -372,13 +372,16 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @param Content|VersionInfo $content
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($content, array $references, $step)
     {
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+
+            $reference = $this->parseReferenceDefinition($key, $reference);
 
             switch ($reference['attribute']) {
                 case 'object_id':
@@ -479,7 +482,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                         break;
                     }
 
-                    throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Content Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;

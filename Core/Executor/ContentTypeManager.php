@@ -358,6 +358,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
      * @param ContentType $contentType
      * @param array $references the definitions of the references to set
      * @throws \InvalidArgumentException When trying to assign a reference to an unsupported attribute
+     * @throws InvalidStepDefinitionException
      * @return array key: the reference names, values: the reference values
      */
     protected function getReferencesValues($contentType, array $references, $step)
@@ -365,7 +366,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $lang = $this->getLanguageCode($step);
         $refs = array();
 
-        foreach ($references as $reference) {
+        foreach ($references as $key => $reference) {
+
+            $reference = $this->parseReferenceDefinition($key, $reference);
+
             switch ($reference['attribute']) {
                 case 'content_type_id':
                 case 'id':
@@ -437,7 +441,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         break;
                     }
 
-                    throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('Content Type Manager does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $refs[$reference['identifier']] = $value;
