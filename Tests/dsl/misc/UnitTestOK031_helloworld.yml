@@ -1,3 +1,4 @@
+# A migration which prints something to stdout
 -
     type: reference
     mode: set

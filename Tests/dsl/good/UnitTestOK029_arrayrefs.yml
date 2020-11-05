@@ -1,4 +1,4 @@
-# BC
+# NB: assumes that 'folder' ContentType is available
 -
     type: content
     mode: load

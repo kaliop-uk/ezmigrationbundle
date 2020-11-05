@@ -1,11 +1,14 @@
 <?php
 
-include_once(__DIR__.'/CommandTest.php');
+include_once(__DIR__.'/CommandExecutingTest.php');
 
-use Symfony\Component\Console\Input\ArrayInput;
-
-class GenerateTest extends CommandTest
+/**
+ * Tests the `generate` command
+ */
+class GenerateTest extends CommandExecutingTest
 {
+    protected $targetBundle = 'EzPublishCoreBundle'; // it is always present :-)
+
     /**
      * Tests the kaliop:migration:generate command
      *
@@ -29,7 +32,6 @@ class GenerateTest extends CommandTest
         $mode = null
     ) {
         $parameters = array(
-            'command' => 'kaliop:migration:generate',
             'bundle' => $this->targetBundle
         );
 
@@ -61,10 +63,7 @@ class GenerateTest extends CommandTest
             $parameters['--mode'] = $mode;
         }
 
-        $input = new ArrayInput($parameters);
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $output = $this->runCommand('kaliop:migration:generate', $parameters);
         $this->checkGeneratedFile($this->saveGeneratedFile($output), $mode);
     }
 
@@ -136,10 +135,7 @@ class GenerateTest extends CommandTest
     protected function checkGeneratedFile($filePath, $mode)
     {
         // Check that the generated file can be parsed as valid Migration Definition
-        $input = new ArrayInput(array('command' => 'kaliop:migration:status'));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $output = $this->runCommand('kaliop:migration:status');
         $this->assertRegExp('?\| ' . basename($filePath) . ' +\| not executed +\|?', $output);
 
         // We should really test generated migrations by executing them, but for the moment we have a few problems:
@@ -147,10 +143,7 @@ class GenerateTest extends CommandTest
         // 2. generated migration for 'anon' user has a limitation with borked siteaccess
         // 3. generated migration for 'folder' contenttype has a borked field-settings definition
         if (false) {
-            $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => null));
-            $exitCode = $this->app->run($input, $this->output);
-            $output = $this->fetchOutput();
-            $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+            $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => null));
             $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
         }
     }

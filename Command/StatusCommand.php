@@ -51,7 +51,7 @@ EOT
 
         if (!count($migrationDefinitions) && !count($migrations)) {
             $output->writeln('<info>No migrations found</info>');
-            return;
+            return 0;
         }
 
         // create a unique list of all migrations (coming from db) and definitions (coming from disk)
@@ -197,9 +197,9 @@ EOT
 
         if ($input->getOption('todo')) {
             foreach ($data as $migrationData) {
-                echo "$migrationData\n";
+                $output->writeln("$migrationData", OutputInterface::OUTPUT_RAW|OutputInterface::VERBOSITY_QUIET);
             }
-            return;
+            return 0;
         }
 
         if ($input->getOption('summary')) {

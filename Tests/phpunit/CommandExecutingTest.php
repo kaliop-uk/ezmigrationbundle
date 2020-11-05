@@ -2,12 +2,12 @@
 
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 
-abstract class CommandTest extends WebTestCase
+abstract class CommandExecutingTest extends WebTestCase
 {
-    protected $dslDir;
-    protected $targetBundle = 'EzPublishCoreBundle'; // it is always present :-)
     protected $leftovers = array();
 
     /** @var \Symfony\Component\DependencyInjection\ContainerInterface $container */
@@ -19,13 +19,6 @@ abstract class CommandTest extends WebTestCase
 
     // tell to phpunit not to mess with ezpublish legacy global vars...
     protected $backupGlobalsBlacklist = array('eZCurrentAccess');
-
-    public function __construct($name = null, array $data = array(), $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        // seems like this can not be used outside of the constructor...
-        $this->dslDir = __DIR__ . '/../dsl';
-    }
 
     /// @todo if we want to be compatible with phpunit >= 8.0, we should do something akin to https://github.com/symfony/framework-bundle/blob/4.3/Test/ForwardCompatTestTrait.php
     protected function setUp()
@@ -110,5 +103,33 @@ abstract class CommandTest extends WebTestCase
     protected function getContainer()
     {
         return $this->_container;
+    }
+
+    /**
+     * @param string $commandName
+     * @param array $params
+     * @param bool $checkExitCode
+     * @return string|null
+     * @throws Exception
+     */
+    protected function runCommand($commandName, array $params = array(), $checkExitCode = true)
+    {
+        $exitCode = $this->app->run($this->buildInput($commandName, $params), $this->output);
+        $output = $this->fetchOutput();
+        if ($checkExitCode) {
+            $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        }
+        return $output;
+    }
+
+    /**
+     * @param $commandName
+     * @param array $params
+     * @return ArrayInput
+     */
+    protected function buildInput($commandName, array $params = array())
+    {
+        $params = array_merge(['command' => $commandName], $params);
+        return new ArrayInput($params);
     }
 }

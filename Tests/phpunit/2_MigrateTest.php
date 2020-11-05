@@ -1,15 +1,14 @@
 <?php
 
-include_once(__DIR__.'/MigrationTest.php');
+include_once(__DIR__.'/MigrationExecutingTest.php');
 
-use Symfony\Component\Console\Input\ArrayInput;
 use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 
 /**
- * Tests the 'kaliop:migration:migrate' as well as the 'kaliop:migration:migration' command
+ * Tests the 'kaliop:migration:migrate' and (partially) 'kaliop:migration:migration' commands
  */
-class MigrateTest extends MigrationTest
+class MigrateTest extends MigrationExecutingTest
 {
     /**
      * @param string $filePath
@@ -27,10 +26,7 @@ class MigrateTest extends MigrationTest
         $count1 = BeforeStepExecutionListener::getExecutions();
         $count2 = StepExecutedListener::getExecutions();
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
         // check that there are no notes related to adding the migration before execution
         $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
 
@@ -54,10 +50,7 @@ class MigrateTest extends MigrationTest
 
         $this->prepareMigration($filePath);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
         // check that the mig has been skipped
         $this->assertRegexp('?Skipping ' . basename($filePath) . '?', $output);
 
@@ -77,10 +70,10 @@ class MigrateTest extends MigrationTest
 
         $this->prepareMigration($filePath);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
+        $input = $this->buildInput('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
-        $this->assertNotSame(0, $exitCode, 'CLI Command should have failed. Output: ' . $output);
+        $this->assertNotEquals(0, $exitCode, 'CLI Command should have failed. Output: ' . $output);
         // check that the mig failed
         $this->assertRegexp('?Migration failed!?', $output);
 
@@ -97,14 +90,12 @@ class MigrateTest extends MigrationTest
 
         $this->deleteMigration($filePath, false);
 
-        $exitCode = $this->runCommand('kaliop:migration:migrate', array(
+        $output = $this->runCommand('kaliop:migration:migrate', array(
             '--path' => array($filePath),
             '-n' => true,
             '-u' => true,
             '--default-language' => $defaultLanguage,
         ));
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
 
         $repository = $this->getRepository();
         $contentService = $repository->getContentService();
@@ -135,7 +126,7 @@ class MigrateTest extends MigrationTest
     /**
      * Tests executing a very simple migration with all the different cli flags enabled or not
      * @param array $options
-     * @dataProvider migrateOptionsProvider
+     * @dataProvider migrateCommandOptionsProvider
      */
     public function testExecuteWithDifferentOptions(array $options = array())
     {
@@ -143,10 +134,7 @@ class MigrateTest extends MigrationTest
 
         $this->deleteMigration($filePath, false);
 
-        $input = new ArrayInput(array_merge(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true), $options));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $output = $this->runCommand('kaliop:migration:migrate', array_merge(array('--path' => array($filePath), '-n' => true), $options));
 
         // check that the output contains the expected output, in quiet mode/verbose/very_verbose modes
         /// @todo fix usage of output buffering and stream handlers to allow matching the reference dump
@@ -165,11 +153,8 @@ class MigrateTest extends MigrationTest
             $this->assertRegExp('/Time taken:/', $output, 'Migration output unexpected');
         }
 
-        /// @todo add some assertion on the output of `--info` (or move to a separate test?)
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--info' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        /// @todo add some assertion on the output of `--info`: move to a separate test
+        $output = $this->runCommand('kaliop:migration:migration', array('migration' => basename($filePath), '--info' => true, '-n' => true));
 
         $this->deleteMigration($filePath);
     }
@@ -225,7 +210,7 @@ class MigrateTest extends MigrationTest
         return $out;
     }
 
-    public function migrateOptionsProvider()
+    public function migrateCommandOptionsProvider()
     {
         return array(
             array(array()),

@@ -1,6 +1,6 @@
 <?php
 
-include_once(__DIR__.'/MigrationTest.php');
+include_once(__DIR__.'/MigrationExecutingTest.php');
 
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
@@ -9,9 +9,8 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
-use Symfony\Component\Console\Input\ArrayInput;
 
-class ExceptionTest extends MigrationTest implements ExecutorInterface
+class ExceptionTest extends MigrationExecutingTest implements ExecutorInterface
 {
     /**
      * Tests the MigrationAbortedException, as well as direct manipulation of the migration service
@@ -32,10 +31,7 @@ class ExceptionTest extends MigrationTest implements ExecutorInterface
         $this->assertEquals(Migration::STATUS_DONE, $m->status, 'Migration supposed to be aborted but in unexpected state');
         $this->assertContains('Oh yeah', $m->executionError, 'Migration aborted but its exception message lost');
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => 'exception_test.json', '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->runCommand('kaliop:migration:migration', array('migration' => 'exception_test.json', '--delete' => true, '-n' => true));
     }
 
     /// @todo do a similar test but using Anonymous user
@@ -48,7 +44,7 @@ class ExceptionTest extends MigrationTest implements ExecutorInterface
 
         $this->prepareMigration($filePath);
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true, '--admin-login' => 123456789));
+        $input = $this->buildInput('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true, '--admin-login' => 123456789));
         $exitCode = $this->app->run($input, $this->output);
         $output = $this->fetchOutput();
         $this->assertNotEquals(0, $exitCode, 'CLI Command succeeded instead of failing. Output: ' . $output);
@@ -80,10 +76,7 @@ class ExceptionTest extends MigrationTest implements ExecutorInterface
         $count1 = BeforeStepExecutionListener::getExecutions();
         $count2 = StepExecutedListener::getExecutions();
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
 
         $count3 = BeforeStepExecutionListener::getExecutions();
         $count4 = StepExecutedListener::getExecutions();

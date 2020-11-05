@@ -1,5 +1,5 @@
-# should fail as it is not allowed to set a ref when matching more than one item
-
+# Should fail as it is not allowed to set a ref when matching more than one item
+# NB: assumes that 'folder' ContentType is available
 -
     type: content
     mode: load

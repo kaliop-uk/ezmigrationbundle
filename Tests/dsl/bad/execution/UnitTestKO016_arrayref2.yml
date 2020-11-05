@@ -1,4 +1,5 @@
-# should fail as there are many Folders
+# Should fail as there are many Folders
+# NB: assumes that 'folder' ContentType is available
 
 -
     type: content

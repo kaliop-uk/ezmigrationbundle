@@ -1,3 +1,4 @@
+# NB: assumes that 'folder' ContentType is available
 -
     type: content_type
     mode: load

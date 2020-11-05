@@ -1,15 +1,14 @@
 <?php
 
-include_once(__DIR__.'/MigrationTest.php');
+include_once(__DIR__.'/MigrationExecutingTest.php');
 
-use Symfony\Component\Console\Input\ArrayInput;
 use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 
 /**
- * Tests the 'kaliop:migration:migrate' as well as the 'kaliop:migration:migration' command for eZTags
+ * Tests the 'kaliop:migration:migrate' and (partially) 'kaliop:migration:migration' command for eZTags
  */
-class TagsTest extends MigrationTest
+class TagsTest extends MigrationExecutingTest
 {
     /**
      * @param string $filePath
@@ -29,10 +28,7 @@ class TagsTest extends MigrationTest
         $count1 = BeforeStepExecutionListener::getExecutions();
         $count2 = StepExecutedListener::getExecutions();
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
         // check that there are no notes after adding the migration
         $this->assertRegexp('?\| ' . basename($filePath) . ' +\| +\|?', $output);
 
