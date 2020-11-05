@@ -1,3 +1,4 @@
+# A migration which has to be executed by an Admin
 -
     type: content
     mode: load

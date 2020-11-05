@@ -6,12 +6,12 @@
         contenttype_identifier: not_quite_exist_kmb_test_034_ok
     match_tolerate_misses: true
     references:
-        kmb_test_033_c: count
+        kmb_test_034_c: count
     # disable unit-test check for null step results
     allow_null_results: true
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_033_c
+    identifier: reference:kmb_test_034_c
     test:
         equals: 0

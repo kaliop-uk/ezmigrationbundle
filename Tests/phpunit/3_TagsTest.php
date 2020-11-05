@@ -1,6 +1,6 @@
 <?php
 
-include_once(__DIR__.'/CommandTest.php');
+include_once(__DIR__.'/MigrationTest.php');
 
 use Symfony\Component\Console\Input\ArrayInput;
 use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
@@ -9,7 +9,7 @@ use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 /**
  * Tests the 'kaliop:migration:migrate' as well as the 'kaliop:migration:migration' command for eZTags
  */
-class TagsTest extends CommandTest
+class TagsTest extends MigrationTest
 {
     /**
      * @param string $filePath
@@ -24,16 +24,7 @@ class TagsTest extends CommandTest
             return;
         }
 
-        // Make sure migration is not in the db: delete it, ignoring errors
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $this->app->run($input, $this->output);
-        $this->fetchOutput();
-
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->assertRegexp('?Added migration?', $output);
+        $this->prepareMigration($filePath);
 
         $count1 = BeforeStepExecutionListener::getExecutions();
         $count2 = StepExecutedListener::getExecutions();
@@ -49,10 +40,7 @@ class TagsTest extends CommandTest
         $this->assertGreaterThanOrEqual($count1 + 1, BeforeStepExecutionListener::getExecutions(), "Migration 'before step' listener did not fire");
         $this->assertGreaterThanOrEqual($count2 + 1, StepExecutedListener::getExecutions(), "Migration 'step executed' listener did not fire");
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->deleteMigration($filePath);
     }
 
     public function goodDSLProvider()

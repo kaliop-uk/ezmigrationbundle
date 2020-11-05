@@ -1,8 +1,7 @@
 <?php
 
-include_once(__DIR__.'/CommandTest.php');
+include_once(__DIR__.'/MigrationTest.php');
 
-use Symfony\Component\Console\Input\ArrayInput;
 use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
@@ -10,11 +9,13 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
+use Symfony\Component\Console\Input\ArrayInput;
 
-class ExceptionTest extends CommandTest implements ExecutorInterface
+class ExceptionTest extends MigrationTest implements ExecutorInterface
 {
     /**
      * Tests the MigrationAbortedException, as well as direct manipulation of the migration service
+     * @todo replace this with a yml migration that uses a migration/fail step
      */
     public function testMigrationAbortedException()
     {
@@ -37,23 +38,15 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
     }
 
+    /// @todo do a similar test but using Anonymous user
     public function testInvalidUserAccountException()
     {
         //$bundles = $this->getContainer()->getParameter('kernel.bundles');
         $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
 
-        $filePath = $this->dslDir . '/UnitTestOK033_loadSomething.yml';
+        $filePath = $this->dslDir . '/misc/UnitTestOK401_loadSomething.yml';
 
-        // Make sure migration is not in the db: delete it, ignoring errors
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $this->app->run($input, $this->output);
-        $this->fetchOutput();
-
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->assertRegexp('?Added migration?', $output);
+        $this->prepareMigration($filePath);
 
         $input = new ArrayInput(array('command' => 'kaliop:migration:migrate', '--path' => array($filePath), '-n' => true, '-u' => true, '--admin-login' => 123456789));
         $exitCode = $this->app->run($input, $this->output);
@@ -64,10 +57,7 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         $m = $ms->getMigration(basename($filePath));
         $this->assertEquals($m->status, Migration::STATUS_FAILED, 'Migration supposed to be failed but in unexpected state');
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->deleteMigration($filePath);
     }
 
     /**
@@ -85,15 +75,7 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         }
 
         // Make sure migration is not in the db: delete it, ignoring errors
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $this->app->run($input, $this->output);
-        $this->fetchOutput();
-
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => $filePath, '--add' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
-        $this->assertRegexp('?Added migration?', $output);
+        $this->prepareMigration($filePath);
 
         $count1 = BeforeStepExecutionListener::getExecutions();
         $count2 = StepExecutedListener::getExecutions();
@@ -118,10 +100,7 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
             'Migration supposed to be aborted/suspended but in unexpected state'
         );
 
-        $input = new ArrayInput(array('command' => 'kaliop:migration:migration', 'migration' => basename($filePath), '--delete' => true, '-n' => true));
-        $exitCode = $this->app->run($input, $this->output);
-        $output = $this->fetchOutput();
-        $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
+        $this->deleteMigration($filePath);
     }
 
     public function goodDSLProvider()
@@ -140,6 +119,8 @@ class ExceptionTest extends CommandTest implements ExecutorInterface
         }
         return $out;
     }
+
+    // ### ExecutorInterface ###
 
     public function supportedTypes()
     {
