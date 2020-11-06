@@ -74,7 +74,7 @@ class ExceptionsTest extends MigrationExecutingTest implements ExecutorInterface
         $this->deleteMigration('exception_test.json');
     }
 
-    /// @todo after maoving to php >= 7, add test for catching php fatal errors
+    /// @todo after moving to php >= 7, add test for catching php fatal errors
 
     /// @todo do a similar test but using Anonymous user
     public function testInvalidUserAccountException()

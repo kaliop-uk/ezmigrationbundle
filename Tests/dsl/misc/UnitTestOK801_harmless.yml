@@ -1,0 +1,7 @@
+# A migration as harmless as possible
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_702_ref
+    value: hello world
+    overwrite: true
