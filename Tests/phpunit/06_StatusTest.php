@@ -22,8 +22,8 @@ class StatusTest extends MigrationExecutingTest
 
     public function testSorting()
     {
-        $filePath1 = $this->dslDir.'/misc/UnitTestOK701_harmless.yml';
-        $filePath2 = $this->dslDir.'/misc/UnitTestOK702_harmless.yml';
+        $filePath1 = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
+        $filePath2 = $this->dslDir.'/misc/UnitTestOK602_harmless.yml';
 
         $this->prepareMigration($filePath1);
         $this->prepareMigration($filePath2);
@@ -48,7 +48,7 @@ class StatusTest extends MigrationExecutingTest
 
     public function testTodo()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK701_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
         $this->prepareMigration($filePath);
         $output = $this->runCommand('kaliop:migration:status', array('--todo' => true));
         $this->assertRegexp('?^'.$filePath.'$?m', $output);

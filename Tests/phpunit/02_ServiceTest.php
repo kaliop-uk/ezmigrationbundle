@@ -9,6 +9,7 @@ use Kaliop\eZMigrationBundle\API\Value\Migration;
 
 /**
  * Tests usage of ez_migration_bundle.migration_service outside console commands
+ * @todo should we extend just KernelTestCase ?
  */
 class ServiceTest extends CommandExecutingTest implements ExecutorInterface
 {
@@ -24,7 +25,7 @@ class ServiceTest extends CommandExecutingTest implements ExecutorInterface
         $ms->executeMigration($md);
 
         $m = $ms->getMigration('storage_test1.json');
-        $this->assertEquals(Migration::STATUS_DONE, $m->status, 'Migration supposed to be aborted but in unexpected state');
+        $this->assertEquals(Migration::STATUS_DONE, $m->status, 'Migration in unexpected state');
 
         $migrations = $ms->getMigrationsByStatus(Migration::STATUS_DONE);
         $this->assertGreaterThanOrEqual(1, $migrations->count());

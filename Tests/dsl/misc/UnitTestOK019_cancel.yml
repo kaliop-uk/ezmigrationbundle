@@ -1,0 +1,15 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_20
+    value: hello
+
+-
+    type: migration
+    mode: cancel
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_20b
+    value: unreachable

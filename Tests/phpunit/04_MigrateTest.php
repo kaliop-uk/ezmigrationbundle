@@ -2,6 +2,7 @@
 
 include_once(__DIR__.'/MigrationExecutingTest.php');
 
+use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\Tests\helper\BeforeStepExecutionListener;
 use Kaliop\eZMigrationBundle\Tests\helper\StepExecutedListener;
 
@@ -123,6 +124,60 @@ class MigrateTest extends MigrationExecutingTest
         $this->deleteMigration($filePath);
     }
 
+    public function testCancelledExecution()
+    {
+        $filePath = $this->dslDir.'/misc/UnitTestOK019_cancel.yml';
+
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
+
+        // Make sure migration is not in the db: delete it, ignoring errors
+        $this->prepareMigration($filePath);
+
+        $count1 = BeforeStepExecutionListener::getExecutions();
+        $count2 = StepExecutedListener::getExecutions();
+
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
+
+        $count3 = BeforeStepExecutionListener::getExecutions();
+        $count4 = StepExecutedListener::getExecutions();
+        $this->assertEquals($count1 + 2, $count3, "Migration not canceled? incorrect number of steps executed");
+        $this->assertEquals($count2 + 1, $count4, "Migration not canceled? incorrect number of steps executed");
+
+        $m = $ms->getMigration(basename($filePath));
+        $this->assertEquals($m->status, Migration::STATUS_DONE, 'Migration supposed to be cancelled but in unexpected state');
+
+        $this->deleteMigration($filePath);
+    }
+
+    public function testFailedExecution()
+    {
+        $filePath = $this->dslDir.'/misc/UnitTestOK020_fail.yml';
+
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
+
+        // Make sure migration is not in the db: delete it, ignoring errors
+        $this->prepareMigration($filePath);
+
+        $count1 = BeforeStepExecutionListener::getExecutions();
+        $count2 = StepExecutedListener::getExecutions();
+
+        $output = $this->runCommand(
+            'kaliop:migration:migrate',
+            array('--path' => array($filePath), '-n' => true, '-u' => true),
+            false
+        );
+
+        $count3 = BeforeStepExecutionListener::getExecutions();
+        $count4 = StepExecutedListener::getExecutions();
+        $this->assertEquals($count1 + 2, $count3, "Migration not failed? incorrect number of steps executed");
+        $this->assertEquals($count2 + 1, $count4, "Migration not failed? incorrect number of steps executed");
+
+        $m = $ms->getMigration(basename($filePath));
+        $this->assertEquals($m->status, Migration::STATUS_FAILED, 'Migration supposed to be failed but in unexpected state');
+
+        $this->deleteMigration($filePath);
+    }
+
     /**
      * Tests executing a very simple migration with all the different cli flags enabled or not
      * @param array $options
@@ -130,7 +185,7 @@ class MigrateTest extends MigrationExecutingTest
      */
     public function testExecuteWithDifferentOptions(array $options = array())
     {
-        $filePath = $this->dslDir . '/misc/UnitTestOK031_helloworld.yml';
+        $filePath = $this->dslDir . '/misc/UnitTestOK021_helloworld.yml';
 
         $this->deleteMigration($filePath, false);
 

@@ -7,7 +7,7 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 /**
  * Tests the 'filtering' features of the collections. Plain usage as array is already tested by the rest of the suite
- * @todo should we simply extend WebTestCase ?
+ * @todo should we extend just KernelTestCase ?
  */
 class CollectionsTest extends CommandExecutingTest
 {

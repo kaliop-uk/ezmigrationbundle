@@ -6,11 +6,7 @@
 
 -
     type: migration
-    mode: cancel
-    until:
-        match:
-            "reference:kmb_test_21":
-                eq: hello
+    mode: fail
 
 -
     type: reference
