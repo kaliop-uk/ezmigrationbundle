@@ -17,6 +17,7 @@ class ExceptionsTest extends MigrationExecutingTest implements ExecutorInterface
     {
         $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
         $ms->addExecutor($this);
+
         $md = new MigrationDefinition(
             'exception_test.json',
             '/dev/null',
@@ -26,14 +27,54 @@ class ExceptionsTest extends MigrationExecutingTest implements ExecutorInterface
 
         $m = $ms->getMigration('exception_test.json');
         $this->assertEquals(Migration::STATUS_DONE, $m->status, 'Migration in unexpected state');
-        $this->assertContains('Willfully cancelled', $m->executionError, 'Migration aborted but its exception message lost');
+        $this->assertContains('Willfully cancelled', $m->executionError, 'Migration cancelled but its exception message lost');
 
-        $this->runCommand('kaliop:migration:migration', array('migration' => 'exception_test.json', '--delete' => true, '-n' => true));
+        $this->deleteMigration('exception_test.json');
     }
 
-    /// @todo same as above, but with MigrationAbortedException 'fail' mode
+    public function testMigrationFailedException()
+    {
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
+        $ms->addExecutor($this);
 
-    /// @todo test of generic exception ('throw' step)
+        $md = new MigrationDefinition(
+            'exception_test.json',
+            '/dev/null',
+            json_encode(array(array('type' => 'fail')))
+        );
+        $ms->executeMigration($md);
+
+        $m = $ms->getMigration('exception_test.json');
+        $this->assertEquals(Migration::STATUS_FAILED, $m->status, 'Migration in unexpected state');
+        $this->assertContains('Willfully failed', $m->executionError, 'Migration failed but its exception message lost');
+
+        $this->deleteMigration('exception_test.json');
+    }
+
+    public function testMigrationThrowingException()
+    {
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
+        $ms->addExecutor($this);
+
+        $md = new MigrationDefinition(
+            'exception_test.json',
+            '/dev/null',
+            json_encode(array(array('type' => 'throw')))
+        );
+        try {
+            $ms->executeMigration($md);
+        } catch (\Exception $e) {
+            $this->assertContains('Willfully crashed', $e->getMessage());
+        }
+
+        $m = $ms->getMigration('exception_test.json');
+        $this->assertEquals(Migration::STATUS_FAILED, $m->status, 'Migration in unexpected state');
+        $this->assertContains('Willfully crashed', $m->executionError, 'Migration threw but its exception message lost');
+
+        $this->deleteMigration('exception_test.json');
+    }
+
+    /// @todo after maoving to php >= 7, add test for catching php fatal errors
 
     /// @todo do a similar test but using Anonymous user
     public function testInvalidUserAccountException()

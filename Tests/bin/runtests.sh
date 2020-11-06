@@ -7,6 +7,7 @@ source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
 VERBOSITY=
 RESET=false
 COVERAGE=
+TESTSUITE=Tests/phpunit
 
 while getopts ":c:vr" opt
 do
@@ -34,8 +35,18 @@ if [ "${RESET}" = true ]; then
     echo "Running the tests..."
 fi
 
+# Try to be smart parsing the cli params: if there are only options and no args, do not unset TESTSUITE
+if [ -n "$*" ]; then
+    for ARG in "$@"
+    do
+        case "$ARG" in
+        -*) ;;
+        *) TESTSUITE=
+            ;;
+        esac
+    done
+fi
+
 # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
 
-# @todo pass to phpunit any further cli options, or at least allow to specify a single test using --filter
-
-$(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/vendor/phpunit/phpunit/phpunit --stderr --colors ${VERBOSITY} ${COVERAGE} Tests/phpunit "$@"
+$(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/vendor/phpunit/phpunit/phpunit --stderr --colors ${VERBOSITY} ${COVERAGE} ${TESTSUITE} "$@"

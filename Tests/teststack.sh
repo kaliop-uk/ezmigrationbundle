@@ -31,49 +31,49 @@ help() {
 Manages the Test Environment Docker Stack
 
 Commands:
-    build           build or rebuild the complete set of containers and set up eZ. Leaves the stack running
-    cleanup WHAT    remove temporary data/logs/caches/etc... CATEGORY can be any of:
+    build             build or rebuild the complete set of containers and set up eZ. Leaves the stack running
+    cleanup WHAT      remove temporary data/logs/caches/etc... CATEGORY can be any of:
                         - data            NB: this removes all your data! Better done when containers are stopped
                         - docker-images   removes only unused images. Can be quite beneficial to free up space
                         - docker-logs     NB: for this to work, you'll need to run this script as root
                         - ez-cache
                         - ez-logs
                         - logs            removes log files from the databases, webservers
-    console \$cmd    run a Symfony console command in the test container
-    dbconsole       connect to the eZ database for an interactive session
-    enter           enter the test container
-    exec \$cmd       execute a single shell command in the test container
-    images [\$svc]   list container images
-    kill [\$svc]     kill containers
-    logs [\$svc]     view output from containers
-    pause [\$svc]    pause the containers
-    ps [\$svc]       show the status of running containers
-    setup           set up eZ without rebuilding the containers first
-    resetdb         resets the database used for testing (normally executed as part of provisioning)
-    runtests        execute the whole test suite using the test container
-    services        list docker-compose services
-    start [\$svc]    start the complete set of containers
-    stop [\$svc]     stop the complete set of containers
-    top [\$svc]      display the running container processes
-    unpause [\$svc]  unpause the containers
+    console \$cmd      run a Symfony console command in the test container
+    dbconsole         connect to the eZ database for an interactive session
+    enter             enter the test container
+    exec \$cmd         execute a single shell command in the test container
+    images [\$svc]     list container images
+    kill [\$svc]       kill containers
+    logs [\$svc]       view output from containers
+    pause [\$svc]      pause the containers
+    ps [\$svc]         show the status of running containers
+    setup             set up eZ without rebuilding the containers first
+    resetdb           resets the database used for testing (normally executed as part of provisioning)
+    runtests [\$suite] execute the test suite using the test container (or a single test scenario eg. Tests/phpunit/05_TagsTest.php)
+    services          list docker-compose services
+    start [\$svc]      start the complete set of containers
+    stop [\$svc]       stop the complete set of containers
+    top [\$svc]        display the running container processes
+    unpause [\$svc]    unpause the containers
 
 Options:
-    -e FILE         name of an environment file to use instead of .env (has to be used for 'start', not for 'exec' or 'enter').
-                    Path relative to the docker folder.
-                    The env var TESTSTACK_CONFIG_FILE can also be used as an alternative to this option.
-    -h              print help
-    -r              reset eZ database and caches - when running 'runtests'. NB: this wipes all your data!
-    -v              verbose mode
+    -e FILE           name of an environment file to use instead of .env (has to be used for 'start', not for 'exec' or 'enter').
+                      Path relative to the docker folder.
+                      The env var TESTSTACK_CONFIG_FILE can also be used as an alternative to this option.
+    -h                print help
+    -r                reset the eZ database and caches - when running 'runtests'. NB: this wipes all your data!
+    -v                verbose mode
 
 Advanced Options:
-    -c              clean up docker images which have become useless - when running 'build'
-    -d              discard existing containers and force them to rebuild from scratch (this forces a full app set up as well) - when running 'build'
-    -f              freshen: force app set up via resetting containers to clean-build status besides updating them if needed - when running 'build'
-    -n              do not set up the app - when running 'build', 'start'
-    -s              force the app to be set up - when running 'build', 'start'
-    -u              update (pull) the container base images (this might force a rebuild) - when running 'build'
-    -w SECONDS      wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
-    -z              avoid using docker cache - when running 'build -r'
+    -c                clean up docker images which have become useless - when running 'build'
+    -d                discard existing containers and force them to rebuild from scratch (this forces a full app set up as well) - when running 'build'
+    -f                freshen: force app set up via resetting containers to clean-build status besides updating them if needed - when running 'build'
+    -n                do not set up the app - when running 'build', 'start'
+    -s                force the app to be set up - when running 'build', 'start'
+    -u                update (pull) the container base images (this might force a rebuild) - when running 'build'
+    -w SECONDS        wait timeout for completion of app and container set up - when running 'build' and 'start'. Defaults to ${BOOTSTRAP_TIMEOUT}
+    -z                avoid using docker cache - when running 'build -r'
 "
 }
 
@@ -465,7 +465,8 @@ case "${COMMAND}" in
     exec)
         # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
         # q: do we need -ti ?
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c '"$0" "$@"' -- "$@"
+        shift
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c '"$0" "$@"' -- exec "$@"
     ;;
 
     images)
@@ -495,8 +496,9 @@ case "${COMMAND}" in
     ;;
 
     runtests)
+        shift
         # q: do we need -ti ?
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c "./Tests/bin/runtests.sh ${RESET} ${VERBOSITY}"
+        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c '"$0" "$@"' -- ./Tests/bin/runtests.sh ${RESET} ${VERBOSITY} "$@"
     ;;
 
     setup)
