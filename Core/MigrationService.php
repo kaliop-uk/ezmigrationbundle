@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -66,14 +67,18 @@ class MigrationService implements ContextProviderInterface
     /** @var  OutputInterface $output */
     protected $output;
 
+    /** @var ReferenceBagInterface */
+    protected $referenceResolver;
+
     public function __construct(LoaderInterface $loader, StorageHandlerInterface $storageHandler, Repository $repository,
-        EventDispatcherInterface $eventDispatcher, $contextHandler)
+        EventDispatcherInterface $eventDispatcher, $contextHandler, $referenceResolver)
     {
         $this->loader = $loader;
         $this->storageHandler = $storageHandler;
         $this->repository = $repository;
         $this->dispatcher = $eventDispatcher;
         $this->contextHandler = $contextHandler;
+        $this->referenceResolver = $referenceResolver;
     }
 
     public function addDefinitionParser(DefinitionParserInterface $DefinitionParser)
@@ -441,11 +446,12 @@ class MigrationService implements ContextProviderInterface
     /**
      * @param Migration $migration
      * @param bool $useTransaction
+     * @param array $forcedReferences
      * @throws \Exception
      *
      * @todo add support for adminLogin ?
      */
-    public function resumeMigration(Migration $migration, $useTransaction = true)
+    public function resumeMigration(Migration $migration, $useTransaction = true, array $forcedReferences = array())
     {
         if ($migration->status != Migration::STATUS_SUSPENDED) {
             throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': it is not in suspended status");
@@ -466,6 +472,12 @@ class MigrationService implements ContextProviderInterface
 
         // restore context
         $this->contextHandler->restoreCurrentContext($migration->name);
+
+        if ($forcedReferences) {
+            foreach($forcedReferences as $name => $value) {
+                $this->referenceResolver->addReference($name, $value, true);
+            }
+        }
 
         if (!isset($this->migrationContext[$migration->name])) {
             throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is missing");

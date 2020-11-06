@@ -134,10 +134,10 @@ EOT
             $refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
             foreach($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
-                if (count($ref) < 2) {
+                if (count($ref) < 2 || $ref[0] === '') {
                     throw new \Exception("Invalid reference specification: '$refSpec'");
                 }
-                $refResolver->addReference($ref[0], $ref[1]);
+                $refResolver->addReference($ref[0], $ref[1], true);
             }
         }
 

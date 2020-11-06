@@ -31,6 +31,7 @@ class ResumeCommand extends AbstractCommand
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question.")
             ->addOption('no-transactions', 'u', InputOption::VALUE_NONE, "Do not use a repository transaction to wrap each migration. Unsafe, but needed for legacy slot handlers")
             ->addOption('migration', 'm', InputOption::VALUE_REQUIRED, 'A single migration to resume (plain migration name).', null)
+            ->addOption('set-reference', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "Inject references into the migrations. Format: --set-reference refname:value --set-reference ref2name:value2")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:resume</info> command allows you to resume any suspended migration
 EOT
@@ -93,6 +94,18 @@ EOT
             }
         }
 
+        $forcedRefs = array();
+        if ($input->getOption('set-reference') /*&& !$input->getOption('separate-process')*/) {
+            $refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
+            foreach($input->getOption('set-reference') as $refSpec) {
+                $ref = explode(':', $refSpec, 2);
+                if (count($ref) < 2 || $ref[0] === '') {
+                    throw new \Exception("Invalid reference specification: '$refSpec'");
+                }
+                $forcedRefs[$ref[0]] = $ref[1];
+            }
+        }
+
         $executed = 0;
         $failed = 0;
 
@@ -100,7 +113,7 @@ EOT
             $output->writeln("<info>Resuming {$suspendedMigration->name}</info>");
 
             try {
-                $migrationService->resumeMigration($suspendedMigration, !$input->getOption('no-transactions'));
+                $migrationService->resumeMigration($suspendedMigration, !$input->getOption('no-transactions'), $forcedRefs);
 
                 $executed++;
             } catch (\Exception $e) {

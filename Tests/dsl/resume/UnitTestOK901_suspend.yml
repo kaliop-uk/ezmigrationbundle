@@ -1,7 +1,7 @@
 -
     type: reference
     mode: set
-    identifier: kmb_test_21
+    identifier: kmb_test_901
     value: hello
 
 -
@@ -9,11 +9,12 @@
     mode: suspend
     until:
         match:
-            "reference:kmb_test_21":
+            "reference:kmb_test_901":
                 eq: world
 
 -
-    type: reference
-    mode: set
-    identifier: kmb_test_21b
-    value: unreachable
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_901
+    test:
+        equals: world

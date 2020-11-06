@@ -8,6 +8,8 @@ Version 5.13.0
 * New: taught the `kaliop:migration:migrate` command a new option: `--set-reference` (issue #162). This is allows to
   inject any desired reference value into the migrations.
 
+* New: taught the `kaliop:migration:resume` command the same new option: `--set-reference`
+
 * Improved: references can now be set using a simplified syntax. eg:
 
           -
