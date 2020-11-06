@@ -55,4 +55,22 @@ class StatusTest extends MigrationExecutingTest
 
         $this->deleteMigration($filePath);
     }
+
+    public function testPath()
+    {
+        $filePath = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
+        $this->deleteMigration($filePath, false);
+
+        $output = $this->runCommand('kaliop:migration:status');
+        $this->assertNotContains(basename($filePath), $output);
+
+        $output = $this->runCommand('kaliop:migration:status', array('--path' => array($filePath)));
+        $this->assertContains(basename($filePath), $output);
+
+        $this->addMigration($filePath);
+        $output = $this->runCommand('kaliop:migration:status');
+        $this->assertContains(basename($filePath), $output);
+
+        $this->deleteMigration($filePath);
+    }
 }
