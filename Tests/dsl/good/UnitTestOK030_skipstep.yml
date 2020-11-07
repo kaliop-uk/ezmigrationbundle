@@ -16,6 +16,16 @@
             satisfies: "value == 'def'"
 
 -
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: def
+    overwrite: true
+    if:
+        "reference:kmb_test_ref":
+            isnull: ~
+
+-
     type: assert
     target: reference
     identifier: reference:kmb_test_ref
@@ -38,3 +48,20 @@
     identifier: reference:kmb_test_ref
     test:
         equals: def
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref
+    value: ghi
+    overwrite: true
+    if:
+        "reference:kmb_test_ref":
+            notnull: ~
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref
+    test:
+        equals: ghi
