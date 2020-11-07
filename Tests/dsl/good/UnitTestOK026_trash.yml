@@ -112,6 +112,23 @@
 
 -
     type: trash
+    mode: load
+    match:
+        location_id: reference:kmb_test_026_2_loc
+    references:
+        -
+            identifier: kmb_test_026_2_trashed_loc
+            attribute: content_id
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_026_2_trashed_loc
+    test:
+        equals: reference:kmb_test_026_2
+
+-
+    type: trash
     mode: recover
     match:
         location_id: reference:kmb_test_026_2_loc

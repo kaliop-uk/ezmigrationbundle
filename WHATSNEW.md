@@ -35,7 +35,7 @@ Version 5.13.0
   (issue #199), eg:
 
         -
-            type: "sql"
+            type: sql
             resolve_references: true
             mysql: "UPDATE emp SET job='sailor' WHERE ename='[reference:example_reference]'"
 
@@ -124,8 +124,11 @@ Version 5.13.0
 * New: migration steps can now take advantage of `$context['output]` to echo debug/warning messages (issue #201).
   When set, it is set to an OutputInterface object.
 
+* Improved: many new and improved test cases
+
 * New: taught the test-execution command `teststack.sh` two new actions: `console` and `dbconsole`, as well as a few new
-  options: `-r runtests`, `cleanup ez-cache` and `cleanup ez-logs`
+  options: `-r runtests`, `cleanup ez-cache` and `cleanup ez-logs`. It also accepts the name of a testcase to be run
+  instead of the whole suite and other phpunti command line options, when executing `runtests`.
 
 * Fixed: regressions when running the test-execution command `teststack.sh` with the `-u` option or `resetdb` action
 
