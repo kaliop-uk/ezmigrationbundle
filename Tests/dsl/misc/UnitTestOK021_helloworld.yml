@@ -2,10 +2,10 @@
 -
     type: reference
     mode: set
-    identifier: kmb_test_31_ref
+    identifier: kmb_test_21_ref
     value: hello world
 
 -
     type: reference
     mode: dump
-    identifier: reference:kmb_test_31_ref
+    identifier: reference:kmb_test_21_ref

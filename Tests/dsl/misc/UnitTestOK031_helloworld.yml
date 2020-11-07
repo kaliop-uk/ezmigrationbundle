@@ -1,0 +1,6 @@
+# A migration which needs a ref to be set
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_test_31_ref

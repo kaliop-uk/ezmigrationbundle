@@ -124,6 +124,25 @@ class MigrateTest extends MigrationExecutingTest
         $this->deleteMigration($filePath);
     }
 
+    public function testSetRef()
+    {
+        $filePath = $this->dslDir.'/misc/UnitTestOK031_helloworld.yml';
+
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
+
+        // Make sure migration is not in the db: delete it, ignoring errors
+        $this->prepareMigration($filePath);
+
+        $output = $this->runCommand(
+            'kaliop:migration:migrate',
+            array('--path' => array($filePath), '-n' => true, '-u' => true, '--set-reference' => array('yo:lo', 'kmb_test_31_ref:hello'))
+        );
+
+        $this->assertContains('hello', $output);
+
+        $this->deleteMigration($filePath);
+    }
+
     public function testCancelledExecution()
     {
         $filePath = $this->dslDir.'/misc/UnitTestOK019_cancel.yml';
