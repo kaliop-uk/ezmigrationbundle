@@ -292,6 +292,7 @@
         -
             identifier: kmb_test_004_3_ezcountry
             attribute: 'attributes.ezcountry[0]'
+            overwrite: true
 
 -
     type: assert
@@ -299,6 +300,32 @@
     identifier: reference:kmb_test_004_3_ezcountry
     test:
         equals: AL
+
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_004_3_ezcountry_set
+    value: [ AFG ]
+
+-
+    type: content
+    mode: update
+    match:
+        location_remote_id: kmb_test_004_3_location_remote_id
+    attributes:
+        ezcountry: reference:kmb_test_004_3_ezcountry_set
+    references:
+        -
+            identifier: kmb_test_004_3_ezcountry
+            attribute: 'attributes.ezcountry[0]'
+            overwrite: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_3_ezcountry
+    test:
+        equals: AF
 
 -
     type: content_type
