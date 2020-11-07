@@ -286,7 +286,7 @@ class MigrateTest extends MigrationExecutingTest
             array(array('--separate-process' => true)),
             array(array('--force-sigchild-enabled' => true)),
             array(array('--survive-disconnected-tty' => true)),
-            array(array('--set-reference' => 'hello:world')),
+            array(array('--set-reference' => array('hello:world'))),
             array(array('-q' => true)),
             array(array('-v' => true)),
             array(array('-vv' => true)),

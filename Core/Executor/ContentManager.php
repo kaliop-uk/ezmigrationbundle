@@ -472,6 +472,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             if (count($parts) == 2 && $fieldIdentifier === $parts[1]) {
                                 throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has an array value');
                             }
+                            /// @todo this does not give any guarantees regarding the cardinality of the matched stuff...
                             $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
                         } else {
                             if (count($parts) > 2) {

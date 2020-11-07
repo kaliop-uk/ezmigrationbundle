@@ -451,7 +451,7 @@ It is recommended to run the tests suite using a dedicated eZPublish installatio
 A safer choice to run the tests of the bundle is to set up a dedicated environment, similar to the one used when the test
 suite is run on Travis.
 The advantages are multiple: on one hand you can start with any version of eZPublish you want; on the other you will
-be more confident that the tests will still pass on Travis.
+be more confident that any tests you add or modify will also pass on Travis.
 The disadvantages are that you will need Docker and Docker-compose, and that the environment you will use will look
 quite unlike a standard eZPublish setup! Also, it will take a considerable amount of disk space and time to build.
 
@@ -462,12 +462,24 @@ Steps to set up a dedicated test environment and run the tests in it:
     ./Tests/teststack.sh runtests
     ./Tests/teststack.sh stop
 
-In case you want to run manual commands, eg. the symfony console:
+You can also run a single test case:
 
-    ./Tests/teststack.sh console cache:clear
+    ./Tests/teststack.sh runtests ./Tests/phpunit/01_CollectionsTest.php
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
 Note: make sure to have enough disk space available.
+
+In case you want to run manually commands, such as the symfony console:
+
+    ./Tests/teststack.sh console cache:clear
+
+Or easily get to a database shell prompt:
+
+    ./Tests/teststack.sh dbconsole
+
+Or command-line shell prompt to the Docker container where tests are run:
+
+    ./Tests/teststack.sh shell
 
 The tests in the Docker container run using the version of debian/php/eZPlatform kernel specified in the file
 `Tests/docker/docker-compose.yml`.

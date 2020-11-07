@@ -38,6 +38,7 @@ class ResumeTest extends MigrationExecutingTest
         $m = $ms->getMigration(basename($filePath));
         $this->assertEquals($m->status, Migration::STATUS_SUSPENDED, 'Migration supposed to be suspended but in unexpected state');
 
+        # Tests issue #162
         $output = $this->runCommand('kaliop:migration:resume', array('--set-reference' => array('kmb_test_901:world'), '-n' => true, '-u' => true));
 
         $m = $ms->getMigration(basename($filePath));

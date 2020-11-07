@@ -20,6 +20,7 @@ class StatusTest extends MigrationExecutingTest
         $this->assertRegexp('?\| Skipped +\| \d+ +\|?', $output);
     }
 
+    // Tests issue #190
     public function testSorting()
     {
         $filePath1 = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';

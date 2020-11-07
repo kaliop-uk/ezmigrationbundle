@@ -283,10 +283,22 @@
     version_creator: anonymous
     attributes:
         ezstring: hello world 3
+        # Issue # 224
+        ezcountry: ALB
     references:
         -
             identifier: kmb_test_004_3
             attribute: object_id
+        -
+            identifier: kmb_test_004_3_ezcountry
+            attribute: 'attributes.ezcountry[0]'
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_004_3_ezcountry
+    test:
+        equals: AL
 
 -
     type: content_type
