@@ -1,0 +1,5 @@
+-
+    type: process
+    mode: run
+    command: abracadabrahocuspocus
+    fail_on_error: true

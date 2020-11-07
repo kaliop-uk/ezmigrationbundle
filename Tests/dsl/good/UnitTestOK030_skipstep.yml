@@ -4,7 +4,6 @@
     identifier: kmb_test_ref
     value: abc
 
-
 -
     type: reference
     mode: set

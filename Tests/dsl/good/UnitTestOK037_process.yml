@@ -1,0 +1,34 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_37_cmd
+    value: php
+
+-   type: reference
+    mode: set
+    identifier: kmb_test_37_arg
+    value: -v
+
+-
+    type: process
+    mode: run
+    command: reference:kmb_test_37_cmd
+    arguments:
+        - reference:kmb_test_37_arg
+    references: # Optional
+        kmb_test_37_out: output
+        kmb_test_37_exit: exit_code
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_37_exit
+    test:
+        equals: 0
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_37_out
+    test:
+        contains: PHP
