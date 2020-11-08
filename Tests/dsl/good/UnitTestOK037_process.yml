@@ -15,7 +15,7 @@
     command: reference:kmb_test_37_cmd
     arguments:
         - reference:kmb_test_37_arg
-    references: # Optional
+    references:
         kmb_test_37_out: output
         kmb_test_37_errout: error_output
         kmb_test_37_exit: exit_code
@@ -46,7 +46,7 @@
     mode: run
     command: pwd
     working_directory: /tmp
-    references: # Optional
+    references:
         kmb_test_37_out2: output
 
 -
@@ -62,7 +62,7 @@
     command: env
     environment:
         HELLO: world
-    references: # Optional
+    references:
         kmb_test_37_out3: output
 
 -
