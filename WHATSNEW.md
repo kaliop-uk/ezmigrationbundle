@@ -31,7 +31,7 @@ Version 5.13.0
             identifier: myReference
             value: '%env(PWD)%'
 
-* New: : taught the `reference/set` migration step _not_ to resolve environment variables at all, eg:
+* New: taught the `reference/set` migration step _not_ to resolve environment variables at all, eg:
 
         -
             type: reference
@@ -137,7 +137,7 @@ Version 5.13.0
 
 * New: taught the test-execution command `teststack.sh` two new actions: `console` and `dbconsole`, as well as a few new
   options: `-r runtests`, `cleanup ez-cache` and `cleanup ez-logs`. It also accepts the name of a testcase to be run
-  instead of the whole suite and other phpunti command line options, when executing `runtests`.
+  instead of the whole suite and other phpunit command line options, when executing `runtests`.
 
 * Fixed: regressions when running the test-execution command `teststack.sh` with the `-u` option or `resetdb` action
 
