@@ -1,16 +1,17 @@
 <?php
 
-
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
+use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\VarDumper\VarDumper;
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
-use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
 
 class ReferenceExecutor extends AbstractExecutor
 {
@@ -62,8 +63,12 @@ class ReferenceExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Invalid step definition: miss 'value' for setting reference");
         }
 
-        // this makes sense since we started supporting embedded refs...
-        $value = $this->referenceResolver->resolveReference($dsl['value']);
+        if (!isset($dsl['resolve_references']) || $dsl['resolve_references']) {
+            // this makes sense since we started supporting embedded refs...
+            $value = $this->referenceResolver->resolveReference($dsl['value']);
+        } else {
+            $value = $dsl['value'];
+        }
 
         if (0 === strpos($value, '%env(') && ')%' === substr($value, -2) && '%env()%' !== $value) {
             /// @todo find out how to use Sf components to resolve this value instead of doing it by ourselves...
@@ -188,24 +193,50 @@ class ReferenceExecutor extends AbstractExecutor
         if (!$this->referenceResolver->isReference($dsl['identifier'])) {
             throw new \Exception("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");
         }
-        /// @todo improve handling of the case $context['output'] is set - atm it does not seem to work with unit tests...
-        if (isset($context['output']) && $context['output'] instanceof OutputInterface) {
-            if ($context['output']->isQuiet()) {
-                return $this->referenceResolver->resolveReference($dsl['identifier']);
-            }
-            ob_start();
+        if (isset($context['output']) && $context['output'] instanceof OutputInterface && $context['output']->isQuiet()) {
+            return $this->referenceResolver->resolveReference($dsl['identifier']);
         }
+
         if (isset($dsl['label'])) {
-            echo $dsl['label'];
+            $label = $dsl['label'];
         } else {
-            VarDumper::dump($dsl['identifier']);
+            $label = $this->dumpVar($dsl['identifier']);
         }
-        $value = $this->referenceResolver->resolveReference($dsl['identifier']);
-        VarDumper::dump($value);
+        $value = $this->dumpVar($this->referenceResolver->resolveReference($dsl['identifier']));
+
         if (isset($context['output']) && $context['output'] instanceof OutputInterface) {
-            $context['output']->write(ob_get_contents(), false, OutputInterface::OUTPUT_RAW|OutputInterface::VERBOSITY_NORMAL);
-            ob_end_clean();
+            $context['output']->write($label . $value, false, OutputInterface::OUTPUT_RAW|OutputInterface::VERBOSITY_NORMAL);
+        } else {
+            echo $label . $value;
         }
+
         return $value;
+    }
+
+    /**
+     * Similar to VarDumper::dump(), but returns the output
+     * @param mixed $var
+     * @return string
+     * @throws \ErrorException
+     */
+    protected function dumpVar($var)
+    {
+        $cloner = new VarCloner();
+        $dumper = \in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) ? new CliDumper() : new HtmlDumper();
+        $output = '';
+
+        $dumper->dump(
+            $cloner->cloneVar($var),
+            function ($line, $depth) use (&$output) {
+                // A negative depth means "end of dump"
+                if ($depth >= 0) {
+                    // Adds a two spaces indentation to the line
+                    /// @todo should we use NBSP for html dumping?
+                    $output .= str_repeat('  ', $depth) . $line . "\n";
+                }
+            }
+        );
+
+        return $output;
     }
 }

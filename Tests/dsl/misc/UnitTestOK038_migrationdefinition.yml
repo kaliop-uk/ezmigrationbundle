@@ -1,0 +1,47 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_038_dirty_hack
+    value: 'reference:kmb_038_matched_objs'
+    resolve_references: false
+
+-
+    type: migration_definition
+    mode: save
+    file: /tmp/unit_test_generated_migration_038_1.json
+    migration_steps:
+        -
+            type: content
+            mode: load
+            match: { location_id: 2 }
+            references:
+                -
+                    identifier: kmb_038_matched_objs
+                    attribute: count
+        -
+            type: assert
+            target: reference
+            identifier: reference:kmb_038_dirty_hack
+            test:
+                equals: 1
+        -
+            type: reference
+            mode: dump
+            identifier: reference:kmb_038_dirty_hack
+    allow_null_results: true
+
+### @todo generate a content-create migration instead, to be then deleted ?
+
+-
+    type: migration_definition
+    mode: generate
+    file: /tmp/unit_test_generated_migration_038_2.json
+    migration_type: content_type
+    migration_mode: update
+    match:
+        type: contenttype_identifier
+        value: folder
+    references:
+        -
+            identifier: kmb_038_matched_cti
+            attribute: '[0].match.contenttype_identifier'

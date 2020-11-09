@@ -31,6 +31,15 @@ Version 5.13.0
             identifier: myReference
             value: '%env(PWD)%'
 
+* New: : taught the `reference/set` migration step _not_ to resolve environment variables at all, eg:
+
+        -
+            type: reference
+            mode: set
+            identifier: a_funny_string
+            value: 'reference:or_not_to_reference'
+            resolve_references: false
+
 * New: taught the SQL migration step, when specified in yaml format, to resolve references embedded in the sql statement
   (issue #199), eg:
 

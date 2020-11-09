@@ -2,12 +2,12 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
-use Kaliop\eZMigrationBundle\API\MatcherInterface;
-use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
-use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use JmesPath\Env as JmesPath;
+use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\MatcherInterface;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\Yaml\Yaml;
 
 class MigrationDefinitionExecutor extends AbstractExecutor
@@ -121,6 +121,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
         } else {
             $definition = $dsl['migration_steps'];
         }
+
         $definition = $this->resolveReferencesRecursively($definition);
 
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);

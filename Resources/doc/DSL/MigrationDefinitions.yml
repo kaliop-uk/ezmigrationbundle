@@ -34,6 +34,9 @@
             match: { location_id: 2 }
             attributes: { }
         - etc...
+       # If you want to use the string 'reference:something' in the _generated_ migration, at the moment you need to
+       # use a workaround: define a reference in the current migration which resolves to the string 'reference:something',
+       # as is done in the test file UnitTestOk038_migrationdefinition.yml
     file: string # path to the file to be generated. Mandatory.
                  # The filename must end with an extension of either .yml or .json
     if: # Optional. If set, the migration step will be skipped unless the condition is matched

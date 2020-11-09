@@ -143,6 +143,32 @@ class MigrateTest extends MigrationExecutingTest
         $this->deleteMigration($filePath);
     }
 
+    public function testMigrationGeneration()
+    {
+        $filePath = $this->dslDir.'/misc/UnitTestOK038_migrationdefinition.yml';
+        $filePath2 = '/tmp/unit_test_generated_migration_038_1.json';
+        $filePath3 = '/tmp/unit_test_generated_migration_038_2.json';
+
+        // Make sure migration is not in the db: delete it, ignoring errors
+        $this->prepareMigration($filePath);
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
+
+        $this->prepareMigration($filePath2);
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath2), '-n' => true, '-u' => true));
+
+        $this->assertContains('kmb_038_matched_objs', $output);
+
+        // this one we can not execute - we only parse for correctness
+        $this->prepareMigration($filePath3);
+
+        $this->deleteMigration($filePath);
+        $this->deleteMigration($filePath2);
+        $this->deleteMigration($filePath3);
+
+        unlink($filePath2);
+        unlink($filePath3);
+    }
+
     public function testCancelledExecution()
     {
         $filePath = $this->dslDir.'/misc/UnitTestOK019_cancel.yml';
