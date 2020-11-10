@@ -2,7 +2,7 @@
 
 # Installs required OS packages
 
-# @todo make install of Apache, Java, memcached, mysql-client optional
+# @todo make install of Apache, Java, memcached, mysql/postgresql-client optional
 # @todo allow optional install of redis, postgresql-client, elastic ?
 # @todo allow optional install of custom packages
 
@@ -18,6 +18,7 @@ if [ "${DEBIAN_VERSION}" = jessie -o -z "${DEBIAN_VERSION}" ]; then
         git \
         lsb-release \
         memcached \
+        postgresql-client \
         sudo \
         unzip \
         wget \
@@ -30,6 +31,7 @@ else
         git \
         lsb-release \
         memcached \
+        postgresql-client \
         sudo \
         unzip \
         wget \

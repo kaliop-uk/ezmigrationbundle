@@ -3,9 +3,10 @@
 # Set up a pristine eZ database and accompanying user (mysql only)
 # NB: drops both the db and the user if they are pre-existing!
 #
-# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, MYSQL_DATABASE, MYSQL_HOST, MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD, MYSQL_USER
+# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, DB_EZ_DATABASE, DB_EZ_PASSWORD, DB_EZ_USER, DB_HOST, DB_ROOT_PASSWORD
 
 # @todo support a -v option
+# @todo add support for postgres
 
 set -e
 
@@ -13,17 +14,21 @@ source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
 
 ROOT_DB_USER=root
 ROOT_DB_PWD=
-DB_HOST=
+DB_HOST_FLAG=
+
+if [-z "${DB_HOST}" ]; then
+    DB_HOST=${DB_TYPE}
+fi
 
 # @todo check if all required vars have a value
 
 if [ "${TRAVIS}" != "true" ]; then
-    ROOT_DB_PWD="-p${MYSQL_ROOT_PASSWORD}"
-    DB_HOST="-h ${MYSQL_HOST}"
+    ROOT_DB_PWD="-p${DB_ROOT_PASSWORD}"
+    DB_HOST_FLAG="-h ${DB_HOST}"
 fi
 
-ROOT_DB_COMMAND="mysql ${DB_HOST} -u${ROOT_DB_USER} ${ROOT_DB_PWD}"
-EZ_DB_COMMAND="mysql ${DB_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}"
+ROOT_DB_COMMAND="mysql ${DB_HOST_FLAG} -u${ROOT_DB_USER} ${ROOT_DB_PWD}"
+EZ_DB_COMMAND="mysql ${DB_HOST_FLAG} -u${DB_EZ_USER} -p${DB_EZ_PASSWORD} ${DB_EZ_DATABASE}"
 
 # MySQL 5.7 defaults to strict mode, which is not good with ezpublish community kernel 2014.11.8
 if [ "${EZ_VERSION}" = "ezpublish-community" -a "${TRAVIS}" = "true" ]; then
@@ -33,11 +38,11 @@ if [ "${EZ_VERSION}" = "ezpublish-community" -a "${TRAVIS}" = "true" ]; then
     sudo service mysql restart
 fi
 
-${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${MYSQL_DATABASE};"
+${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${DB_EZ_DATABASE};"
 # @todo drop user only if it exists (easy on mysql 5.7 and later, not so much on 5.6...)
-${ROOT_DB_COMMAND} -e "DROP USER '${MYSQL_USER}'@'%';" 2>/dev/null || :
-${ROOT_DB_COMMAND} -e "CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';" 2>/dev/null
-${ROOT_DB_COMMAND} -e "CREATE DATABASE ${MYSQL_DATABASE} CHARACTER SET utf8mb4; GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%'"
+${ROOT_DB_COMMAND} -e "DROP USER '${DB_EZ_USER}'@'%';" 2>/dev/null || :
+${ROOT_DB_COMMAND} -e "CREATE USER '${DB_EZ_USER}'@'%' IDENTIFIED BY '${DB_EZ_PASSWORD}';" 2>/dev/null
+${ROOT_DB_COMMAND} -e "CREATE DATABASE ${DB_EZ_DATABASE} CHARACTER SET utf8mb4; GRANT ALL PRIVILEGES ON ${DB_EZ_DATABASE}.* TO '${DB_EZ_USER}'@'%'"
 
 # Load the database schema and data from sql files present in either the legacy stack or kernel
 if [ "${EZ_VERSION}" = "ezpublish-community" ]; then

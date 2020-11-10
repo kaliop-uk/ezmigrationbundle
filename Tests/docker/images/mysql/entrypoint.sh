@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "[`date`] Bootstrapping MySQL..."
+echo "[$(date)] Bootstrapping MySQL..."
 
 clean_up() {
     # Perform program exit housekeeping
-    echo "[`date`] Stopping the service..."
+    echo "[$(date)] Stopping the service..."
     pkill --signal term mysqld
     if [ -f /var/run/bootstrap_ok ]; then
         rm /var/run/bootstrap_ok
@@ -19,7 +19,7 @@ fi
 
 # Fix UID & GID for user 'mysql'
 
-echo "[`date`] Fixing filesystem permissions..."
+echo "[$(date)] Fixing filesystem permissions..."
 
 ORIGPASSWD=$(cat /etc/passwd | grep mysql)
 ORIG_UID=$(echo $ORIGPASSWD | cut -f3 -d:)
@@ -45,13 +45,13 @@ if [ -d /tmpfs ]; then
     chmod 0777 /tmpfs
 fi
 
-echo "[`date`] Handing over control to /entrypoint.sh..."
+echo "[$(date)] Handing over control to /entrypoint.sh..."
 
 trap clean_up TERM
 
 /entrypoint.sh $@ &
 
-echo "[`date`] Bootstrap finished" | tee /var/run/bootstrap_ok
+echo "[$(date)] Bootstrap finished" | tee /var/run/bootstrap_ok
 
 tail -f /dev/null &
 child=$!

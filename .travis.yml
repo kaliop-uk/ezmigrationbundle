@@ -8,10 +8,11 @@ services:
 env:
   global:
     - SYMFONY_ENV=behat
-    - MYSQL_USER=ezp
-    - MYSQL_PASSWORD=ezp
-    - MYSQL_DATABASE=behattestdb
-    - MYSQL_HOST=localhost
+    - DB_HOST=localhost
+    - DB_TYPE=mysql
+    - DB_EZ_USER=ezp
+    - DB_EZ_PASSWORD=ezp
+    - DB_EZ_DATABASE=behattestdb
 
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions

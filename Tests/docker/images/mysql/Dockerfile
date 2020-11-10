@@ -3,6 +3,7 @@ ARG mysql_version=5.6
 FROM mysql:${mysql_version}
 LABEL mysql.version=${mysql_version}
 
+ARG do_shrink_container=true
 ARG do_update_os=true
 ARG timezone=none
 
@@ -20,7 +21,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
 #RUN if [ "${do_update_os}" != "false" ]; then apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --allow-unauthenticated; fi
 
 # Clear archives in apt cache folder to slim down the image
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# -----------------------------------------------------------------------------
+RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /var/lib/apt/lists/*; fi
 
 COPY entrypoint.sh /root/entrypoint.sh
 RUN chmod 755 /root/entrypoint.sh

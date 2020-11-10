@@ -16,17 +16,16 @@ services:
         environment:
             - CONTAINER_USER_UID=${CONTAINER_USER_UID:-1000}
             - CONTAINER_USER_GID=${CONTAINER_USER_GID:-1000}
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_test}
-            - MYSQL_USER=${MYSQL_USER:-ezp}
-            - MYSQL_PASSWORD=${MYSQL_PASSWORD:-ezp}
-            - MYSQL_DATABASE=${MYSQL_DATABASE:-behattestdb}
-            # to be kept in sync with the hostname of the mysql container a few lines below
-            - MYSQL_HOST=${MYSQL_HOST:-mysql}
+            - DB_TYPE=${DB_TYPE:-mysql}
+            - DB_HOST
+            - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root_test}
+            - DB_EZ_USER=${DB_EZ_USER:-ezp}
+            - DB_EZ_PASSWORD=${DB_EZ_PASSWORD:-ezp}
+            - DB_EZ_DATABASE=${DB_EZ_DATABASE:-behattestdb}
             - COMPOSE_SETUP_APP_ON_BOOT
             # is this useful for something or just a leftover?
             ###- PHP_VERSION=${COMPOSE_PHP_VERSION:-default}
             # Configuration for the eZ test env to build
-            - CODE_COVERAGE=${CODE_COVERAGE:-0}
             - EZ_PACKAGES=${EZ_PACKAGES:-ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle}
             - EZ_VERSION=${EZ_VERSION:-ezplatform2}
             - INSTALL_SOLRBUNDLE=${INSTALL_SOLRBUNDLE:-0}
@@ -43,38 +42,6 @@ services:
             # @todo would there be any value in using env vars for these folders?
             - ../../:/home/test/ezmigrationbundle
             - ./data/.composer/:/home/test/.composer
-
-    mysql:
-        build:
-            context: images/mysql
-            args:
-                timezone: ${COMPOSE_TZ:-none}
-                do_update_os: ${COMPOSE_DO_UPDATE_OS:-true}
-                mysql_version: ${MYSQL_VERSION:-5.6}
-        hostname: mysql
-        container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_mysql
-        environment:
-            - CONTAINER_USER_UID=${CONTAINER_USER_UID:-1000}
-            - CONTAINER_USER_GID=${CONTAINER_USER_GID:-1000}
-            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root_test}
-            - MYSQL_USER=${MYSQL_USER:-ezp}
-            - MYSQL_PASSWORD=${MYSQL_PASSWORD:-ezp}
-            - MYSQL_DATABASE=${MYSQL_DATABASE:-behattestdb}
-            # As opposed to TRAVIS=true ;-)
-            - DOCKER=true
-        volumes:
-            #- ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            # @todo would there be any value in using env vars for these folders?
-            - ./data/mysql/:/var/lib/mysql
-            - ./logs/mysql/:/var/log/mysql
-        #tmpfs:
-        #    # used for mysql temp tables. Useful with ez5 db schema / queries (it creates lots of temp tables on disk)
-        #    - /tmpfs:mode=777
-        # uncomment this to be able to access the db from the host
-        #ports:
-        #    - "3307:3306"
-        # nb: this prevents the image to start on some ubuntu installs because of apparmor config...
-        #privileged: true
 
 #networks:
 #    default:

@@ -1,22 +1,39 @@
 #!/usr/bin/env bash
 
-# Uses env vars: MYSQL_DATABASE, MYSQL_HOST, MYSQL_PASSWORD, MYSQL_USER
+# Uses env vars: DB_EZ_DATABASE, DB_EZ_PASSWORD, DB_EZ_USER, DB_HOST, DB_TYPE
 
 # @todo support a -v option
-# @todo add support for postregs
 
 set -e
 
-source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
+#source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
 
-ROOT_DB_USER=root
-ROOT_DB_PWD=
-DB_HOST=
+#ROOT_DB_USER=root
+#ROOT_DB_PWD=
+DB_HOST_FLAG=
 
-# @todo check if all required vars have a value
-
-if [ "${TRAVIS}" != "true" ]; then
-    DB_HOST="-h ${MYSQL_HOST}"
+if [-z "${DB_HOST}" ]; then
+    DB_HOST=${DB_TYPE}
 fi
 
-mysql ${DB_HOST} -u${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE}
+# @todo check that all required vars have a value
+
+if [ "${DB_TYPE}" = "mysql" ]; then
+
+    #if [ "${TRAVIS}" != "true" ]; then
+    #    DB_HOST_FLAG="-h ${DB_TYPE}"
+    #fi
+    mysql -h ${DB_HOST} -u${DB_EZ_USER} -p${DB_EZ_PASSWORD} ${DB_EZ_DATABASE}
+
+else if [ "${DB_TYPE}" = "postgresql" ]; then
+
+    #if [ "${TRAVIS}" != "true" ]; then
+    #    DB_HOST_FLAG="-h ${DB_TYPE}"
+    #fi
+    # we rely on .pgpass for auth
+    psql -h ${DB_HOST} -U ${DB_EZ_USER} -d ${DB_EZ_DATABASE}
+
+else
+    printf "\n\e[31mERROR: unknown db type ${DB_TYPE}\e[0m\n\n" >&2
+    exit 1
+fi

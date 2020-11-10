@@ -12,3 +12,10 @@ else
     INI_PATH=${INI_PATH/Scan this dir for additional .ini files => /}
     sudo cp Tests/config/php/zzz_php.ini ${INI_PATH}
 fi
+
+# Disable xdebug for speed (both for executing composer and running tests); we enable it only when generating coverage
+XDEBUG_INI=`php -i | grep xdebug.ini | grep -v '=>' | head -1`
+XDEBUG_INI=${XDEBUG_INI/,/}
+if [ "${XDEBUG_INI}" != "" ]; then
+    sudo mv "${XDEBUG_INI}" "${XDEBUG_INI}.off";
+fi

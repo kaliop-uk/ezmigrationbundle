@@ -10,7 +10,11 @@
 /Tests/docker/.env
 /Tests/docker/data/.composer/*
 /Tests/docker/data/mysql/*
+/Tests/docker/data/postgresql/*
 /Tests/docker/logs/mysql/*
+/Tests/docker/logs/postgresql/*
 !/Tests/docker/data/.composer/.gitkeep
 !/Tests/docker/data/mysql/.gitkeep
+!/Tests/docker/data/postgresql/.gitkeep
 !/Tests/docker/logs/mysql/.gitkeep
+!/Tests/docker/logs/postgresql/.gitkeep

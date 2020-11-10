@@ -3,7 +3,7 @@
 # Set up fully the test environment (except for installing required sw packages): php, mysql, eZ, etc...
 # Has to be useable from Docker as well as from Travis.
 #
-# Uses env vars: CODE_COVERAGE, EZ_VERSION, TRAVIS, TRAVIS_PHP_VERSION
+# Uses env vars: EZ_VERSION, TRAVIS, TRAVIS_PHP_VERSION
 
 # @todo check if all required env vars have a value
 # @todo support a -v option
@@ -39,21 +39,8 @@ fi
 
 ./Tests/bin/setup/php-config.sh
 
-# Disable xdebug for speed (both for executing composer and running tests), but allow us to re-enable it later
-XDEBUG_INI=`php -i | grep xdebug.ini | grep -v '=>' | head -1`
-XDEBUG_INI=${XDEBUG_INI/,/}
-if [ "${XDEBUG_INI}" != "" ]; then
-    sudo mv "${XDEBUG_INI}" "${XDEBUG_INI}.bak";
-fi
-
 ./Tests/bin/setup/composer-dependencies.sh
 
-# Re-enable xdebug for when we need to generate code coverage
-if [ "${CODE_COVERAGE}" = "1" -a "${XDEBUG_INI}" != "" ]; then
-    sudo mv "${XDEBUG_INI}.bak" "${XDEBUG_INI}"
-fi
-
-# @todo should we look instead to the base travis image used ?
 if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
     sudo systemctl start mysql
 fi

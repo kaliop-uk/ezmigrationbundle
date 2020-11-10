@@ -77,6 +77,10 @@ Advanced Options:
 "
 }
 
+create_compose_command() {
+    DOCKER_COMPOSE="${DOCKER_COMPOSE} -f docker-compose.yml -f docker-compose-${DB_TYPE}.yml"
+}
+
 build() {
 
     if [ ${CLEANUP_UNUSED_IMAGES} = 'true' ]; then
@@ -109,7 +113,12 @@ build() {
         else
             MIMG="mysql:5.6"
         fi
-        IMAGES="${DIMG} ${MIMG}"
+        if [ -n "${POSTGRESQL_VERSION}"]; then
+            PIMG="postgres:${POSTGRESQL_VERSION}"
+        else
+            PIMG="postgres:9.5"
+        fi
+        IMAGES="${DIMG} ${MIMG} ${PIMG}"
         for IMAGE in $IMAGES; do
             docker pull $IMAGE
         done
@@ -266,6 +275,13 @@ load_config() {
     fi
 
     dotenv ${CONFIG_FILE}
+
+    # same default as in docker-compose.yml
+    if [ -z "${DB_TYPE}" ]; then
+        DB_TYPE=mysql
+    fi
+
+    create_compose_command
 
     # @todo check UID, GID from conf vs. current. If different, ask for confirmation before running
     #if []; then

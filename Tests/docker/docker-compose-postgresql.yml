@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+    postgresql:
+        build:
+            context: images/postgresql
+            args:
+                timezone: ${COMPOSE_TZ:-none}
+                do_update_os: ${COMPOSE_DO_UPDATE_OS:-true}
+                # note: Travis Xenial images come with PG 9.5; Bionic with and Focal with
+                postgresql_version: ${POSTGRESQL_VERSION:-9.5}
+        hostname: postgresql
+        container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_postgresql
+        environment:
+            - CONTAINER_USER_UID=${CONTAINER_USER_UID:-1000}
+            - CONTAINER_USER_GID=${CONTAINER_USER_GID:-1000}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-root_test}
+            # As opposed to TRAVIS=true ;-)
+            - DOCKER=true
+        volumes:
+            # @todo would there be any value in using env vars for these folders?
+            - ./data/postgresql/:/var/lib/postgresql
+            - ./logs/postgresql/:/var/log/postgresql
+        # uncomment this to be able to access the db from the host
+        #ports:
+        #    - "5433:5432"

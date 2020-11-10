@@ -1,8 +1,8 @@
 Version XX (unreleased)
 =======================
 
-* Improved: taught the test-execution command `teststack.sh` to generate code coverage reports when setting docker env
-  var `CODE_COVERAGE=1` and running `teststack.sh runtests -- --coverage-html=/some-dir`
+* Improved: taught the test-execution command `teststack.sh` to generate code coverage reports when running
+  `teststack.sh runtests -- --coverage-html=/some-dir`
 
 
 Version 5.13.0

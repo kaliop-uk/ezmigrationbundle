@@ -4,16 +4,19 @@ set -e
 
 source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
 
-VERBOSITY=
-RESET=false
+PHPOPTS=
 COVERAGE=
 TESTSUITE=Tests/phpunit
+RESET=false
+VERBOSITY=
 
 while getopts ":c:vr" opt
 do
     case $opt in
         c)
+            # @todo parse $OPTARG, decide format to use for coverage based on file/dir name (not easy to do)
             COVERAGE="--coverage-clover=${OPTARG}"
+            PHPOPTS="-d zend_extension=xdebug.so"
         ;;
         r)
             RESET=true
@@ -35,18 +38,27 @@ if [ "${RESET}" = true ]; then
     echo "Running the tests..."
 fi
 
-# Try to be smart parsing the cli params: if there are only options and no args, do not unset TESTSUITE
+# Try to be smart parsing the cli params:
+# - if there are only options and no args, do not unset TESTSUITE
+# - if there are code coverage options, make sure we enable xdebug
 if [ -n "$*" ]; then
     for ARG in "$@"
     do
         case "$ARG" in
+        --coverage-*)
+            PHPOPTS="-d zend_extension=xdebug.so"
+            ;;
         -*) ;;
-        *) TESTSUITE=
+        *)
+            TESTSUITE=
             ;;
         esac
     done
 fi
 
+# @todo detect if the user ahs passed in any code coverage options. if so, or with -c, enable xdebug options
+#       which support code coverage
+
 # Note: make sure we run the version of phpunit we installed, not the system one. See: https://github.com/sebastianbergmann/phpunit/issues/2014
 
-$(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/vendor/phpunit/phpunit/phpunit --stderr --colors ${VERBOSITY} ${COVERAGE} ${TESTSUITE} "$@"
+php ${PHPOPTS} $(dirname $(dirname $(dirname ${BASH_SOURCE[0]})))/vendor/phpunit/phpunit/phpunit --stderr --colors ${VERBOSITY} ${COVERAGE} ${TESTSUITE} "$@"

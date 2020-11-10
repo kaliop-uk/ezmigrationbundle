@@ -12,6 +12,7 @@ if [ "${DEBIAN_VERSION}" = jessie ]; then
         php5-json \
         php5-memcached \
         php5-mysql \
+        php5-pgsql \
         php5-xdebug \
         php5-xsl
 else
@@ -25,6 +26,7 @@ else
         php-memcached \
         php-mbstring \
         php-mysql \
+        php-pgsql \
         php-xdebug \
         php-xml
 fi

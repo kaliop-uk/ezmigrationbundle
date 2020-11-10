@@ -13,7 +13,7 @@ doctrine:
     dbal:
         connections:
             default:
-                driver: pdo_mysql
+                driver: '%database_driver%'
                 host: '%database_host%'
                 user: '%database_user%'
                 password: '%database_password%'
