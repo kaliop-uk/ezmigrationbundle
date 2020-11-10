@@ -3,7 +3,7 @@
 # Set up fully the test environment (except for installing required sw packages): php, mysql, eZ, etc...
 # Has to be useable from Docker as well as from Travis.
 #
-# Uses env vars: CODE_COVERAGE, EZ_COMPOSER_LOCK, EZ_PACKAGES, EZ_VERSION, TRAVIS, TRAVIS_PHP_VERSION
+# Uses env vars: CODE_COVERAGE, EZ_VERSION, TRAVIS, TRAVIS_PHP_VERSION
 
 # @todo check if all required env vars have a value
 # @todo support a -v option
@@ -37,55 +37,23 @@ fi
 #    composer selfupdate
 #fi
 
-# Increase php memory limit (need to do this now or we risk composer failing)
-if [ "${TRAVIS}" = "true" ]; then
-    phpenv config-add Tests/config/php/zzz_php.ini
-else
-    INI_PATH=$(php -i | grep 'Scan this dir for additional .ini files')
-    INI_PATH=${INI_PATH/Scan this dir for additional .ini files => /}
-    sudo cp Tests/config/php/zzz_php.ini ${INI_PATH}
-fi
+./Tests/bin/setup/php-config.sh
 
-# Disable xdebug for speed (both for executing composer and running tests), but allow us to e-enable it later
-XDEBUG_INI=`php -i | grep xdebug.ini | grep home/travis | grep -v '=>' | head -1`
+# Disable xdebug for speed (both for executing composer and running tests), but allow us to re-enable it later
+XDEBUG_INI=`php -i | grep xdebug.ini | grep -v '=>' | head -1`
 XDEBUG_INI=${XDEBUG_INI/,/}
 if [ "${XDEBUG_INI}" != "" ]; then
-    mv "${XDEBUG_INI}" "${XDEBUG_INI}.bak";
+    sudo mv "${XDEBUG_INI}" "${XDEBUG_INI}.bak";
 fi
 
-# We do not rely on the requirements set in composer.json, but install a different eZ version depending on the test matrix (env vars)
-
-# For the moment, to install eZPlatform, a set of DEV packages has to be allowed (eg roave/security-advisories); really ugly sed expression to alter composer.json follows
-# A different work around for this has been found in setting up an alias for them in the std composer.json require-dev section
-#- 'if [ "$EZ_VERSION" != "ezpublish" ]; then sed -i ''s/"license": "GPL-2.0",/"license": "GPL-2.0", "minimum-stability": "dev", "prefer-stable": true,/'' composer.json; fi'
-
-# Allow installing a precomputed set of packages. Useful to save memory, eg. for running with php 5.6...
-if [ -n "${EZ_COMPOSER_LOCK}" ]; then
-    cp ${EZ_COMPOSER_LOCK} composer.lock
-    composer install
-else
-    # composer.lock gets in the way when switching between eZ versions
-    if [ -f composer.lock ]; then
-        rm composer.lock
-    fi
-    cp composer.json composer.json.bak
-    composer require --dev --no-update ${EZ_PACKAGES}
-    cp composer.json composer_last.json
-    composer update --dev
-    # @todo remove composer.json.bak ? (we should also check that no-one has modified it since we saved it...)
-    cp composer.json.bak composer.json
-fi
-
-if [ "${TRAVIS}" = "true" ]; then
-    # useful for troubleshooting tests failures
-    composer show
-fi
+./Tests/bin/setup/composer-dependencies.sh
 
 # Re-enable xdebug for when we need to generate code coverage
 if [ "${CODE_COVERAGE}" = "1" -a "${XDEBUG_INI}" != "" ]; then
-    mv "${XDEBUG_INI}.bak" "${XDEBUG_INI}"
+    sudo mv "${XDEBUG_INI}.bak" "${XDEBUG_INI}"
 fi
 
+# @todo should we look instead to the base travis image used ?
 if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
     sudo systemctl start mysql
 fi
@@ -93,8 +61,8 @@ fi
 # Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
 ./Tests/bin/create-db.sh
 
-# Set up configuration files
-./Tests/bin/setup-ez-config.sh
+# Set up eZ configuration files
+./Tests/bin/setup/ez-config.sh
 
 # TODO are these needed at all?
 #$(dirname ${BASH_SOURCE[0]})/sfconsole.sh assetic:dump

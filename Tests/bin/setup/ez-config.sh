@@ -7,7 +7,7 @@
 # @todo check if all required vars have a value
 # @todo use 'set -e' to insure a proper setup
 
-source $(dirname ${BASH_SOURCE[0]})/set-env-vars.sh
+source $(dirname $(dirname ${BASH_SOURCE[0]}))/set-env-vars.sh
 
 if [ "${EZ_VERSION}" = "ezplatform3" ]; then
     APP_DIR=vendor/ezsystems/ezplatform

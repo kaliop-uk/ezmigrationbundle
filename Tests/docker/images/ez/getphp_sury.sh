@@ -26,6 +26,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y \
     php${PHP_VERSION}-memcached \
     php${PHP_VERSION}-mbstring \
     php${PHP_VERSION}-mysql \
+    php${PHP_VERSION}-xdebug \
     php${PHP_VERSION}-xml
 
 update-alternatives --set php /usr/bin/php${PHP_VERSION}

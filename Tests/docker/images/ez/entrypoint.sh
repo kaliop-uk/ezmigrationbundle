@@ -89,7 +89,7 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
     # @todo we should as well reinstall if current env vars (packages and other build-config vars) are changed since we installed...
     if [ "${COMPOSE_SETUP_APP_ON_BOOT}" = 'force' -o ! -f /tmp/setup_ok ]; then
         echo "[`date`] Setting up eZ..."
-        su test -c "cd /home/test/ezmigrationbundle && ./Tests/environment/setup.sh; echo \$? > /tmp/setup_ok"
+        su test -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
         # back up composer config
         # @todo do not attempt to back up composer.lock if it does not exist
         su test -c "mv /home/test/ezmigrationbundle/composer_last.json /home/test/ezmigrationbundle/composer_${HASH}.json; cp /home/test/ezmigrationbundle/composer.lock /home/test/ezmigrationbundle/composer_${HASH}.lock"
