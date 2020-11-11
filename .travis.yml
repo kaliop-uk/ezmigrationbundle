@@ -45,7 +45,7 @@ matrix:
       env: EZ_PACKAGES='ezsystems/ezplatform:~2.4.2 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.3 sensio/generator-bundle' EZ_VERSION=ezplatform2 CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     # latest version currently available of eZPlatform 2 - currently 2.5, which is also LTS
     - php: 7.4
-      env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.12 ezsystems/ezplatform-xmltext-fieldtype:^1.9 ezsystems/behatbundle:^7.0 netgen/tagsbundle:^3.4 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.15 ezsystems/ezplatform-xmltext-fieldtype:^1.9 ezsystems/behatbundle:^7.0 netgen/tagsbundle:^3.4 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
 before_install:
   # Note: as of 2020/10/30, composer self-updates to rev. 2.0 for php 5.6-7.2, but not for 7.3 and 7.4... most likely
