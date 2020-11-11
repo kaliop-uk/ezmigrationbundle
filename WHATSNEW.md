@@ -1,8 +1,11 @@
 Version XX (unreleased)
 =======================
 
-* Improved: taught the test-execution command `teststack.sh` to generate code coverage reports when running
-  `teststack.sh runtests -- --coverage-html=/some-dir`
+* Improved: taught the test-execution command `teststack.sh` to generate code coverage reports, by running
+  `teststack.sh runtests -- --coverage-html=/some-dir`. Note that it might take a long time to run.
+
+* Improved: allow to run unit tests on a PostgreSQL database instead of MySQL. At the moment this works correctly
+  for testing against eZPublish Platform but not against eZPlatorm 1/2/3
 
 
 Version 5.13.0
