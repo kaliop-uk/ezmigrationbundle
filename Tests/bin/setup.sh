@@ -45,11 +45,11 @@ if [ "${TRAVIS_PHP_VERSION}" = "5.6" ]; then
     sudo systemctl start mysql
 fi
 
-# Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
-./Tests/bin/create-db.sh
-
 # Set up eZ configuration files
 ./Tests/bin/setup/ez-config.sh
+
+# Create the database from sql files present in either the legacy stack or kernel (has to be run after composer install)
+./Tests/bin/create-db.sh
 
 # TODO are these needed at all?
 #$(dirname ${BASH_SOURCE[0]})/sfconsole.sh assetic:dump
