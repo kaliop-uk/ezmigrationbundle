@@ -14,6 +14,8 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 * eZPlatform 1, eZPlatform 2 or eZPublish Enterprise 5.4 or eZPublish Community 2014.11 or later.
 
+NB: for eZPlatform 3 and later, head on to https://github.com/tanoconsulting/ezmigrationbundle2
+
 
 ## Installation
 

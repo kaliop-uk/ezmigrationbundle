@@ -2,11 +2,11 @@
 
 // Used to set parameters based on env vars, regardless of the SF and eZ versions in use
 
-// we rely on Doctrine aliases for this to work
-$container->setParameter('database_driver', getenv('DB_TYPE'));
-// and on Docker conatienrs configuration for having hostnames that match db types
-if (($dbHost = getenv('DB_HOST')) !== false) {
-    $container->setParameter('database_host', $dbHost);
+/// @var ContainerBuilder $container
+$container->setParameter('database_driver', 'pdo_' .str_replace(array('postgresql'), array('pgsql'), getenv('DB_TYPE')));
+// we rely on Docker containers configuration for having hostnames that match db types
+if (getenv('DB_HOST') !== false) {
+    $container->setParameter('database_host', getenv('DB_HOST'));
 } else {
     $container->setParameter('database_host', getenv('DB_TYPE'));
 }

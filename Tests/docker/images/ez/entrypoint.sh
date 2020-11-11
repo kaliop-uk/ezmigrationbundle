@@ -46,7 +46,7 @@ if [ $(stat -c '%u' "${ORIG_HOME}") != "${CONTAINER_USER_UID}" -o $(stat -c '%g'
 fi
 
 if [ "${DB_TYPE}" = postgresql ]; then
-    if [-z "${DB_HOST}" ]; then
+    if [ -z "${DB_HOST}" ]; then
         DB_HOST=${DB_TYPE}
     fi
     echo "[$(date)] Setting up ~/.pgpass file..."
