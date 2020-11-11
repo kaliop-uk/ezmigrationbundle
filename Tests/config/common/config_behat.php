@@ -10,6 +10,11 @@ if (getenv('DB_HOST') !== false) {
 } else {
     $container->setParameter('database_host', getenv('DB_TYPE'));
 }
+if (getenv('DB_TYPE') == 'postgresql' && getenv('POSTGRESQL_VERSION') !== false) {
+    $container->setParameter('database_version', getenv('POSTGRESQL_VERSION'));
+} else if (getenv('DB_TYPE') == 'mysql' && getenv('MYSQL_VERSION') !== false) {
+    $container->setParameter('database_version', getenv('MYSQL_VERSION'));
+}
 $container->setParameter('database_user', getenv('DB_EZ_USER'));
 $container->setParameter('database_password', getenv('DB_EZ_PASSWORD'));
 $container->setParameter('database_name', getenv('DB_EZ_DATABASE'));

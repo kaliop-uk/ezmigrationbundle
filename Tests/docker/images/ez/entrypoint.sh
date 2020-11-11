@@ -52,6 +52,7 @@ if [ "${DB_TYPE}" = postgresql ]; then
     echo "[$(date)] Setting up ~/.pgpass file..."
     echo "${DB_HOST}:5432:${DB_EZ_DATABASE}:${DB_EZ_USER}:${DB_EZ_PASSWORD}" > "${ORIG_HOME}/.pgpass"
     echo "${DB_HOST}:5432:postgres:postgres:${DB_ROOT_PASSWORD}" >> "${ORIG_HOME}/.pgpass"
+    chown "${CONTAINER_USER_UID}":"${CONTAINER_USER_GID}" "${ORIG_HOME}/.pgpass"
     chmod 600 "${ORIG_HOME}/.pgpass"
 fi
 

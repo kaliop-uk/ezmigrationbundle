@@ -79,6 +79,7 @@ Advanced Options:
 
 create_compose_command() {
     DOCKER_COMPOSE="${DOCKER_COMPOSE} -f docker-compose.yml -f docker-compose-${DB_TYPE}.yml"
+    DOCKER_COMPOSE_QUIET=${DOCKER_COMPOSE/ --verbose/}
 }
 
 build() {
@@ -155,7 +156,7 @@ build() {
     if [ "${SETUP_APP_ON_BOOT}" = skip ]; then
         echo "[`date`] Build finished"
     else
-        echo "[`date`] Build finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
+        echo "[`date`] Build finished. Exit code: $(docker exec "${WEB_CONTAINER}" cat /tmp/setup_ok)"
     fi
 
     exit ${RETCODE}
@@ -198,7 +199,7 @@ cleanup() {
             cleanup_dead_docker_images
         ;;
         docker-logs)
-            for CONTAINER in $(docker-compose ps -q)
+            for CONTAINER in $(${DOCKER_COMPOSE_QUIET} ps -q)
             do
                 LOGFILE=$(docker inspect --format='{{.LogPath}}' ${CONTAINER})
                 if [ -n "${LOGFILE}" ]; then
@@ -207,10 +208,10 @@ cleanup() {
             done
         ;;
         ez-cache)
-            docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/cleanup.sh ez-cache'
+            docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c './Tests/bin/cleanup.sh ez-cache'
         ;;
         ez-logs)
-            docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/cleanup.sh ez-cache'
+            docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c './Tests/bin/cleanup.sh ez-cache'
         ;;
         logs)
             find ./logs/ -type f ! -name .gitkeep -delete
@@ -302,10 +303,10 @@ setup_app() {
     fi
 
     echo "[`date`] Setting up eZ..."
-    docker exec ${WEB_CONTAINER} su ${WEB_USER} -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
+    docker exec "${WEB_CONTAINER}" su "${WEB_USER}" -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
 
     # @bug WEB_CONTAINER is not defined in subshell ?
-    echo "[`date`] Setup finished. Exit code: $(docker exec ${WEB_CONTAINER} cat /tmp/setup_ok)"
+    echo "[`date`] Setup finished. Exit code: $(docker exec "${WEB_CONTAINER}" cat /tmp/setup_ok)"
 }
 
 # Wait until containers have fully booted
@@ -318,8 +319,8 @@ wait_for_bootstrap() {
     case "${1}" in
         all)
             # q: check all services or only the running ones?
-            #BOOTSTRAP_CONTAINERS=$(docker-compose config --services)
-            BOOTSTRAP_CONTAINERS=$(docker-compose ps --services | tr '\n' ' ')
+            #BOOTSTRAP_CONTAINERS=$(${DOCKER_COMPOSE_QUIET} config --services)
+            BOOTSTRAP_CONTAINERS=$(${DOCKER_COMPOSE_QUIET} ps --services | tr '\n' ' ')
         ;;
         app)
             BOOTSTRAP_CONTAINERS='ez'
@@ -343,7 +344,7 @@ wait_for_bootstrap() {
             printf "Waiting for ${BS_CONTAINER} ... "
             # @todo fix this check for the case of container not running...
             # @todo speed this up... maybe go back to generating and checking files mounted on the host?
-            docker-compose exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
+            ${DOCKER_COMPOSE_QUIET} exec ${BS_CONTAINER} cat ${BOOTSTRAP_OK_FILE} >/dev/null 2>/dev/null
             RETCODE=$?
             if [ ${RETCODE} -eq 0 ]; then
                 printf "\e[32mdone\e[0m\n"
@@ -445,7 +446,7 @@ fi
 
 load_config
 
-WEB_CONTAINER=$(docker-compose ps ${WEB_SERVICE} | sed -e '1,2d' | awk '{print $1}')
+WEB_CONTAINER=$(${DOCKER_COMPOSE_QUIET} ps "${WEB_SERVICE}" | sed -e '1,2d' | awk '{print $1}')
 
 case "${COMMAND}" in
     build)
@@ -462,11 +463,11 @@ case "${COMMAND}" in
     ;;
 
     console | sfconsole)
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/sfconsole.sh "$@"' -- "$@"
+        docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c './Tests/bin/sfconsole.sh "$@"' -- "$@"
     ;;
 
     dbconsole | dbcli | dbclient)
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/dbconsole.sh "$@"' -- "$@"
+        docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c './Tests/bin/dbconsole.sh "$@"' -- "$@"
     ;;
 
     # courtesy command alias - same as 'ps'
@@ -475,14 +476,14 @@ case "${COMMAND}" in
     ;;
 
     enter | shell | cli)
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER}
+        docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}"
     ;;
 
     exec)
         # scary line ? found it at https://stackoverflow.com/questions/12343227/escaping-bash-function-arguments-for-use-by-su-c
         # q: do we need -ti ?
         shift
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c '"$0" "$@"' -- exec "$@"
+        docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c '"$0" "$@"' -- exec "$@"
     ;;
 
     images)
@@ -508,13 +509,13 @@ case "${COMMAND}" in
     resetdb)
         # @todo allow this to be run from within the test container
         # q: do we need -ti ?
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c './Tests/bin/create-db.sh'
+        docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c './Tests/bin/create-db.sh'
     ;;
 
     runtests)
         shift
         # q: do we need -ti ?
-        docker exec -ti ${WEB_CONTAINER} su ${WEB_USER} -c '"$0" "$@"' -- ./Tests/bin/runtests.sh ${RESET} ${VERBOSITY} "$@"
+        docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c '"$0" "$@"' -- ./Tests/bin/runtests.sh ${RESET} ${VERBOSITY} "$@"
     ;;
 
     setup)
@@ -522,7 +523,7 @@ case "${COMMAND}" in
     ;;
 
     services)
-        docker-compose config --services | sort
+        ${DOCKER_COMPOSE} config --services | sort
     ;;
 
     start)

@@ -1,4 +1,4 @@
-ARG base_image_version=9.5
+ARG postgresql_version=9.5
 
 FROM postgres:${postgresql_version}
 LABEL postgresql.version=${postgresql_version}
@@ -32,8 +32,8 @@ RUN if [ "${do_shrink_container}" != "false" ]; then apt-get clean && rm -rf /va
 
 # Set up entrypoint
 # -----------------------------------------------------------------------------
-COPY entrypoint.sh.sh /root/entrypoint.sh
-RUN chmod 755 /root/bootstrap.sh
+COPY entrypoint.sh /root/entrypoint.sh
+RUN chmod 755 /root/entrypoint.sh
 
 EXPOSE 5432
 
