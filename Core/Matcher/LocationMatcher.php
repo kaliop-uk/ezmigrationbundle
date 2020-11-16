@@ -28,7 +28,9 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
         self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_SECTION, self::MATCH_SUBTREE,
         self::MATCH_VISIBILITY,
         // aliases
-        'content_type', 'content_type_id', 'content_type_identifier',
+        'content_type',
+        // BC
+        'contenttype_id', 'contenttype_identifier',
         // location-only
         self::MATCH_DEPTH, self::MATCH_IS_MAIN_LOCATION, self::MATCH_PRIORITY,
     );

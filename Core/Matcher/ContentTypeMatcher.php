@@ -16,15 +16,17 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_CONTENTTYPE_ID = 'contenttype_id';
-    const MATCH_CONTENTTYPE_IDENTIFIER = 'contenttype_identifier';
-    //const MATCH_CONTENTTYPE_REMOTE_ID = 'contenttype_remote_id';
+    const MATCH_CONTENTTYPE_ID = 'content_type_id';
+    const MATCH_CONTENTTYPE_IDENTIFIER = 'content_type_identifier';
+    //const MATCH_CONTENTTYPE_REMOTE_ID = 'content_type_remote_id';
 
     protected $allowedConditions = array(
         self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENTTYPE_ID, self::MATCH_CONTENTTYPE_IDENTIFIER, //self::MATCH_CONTENTTYPE_REMOTE_ID,
         // aliases
         'id', 'identifier', // 'remote_id'
+        // BC
+        'contenttype_id', 'contenttype_identifier',
     );
     protected $returns = 'ContentType';
 
@@ -59,10 +61,12 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
             switch ($key) {
                 case 'id':
+                case 'contenttype_id':
                 case self::MATCH_CONTENTTYPE_ID:
                    return new ContentTypeCollection($this->findContentTypesById($values, $tolerateMisses));
 
                 case 'identifier':
+                case 'contenttype_identifier':
                 case self::MATCH_CONTENTTYPE_IDENTIFIER:
                     return new ContentTypeCollection($this->findContentTypesByIdentifier($values, $tolerateMisses));
 

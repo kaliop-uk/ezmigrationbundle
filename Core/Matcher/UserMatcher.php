@@ -17,14 +17,16 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
     const MATCH_USER_ID = 'user_id';
     const MATCH_USER_LOGIN = 'login';
     const MATCH_USER_EMAIL = 'email';
-    const MATCH_USERGROUP_ID = 'usergroup_id';
+    const MATCH_USERGROUP_ID = 'user_group_id';
 
     protected $allowedConditions = array(
         self::MATCH_AND, self::MATCH_OR,
         self::MATCH_USER_ID, self::MATCH_USER_LOGIN, self::MATCH_USER_EMAIL,
         self::MATCH_USERGROUP_ID,
         // aliases
-        'id'
+        'id',
+        // BC
+        'usergroup_id'
     );
     protected $returns = 'User';
 
@@ -66,6 +68,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 case self::MATCH_USER_LOGIN:
                     return new UserCollection($this->findUsersByLogin($values, $tolerateMisses));
 
+                case 'usergroup_id':
                 case self::MATCH_USERGROUP_ID:
                     return new UserCollection($this->findUsersByGroup($values, $tolerateMisses));
 

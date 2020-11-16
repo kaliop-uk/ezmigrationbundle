@@ -12,14 +12,16 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_CONTENTTYPEGROUP_ID = 'contenttypegroup_id';
-    const MATCH_CONTENTTYPEGROUP_IDENTIFIER = 'contenttypegroup_identifier';
+    const MATCH_CONTENTTYPEGROUP_ID = 'content_type_group_id';
+    const MATCH_CONTENTTYPEGROUP_IDENTIFIER = 'content_type_group_identifier';
 
     protected $allowedConditions = array(
         self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_CONTENTTYPEGROUP_ID, self::MATCH_CONTENTTYPEGROUP_IDENTIFIER,
         // aliases
-        'id', 'identifier'
+        'id', 'identifier',
+        // BC
+        'contenttypegroup_id', 'contenttypegroup_identifier',
     );
     protected $returns = 'ContentTypeGroup';
 
@@ -54,10 +56,12 @@ class ContentTypeGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
             switch ($key) {
                 case 'id':
+                case 'contenttypegroup_id';
                 case self::MATCH_CONTENTTYPEGROUP_ID:
                     return new ContentTypeGroupCollection($this->findContentTypeGroupsById($values, $tolerateMisses));
 
                 case 'identifier':
+                case 'contenttypegroup_identifier':
                 case self::MATCH_CONTENTTYPEGROUP_IDENTIFIER:
                     return new ContentTypeGroupCollection($this->findContentTypeGroupsByIdentifier($values, $tolerateMisses));
 

@@ -13,14 +13,16 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_OBJECTSTATE_ID = 'objectstate_id';
-    const MATCH_OBJECTSTATE_IDENTIFIER = 'objectstate_identifier';
+    const MATCH_OBJECTSTATE_ID = 'object_state_id';
+    const MATCH_OBJECTSTATE_IDENTIFIER = 'object_state_identifier';
 
     protected $allowedConditions = array(
         self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_OBJECTSTATE_ID, self::MATCH_OBJECTSTATE_IDENTIFIER,
         // aliases
-        'id', 'identifier'
+        'id', 'identifier',
+        // BC
+        'objectstate_id', 'objectstate_identifier',
     );
     protected $returns = 'ObjectState';
 
@@ -55,10 +57,12 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
 
             switch ($key) {
                 case 'id':
+                case 'objectstate_id':
                 case self::MATCH_OBJECTSTATE_ID:
                    return new ObjectStateCollection($this->findObjectStatesById($values, $tolerateMisses));
 
                 case 'identifier':
+                case 'objectstate_identifier':
                 case self::MATCH_OBJECTSTATE_IDENTIFIER:
                     return new ObjectStateCollection($this->findObjectStatesByIdentifier($values, $tolerateMisses));
 

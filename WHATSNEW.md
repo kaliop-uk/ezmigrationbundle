@@ -10,6 +10,11 @@ Version XX (unreleased)
 * Improved: allow to run unit tests on a PostgreSQL database instead of MySQL. At the moment this works correctly
   for testing against eZPublish Platform but not against eZPlatorm 1/2/3
 
+* Deprecated: matching using keys: `contenttype_id`, `contenttypegroup_id`, `objectstate_id`, `objectstategroup_id`,
+  `usergroup_id` has been deprecated in favour of `content_type_id`, `content_type_group_id`, `object_state_id`,
+  `object_state_group_id`, `userg_roup_id`. The same applies for the equivalent `..._identifier` keys.
+  This makes the DSL more consistent.
+
 
 Version 5.13.0
 ==============

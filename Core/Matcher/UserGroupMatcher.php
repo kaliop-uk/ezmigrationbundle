@@ -16,7 +16,7 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_USERGROUP_ID = 'usergroup_id';
+    const MATCH_USERGROUP_ID = 'user_group_id';
     const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
 
     protected $allowedConditions = array(
@@ -24,7 +24,9 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
         self::MATCH_USERGROUP_ID,
         self::MATCH_CONTENT_REMOTE_ID,
         // aliases
-        'id'
+        'id',
+        // BC
+        'usergroup_id',
     );
     protected $returns = 'UserGroup';
 
@@ -61,6 +63,7 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
             switch ($key) {
                 case 'id':
+                case 'usergroup_id':
                 case self::MATCH_USERGROUP_ID:
                     return new UserGroupCollection($this->findUserGroupsById($values, $tolerateMisses));
 

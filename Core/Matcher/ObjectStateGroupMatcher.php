@@ -13,14 +13,16 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_OBJECTSTATEGROUP_ID = 'objectstategroup_id';
-    const MATCH_OBJECTSTATEGROUP_IDENTIFIER = 'objectstategroup_identifier';
+    const MATCH_OBJECTSTATEGROUP_ID = 'object_state_group_id';
+    const MATCH_OBJECTSTATEGROUP_IDENTIFIER = 'object_state_group_identifier';
 
     protected $allowedConditions = array(
         self:: MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
         self::MATCH_OBJECTSTATEGROUP_ID, self::MATCH_OBJECTSTATEGROUP_IDENTIFIER,
         // aliases
-        'id', 'identifier'
+        'id', 'identifier',
+        // BC
+        'objectstategroup_id', 'objectstategroup_identifier',
     );
     protected $returns = 'ObjectStateGroup';
 
@@ -63,10 +65,12 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
 
             switch ($key) {
                 case 'id':
+                case 'objectstategroup_id':
                 case self::MATCH_OBJECTSTATEGROUP_ID:
                     return new ObjectStateGroupCollection($this->findObjectStateGroupsById($values, $tolerateMisses));
 
                 case 'identifier':
+                case 'objectstategroup_identifier':
                 case self::MATCH_OBJECTSTATEGROUP_IDENTIFIER:
                     return new ObjectStateGroupCollection($this->findObjectStateGroupsByIdentifier($values, $tolerateMisses));
 

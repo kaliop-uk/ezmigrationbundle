@@ -20,8 +20,8 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_CONTENT_REMOTE_ID = 'content_remote_id';
     const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
     const MATCH_ATTRIBUTE = 'attribute';
-    const MATCH_CONTENT_TYPE_ID = 'contenttype_id';
-    const MATCH_CONTENT_TYPE_IDENTIFIER = 'contenttype_identifier';
+    const MATCH_CONTENT_TYPE_ID = 'content_type_id';
+    const MATCH_CONTENT_TYPE_IDENTIFIER = 'content_type_identifier';
     const MATCH_CREATION_DATE = 'creation_date';
     const MATCH_GROUP = 'group';
     const MATCH_LANGUAGE_CODE = 'lang';
@@ -140,11 +140,11 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 }
                 return new Query\Criterion\Field($attribute, self::$operatorsMap[$operator], $match);
 
-            case 'content_type_id':
+            case 'contenttype_id':
             case self::MATCH_CONTENT_TYPE_ID:
                 return new Query\Criterion\ContentTypeId($values);
 
-            case 'content_type_identifier':
+            case 'contenttype_identifier':
             case self::MATCH_CONTENT_TYPE_IDENTIFIER:
                 return new Query\Criterion\ContentTypeIdentifier($values);
 
