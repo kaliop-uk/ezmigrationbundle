@@ -26,6 +26,9 @@ interface StorageHandlerInterface
      */
     public function loadMigrationsByStatus($status, $limit = null, $offset = null);
 
+    /// @todo add loadMigrationsByPaths when we can break BC
+    //public function loadMigrationsByPaths(array $paths, $limit = null, $offset = null);
+
     /**
      * @param string $migrationName
      * @return Migration|null
@@ -89,5 +92,4 @@ interface StorageHandlerInterface
      * @throws \Exception If the migration was not present or not suspended
      */
     public function resumeMigration(Migration $migration);
-
 }

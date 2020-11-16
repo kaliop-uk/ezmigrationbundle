@@ -67,6 +67,7 @@ class StatusTest extends MigrationExecutingTest
 
         $output = $this->runCommand('kaliop:migration:status', array('--path' => array($filePath)));
         $this->assertContains(basename($filePath), $output);
+        $this->assertNotContains('20100101000200_MigrateV1ToV2.php', $output);
 
         $this->addMigration($filePath);
         $output = $this->runCommand('kaliop:migration:status');

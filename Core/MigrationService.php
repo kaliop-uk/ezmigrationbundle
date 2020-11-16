@@ -181,6 +181,11 @@ class MigrationService implements ContextProviderInterface
         return $this->storageHandler->loadMigrationsByStatus($status, $limit, $offset);
     }
 
+    public function getMigrationsByPaths(array $paths, $limit = null, $offset = null)
+    {
+        return $this->storageHandler->loadMigrationsByPaths($paths, $limit, $offset);
+    }
+
     /**
      * @param string $migrationName
      * @return Migration|null

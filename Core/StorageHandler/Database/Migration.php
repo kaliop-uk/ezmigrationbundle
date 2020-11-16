@@ -42,7 +42,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
      */
     public function loadMigrations($limit = null, $offset = null)
     {
-        return $this->loadMigrationsInner(null, $limit, $offset);
+        return $this->loadMigrationsInner(null, null, $limit, $offset);
     }
 
     /**
@@ -53,16 +53,22 @@ class Migration extends TableStorage implements StorageHandlerInterface
      */
     public function loadMigrationsByStatus($status, $limit = null, $offset = null)
     {
-        return $this->loadMigrationsInner($status, $limit, $offset);
+        return $this->loadMigrationsInner($status, null, $limit, $offset);
+    }
+
+    public function loadMigrationsByPaths($paths, $limit = null, $offset = null)
+    {
+        return $this->loadMigrationsInner(null, $paths, $limit, $offset);
     }
 
     /**
      * @param int $status
+     * @param null|string[] $paths
      * @param int $limit
      * @param int $offset
      * @return MigrationCollection
      */
-    protected function loadMigrationsInner($status = null, $limit = null, $offset = null)
+    protected function loadMigrationsInner($status = null, $paths = array(), $limit = null, $offset = null)
     {
         $this->createTableIfNeeded();
 
@@ -71,8 +77,20 @@ class Migration extends TableStorage implements StorageHandlerInterface
         $q->select($this->fieldList)
             ->from($this->tableName)
             ->orderBy('migration', SelectQuery::ASC);
-        if ($status !== null) {
-            $q->where($q->expr->eq('status', $q->bindValue($status)));
+        if ($status !== null || (is_array($paths) && count($paths))) {
+            $exps = [];
+            if ($status !== null) {
+                $exps[] = $q->expr->eq('status', $q->bindValue($status));
+            }
+            if (is_array($paths) && count($paths)) {
+                $pexps = array();
+                foreach($paths as $path) {
+                    /// @todo use a proper db-aware escaping function
+                    $pexps[] = $q->expr->like('path', "'" . str_replace(array('_', '%', "'"), array('\_', '\%', "''"), $path).'%' . "'");
+                }
+                $exps[] = $q->expr->lor($pexps);
+            }
+            $q->where($q->expr->land($exps));
         }
         if ($limit > 0 || $offset > 0) {
             if ($limit <= 0) {

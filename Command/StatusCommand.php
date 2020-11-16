@@ -49,7 +49,7 @@ EOT
 
         $displayPath = $input->getOption('show-path');
         $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path'));
-        $migrations = $migrationsService->getMigrations();
+        $migrations = $migrationsService->getMigrationsByPaths($input->getOption('path'));
 
         if (!count($migrationDefinitions) && !count($migrations)) {
             $output->writeln('<info>No migrations found</info>');

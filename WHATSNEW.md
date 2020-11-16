@@ -7,8 +7,11 @@ Version XX (unreleased)
 * New: taught the `kaliop:migration:status` command to display full migration path by using the `--show-path` option
   (issue #152)
 
+* Improved: when the `kaliop:migration:status` command is run with `--path`, it will now filter out according to the
+  given paths not only the available migrations, but also the registered/executed/failed/suspended ones
+
 * Improved: taught the test-execution command `teststack.sh` to generate code coverage reports, by running
-  `teststack.sh runtests -- --coverage-html=/some-dir`. Note that it might take a long time to run.
+  `teststack.sh runtests -- --coverage-html=/some-dir`. Note that it might take a long time to run
 
 * Improved: allow to run unit tests on a PostgreSQL database instead of MySQL. At the moment this works correctly
   for testing against eZPublish Platform but not against eZPlatorm 1/2/3
