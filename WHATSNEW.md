@@ -1,6 +1,9 @@
 Version XX (unreleased)
 =======================
 
+* New: taught the `kaliop:migration:status` command to display full migration path by using the `--show-path` option
+  (issue #152)
+
 * Improved: taught the test-execution command `teststack.sh` to generate code coverage reports, by running
   `teststack.sh runtests -- --coverage-html=/some-dir`. Note that it might take a long time to run.
 

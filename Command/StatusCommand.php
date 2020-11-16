@@ -27,6 +27,7 @@ class StatusCommand extends AbstractCommand
             ->addOption('sort-by', null, InputOption::VALUE_REQUIRED, "Supported sorting order: name, execution", 'name')
             ->addOption('summary', null, InputOption::VALUE_NONE, "Only print summary information")
             ->addOption('todo', null, InputOption::VALUE_NONE, "Only print list of migrations to execute (full path to each)")
+            ->addOption('show-path', null, InputOption::VALUE_NONE, "Print migration path instead of status")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:status</info> command displays the status of all available migrations:
 
@@ -46,6 +47,7 @@ EOT
 
         $migrationsService = $this->getMigrationService();
 
+        $displayPath = $input->getOption('show-path');
         $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path'));
         $migrations = $migrationsService->getMigrations();
 
@@ -107,9 +109,11 @@ EOT
         foreach ($index as $name => $value) {
             if (!isset($value['migration'])) {
                 $migrationDefinition = $migrationsService->parseMigrationDefinition($value['definition']);
-                $notes = '';
+                $notes = $displayPath ? $migrationDefinition->path : '';
                 if ($migrationDefinition->status != MigrationDefinition::STATUS_PARSED) {
-                    $notes = '<error>' . $migrationDefinition->parsingError . '</error>';
+                    if (!$displayPath) {
+                        $notes = '<error>' . $migrationDefinition->parsingError . '</error>';
+                    }
                     $summary[self::STATUS_INVALID][1]++;
                 } else {
                     $summary[Migration::STATUS_TODO][1]++;
@@ -127,6 +131,7 @@ EOT
 
                 }
             } else {
+                /** @var Migration $migration */
                 $migration = $value['migration'];
 
                 if (!isset($summary[$migration->status])) {
@@ -169,22 +174,27 @@ EOT
                         $status = '<error>failed</error>';
                         break;
                 }
-                $notes = array();
-                if ($migration->executionError != '') {
-                    $notes[] = "<error>{$migration->executionError}</error>";
-                }
-                if (!isset($value['definition'])) {
-                    $notes[] = '<comment>The migration definition file can not be found any more</comment>';
+                if ($displayPath) {
+                    $notes = $migration->path;
                 } else {
-                    $migrationDefinition = $value['definition'];
-                    if (md5($migrationDefinition->rawDefinition) != $migration->md5) {
-                        $notes[] = '<comment>The migration definition file has now a different checksum</comment>';
+                    $notes = array();
+                    if ($migration->executionError != '') {
+                        $notes[] = "<error>{$migration->executionError}</error>";
                     }
-                    if ($migrationDefinition->path != $migrationDefinition->path) {
-                        $notes[] = '<comment>The migration definition file has now moved</comment>';
+                    if (!isset($value['definition'])) {
+                        $notes[] = '<comment>The migration definition file can not be found any more</comment>';
+                    } else {
+                        $migrationDefinition = $value['definition'];
+                        if (md5($migrationDefinition->rawDefinition) != $migration->md5) {
+                            $notes[] = '<comment>The migration definition file has now a different checksum</comment>';
+                        }
+                        if ($migrationDefinition->path != $migrationDefinition->path) {
+                            $notes[] = '<comment>The migration definition file has now moved</comment>';
+                        }
                     }
+                    $notes = implode(' ', $notes);
                 }
-                $notes = implode(' ', $notes);
+
                 $data[] = array(
                     $i++,
                     $migration->name,
@@ -209,7 +219,7 @@ EOT
             $data = $summary;
             $headers = array('Status', 'Count');
         } else {
-            $headers = array('#', 'Migration', 'Status', 'Executed on', 'Notes');
+            $headers = array('#', 'Migration', 'Status', 'Executed on', $displayPath ? 'Path' : 'Notes');
         }
 
         $table = new Table($output);
