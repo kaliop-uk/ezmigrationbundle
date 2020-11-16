@@ -95,9 +95,7 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
         foreach ($conditions as $key => $values) {
 
             if ($key == self::MATCH_QUERY_TYPE) {
-                if ($this->queryTypeRegistry == null) {
-                    throw new InvalidMatchConditionsException('Matching by query_type is not supported with this eZP version');
-                }
+                $query = $this->getQueryByQueryType($values);
             } else {
                 $query = new LocationQuery();
                 $query->filter = $this->getQueryCriterion($key, $values);

@@ -1,0 +1,16 @@
+-
+    type: location
+    mode: load
+    match:
+        query_type:
+            name: kezmbtest_query
+            parameters: []
+    references:
+        kmb_test_39: count
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_39
+    test:
+        GreaterThan: 3

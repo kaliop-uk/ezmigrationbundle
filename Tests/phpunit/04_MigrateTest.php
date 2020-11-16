@@ -223,6 +223,22 @@ class MigrateTest extends MigrationExecutingTest
         $this->deleteMigration($filePath);
     }
 
+    public function testQueryType()
+    {
+        $filePath = $this->dslDir . '/misc/UnitTestOK039_querytype.yml';
+
+        try {
+            $qtr = $this->getContainer()->get('ez_migration_bundle.migration_service');
+        } catch (\Exception $e) {
+            $this->markTestSkipped();
+            return;
+        }
+
+        $this->prepareMigration($filePath);
+        $output = $this->runCommand('kaliop:migration:migrate', array('--path' => array($filePath), '-n' => true, '-u' => true));
+        $this->deleteMigration($filePath);
+    }
+
     /**
      * Tests executing a very simple migration with all the different cli flags enabled or not
      * @param array $options

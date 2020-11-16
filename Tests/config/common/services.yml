@@ -34,3 +34,7 @@ services:
             - { name: swiftmailer.default.plugin }
     ez_migration_bundle.test.just_a_service:
         class: Kaliop\eZMigrationBundle\Tests\helper\JustAService
+    ez_migration_bundle.test.query_type:
+        class: Kaliop\eZMigrationBundle\Tests\helper\MigrationTestQueryType
+        tags:
+            - { name: ezpublish.query_type }
