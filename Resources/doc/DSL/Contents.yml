@@ -111,6 +111,21 @@
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
+# It is also possible to create or update contents with multiple languages in a single pass by using the following:
+-
+    type: content
+    mode: create
+    content_type: xxx # Content type identifier
+    parent_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
+    attributes:
+        attribute1:
+            eng-GB: value english
+            fre-FR: valeur francais
+        attribute2:
+            eng-GB: 1
+            fre-FR: 2
+# NB: Please note that when using this syntax, ALL attribute values must be specified by using a language key
+
 -
     type: content
     mode: update
@@ -138,6 +153,9 @@
         owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
+        query_type: # match using a user-defined QueryType. NB: this can not be used together with AND/OR/OT clauses
+            name: string
+            parameters: [a, b, c]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
@@ -203,21 +221,6 @@
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 
-# It is also possible to create and update contents with multiple languages in a single pass by using the following:
--
-    type: content
-    mode: create
-    content_type: xxx # Content type identifier
-    parent_location: x # The id of the parent location. When a non numeric string is used, it is assumed to be a location remote id
-    attributes:
-        attribute1:
-            eng-GB: value english
-            fre-FR: valeur francais
-        attribute2:
-            eng-GB: 1
-            fre-FR: 2
-# NB: Please note that when using this syntax, ALL attribute values must be specified by using a language key
-
 -
     type: content
     mode: delete
@@ -245,6 +248,9 @@
         owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
+        query_type: # match using a user-defined QueryType. NB: this can not be used together with AND/OR/OT clauses
+            name: string
+            parameters: [a, b, c]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
@@ -302,6 +308,9 @@
         owner: xxx # user id, login or email if unique
         parent_location_id: x # int|int[]
         parent_location_remote_id: xxx # string|string[]
+        query_type: # match using a user-defined QueryType. NB: this can not be used together with AND/OR/OT clauses
+            name: string
+            parameters: [a, b, c]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool

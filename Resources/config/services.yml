@@ -524,6 +524,7 @@ services:
             - '@ez_migration_bundle.object_state_matcher'
             - '@ez_migration_bundle.user_matcher'
             - '%ez_migration_bundle.query_limit%'
+            - '@?ezpublish.query_type.registry'
 
     ez_migration_bundle.content_type_matcher:
         class: '%ez_migration_bundle.content_type_matcher.class%'
@@ -555,6 +556,7 @@ services:
             - '@ez_migration_bundle.object_state_matcher'
             - '@ez_migration_bundle.user_matcher'
             - '%ez_migration_bundle.query_limit%'
+            - '@?ezpublish.query_type.registry'
 
     ez_migration_bundle.object_state_matcher:
         class: '%ez_migration_bundle.object_state_matcher.class%'

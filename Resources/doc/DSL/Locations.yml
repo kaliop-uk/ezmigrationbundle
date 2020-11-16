@@ -103,6 +103,9 @@
         parent_location_remote_id: # the remote location id(s) of the parent(s) of the locations we want to update
         priority:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
+        query_type: # match using a user-defined QueryType. NB: this can not be used together with AND/OR/OT clauses
+            name: string
+            parameters: [a, b, c]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
@@ -189,6 +192,9 @@
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to delete
         priority:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
+        query_type: # match using a user-defined QueryType. NB: this can not be used together with AND/OR/OT clauses
+            name: string
+            parameters: [a, b, c]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool
@@ -273,6 +279,9 @@
         parent_location_remote_id: # the remote location id(s) of the parent(s) of locations we want to load
         priority:
             _operator_: value # _operator_: eq, gt, gte, lt, lte, value: int
+        query_type: # match using a user-defined QueryType. NB: this can not be used together with AND/OR/OT clauses
+            name: string
+            parameters: [a, b, c]
         section: xx # int|int[]|string|string[] section id(s) or identifier(s)
         subtree: /1/2/2345 # string|string[]
         visibility: true # bool

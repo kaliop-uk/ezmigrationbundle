@@ -6,9 +6,11 @@ use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Values\Content\Query\SortClause;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 use eZ\Publish\API\Repository\Repository;
+use eZ\Publish\Core\QueryType\QueryTypeRegistry;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidSortConditionsException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use PhpParser\Node\Expr\Isset_;
 
 /**
  * @todo extend to allow matching by modifier, language code, content_type_group_id
@@ -30,6 +32,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     const MATCH_OWNER = 'owner';
     const MATCH_PARENT_LOCATION_ID = 'parent_location_id';
     const MATCH_PARENT_LOCATION_REMOTE_ID = 'parent_location_remote_id';
+    const MATCH_QUERY_TYPE = 'query_type';
     const MATCH_SECTION = 'section';
     const MATCH_SUBTREE = 'subtree';
     const MATCH_VISIBILITY = 'visibility';
@@ -77,6 +80,8 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
     protected $userMatcher;
     /** @var int $queryLimit */
     protected $queryLimit;
+    /** @var QueryTypeRegistry|null */
+    protected $queryTypeRegistry;
 
     /**
      * @param Repository $repository
@@ -89,13 +94,14 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
      */
     public function __construct(Repository $repository, KeyMatcherInterface $groupMatcher = null,
         KeyMatcherInterface $sectionMatcher = null, KeyMatcherInterface $stateMatcher = null,
-        KeyMatcherInterface $userMatcher = null, $queryLimit = null)
+        KeyMatcherInterface $userMatcher = null, $queryLimit = null, $queryTypeRegistry = null)
     {
         parent::__construct($repository);
         $this->groupMatcher = $groupMatcher;
         $this->sectionMatcher = $sectionMatcher;
         $this->stateMatcher = $stateMatcher;
         $this->userMatcher = $userMatcher;
+        $this->queryTypeRegistry = $queryTypeRegistry;
 
         if ($queryLimit !== null) {
             $this->queryLimit = (int)$queryLimit;
@@ -245,6 +251,9 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 $subCriterion = $this->getQueryCriterion(key($values), $value);
                 return new Query\Criterion\LogicalNot($subCriterion);
 
+            case self::MATCH_QUERY_TYPE:
+                throw new InvalidMatchConditionsException($this->returns . " can not use a QueryType as sub-condition");
+
             default:
                 throw new InvalidMatchConditionsException($this->returns . " can not be matched because matching condition '$key' is not supported. Supported conditions are: " .
                     implode(', ', $this->allowedConditions));
@@ -322,6 +331,28 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
         }
 
         return $out;
+    }
+
+    /**
+     * @param $queryTypeDef
+     * @return Query
+     * @throws InvalidMatchConditionsException
+     */
+    protected function getQueryByQueryType($queryTypeDef)
+    {
+        if ($this->queryTypeRegistry == null) {
+            throw new InvalidMatchConditionsException('Matching by query_type is not supported with this eZP version');
+        }
+        if (is_string($queryTypeDef)) {
+            $queryTypeDef = array('name' => $queryTypeDef);
+        }
+        if (!isset($queryTypeDef['name'])) {
+            throw new InvalidMatchConditionsException("Matching by query_type is not supported without 'name'");
+        }
+
+        $qt = $this->queryTypeRegistry->getQueryType($queryTypeDef['name']);
+        $q = $qt->getQuery(isset($queryTypeDef['parameters']) ? $queryTypeDef['parameters'] : array());
+        return $q;
     }
 
     /**

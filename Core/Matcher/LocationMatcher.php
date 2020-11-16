@@ -25,8 +25,8 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
         self::MATCH_CONTENT_ID, self::MATCH_LOCATION_ID, self::MATCH_CONTENT_REMOTE_ID, self::MATCH_LOCATION_REMOTE_ID,
         self::MATCH_ATTRIBUTE, self::MATCH_CONTENT_TYPE_ID, self::MATCH_CONTENT_TYPE_IDENTIFIER, self::MATCH_GROUP,
         self::MATCH_CREATION_DATE, self::MATCH_MODIFICATION_DATE, self::MATCH_OBJECT_STATE, self::MATCH_OWNER,
-        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_SECTION, self::MATCH_SUBTREE,
-        self::MATCH_VISIBILITY,
+        self::MATCH_PARENT_LOCATION_ID, self::MATCH_PARENT_LOCATION_REMOTE_ID, self::MATCH_QUERY_TYPE, self::MATCH_SECTION,
+        self::MATCH_SUBTREE, self::MATCH_VISIBILITY,
         // aliases
         'content_type',
         // BC
@@ -94,14 +94,23 @@ class LocationMatcher extends QueryBasedMatcher implements SortingMatcherInterfa
 
         foreach ($conditions as $key => $values) {
 
-            $query = new LocationQuery();
+            if ($key == self::MATCH_QUERY_TYPE) {
+                if ($this->queryTypeRegistry == null) {
+                    throw new InvalidMatchConditionsException('Matching by query_type is not supported with this eZP version');
+                }
+            } else {
+                $query = new LocationQuery();
+                $query->filter = $this->getQueryCriterion($key, $values);
+            }
+
+            // q: when getting a query via QueryType, should we always inject offset/limit?
             $query->limit = $limit != 0 ? $limit : self::INT_MAX_16BIT;
             $query->offset = $offset;
             if (!empty($sort)) {
                 $query->sortClauses = $this->getSortClauses($sort);
             }
             if (isset($query->performCount)) $query->performCount = false;
-            $query->filter = $this->getQueryCriterion($key, $values);
+
             $results = $this->getSearchService()->findLocations($query);
 
             $locations = [];
