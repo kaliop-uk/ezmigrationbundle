@@ -228,7 +228,7 @@ class MigrateTest extends MigrationExecutingTest
         $filePath = $this->dslDir . '/misc/UnitTestOK039_querytype.yml';
 
         try {
-            $qtr = $this->getContainer()->get('ez_migration_bundle.migration_service');
+            $qtr = $this->getContainer()->get('ezpublish.query_type.registry');
         } catch (\Exception $e) {
             $this->markTestSkipped();
             return;
