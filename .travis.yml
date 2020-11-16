@@ -32,11 +32,13 @@ matrix:
 
     # eZPlatform 1 aka eZPublish 6 - earliest LTS release is 1.7
     - php: 7.0
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.9 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.2' EZ_VERSION=ezplatform CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.7.9 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ez-matrix-bundle:^0.2.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.2' EZ_VERSION=ezplatform CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
     # last version available of eZPlatform 1 - also an LTS
     - php: 7.1
-      env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.5 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.2' EZ_VERSION=ezplatform CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
+      env: EZ_PACKAGES='ezsystems/ezplatform:~1.13.5 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ezplatform-matrix-fieldtype:^1.0 ezsystems/behatbundle:^6.3 netgen/tagsbundle:^2.2' EZ_VERSION=ezplatform CODE_COVERAGE=1 INSTALL_TAGSBUNDLE=1
 
+    # eZPlatform 2 aka eZPublish 7
+    # Comes with ezplatform-matrix-fieldtype included
     # sensio/generator-bundle is only needed because we run the tests using 'behat' sf env
     - php: 7.2
       env: EZ_PACKAGES='ezsystems/ezplatform:~2.3.2 ezsystems/ezplatform-xmltext-fieldtype:^1.7 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.2 ezsystems/repository-forms:<=2.4 sensio/generator-bundle' EZ_VERSION=ezplatform2 CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1

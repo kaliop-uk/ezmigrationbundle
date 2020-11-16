@@ -36,6 +36,14 @@
 #
 # ezmedia
 #    field-settings:
+#        minimum_rows: 0 # only supported by the EzPlatformMatrixFieldtype field type, not the ezocumminity one
+#        columns: # only supported by the EzPlatformMatrixFieldtype field type, not the ezocumminity one
+#            - { identifier: colName }
+#        columnList: # only supported by the community field type, not the EzPlatformMatrixFieldtype one
+#            - { name: colname, identifier: colId, index: colIdx }
+#
+# ezmedia
+#    field-settings:
 #        mediaType: html5_video
 #    validator-configuration:
 #        FileSizeValidator: { maxFileSize: false } # in MB

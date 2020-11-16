@@ -7,6 +7,8 @@ Version XX (unreleased)
 * New: Content and Location matchers, used in `load`, `update` and `delete` steps for Content and Location can now match
   by QueryType (issue #239)
 
+* New: support for eZMatrix fieldType (issue #217).
+
 * New: taught the `kaliop:migration:status` command to display full migration path by using the `--show-path` option
   (issue #152)
 
