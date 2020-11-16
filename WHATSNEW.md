@@ -1,6 +1,9 @@
 Version XX (unreleased)
 =======================
 
+* New: migration step `user/create` can now assign roles to the newly created user (besides theroles automatically
+  inherited from the user's groups)
+
 * New: Content and Location matchers, used in `load`, `update` and `delete` steps for Content and Location can now match
   by QueryType (issue #239)
 

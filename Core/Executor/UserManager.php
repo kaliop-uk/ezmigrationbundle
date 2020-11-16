@@ -70,6 +70,16 @@ class UserManager extends RepositoryExecutor
         // Create the user
         $user = $userService->createUser($userCreateStruct, $userGroups);
 
+        if (isset($step->dsl['roles'])) {
+            $roleService = $this->repository->getRoleService();
+            // we support both Ids and Identifiers
+            foreach ($step->dsl['roles'] as $roleId) {
+                $roleId = $this->referenceResolver->resolveReference($roleId);
+                $role = $this->roleMatcher->matchOneByKey($roleId);
+                $roleService->assignRoleToUser($role, $user);
+            }
+        }
+
         $this->setReferences($user, $step);
 
         return $user;
