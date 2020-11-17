@@ -4,6 +4,8 @@
 #
 # Uses env vars: TRAVIS
 
+set -e
+
 # Increase php memory limit (need to do this now or we risk composer failing)
 if [ "${TRAVIS}" = "true" ]; then
     phpenv config-add Tests/config/php/zzz_php.ini

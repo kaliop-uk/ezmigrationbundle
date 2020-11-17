@@ -27,7 +27,7 @@ matrix:
   include:
     # The last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4
     - php: 5.6
-      #env: EZ_PACKAGES='ezsystems/ezpublish-community:^2014.11.1 ezsystems/behatbundle:^5.4 netgen/tagsbundle:^2.0.11' EZ_VERSION=ezpublish-community CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
+      #env: EZ_PACKAGES='ezsystems/ezpublish-community:^2014.11.1 ezsystems/ez-matrix-bundle:^0.1.0 ezsystems/behatbundle:^5.4 netgen/tagsbundle:^2.0.11' EZ_VERSION=ezpublish-community CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
       env: EZ_COMPOSER_LOCK=Tests/composer/composer-cp_2104111.lock EZ_VERSION=ezpublish-community CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 
     # eZPlatform 1 aka eZPublish 6 - earliest LTS release is 1.7
@@ -45,7 +45,7 @@ matrix:
     # next-to-latest version currently available of eZPlatform 2
     - php: 7.3
       env: EZ_PACKAGES='ezsystems/ezplatform:~2.4.2 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.3 sensio/generator-bundle' EZ_VERSION=ezplatform2 CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
-    # latest version currently available of eZPlatform 2 - currently 2.5, which is also LTS
+    # latest version currently available of eZPlatform 2 - currently 2.5, which is an LTS
     - php: 7.4
       env: EZ_PACKAGES='ezsystems/ezplatform:^2.5.15 ezsystems/ezplatform-xmltext-fieldtype:^1.9 ezsystems/behatbundle:^7.0 netgen/tagsbundle:^3.4 sensio/generator-bundle overblog/graphiql-bundle' EZ_VERSION=ezplatform2 CODE_COVERAGE=0 INSTALL_TAGSBUNDLE=1
 

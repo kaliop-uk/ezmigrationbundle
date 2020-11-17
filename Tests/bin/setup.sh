@@ -8,7 +8,7 @@
 # @todo check if all required env vars have a value
 # @todo support a -v option
 
-set -ev
+set -e
 
 cd $(dirname ${BASH_SOURCE[0]})/../..
 

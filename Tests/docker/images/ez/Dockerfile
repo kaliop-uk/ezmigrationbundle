@@ -23,7 +23,7 @@ RUN mkdir -p /usr/share/man/man1
 # depending on Debian version, the package list will be different
 COPY getpackages.sh /root/getpackages.sh
 COPY getphp_sury.sh /root/getphp_sury.sh
-COPY getphp_sury.sh /root/getphp_default.sh
+COPY getphp_default.sh /root/getphp_default.sh
 RUN chmod 755 /root/getpackages.sh && chmod 755 /root/getphp_default.sh && chmod 755 /root/getphp_sury.sh
 RUN cd /root && ./getpackages.sh "${php_version}"
 

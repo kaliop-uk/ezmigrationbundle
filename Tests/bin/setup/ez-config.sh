@@ -7,6 +7,8 @@
 # @todo check if all required vars have a value
 # @todo use 'set -e' to insure a proper setup
 
+set -e
+
 source $(dirname $(dirname ${BASH_SOURCE[0]}))/set-env-vars.sh
 
 if [ "${EZ_VERSION}" = "ezplatform3" ]; then
