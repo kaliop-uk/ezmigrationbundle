@@ -3,10 +3,10 @@
 # Set up a pristine eZ database and accompanying user (mysql only)
 # NB: drops both the db and the user if they are pre-existing!
 #
-# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, DB_EZ_DATABASE, DB_EZ_PASSWORD, DB_EZ_USER, DB_HOST, DB_ROOT_PASSWORD, DB_TYPE
+# Uses env vars: EZ_VERSION, INSTALL_TAGSBUNDLE, TRAVIS, DB_EZ_DATABASE, DB_EZ_PASSWORD, DB_EZ_USER, DB_HOST, DB_ROOT_PASSWORD, DB_TYPE, DB_CHARSET
 
 # @todo support a -v option
-# @todo add support for postgres
+# @todo finish support for postgres
 
 set -e
 
@@ -53,23 +53,28 @@ fi
 
 case "${DB_TYPE}" in
     mysql)
-        if [ "${EZ_VERSION}" = "ezpublish-community" ]; then
-            # eZPublish schema has column indexes which are too long for Mysql in stock config when using 4 bytes per char...
-            CHARSET=utf8
-        else
-            CHARSET=utf8mb4
+        if [ -z "${DB_CHARSET}" ]; then
+            if [ "${EZ_VERSION}" = "ezpublish-community" ]; then
+                # eZPublish schema has column indexes which are too long for Mysql in stock config when using 4 bytes per char...
+                DB_CHARSET=utf8
+            else
+                DB_CHARSET=utf8mb4
+            fi
         fi
         ${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${DB_EZ_DATABASE};"
         # @todo drop user only if it exists (easy on mysql 5.7 and later, not so much on 5.6...)
         ${ROOT_DB_COMMAND} -e "DROP USER '${DB_EZ_USER}'@'%';" 2>/dev/null || :
         ${ROOT_DB_COMMAND} -e "CREATE USER '${DB_EZ_USER}'@'%' IDENTIFIED BY '${DB_EZ_PASSWORD}';" 2>/dev/null
-        ${ROOT_DB_COMMAND} -e "CREATE DATABASE ${DB_EZ_DATABASE} CHARACTER SET ${CHARSET}; GRANT ALL PRIVILEGES ON ${DB_EZ_DATABASE}.* TO '${DB_EZ_USER}'@'%'"
+        ${ROOT_DB_COMMAND} -e "CREATE DATABASE ${DB_EZ_DATABASE} CHARACTER SET ${DB_CHARSET}; GRANT ALL PRIVILEGES ON ${DB_EZ_DATABASE}.* TO '${DB_EZ_USER}'@'%'"
         ;;
     postgresql)
+        if [ -z "${DB_CHARSET}" ]; then
+            DB_CHARSET=UTF8
+        fi
         ${ROOT_DB_COMMAND} -c "DROP DATABASE IF EXISTS ${DB_EZ_DATABASE};"
         ${ROOT_DB_COMMAND} -c "DROP USER IF EXISTS ${DB_EZ_USER};"
         ${ROOT_DB_COMMAND} -c "CREATE USER ${DB_EZ_USER} WITH ENCRYPTED PASSWORD '${DB_EZ_PASSWORD}';"
-        ${ROOT_DB_COMMAND} -c "CREATE DATABASE ${DB_EZ_DATABASE}"
+        ${ROOT_DB_COMMAND} -c "CREATE DATABASE ${DB_EZ_DATABASE} WITH ENCODING '${DB_CHARSET}'"
         ${ROOT_DB_COMMAND} -c "GRANT ALL PRIVILEGES ON DATABASE ${DB_EZ_DATABASE} to ${DB_EZ_USER};"
         ;;
 esac

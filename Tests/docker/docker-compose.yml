@@ -21,6 +21,7 @@ services:
             - MYSQL_VERSION=${MYSQL_VERSION:-5.6}
             - POSTGRESQL_VERSION=${POSTGRESQL_VERSION:-9.5}
             - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-root_test}
+            - DB_CHARSET
             - DB_EZ_USER=${DB_EZ_USER:-ezp}
             - DB_EZ_PASSWORD=${DB_EZ_PASSWORD:-ezp}
             - DB_EZ_DATABASE=${DB_EZ_DATABASE:-behattestdb}

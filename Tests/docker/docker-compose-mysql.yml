@@ -8,7 +8,8 @@ services:
             args:
                 timezone: ${COMPOSE_TZ:-none}
                 do_update_os: ${COMPOSE_DO_UPDATE_OS:-true}
-                # note: Travis Xenial images come with mysql 5.7 by default - but that is not recommended for EZP 5.4
+                # note: Travis Xenial and Bionic images come with mysql 5.7 by default; Focal comes with mysql 8.0
+                #       But mysql 5.6 is not recommended for EZP 5.4, so we default to 5.6
                 mysql_version: ${MYSQL_VERSION:-5.6}
         hostname: mysql
         container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_mysql

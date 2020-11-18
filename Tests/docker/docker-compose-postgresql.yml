@@ -8,7 +8,8 @@ services:
             args:
                 timezone: ${COMPOSE_TZ:-none}
                 do_update_os: ${COMPOSE_DO_UPDATE_OS:-true}
-                # note: Travis Xenial images come with PG 9.5; Bionic with and Focal with
+                # note: Travis Xenial images come with PG 9.4-9.6,10; Bionic with 9.3-9.6,10,11 and Focal with 12
+                #       We go with 9.5 as default because it is the lowest upstream supported version as of 11/2020...
                 postgresql_version: ${POSTGRESQL_VERSION:-9.5}
         hostname: postgresql
         container_name: ${COMPOSE_PROJECT_NAME:-kezmbtest}_postgresql
