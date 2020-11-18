@@ -70,21 +70,23 @@ class ReferenceExecutor extends AbstractExecutor
             $value = $dsl['value'];
         }
 
-        if (0 === strpos($value, '%env(') && ')%' === substr($value, -2) && '%env()%' !== $value) {
-            /// @todo find out how to use Sf components to resolve this value instead of doing it by ourselves...
-            $env = substr($value, 5, -2);
-            // we use getenv because $_ENV gets cleaned up (by whom?)
-            $val = getenv($env);
-            if ($val === false) {
-                throw new \Exception("Env var $env seems not to be defined");
-            }
-            $value = $val;
-        } else {
-            /// @todo add support for eZ dynamic parameters too
+        if (is_string($value)) {
+            if (0 === strpos($value, '%env(') && ')%' === substr($value, -2) && '%env()%' !== $value) {
+                /// @todo find out how to use Sf components to resolve this value instead of doing it by ourselves...
+                $env = substr($value, 5, -2);
+                // we use getenv because $_ENV gets cleaned up (by whom?)
+                $val = getenv($env);
+                if ($val === false) {
+                    throw new \Exception("Env var $env seems not to be defined");
+                }
+                $value = $val;
+            } else {
+                /// @todo add support for eZ dynamic parameters too
 
-            if (preg_match('/.*%.+%.*$/', $value)) {
-                // we use the same parameter resolving rule as symfony, even though this means abusing the ContainerInterface
-                $value = $this->container->getParameterBag()->resolveString($value);
+                if (preg_match('/.*%.+%.*$/', $value)) {
+                    // we use the same parameter resolving rule as symfony, even though this means abusing the ContainerInterface
+                    $value = $this->container->getParameterBag()->resolveString($value);
+                }
             }
         }
 
