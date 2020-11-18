@@ -446,7 +446,7 @@ fi
 
 load_config
 
-WEB_CONTAINER=$(${DOCKER_COMPOSE_QUIET} ps "${WEB_SERVICE}" | sed -e '1,2d' | awk '{print $1}')
+WEB_CONTAINER=$(${DOCKER_COMPOSE_QUIET} config | grep 'container_name: .*_ez$' | sed -e 's/ \+container_name: \+//g')
 
 case "${COMMAND}" in
     build)
