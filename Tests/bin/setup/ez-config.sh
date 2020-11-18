@@ -5,9 +5,9 @@
 # Uses env vars: EZ_VERSION, KERNEL_CLASS, KERNEL_DIR, INSTALL_SOLRBUNDLE, INSTALL_TAGSBUNDLE
 
 # @todo check if all required vars have a value
-# @todo use 'set -e' to insure a proper setup
+# @todo use 'set -e' to insure a proper setup (needs work)
 
-set -e
+#set -e
 
 source $(dirname $(dirname ${BASH_SOURCE[0]}))/set-env-vars.sh
 

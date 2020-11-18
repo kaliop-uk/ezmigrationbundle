@@ -53,11 +53,17 @@ fi
 
 case "${DB_TYPE}" in
     mysql)
+        if [ "${EZ_VERSION}" = "ezpublish-community" ]; then
+            # eZPublish schema has column indexes which are too long for Mysql in stock config when using 4 bytes per char...
+            CHARSET=utf8
+        else
+            CHARSET=utf8mb4
+        fi
         ${ROOT_DB_COMMAND} -e "DROP DATABASE IF EXISTS ${DB_EZ_DATABASE};"
         # @todo drop user only if it exists (easy on mysql 5.7 and later, not so much on 5.6...)
         ${ROOT_DB_COMMAND} -e "DROP USER '${DB_EZ_USER}'@'%';" 2>/dev/null || :
         ${ROOT_DB_COMMAND} -e "CREATE USER '${DB_EZ_USER}'@'%' IDENTIFIED BY '${DB_EZ_PASSWORD}';" 2>/dev/null
-        ${ROOT_DB_COMMAND} -e "CREATE DATABASE ${DB_EZ_DATABASE} CHARACTER SET utf8mb4; GRANT ALL PRIVILEGES ON ${DB_EZ_DATABASE}.* TO '${DB_EZ_USER}'@'%'"
+        ${ROOT_DB_COMMAND} -e "CREATE DATABASE ${DB_EZ_DATABASE} CHARACTER SET ${CHARSET}; GRANT ALL PRIVILEGES ON ${DB_EZ_DATABASE}.* TO '${DB_EZ_USER}'@'%'"
         ;;
     postgresql)
         ${ROOT_DB_COMMAND} -c "DROP DATABASE IF EXISTS ${DB_EZ_DATABASE};"

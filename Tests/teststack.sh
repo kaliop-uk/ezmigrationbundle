@@ -88,18 +88,18 @@ build() {
         cleanup_dead_docker_images
     fi
 
-    echo "[`date`] Stopping running Containers..."
+    echo "[$(date)] Stopping running Containers..."
 
     ${DOCKER_COMPOSE} stop
 
     if [ ${REBUILD} = 'true' ]; then
-        echo "[`date`] Removing existing Containers..."
+        echo "[$(date)] Removing existing Containers..."
 
         ${DOCKER_COMPOSE} rm -f
     fi
 
     if [ ${PULL_IMAGES} = 'true' ]; then
-        echo "[`date`] Pulling base Docker images..."
+        echo "[$(date)] Pulling base Docker images..."
         # @todo make this flexible enough to accommodate any base image
         # 1 get list of images
         # 2 for each, run 'docker image history $img', remove <missing>
@@ -125,7 +125,7 @@ build() {
         done
     fi
 
-    echo "[`date`] Building Containers..."
+    echo "[$(date)] Building Containers..."
 
     ${DOCKER_COMPOSE} build ${PARALLEL_BUILD} ${DOCKER_NO_CACHE}
     RETCODE=$?
@@ -138,7 +138,7 @@ build() {
         export COMPOSE_SETUP_APP_ON_BOOT=${SETUP_APP_ON_BOOT}
     fi
 
-    echo "[`date`] Starting Containers..."
+    echo "[$(date)] Starting Containers..."
 
     if [ ${RECREATE} = 'true' ]; then
         ${DOCKER_COMPOSE} up -d --force-recreate
@@ -154,9 +154,9 @@ build() {
     fi
 
     if [ "${SETUP_APP_ON_BOOT}" = skip ]; then
-        echo "[`date`] Build finished"
+        echo "[$(date)] Build finished"
     else
-        echo "[`date`] Build finished. Exit code: $(docker exec "${WEB_CONTAINER}" cat /tmp/setup_ok)"
+        echo "[$(date)] Build finished. Exit code: $(docker exec "${WEB_CONTAINER}" cat /tmp/setup_ok)"
     fi
 
     exit ${RETCODE}
@@ -226,7 +226,7 @@ cleanup() {
 }
 
 cleanup_dead_docker_images() {
-    echo "[`date`] Removing unused Docker images from disk..."
+    echo "[$(date)] Removing unused Docker images from disk..."
     DEAD_IMAGES=$(docker images | grep "<none>" | awk "{print \$3}")
     if [ -n "${DEAD_IMAGES}" ]; then
         docker rmi ${DEAD_IMAGES}
@@ -236,7 +236,7 @@ cleanup_dead_docker_images() {
 # @todo add support for setting up file Tests/docker/data/.composer/auth.json
 create_default_config() {
     if [ ! -f ${DEFAULT_CONFIG_FILE} ]; then
-        echo "[`date`] Setting up the configuration file..."
+        echo "[$(date)] Setting up the configuration file..."
 
         CURRENT_USER_UID=$(id -u)
         CURRENT_USER_GID=$(id -g)
@@ -290,7 +290,7 @@ load_config() {
 }
 
 setup_app() {
-    echo "[`date`] Starting all Containers..."
+    echo "[$(date)] Starting all Containers..."
 
     # avoid automatic app setup being triggered here
     export COMPOSE_SETUP_APP_ON_BOOT=skip
@@ -302,11 +302,11 @@ setup_app() {
         exit ${RETCODE}
     fi
 
-    echo "[`date`] Setting up eZ..."
+    echo "[$(date)] Setting up eZ..."
     docker exec "${WEB_CONTAINER}" su "${WEB_USER}" -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
 
     # @bug WEB_CONTAINER is not defined in subshell ?
-    echo "[`date`] Setup finished. Exit code: $(docker exec "${WEB_CONTAINER}" cat /tmp/setup_ok)"
+    echo "[$(date)] Setup finished. Exit code: $(docker exec "${WEB_CONTAINER}" cat /tmp/setup_ok)"
 }
 
 # Wait until containers have fully booted
@@ -334,7 +334,7 @@ wait_for_bootstrap() {
         ;;
     esac
 
-    echo "[`date`] Waiting for containers bootstrap to finish..."
+    echo "[$(date)] Waiting for containers bootstrap to finish..."
 
      i=0
      while [ $i -le "${BOOTSTRAP_TIMEOUT}" ]; do
