@@ -6,6 +6,8 @@
 
 set -e
 
+echo "Setting up php configuration..."
+
 # Increase php memory limit (need to do this now or we risk composer failing)
 if [ "${TRAVIS}" = "true" ]; then
     phpenv config-add Tests/config/php/zzz_php.ini
@@ -16,7 +18,7 @@ else
 fi
 
 # Disable xdebug for speed (both for executing composer and running tests); we enable it only when generating coverage
-XDEBUG_INI=`php -i | grep xdebug.ini | grep -v '=>' | head -1`
+XDEBUG_INI=$(php -i | grep xdebug.ini | grep -v '=>' | head -1)
 XDEBUG_INI=${XDEBUG_INI/,/}
 if [ "${XDEBUG_INI}" != "" ]; then
     sudo mv "${XDEBUG_INI}" "${XDEBUG_INI}.off";

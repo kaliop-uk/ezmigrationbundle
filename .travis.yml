@@ -17,8 +17,9 @@ env:
 # NB: see https://support.ez.no/Public/Service-Life for EOL dates of eZPublish versions
 #     and http://php.net/supported-versions.php for EOL dates of PHP versions
 # About php versions:
-#     - php 5.6 can be installed on RHEL/CentOS 6, which is the oldest currently supported (see at the bottom of https://access.redhat.com/support/policy/updates/errata)
+#     - php 5.6 _can_ be installed from epel/remi repos on RHEL/CentOS 6, which is the oldest currently supported (see at the bottom of https://access.redhat.com/support/policy/updates/errata)
 #     - Debian 8 comes with php 5.6 too - although it is _abandonware_ by now
+#     - Ubuntu 14 comes with php 5.5, and it is in extended support (ESM) until 2022. It might be possible to update it php 5.6 via ondrej ppa
 # We thus still test on php 5.6
 # We limit the matrix to one version of eZPublish for each version of PHP
 # @todo where we have 2 minor versions of the same 'main version' tested, we should test the lower numbered one forcing composer to use the oldest possible dependencies

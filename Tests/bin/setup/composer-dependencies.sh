@@ -12,14 +12,19 @@
 
 # Allow installing a precomputed set of packages. Useful to save memory, eg. for running with php 5.6...
 if [ -n "${EZ_COMPOSER_LOCK}" ]; then
+    echo "Installing packages via Composer using existing lock file ${EZ_COMPOSER_LOCK}..."
+
     cp ${EZ_COMPOSER_LOCK} composer.lock
     composer install
 else
+    echo "Installing packages via Composer: the ones in composer.json plus ${EZ_PACKAGES}..."
+
     # composer.lock gets in the way when switching between eZ versions
     if [ -f composer.lock ]; then
         rm composer.lock
     fi
     cp composer.json composer.json.bak
+    # we split require from update to (hopefully) save some ram
     composer require --dev --no-update ${EZ_PACKAGES}
     cp composer.json composer_last.json
     composer update --dev

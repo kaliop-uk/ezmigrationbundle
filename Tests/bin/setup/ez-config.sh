@@ -9,6 +9,8 @@
 
 #set -e
 
+echo "Setting up eZ configuration..."
+
 source $(dirname $(dirname ${BASH_SOURCE[0]}))/set-env-vars.sh
 
 if [ "${EZ_VERSION}" = "ezplatform3" ]; then

@@ -19,6 +19,8 @@ if [ -z "${DB_HOST}" ]; then
     DB_HOST=${DB_TYPE}
 fi
 
+echo "Creating the eZ database and user and loading it with default data..."
+
 # @todo check if all required vars have a value
 
 case "${DB_TYPE}" in
