@@ -269,10 +269,10 @@ dotenv() {
 load_config() {
     if [ -z "${CONFIG_FILE}" ]; then
         CONFIG_FILE=${DEFAULT_CONFIG_FILE}
-    else
-        if [ -n "${VERBOSITY}" ]; then
-            echo "Using config file: ${CONFIG_FILE}"
-        fi
+    fi
+
+    if [ -n "${VERBOSITY}" ]; then
+        echo "Using config file: ${CONFIG_FILE}"
     fi
 
     dotenv ${CONFIG_FILE}
@@ -462,11 +462,13 @@ case "${COMMAND}" in
         ${DOCKER_COMPOSE} config ${2}
     ;;
 
-    console | sfconsole)
+    console | ezconsole | sfconsole)
+        # @todo allow this to be run from within the test container
         docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c './Tests/bin/sfconsole.sh "$@"' -- "$@"
     ;;
 
     dbconsole | dbcli | dbclient)
+        # @todo allow this to be run from within the test container
         docker exec -ti "${WEB_CONTAINER}" su "${WEB_USER}" -c './Tests/bin/dbconsole.sh "$@"' -- "$@"
     ;;
 

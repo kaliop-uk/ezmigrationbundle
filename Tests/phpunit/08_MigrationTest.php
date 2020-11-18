@@ -60,5 +60,7 @@ class MigrationTest extends MigrationExecutingTest
         $output = $this->fetchOutput();
         $this->assertNotEquals(0, $exitCode);
         $this->assertContains('already exists', $output);
+
+        $this->deleteMigration($filePath);
     }
 }
