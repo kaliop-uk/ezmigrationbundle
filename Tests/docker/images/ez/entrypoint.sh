@@ -76,29 +76,34 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
     # @todo to avoid generating uselessly different variations, we should as well sort EZ_PACKAGES
     HASH=$(echo "${P_V} ${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
 
+    if [ -d /home/test/ezmigrationbundle/vendor  ]; then
+        printf "\n\e[31mWARNING: vendor folder is not a symlink\e[0m\n\n"
+    fi
+
     # We hash the name of the vendor folder based on packages to install. This allows quick swaps
     if [ -L /home/test/ezmigrationbundle/vendor -o ! -d /home/test/ezmigrationbundle/vendor ]; then
-        echo "[$(date)] Setting up vendor folder as symlink..."
+        echo "[$(date)] Setting up vendor folder as symlink to vendor_${HASH}..."
         if [ ! -d /home/test/ezmigrationbundle/vendor_${HASH} ]; then
             mkdir /home/test/ezmigrationbundle/vendor_${HASH}
-
         fi
         chown -R test:test /home/test/ezmigrationbundle/vendor_${HASH}
         if [ -L /home/test/ezmigrationbundle/vendor ]; then
             TARGET=$(readlink -f /home/test/ezmigrationbundle/vendor)
             if [ "${TARGET}" != "/home/test/ezmigrationbundle/vendor_${HASH}" ]; then
+                echo "[$(date)] Fixing vendor folder symlink from ${TARGET} to vendor_${HASH}..."
                 rm /home/test/ezmigrationbundle/vendor
                 ln -s /home/test/ezmigrationbundle/vendor_${HASH} /home/test/ezmigrationbundle/vendor
                 if [ -f /tmp/setup_ok ]; then rm /tmp/setup_ok; fi
             fi
         else
+            echo "[$(date)] Creating vendor folder symlink to vendor_${HASH}..."
             ln -s /home/test/ezmigrationbundle/vendor_${HASH} /home/test/ezmigrationbundle/vendor
             if [ -f /tmp/setup_ok ]; then rm /tmp/setup_ok; fi
         fi
     fi
 
     # @todo try to reinstall if last install did fail, even if /tmp/setup_ok does exist...
-    # @todo we should as well reinstall if current env vars (packages and other build-config vars) are changed since we installed...
+    # @todo we should reinstall as well if current env vars (bundles and other build-config vars) are changed since we installed...
     if [ "${COMPOSE_SETUP_APP_ON_BOOT}" = 'force' -o ! -f /tmp/setup_ok ]; then
         echo "[$(date)] Setting up eZ..."
         su test -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"

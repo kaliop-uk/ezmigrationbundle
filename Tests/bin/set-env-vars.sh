@@ -4,23 +4,36 @@
 # - KERNEL_CLASS, KERNEL_DIR (used by phpunit)
 # - CONSOLE_CMD (used by shell scripts)
 #
-# Uses env vars: EZ_VERSION
+# Uses env vars: EZ_VERSION, `composer` command if EZ_VERSION not set
 #
 # To be executed using 'source'
 
 # @todo also set up APP_ENV, SYMFONY_ENV (defaulting to 'behat')
 
-# Figure out EZ_VERSION from EZ_PACKAGES if the former is not set
-if [ -z "${EZ_VERSION}" -a -n "${EZ_PACKAGES}" ]; then
-    # @todo...
-    :
+# Figure out EZ_VERSION if required
+if [ -z "${EZ_VERSION}" ]; then
+    EZ_VERSION=$(composer show | grep ezsystems/ezpublish-kernel)
+    if [ -n "${EZ_VERSION}" ]; then
+        if [[ "${EZ_VERSION}" == *" v7."* ]]; then
+            export EZ_VERSION=ezplatform2
+        else
+            if [[ "${EZ_VERSION}" == *" v6."* ]]; then
+                export EZ_VERSION=ezplatform
+            else
+                export EZ_VERSION=ezpublish-community
+            fi
+        fi
+    else
+        EZ_VERSION=$(composer show | grep ezsystems/ezplatform-kernel)
+        if [ -n "${EZ_VERSION}" ]; then
+            export EZ_VERSION=ezplatform3
+        fi
+    fi
 fi
 
 # @todo Figure out EZ_BUNDLES from EZ_PACKAGES if the former is not set
-if [ -z "${EZ_BUNDLES}" -a -n "${EZ_PACKAGES}" ]; then
-    # @todo...
-    :
-fi
+#if [ -z "${EZ_BUNDLES}" -a -n "${EZ_PACKAGES}" ]; then
+#fi
 
 if [ "${EZ_VERSION}" = "ezplatform3" ]; then
     if [ -z "${KERNEL_CLASS}" ]; then
