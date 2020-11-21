@@ -17,8 +17,6 @@ class MatrixTest extends MigrationExecutingTest
      */
     public function testExecuteGoodDSL($filePath = '')
     {
-        $bundles = $this->getContainer()->getParameter('kernel.bundles');
-
         if ($filePath == '') {
             $this->markTestSkipped();
             return;
@@ -56,7 +54,7 @@ class MatrixTest extends MigrationExecutingTest
             if (class_exists('EzSystems\EzPlatformMatrixFieldtype\FieldType\Type')) {
                 $dslDir .= '/platform';
             } else {
-                return array('');
+                return array(array(''));
             }
         }
 

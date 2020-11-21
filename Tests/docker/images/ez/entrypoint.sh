@@ -76,7 +76,7 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
     # @todo to avoid generating uselessly different variations, we should as well sort EZ_PACKAGES
     HASH=$(echo "${P_V} ${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
 
-    if [ -d /home/test/ezmigrationbundle/vendor  ]; then
+    if [ -d /home/test/ezmigrationbundle/vendor ]; then
         printf "\n\e[31mWARNING: vendor folder is not a symlink\e[0m\n\n"
     fi
 
