@@ -45,11 +45,11 @@ class MatrixTest extends MigrationExecutingTest
         $dslDir = $this->dslDir.'/ezmatrix';
 
         if (class_exists('EzSystems\MatrixBundle\FieldType\Matrix\Type')) {
-            try {
-                $ft = new EzSystems\MatrixBundle\FieldType\Matrix\Type();
-                $ft->validateFieldSettings(null);
+            $ft = new EzSystems\MatrixBundle\FieldType\Matrix\Type();
+            $errors = $ft->validateFieldSettings(array('columnList' => array()));
+            if (count($errors)) {
                 $dslDir .= '/community_01';
-            } catch (ValidationError $e) {
+            } else {
                 $dslDir .= '/community_02';
             }
         } else {
