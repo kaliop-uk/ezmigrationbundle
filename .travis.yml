@@ -35,8 +35,9 @@ matrix:
     - php: 7.0
       env: EZ_VERSION=ezplatform EZ_PACKAGES='ezsystems/ezplatform:~1.7.9 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ez-matrix-bundle:^0.2.1 netgen/tagsbundle:^2.2 ezsystems/behatbundle:^6.3' EZ_BUNDLES='EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
     # last version available of eZPlatform 1 - also an LTS
+    # EzPlatformAdminUiBundle is required by ezplatform-matrix-fieldtype
     - php: 7.1
-      env: EZ_VERSION=ezplatform EZ_PACKAGES='ezsystems/ezplatform:~1.13.5 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ezplatform-matrix-fieldtype:^1.0 netgen/tagsbundle:^2.2 ezsystems/behatbundle:^6.3' EZ_BUNDLES='EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\EzPlatformMatrixFieldtypeBundle\EzPlatformMatrixFieldtypeBundle Netgen\TagsBundle\NetgenTagsBundle'
+      env: EZ_VERSION=ezplatform EZ_PACKAGES='ezsystems/ezplatform:~1.13.5 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ezplatform-matrix-fieldtype:^1.0 netgen/tagsbundle:^2.2 ezsystems/behatbundle:^6.3' EZ_BUNDLES='EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\EzPlatformMatrixFieldtypeBundle\EzPlatformMatrixFieldtypeBundle EzSystems\EzPlatformAdminUiBundle\EzPlatformAdminUiBundle Netgen\TagsBundle\NetgenTagsBundle'
 
     # eZPlatform 2 aka eZPublish 7
     # Comes with ezplatform-matrix-fieldtype included
