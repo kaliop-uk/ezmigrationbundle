@@ -9,7 +9,7 @@ class MigrationTest extends MigrationExecutingTest
 {
     public function testInfo()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK801_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK901_harmless.yml';
         $this->prepareMigration($filePath);
 
         $output = $this->runCommand('kaliop:migration:migration', array('--info' => true, 'migration' => basename($filePath)));
@@ -21,7 +21,7 @@ class MigrationTest extends MigrationExecutingTest
 
     public function testSkip()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK801_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK901_harmless.yml';
         $this->deleteMigration($filePath, false);
 
         $output = $this->runCommand('kaliop:migration:migration', array('--skip' => true, '-n' => true, 'migration' => $filePath));
@@ -38,7 +38,7 @@ class MigrationTest extends MigrationExecutingTest
 
     public function testDelete()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK801_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK901_harmless.yml';
         $this->prepareMigration($filePath);
 
         $output = $this->runCommand('kaliop:migration:status');
@@ -53,7 +53,7 @@ class MigrationTest extends MigrationExecutingTest
     /// @todo move to ExceptionTests ?
     public function testAddSameMigrationTwice()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK901_harmless.yml';
         $this->prepareMigration($filePath);
 
         $exitCode = $this->app->run($this->buildInput('kaliop:migration:migration', array('--add' => true, '-n' => true, 'migration' => $filePath)), $this->output);

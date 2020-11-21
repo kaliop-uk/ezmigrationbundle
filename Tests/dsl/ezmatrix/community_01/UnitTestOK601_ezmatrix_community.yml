@@ -16,11 +16,6 @@
             type: ezmatrix
             name: Bibliography
             identifier: bibliography
-            field-settings:
-                columns:
-                    - { identifier: authors }
-                    - { identifier: title }
-                    - { identifier: release_info }
 
 -
     type: content

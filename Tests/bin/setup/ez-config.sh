@@ -2,7 +2,7 @@
 
 # Set up eZ configuration files
 #
-# Uses env vars: EZ_VERSION, KERNEL_CLASS, KERNEL_DIR, INSTALL_SOLRBUNDLE, INSTALL_TAGSBUNDLE
+# Uses env vars: EZ_VERSION, EZ_BUNDLES
 
 # @todo check if all required vars have a value
 # @todo use 'set -e' to insure a proper setup (needs work)
@@ -65,36 +65,59 @@ if [ $? -ne 0 ]; then
     sed -i 's/$bundles = \[/$bundles = \[new Kaliop\\eZMigrationBundle\\EzMigrationBundle(),/' ${KERNEL_DIR}/${KERNEL_CLASS}.php
 fi
 
-# And optionally the EzCoreExtraBundle bundle
-if [ "${EZ_VERSION}" = "ezplatform2" ]; then
-    fgrep -q 'new Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+# And the optional bundles
+for BUNDLE in ${EZ_BUNDLES}; do
+    fgrep -q "new ${BUNDLE}()" ${KERNEL_DIR}/${KERNEL_CLASS}.php
     if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new Lolautruche\\\\\EzCoreExtraBundle\\\\\EzCoreExtraBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
+        BUNDLE=${BUNDLE//\\/\\\\}
+        sed -i "/${LAST_BUNDLE}()/i new ${BUNDLE}()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
     fi
-fi
+done
 
-# And optionally the Netgen tags bundle
-if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then
-    fgrep -q 'new Netgen\TagsBundle\NetgenTagsBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
-    if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new Netgen\\\\\TagsBundle\\\\\NetgenTagsBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
-    fi
-fi
-
-if [ "${INSTALL_SOLRBUNDLE}" = "1" ]; then
-    fgrep -q 'new EzSystems\EzPlatformSolrSearchEngineBundle\EzSystemsEzPlatformSolrSearchEngineBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
-    if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformSolrSearchEngineBundle\\\\\EzSystemsEzPlatformSolrSearchEngineBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
-    fi
-fi
-
-# For eZPlatform, load the xmltext bundle
-if [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" ]; then
-    fgrep -q 'new EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
-    if [ $? -ne 0 ]; then
-        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformXmlTextFieldTypeBundle\\\\\EzSystemsEzPlatformXmlTextFieldTypeBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
-    fi
-fi
+## And optionally the EzCoreExtraBundle bundle
+#if [ "${EZ_VERSION}" = "ezplatform2" ]; then
+#    fgrep -q 'new Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    if [ $? -ne 0 ]; then
+#        sed -i "/${LAST_BUNDLE}()/i new Lolautruche\\\\\EzCoreExtraBundle\\\\\EzCoreExtraBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    fi
+#fi
+#
+#if [ "${INSTALL_MATRIXBUNDLE}" = "1" ]; then
+#    fgrep -q 'new EzSystems\MatrixBundle\EzSystemsMatrixBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    if [ $? -ne 0 ]; then
+#        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\MatrixBundle\\\\\EzSystemsMatrixBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    fi
+#fi
+#
+#if [ "${INSTALL_MATRIXFIELDTYPEBUNDLE}" = "1" ]; then
+#    fgrep -q 'new EzSystems\EzPlatformMatrixFieldtypeBundle\EzPlatformMatrixFieldtypeBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    if [ $? -ne 0 ]; then
+#        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformMatrixFieldtypeBundle\\\\\EzPlatformMatrixFieldtypeBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    fi
+#fi
+#
+## And optionally the Netgen tags bundle
+#if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then
+#    fgrep -q 'new Netgen\TagsBundle\NetgenTagsBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    if [ $? -ne 0 ]; then
+#        sed -i "/${LAST_BUNDLE}()/i new Netgen\\\\\TagsBundle\\\\\NetgenTagsBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    fi
+#fi
+#
+#if [ "${INSTALL_SOLRBUNDLE}" = "1" ]; then
+#    fgrep -q 'new EzSystems\EzPlatformSolrSearchEngineBundle\EzSystemsEzPlatformSolrSearchEngineBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    if [ $? -ne 0 ]; then
+#        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformSolrSearchEngineBundle\\\\\EzSystemsEzPlatformSolrSearchEngineBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    fi
+#fi
+#
+## For eZPlatform, load the xmltext bundle
+#if [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" ]; then
+#    fgrep -q 'new EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle()' ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    if [ $? -ne 0 ]; then
+#        sed -i "/${LAST_BUNDLE}()/i new EzSystems\\\\\EzPlatformXmlTextFieldTypeBundle\\\\\EzSystemsEzPlatformXmlTextFieldTypeBundle()," ${KERNEL_DIR}/${KERNEL_CLASS}.php
+#    fi
+#fi
 
 # Fix the eZ5/eZPlatform autoload configuration for the unexpected directory layout
 if [ -f "${KERNEL_DIR}/autoload.php" ]; then

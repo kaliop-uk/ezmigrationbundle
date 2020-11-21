@@ -1,0 +1,114 @@
+
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    name: KMB Test 040
+    identifier: kmb_test_040
+    name_pattern: <title>
+    is_container: false
+    attributes:
+        -
+            type: ezstring
+            name: Title
+            identifier: title
+            required: true
+        -
+            type: ezmatrix
+            name: Bibliography
+            identifier: bibliography
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_040
+    parent_location: 2
+    owner: admin
+    attributes:
+        title: Sample
+        bibliography:
+            -
+                authors: 'Author A, Author B'
+                title: 'Lorem ipsum'
+                release_info: 'Cracov 2012'
+            -
+                authors: 'Author 1, Author 2'
+                title: 'Lorem ipsum dolor sit amet'
+                release_info: 'R info abc'
+            -
+                authors: 'Athor I, Author II'
+                title: 'This is a title'
+                release_info: 'Warsaw 2000'
+
+-
+    type: content
+    mode: delete
+    match:
+        content_type_identifier: kmb_test_040
+
+-
+    type: content_type
+    mode: delete
+    match:
+        content_type_identifier: kmb_test_040
+
+### Same, but with field settings
+
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    name: KMB Test 040
+    identifier: kmb_test_040
+    name_pattern: <title>
+    is_container: false
+    attributes:
+        -
+            type: ezstring
+            name: Title
+            identifier: title
+            required: true
+        -
+            type: ezmatrix
+            name: Bibliography
+            identifier: bibliography
+            field-settings:
+                minimum_rows: 0
+                columns:
+                    - { identifier: authors }
+                    - { identifier: title }
+                    - { identifier: release_info }
+
+-
+    type: content
+    mode: create
+    content_type: kmb_test_040
+    parent_location: 2
+    owner: admin
+    attributes:
+        title: Sample
+        bibliography:
+            -
+                authors: 'Author A, Author B'
+                title: 'Lorem ipsum'
+                release_info: 'Cracov 2012'
+            -
+                authors: 'Author 1, Author 2'
+                title: 'Lorem ipsum dolor sit amet'
+                release_info: 'R info abc'
+            -
+                authors: 'Athor I, Author II'
+                title: 'This is a title'
+                release_info: 'Warsaw 2000'
+
+-
+    type: content
+    mode: delete
+    match:
+        content_type_identifier: kmb_test_040
+
+-
+    type: content_type
+    mode: delete
+    match:
+        content_type_identifier: kmb_test_040

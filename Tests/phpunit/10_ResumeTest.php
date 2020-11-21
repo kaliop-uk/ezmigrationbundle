@@ -13,7 +13,7 @@ class ResumeTest extends MigrationExecutingTest
 {
     public function testSuspend()
     {
-        $filePath = $this->dslDir.'/resume/UnitTestOK901_suspend.yml';
+        $filePath = $this->dslDir.'/resume/UnitTestOK1001_suspend.yml';
 
         $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
 

@@ -73,6 +73,7 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
 
     P_V=$(php -r 'echo PHP_VERSION;')
     # @todo should we add to the hash calculation a hash of the contents of the original composer.json ?
+    # @todo to avoid generating uselessly different variations, we should as well sort EZ_PACKAGES
     HASH=$(echo "${P_V} ${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
 
     # We hash the name of the vendor folder based on packages to install. This allows quick swaps

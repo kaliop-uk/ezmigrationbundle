@@ -110,18 +110,17 @@ elif [ "${EZ_VERSION}" = "ezplatform" -o "${EZ_VERSION}" = "ezplatform2" -o "${E
     [[ $(composer show | grep ezsystems/ezpublish-kernel | grep -F -q 7.5.7) ]] && ${EZ_DB_COMMAND} < vendor/ezsystems/ezpublish-kernel/data/update/${DB_TYPE}/dbupdate-7.5.4-to-7.5.5.sql
 fi
 
-if [ "${INSTALL_TAGSBUNDLE}" = "1" ]; then
-    if [ -f vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/${DB_TYPE}/schema.sql ]; then
-        ${EZ_DB_COMMAND} < vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/${DB_TYPE}/schema.sql
+# @todo do not automatically load the eztags schema, but let the test executor tell us which extra sql files to load
+if [ -f vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/${DB_TYPE}/schema.sql ]; then
+    ${EZ_DB_COMMAND} < vendor/netgen/tagsbundle/Netgen/TagsBundle/Resources/sql/${DB_TYPE}/schema.sql
+else
+    if [ -f vendor/netgen/tagsbundle/bundle/Resources/sql/${DB_TYPE}/schema.sql ]; then
+        ${EZ_DB_COMMAND} < vendor/netgen/tagsbundle/bundle/Resources/sql/${DB_TYPE}/schema.sql
     else
-        if [ -f vendor/netgen/tagsbundle/bundle/Resources/sql/${DB_TYPE}/schema.sql ]; then
-            ${EZ_DB_COMMAND} < vendor/netgen/tagsbundle/bundle/Resources/sql/${DB_TYPE}/schema.sql
+        if [ -f vendor/netgen/tagsbundle/Resources/sql/${DB_TYPE}/schema.sql ]; then
+            ${EZ_DB_COMMAND} < vendor/netgen/tagsbundle/Resources/sql/${DB_TYPE}/schema.sql
         else
-            if [ -f vendor/netgen/tagsbundle/Resources/sql/${DB_TYPE}/schema.sql ]; then
-                ${EZ_DB_COMMAND} < vendor/netgen/tagsbundle/Resources/sql/${DB_TYPE}/schema.sql
-            else
-                echo "WARNING: should have loaded the Netgen TagsBundle db schema file but could not find it!" >&2
-            fi
+            :
         fi
     fi
 fi

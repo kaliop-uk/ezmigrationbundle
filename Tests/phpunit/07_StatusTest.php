@@ -23,8 +23,8 @@ class StatusTest extends MigrationExecutingTest
     // Tests issue #190
     public function testSorting()
     {
-        $filePath1 = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
-        $filePath2 = $this->dslDir.'/misc/UnitTestOK602_harmless.yml';
+        $filePath1 = $this->dslDir.'/misc/UnitTestOK701_harmless.yml';
+        $filePath2 = $this->dslDir.'/misc/UnitTestOK702_harmless.yml';
 
         $this->prepareMigration($filePath1);
         $this->prepareMigration($filePath2);
@@ -49,7 +49,7 @@ class StatusTest extends MigrationExecutingTest
 
     public function testTodo()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK701_harmless.yml';
         $this->prepareMigration($filePath);
         $output = $this->runCommand('kaliop:migration:status', array('--todo' => true));
         $this->assertRegexp('?^'.$filePath.'$?m', $output);
@@ -59,7 +59,7 @@ class StatusTest extends MigrationExecutingTest
 
     public function testPath()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK701_harmless.yml';
         $this->deleteMigration($filePath, false);
 
         $output = $this->runCommand('kaliop:migration:status');
@@ -78,7 +78,7 @@ class StatusTest extends MigrationExecutingTest
 
     public function testShowPath()
     {
-        $filePath = $this->dslDir.'/misc/UnitTestOK601_harmless.yml';
+        $filePath = $this->dslDir.'/misc/UnitTestOK701_harmless.yml';
         $this->deleteMigration($filePath, false);
 
         $output = $this->runCommand('kaliop:migration:status', array('--show-path' => true, '--path' => array($filePath)));

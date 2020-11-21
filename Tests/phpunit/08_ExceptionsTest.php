@@ -82,7 +82,7 @@ class ExceptionsTest extends MigrationExecutingTest implements ExecutorInterface
         //$bundles = $this->getContainer()->getParameter('kernel.bundles');
         $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
 
-        $filePath = $this->dslDir . '/misc/UnitTestOK701_loadSomething.yml';
+        $filePath = $this->dslDir . '/misc/UnitTestOK801_loadSomething.yml';
 
         $this->prepareMigration($filePath);
 

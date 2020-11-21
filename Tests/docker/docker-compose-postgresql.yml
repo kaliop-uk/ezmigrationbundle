@@ -21,8 +21,8 @@ services:
             - DOCKER=true
         volumes:
             # @todo would there be any value in using env vars for these folders?
-            - ./data/postgresql/:/var/lib/postgresql
-            - ./logs/postgresql/:/var/log/postgresql
+            - ${COMPOSE_DATA_DIR:-./data}/postgresql/:/var/lib/postgresql
+            - ${COMPOSE_LOGS_DIR:-./logs}/postgresql/:/var/log/postgresql
         # uncomment this to be able to access the db from the host
         #ports:
         #    - "5433:5432"

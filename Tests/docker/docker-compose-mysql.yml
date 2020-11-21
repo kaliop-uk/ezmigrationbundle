@@ -25,8 +25,8 @@ services:
         volumes:
             #- ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
             # @todo would there be any value in using env vars for these folders?
-            - ./data/mysql/:/var/lib/mysql
-            - ./logs/mysql/:/var/log/mysql
+            - ${COMPOSE_DATA_DIR:-./data}/mysql/:/var/lib/mysql
+            - ${COMPOSE_LOGS_DIR:-./logs}/mysql/:/var/log/mysql
         #tmpfs:
         #    # used for mysql temp tables. Useful with ez5 db schema / queries (it creates lots of temp tables on disk)
         #    - /tmpfs:mode=777

@@ -4,11 +4,23 @@
 # - KERNEL_CLASS, KERNEL_DIR (used by phpunit)
 # - CONSOLE_CMD (used by shell scripts)
 #
-# Uses env vars: EZ_VERSION, EZ_PACKAGES
+# Uses env vars: EZ_VERSION
 #
 # To be executed using 'source'
 
-# @todo also set up INSTALL_SOLRBUNDLE, INSTALL_TAGSBUNDLE (from EZ_PACKAGES), APP_ENV, SYMFONY_ENV (defaulting to 'behat')
+# @todo also set up APP_ENV, SYMFONY_ENV (defaulting to 'behat')
+
+# Figure out EZ_VERSION from EZ_PACKAGES if the former is not set
+if [ -z "${EZ_VERSION}" -a -n "${EZ_PACKAGES}" ]; then
+    # @todo...
+    :
+fi
+
+# @todo Figure out EZ_BUNDLES from EZ_PACKAGES if the former is not set
+if [ -z "${EZ_BUNDLES}" -a -n "${EZ_PACKAGES}" ]; then
+    # @todo...
+    :
+fi
 
 if [ "${EZ_VERSION}" = "ezplatform3" ]; then
     if [ -z "${KERNEL_CLASS}" ]; then
