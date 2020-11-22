@@ -1,13 +1,13 @@
-Version XX (unreleased)
-=======================
+Version 5.14.0
+==============
 
-* New: migration step `user/create` can now assign roles to the newly created user (besides theroles automatically
-  inherited from the user's groups)
+* New: support for eZMatrix fieldType (issue #217).
 
 * New: Content and Location matchers, used in `load`, `update` and `delete` steps for Content and Location can now match
   by QueryType (issue #239)
 
-* New: support for eZMatrix fieldType (issue #217).
+* New: migration step `user/create` can now assign roles to the newly created user (besides the roles automatically
+  inherited from the user's groups) (issue #77)
 
 * New: taught the `kaliop:migration:status` command to display full migration path by using the `--show-path` option
   (issue #152)
