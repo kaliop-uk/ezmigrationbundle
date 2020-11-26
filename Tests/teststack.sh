@@ -255,8 +255,9 @@ create_default_config() {
 
 dotenv() {
     if [ ! -f "${1}" ]; then
-        printf "WARNING: configuration file '${1}' not found\n" >&2
-        return 1
+        printf "\n\e[31mERROR: configuration file '${1}' not found\e[0m\n\n" >&2
+
+        exit 1
     fi
     set -a
         . "${1}"
@@ -303,7 +304,7 @@ setup_app() {
     fi
 
     echo "[$(date)] Setting up eZ..."
-    docker exec "${WEB_CONTAINER}" su "${WEB_USER}" -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
+    docker exec "${WEB_CONTAINER}" su "${WEB_USER}" -c "cd /home/test/bundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
 
     # @bug WEB_CONTAINER is not defined in subshell ?
     echo "[$(date)] Setup finished. Exit code: $(docker exec "${WEB_CONTAINER}" cat /tmp/setup_ok)"

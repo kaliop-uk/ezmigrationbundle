@@ -24,7 +24,6 @@ services:
             - DOCKER=true
         volumes:
             #- ./config/mysql/mysql_${COMPOSE_DB_SIZE}.cnf:/etc/mysql/conf.d/mysql.cnf
-            # @todo would there be any value in using env vars for these folders?
             - ${COMPOSE_DATA_DIR:-./data}/mysql/:/var/lib/mysql
             - ${COMPOSE_LOGS_DIR:-./logs}/mysql/:/var/log/mysql
         #tmpfs:

@@ -11,6 +11,9 @@ clean_up() {
     #echo "[$(date)] Stopping Memcached"
     #service memcached stop
 
+    #echo "[$(date)] Stopping Redis"
+    #service redis-server stop
+
     #echo "[$(date)] Stopping Solr"
     #service solr stop
 
@@ -61,6 +64,9 @@ trap clean_up TERM
 #echo "[$(date)] Starting Memcached..."
 #service memcached start
 
+#echo "[$(date)] Starting Redis..."
+#service redis-server start
+
 #echo "[$(date)] Starting Solr..."
 #service solr start
 
@@ -71,33 +77,51 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
 
     # @todo why not move handling of the 'vendor' symlink to setup.sh ?
 
-    P_V=$(php -r 'echo PHP_VERSION;')
-    # @todo should we add to the hash calculation a hash of the contents of the original composer.json ?
-    # @todo to avoid generating uselessly different variations, we should as well sort EZ_PACKAGES
-    HASH=$(echo "${P_V} ${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
+    # We hash the name of the vendor folder based on packages to install. This allows quick swaps of vendors
+    if [ -z "${COMPOSER_VENDOR_DIR}" ]; then
+        P_V=$(php -r 'echo PHP_VERSION;')
+        # @todo should we add to the hash calculation a hash of the contents of the original composer.json ?
+        # @todo we should add to the hash calculation a hash of the installed php extensions
+        # @todo to avoid generating uselessly different variations, we should as well sort EZ_PACKAGES
+        COMPOSER_VENDOR_DIR=vendor_$(echo "${P_V} ${EZ_PACKAGES}" | md5sum | awk  '{print $1}')
+    fi
 
-    if [ -d /home/test/ezmigrationbundle/vendor ]; then
+    # we assume that /home/test/bundle/vendor is never a file...
+
+    if [ ! -L /home/test/bundle/vendor ]; then
         printf "\n\e[31mWARNING: vendor folder is not a symlink\e[0m\n\n"
     fi
 
-    # We hash the name of the vendor folder based on packages to install. This allows quick swaps
-    if [ -L /home/test/ezmigrationbundle/vendor -o ! -d /home/test/ezmigrationbundle/vendor ]; then
-        echo "[$(date)] Setting up vendor folder as symlink to vendor_${HASH}..."
-        if [ ! -d /home/test/ezmigrationbundle/vendor_${HASH} ]; then
-            mkdir /home/test/ezmigrationbundle/vendor_${HASH}
+    if [ -L /home/test/bundle/vendor -o ! -d /home/test/bundle/vendor ]; then
+        echo "[$(date)] Setting up vendor folder as symlink to ${COMPOSER_VENDOR_DIR}..."
+
+        if [ ! -d /home/test/bundle/${COMPOSER_VENDOR_DIR} ]; then
+            mkdir /home/test/bundle/${COMPOSER_VENDOR_DIR}
         fi
-        chown -R test:test /home/test/ezmigrationbundle/vendor_${HASH}
-        if [ -L /home/test/ezmigrationbundle/vendor ]; then
-            TARGET=$(readlink -f /home/test/ezmigrationbundle/vendor)
-            if [ "${TARGET}" != "/home/test/ezmigrationbundle/vendor_${HASH}" ]; then
-                echo "[$(date)] Fixing vendor folder symlink from ${TARGET} to vendor_${HASH}..."
-                rm /home/test/ezmigrationbundle/vendor
-                ln -s /home/test/ezmigrationbundle/vendor_${HASH} /home/test/ezmigrationbundle/vendor
+        chown -R test:test /home/test/bundle/${COMPOSER_VENDOR_DIR}
+
+        # The double-symlink craze makes it possible to have the 'vendor' symlink on the host disk (mounted as volume),
+        # while allowing each container to have it point to a different target 'real' vendor dir which is also on the
+        # host disk
+        if [ -L /home/test/bundle/vendor ]; then
+            TARGET=$(readlink -f /home/test/bundle/vendor)
+            if [ "${TARGET}" != "/home/test/bundle/${COMPOSER_VENDOR_DIR}" ]; then
+                echo "[$(date)] Fixing vendor folder symlink from ${TARGET} to ${COMPOSER_VENDOR_DIR}..."
+                rm /home/test/bundle/vendor
+                if [ -L /home/test/local_vendor ]; then
+                    rm /home/test/local_vendor
+                fi
+                ln -s /home/test/bundle/${COMPOSER_VENDOR_DIR} /home/test/local_vendor
+                ln -s /home/test/local_vendor /home/test/bundle/vendor
                 if [ -f /tmp/setup_ok ]; then rm /tmp/setup_ok; fi
             fi
         else
-            echo "[$(date)] Creating vendor folder symlink to vendor_${HASH}..."
-            ln -s /home/test/ezmigrationbundle/vendor_${HASH} /home/test/ezmigrationbundle/vendor
+            echo "[$(date)] Creating vendor folder symlink to ${COMPOSER_VENDOR_DIR}..."
+            if [ -L /home/test/local_vendor ]; then
+                rm /home/test/local_vendor
+            fi
+            ln -s /home/test/bundle/${COMPOSER_VENDOR_DIR} /home/test/local_vendor
+            ln -s /home/test/local_vendor /home/test/bundle/vendor
             if [ -f /tmp/setup_ok ]; then rm /tmp/setup_ok; fi
         fi
     fi
@@ -106,10 +130,11 @@ if [ "${COMPOSE_SETUP_APP_ON_BOOT}" != 'skip' ]; then
     # @todo we should reinstall as well if current env vars (bundles and other build-config vars) are changed since we installed...
     if [ "${COMPOSE_SETUP_APP_ON_BOOT}" = 'force' -o ! -f /tmp/setup_ok ]; then
         echo "[$(date)] Setting up eZ..."
-        su test -c "cd /home/test/ezmigrationbundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
+        su test -c "cd /home/test/bundle && ./Tests/bin/setup.sh; echo \$? > /tmp/setup_ok"
         # back up composer config
         # @todo do not attempt to back up composer.lock if it does not exist
-        su test -c "mv /home/test/ezmigrationbundle/composer_last.json /home/test/ezmigrationbundle/composer_${HASH}.json; cp /home/test/ezmigrationbundle/composer.lock /home/test/ezmigrationbundle/composer_${HASH}.lock"
+        HASH=${COMPOSER_VENDOR_DIR/vendor_/}
+        su test -c "mv /home/test/bundle/composer_last.json /home/test/bundle/composer_${HASH}.json; cp /home/test/bundle/composer.lock /home/test/bundle/composer_${HASH}.lock"
     fi
 fi
 

@@ -2,8 +2,10 @@
 
 # Installs required OS packages
 
-# @todo make install of Apache, Java, memcached, mysql/postgresql-client optional
-# @todo allow optional install of redis, postgresql-client, elastic ?
+# @todo make install of java, mysql/postgresql-client optional ?
+# @todo move apache & varnish to dedicated, optional containers ?
+# @todo move redis, memcached to dedicated, optional containers ? This allows running a user-specified version...
+# @todo install elasticache (or is it done by the eZ bundles?)
 # @todo allow optional install of custom packages
 
 PHP_VERSION=$1
@@ -19,11 +21,14 @@ if [ "${DEBIAN_VERSION}" = jessie -o -z "${DEBIAN_VERSION}" ]; then
         lsb-release \
         memcached \
         postgresql-client \
+        redis-server \
         sudo \
         unzip \
+        varnish \
         wget \
         zip
 else
+    # buster, stretch
     apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         apache2 \
         default-jre-headless \
@@ -32,8 +37,10 @@ else
         lsb-release \
         memcached \
         postgresql-client \
+        redis-server \
         sudo \
         unzip \
+        varnish \
         wget \
         zip
 fi

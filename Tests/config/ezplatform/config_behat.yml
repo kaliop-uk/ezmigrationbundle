@@ -5,6 +5,7 @@
 imports:
     - { resource: config_behat_orig.yml }
     - { resource: config_behat.php }
+    - { resource: config_behat_bundle.yml }
 
 parameters:
     ezpublish.kernel.root_dir: '%kernel.root_dir%/../../ezpublish-kernel'

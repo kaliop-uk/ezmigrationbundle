@@ -11,7 +11,7 @@ ARG timezone=none
 # Set up debian mirror
 # (use fixed debian mirrors if you have problems building on a given day)
 # -----------------------------------------------------------------------------
-RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} buster main\ndeb http://security.debian.org buster/updates main\ndeb ${debian_mirror} buster-updates main" > /etc/apt/sources.list; fi
+RUN if [ "${debian_mirror}" != "none" ]; then printf "deb ${debian_mirror} ${debian_version} main\ndeb http://security.debian.org ${debian_version}/updates main\ndeb ${debian_mirror} ${debian_version}-updates main" > /etc/apt/sources.list; fi
 
 # Configure timezone
 # -----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 COPY entrypoint.sh /root/entrypoint.sh
 RUN chmod 755 /root/entrypoint.sh
 
-WORKDIR /home/test/ezmigrationbundle
+WORKDIR /home/test/bundle
 
 # 80: haproxy / varnish / apache
 # 8983: solr

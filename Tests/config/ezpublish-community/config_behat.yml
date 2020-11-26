@@ -5,6 +5,7 @@
 imports:
     - { resource: config_behat_orig.yml }
     - { resource: config_behat.php }
+    - { resource: config_behat_bundle.yml }
 
 parameters:
     # When installing eZPublish-Community as dependency, the directory where the eZ-Kernel package is changes, compared to where

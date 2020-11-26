@@ -3,7 +3,7 @@
 # Set up fully the test environment (except for installing required sw packages): php, mysql, eZ, etc...
 # Has to be useable from Docker as well as from Travis.
 #
-# Uses env vars: EZ_VERSION, TRAVIS, TRAVIS_PHP_VERSION
+# Uses env vars: TRAVIS_PHP_VERSION
 
 # @todo check if all required env vars have a value
 # @todo support a -v option

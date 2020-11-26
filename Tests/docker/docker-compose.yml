@@ -27,17 +27,19 @@ services:
             - DB_EZ_DATABASE=${DB_EZ_DATABASE:-behattestdb}
             - COMPOSE_SETUP_APP_ON_BOOT
             # Configuration for the eZ test env to build
-            - EZ_VERSION=${EZ_VERSION:-ezplatform2}
+            - EZ_VERSION
             - EZ_PACKAGES=${EZ_PACKAGES:-ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle}
-            - EZ_BUNDLES=${EZ_BUNDLES:-Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle Netgen\TagsBundle\NetgenTagsBundle}
+            - EZ_BUNDLES=${EZ_BUNDLES:-Kaliop\eZMigrationBundle\EzMigrationBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle Netgen\TagsBundle\NetgenTagsBundle}
+            # Name of a symfony config file containing parameters and services used by the tests
+            - EZ_TEST_CONFIG_SYMFONY
+            - COMPOSER_VENDOR_DIR
             # Configuration used by Symfony when running via phpunit
             - APP_ENV=${APP_ENV:-behat}
             - SYMFONY_ENV=${SYMFONY_ENV:-behat}
             # As opposed to TRAVIS=true ;-)
             - DOCKER=true
         volumes:
-            # @todo would there be any value in using env vars for these folders?
-            - ${COMPOSE_APP_DIR:-../../}:/home/test/ezmigrationbundle
+            - ${COMPOSE_APP_DIR:-../../}:/home/test/bundle
             - ${COMPOSE_DATA_DIR:-./data}/.composer/:/home/test/.composer
 
 #networks:

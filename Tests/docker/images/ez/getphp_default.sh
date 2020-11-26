@@ -2,6 +2,8 @@
 
 DEBIAN_VERSION=$(lsb_release -s -c)
 
+# @todo allow installation of extra extensions
+
 if [ "${DEBIAN_VERSION}" = jessie ]; then
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
         php5 \
