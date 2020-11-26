@@ -29,6 +29,7 @@ services:
             # Configuration for the eZ test env to build
             - EZ_VERSION
             - EZ_PACKAGES=${EZ_PACKAGES:-ezsystems/ezplatform:^2.5.0 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/behatbundle:^6.5 netgen/tagsbundle:^3.0 sensio/generator-bundle overblog/graphiql-bundle}
+            - EZ_COMPOSER_LOCK
             - EZ_BUNDLES=${EZ_BUNDLES:-Kaliop\eZMigrationBundle\EzMigrationBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle Netgen\TagsBundle\NetgenTagsBundle}
             # Name of a symfony config file containing parameters and services used by the tests
             - EZ_TEST_CONFIG_SYMFONY

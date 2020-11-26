@@ -29,7 +29,7 @@ matrix:
     # The last version of eZPublish Community Project, aka eZPublish 5, corresponds to eZPublish Platform (Enterprise) 5.4
     - php: 5.6
       #env: EZ_VERSION=ezpublish-community EZ_PACKAGES='ezsystems/ezpublish-community:^2014.11.1 ezsystems/ez-matrix-bundle:^0.1.0 netgen/tagsbundle:^2.0.11 ezsystems/behatbundle:^5.4'
-      env: EZ_COMPOSER_LOCK=Tests/composer/composer-cp_2104111.lock EZ_BUNDLES='EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
+      env: EZ_COMPOSER_LOCK=Tests/composer/composer-cp_2104111.lock EZ_BUNDLES='Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
 
     # eZPlatform 1 aka eZPublish 6 - earliest LTS release is 1.7
     # Not compatible with ezplatform-matrix-fieldtype
