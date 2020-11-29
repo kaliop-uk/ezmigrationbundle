@@ -64,12 +64,13 @@ before_install:
   # @todo install memcached, java (for Solr)
 
 install:
+  - git clone --depth 1 --branch 0.1.0 git@github.com:tanoconsulting/euts.git teststack
   # just in case...
-  - chmod 755 ./Tests/bin/*.sh  ./Tests/bin/setup/*.sh
-  - travis_wait 30 ./Tests/bin/setup.sh
+  - chmod 755 ./teststack/bin/*.sh  ./teststack/bin/setup/*.sh
+  - ./teststack/bin/setup.sh
 
 script:
-  - if [ "$CODE_COVERAGE" = "1" ]; then ./Tests/bin/runtests.sh -c coverage.clover; else ./Tests/bin/runtests.sh; fi
+  - if [ "$CODE_COVERAGE" = "1" ]; then ./teststack/bin/runtests.sh -c coverage.clover; else ./teststack/bin/runtests.sh; fi
 
 #after_failure:
   # Display as much info as we can to help developers
