@@ -51,7 +51,7 @@
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }
     },
-    "_comment::travis": "the following section is needed to insure that eZPublish 5 can be built on travis, using the custom directory structure where it is not in the root folder",
+    "_comment::tests": "the following section is needed to insure that eZPublish 5 can be built using the custom euts directory structure where it is not in the root folder",
     "extra": {
         "ezpublish-legacy-dir": "vendor/ezsystems/ezpublish-legacy"
     },
