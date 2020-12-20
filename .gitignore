@@ -5,6 +5,7 @@
 /composer.phar
 /composer_*.json
 /composer_*.lock
+/phpunit.xml
 /vendor
 /vendor_*
 /Tests/dsl/good/references/test_refs_generated.yml

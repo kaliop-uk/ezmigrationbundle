@@ -66,5 +66,11 @@
             "url": "https://github.com/kaliop-uk/SecurityAdvisoriesNoConflicts",
             "no-api": true
         }
+    ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/tanoconsulting"
+        }
     ]
 }
