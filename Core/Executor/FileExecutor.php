@@ -85,7 +85,8 @@ class FileExecutor extends AbstractExecutor
         $exists = file_exists($fileName);
 
         if (array_key_exists('references', $dsl)) {
-            foreach ($dsl['references'] as $reference) {
+            foreach ($dsl['references'] as $key => $reference) {
+                $reference = $this->parseReferenceDefinition($key, $reference);
                 switch ($reference['attribute']) {
                     case 'exists':
                         $overwrite = false;

@@ -582,18 +582,37 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
             if ($mode != 'delete') {
 
-                $attributes = array();
-                foreach ($content->getFieldsByLanguage($this->getLanguageCodeFromContext($context)) as $fieldIdentifier => $field) {
-                    $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
-                    $attributes[$field->fieldDefIdentifier] = $this->fieldHandlerManager->fieldValueToHash(
-                        $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
+                $language = $this->getLanguageCodeFromContext($context);
+                if ($language == 'all') {
+                    $languages = $content->versionInfo->languageCodes;
+                } else {
+                    $contentData = array_merge(
+                        $contentData,
+                        array(
+                            'lang' => $language,
+                        )
                     );
+                    $languages = array($language);
+                }
+
+                $attributes = array();
+                foreach($languages as $lang) {
+                    foreach ($content->getFieldsByLanguage($lang) as $fieldIdentifier => $field) {
+                        $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
+                        $fieldValue = $this->fieldHandlerManager->fieldValueToHash(
+                            $fieldDefinition->fieldTypeIdentifier, $contentType->identifier, $field->value
+                        );
+                        if ($language == 'all') {
+                            $attributes[$field->fieldDefIdentifier][$lang] = $fieldValue;
+                        } else {
+                            $attributes[$field->fieldDefIdentifier] = $fieldValue;
+                        }
+                    }
                 }
 
                 $contentData = array_merge(
                     $contentData,
                     array(
-                        'lang' => $this->getLanguageCodeFromContext($context),
                         'section' => $content->contentInfo->sectionId,
                         'owner' => $content->contentInfo->ownerId,
                         'modification_date' => $content->contentInfo->modificationDate->getTimestamp(),

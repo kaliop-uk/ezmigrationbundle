@@ -1,3 +1,12 @@
+Version 5.xx (unreleased)
+=========================
+
+* New: it is now possible to dump all of a content's languages when generating `content/create` and `content/update`
+  migrations. In order to do so, pass `--lang=all` on the command line
+
+* Fixed: allow usage of shorthand notation when setting references in `file` migration steps
+
+
 Version 5.14.0
 ==============
 

@@ -58,7 +58,7 @@ For SQL type migration you can optionally specify the database server type the m
 
 For content/content_type/language/object_state/role/section migrations you need to specify the entity that you want to generate the migration for:
 
-    <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14 bundleName</info>
+    <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14 --lang=all bundleName</info>
 
 For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies
 you wish for the role. Any not defined will be removed. Example for updating an existing role:
