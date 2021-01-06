@@ -379,7 +379,7 @@
         - ezimage:
             path: blank.jpg
             alt_text: a blank 1x1 px image
-            filename: lol1
+            filename: lol1.jpg
         - ezbinaryfile:
             path: emptyfile.txt
             filename: lol2.txt
