@@ -41,14 +41,20 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
             $realFilePath = $filePath;
         }
 
-        return new BinaryFileValue(
-            array(
-                'path' => $realFilePath,
-                'fileSize' => filesize($realFilePath),
-                'fileName' => $fileName != '' ? $fileName : basename($realFilePath),
-                'mimeType' => $mimeType != '' ? $mimeType : mime_content_type($realFilePath)
-            )
+        $fieldValues = array(
+            'path' => $realFilePath,
+            'fileSize' => filesize($realFilePath),
+            'fileName' => $fileName != '' ? $fileName : basename($realFilePath),
+            //'mimeType' => $mimeType != '' ? $mimeType : mime_content_type($realFilePath)
         );
+
+        // changed 2021/1/6: we do _not_ add the mimetype by default any more, as it is either buggy or
+        // useless - see https://github.com/kaliop-uk/ezmigrationbundle/issues/147#issuecomment-755755241
+        if ($mimeType !== '') {
+            $fieldValues['mimeType'] = $mimeType;
+        }
+
+        return new BinaryFileValue($fieldValues);
     }
 
     /**

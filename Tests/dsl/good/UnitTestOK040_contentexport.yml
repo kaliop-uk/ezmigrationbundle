@@ -1,0 +1,155 @@
+-
+    type: content_type
+    mode: create
+    content_type_group: 1
+    identifier: kmb_test_040_contenttype
+    name: Test Content
+    name_pattern: '<name>'
+    is_container: false
+    attributes:
+        -
+            identifier: name
+            type: ezstring
+            name: name
+        -
+            identifier: ezbinaryfile
+            type: ezbinaryfile
+            name: ezbinaryfile
+        -
+            identifier: ezimage
+            type: ezimage
+            name: ezimage
+        -
+            identifier: ezmedia
+            type: ezmedia
+            name: ezmedia
+
+-   type: content
+    mode: create
+    content_type: kmb_test_040_contenttype
+    parent_location: 2
+    attributes:
+        name: hello world
+        ezimage:
+              path: blank.jpg
+              alt_text: a blank 1x1 px image
+              filename: lol1.jpg
+        ezbinaryfile:
+              path: emptyfile.txt
+              filename: lol2.txt
+        ezmedia:
+              path: small.flv
+              filename: lol3.flv
+    references:
+        -
+            identifier: kmb_040_obj_rid
+            attribute: remote_id
+
+-
+    type: migration_definition
+    mode: generate
+    file: /tmp/unit_test_generated_migration_040.json
+    migration_type: content
+    migration_mode: create
+    match:
+        type: content_remote_id
+        value: 'reference:kmb_040_obj_rid'
+    references:
+        -
+            identifier: kmb_040_filepath_1
+            attribute: '[0].attributes.ezbinaryfile.path'
+        -
+            identifier: kmb_040_filepath_2
+            attribute: '[0].attributes.ezimage.path'
+        -
+            identifier: kmb_040_filepath_3
+            attribute: '[0].attributes.ezmedia.path'
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_040_filepath_1
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_040_filepath_2
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_040_filepath_3
+
+#-
+#    type: content
+#    mode: delete
+#    match:
+#        content_type_identifier: kmb_test_040_contenttype
+
+#-
+#    type: content_type
+#    mode: delete
+#    match:
+#        content_type_identifier: kmb_test_040_contenttype
+
+-
+    type: file
+    mode: delete
+    file: /tmp/unit_test_generated_migration_040.json
+
+-
+    type: file
+    mode: exists
+    file: 'reference:kmb_040_filepath_1'
+    references:
+        kmb_040_file_exists_1: exists
+
+-
+    type: file
+    mode: exists
+    file: 'reference:kmb_040_filepath_2'
+    references:
+        kmb_040_file_exists_2: exists
+
+-
+    type: file
+    mode: exists
+    file: 'reference:kmb_040_filepath_3'
+    references:
+        kmb_040_file_exists_3: exists
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_040_file_exists_1
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_040_file_exists_2
+
+-
+    type: reference
+    mode: dump
+    identifier: reference:kmb_040_file_exists_3
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_040_file_exists_1
+    test:
+        equals: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_040_file_exists_2
+    test:
+        equals: true
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_040_file_exists_3
+    test:
+        equals: true
