@@ -13,6 +13,9 @@ use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Event\MigrationGeneratedEvent;
 
+/**
+ * @todo allow passing in more context options, esp. for content/generate migrations
+ */
 class GenerateCommand extends AbstractCommand
 {
     const DIR_CREATE_PERMISSIONS = 0755;

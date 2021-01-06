@@ -499,9 +499,14 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      * @throws \Exception
      * @return array
      *
-     * @todo add support for dumping all object languages
      * @todo add 2ndary locations when in 'update' mode
      * @todo add dumping of sort_field and sort_order for 2ndary locations
+     * @todo allow context options to tweak the generated migrations eg:
+     *       - omit rids on create
+     *       - omit 2ndary locations on create
+     *       - viceversa, do a full creation of 2ndary locations on create (incl. visibility, priority)
+     *       - match by rid vs match by id on update and on delete
+     *       - etc...
      */
     public function generateMigration(array $matchCondition, $mode, array $context = array())
     {
@@ -541,7 +546,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                         )
                     );
                     $locationService = $this->repository->getLocationService();
-                    /// @todo for accurate replication, we should express the addinfg of 2ndary locatins as separate steps, and copy over visibility, priority etc
+                    /// @todo for accurate replication, we should express the adding of 2ndary locations as separate steps, and copy over visibility, priority etc
                     $locations = $locationService->loadLocations($content->contentInfo);
                     if (count($locations) > 1) {
                         $otherParentLocations = array();
