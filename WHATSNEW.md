@@ -9,6 +9,8 @@ Version 5.15.0
 * Fixed: generating `content/create` and `content/update` migrations would fail with eZPlatform 1 and later for any
   contents with non-null ezbinaryfile and ezmedia fields
 
+* Improved: reduced the amount of test infrastructure setup code by relying on an external tool: https://github.com/tanoconsulting/euts
+
 
 Version 5.14.0
 ==============
