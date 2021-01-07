@@ -105,9 +105,9 @@ class EzMedia extends FileFieldHandler implements FieldValueConverterInterface
         if ($fieldValue->uri == null) {
             return null;
         }
-
+        $binaryFile = $this->ioService->loadBinaryFile($fieldValue->id);
         return array(
-            'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
+            'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($binaryFile->uri) : $fieldValue->uri),
             'filename'=> $fieldValue->fileName,
             'mime_type' => $fieldValue->mimeType,
             'has_controller' => $fieldValue->hasController,

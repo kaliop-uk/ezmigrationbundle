@@ -638,6 +638,7 @@ services:
         arguments:
             - "$io.root_dir$"
             - "@?ezpublish.core.io.prefix_url_decorator"
+            - "@?ezpublish.fieldType.ezbinaryfile.io_service"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezbinaryfile, priority: 0 }
 
@@ -693,6 +694,7 @@ services:
         arguments:
             - "$io.root_dir$"
             - "@?ezpublish.core.io.prefix_url_decorator"
+            - "@?ezpublish.fieldType.ezbinaryfile.io_service"
         tags:
             - { name: ez_migration_bundle.complex_field, fieldtype: ezmedia, priority: 0 }
 

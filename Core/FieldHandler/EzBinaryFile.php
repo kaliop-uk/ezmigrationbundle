@@ -69,9 +69,9 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
         if ($fieldValue->uri == null) {
             return null;
         }
-
+        $binaryFile = $this->ioService->loadBinaryFile($fieldValue->id);
         return array(
-            'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
+            'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($binaryFile->uri) : $binaryFile->uri),
             'filename'=> $fieldValue->fileName,
             'mimeType' => $fieldValue->mimeType
         );

@@ -1,10 +1,13 @@
-Version 5.xx (unreleased)
-=========================
+Version 5.15.0
+==============
 
 * New: it is now possible to dump all of a content's languages when generating `content/create` and `content/update`
   migrations. In order to do so, pass `--lang=all` on the command line
 
 * Fixed: allow usage of shorthand notation when setting references in `file` migration steps
+
+* Fixed: generating `content/create` and `content/update` migrations would fail with eZPlatform 1 and later for any
+  contents with non-null ezbinaryfile and ezmedia fields
 
 
 Version 5.14.0
