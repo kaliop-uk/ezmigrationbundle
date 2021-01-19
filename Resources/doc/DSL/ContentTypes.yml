@@ -34,12 +34,12 @@
 #    validator-configuration:
 #        IntegerValueValidator: { minIntegerValue: null, maxIntegerValue: null }
 #
-# ezmedia
+# ezmatrix
 #    field-settings:
-#        minimum_rows: 0 # only supported by the EzPlatformMatrixFieldtype field type, not the ezocumminity one
-#        columns: # only supported by the EzPlatformMatrixFieldtype field type, not the ezocumminity one
+#        minimum_rows: 0 # only supported by the EzPlatformMatrixFieldtype field type, not the ezcommunity one
+#        columns: # only supported by the EzPlatformMatrixFieldtype field type, not the ezcommunity one
 #            - { identifier: colName }
-#        columnList: # only supported by the community field type, not the EzPlatformMatrixFieldtype one
+#        columnList: # only supported by the ezcommunity field type, not the EzPlatformMatrixFieldtype one
 #            - { name: colname, identifier: colId, index: colIdx }
 #
 # ezmedia
