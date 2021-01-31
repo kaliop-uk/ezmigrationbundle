@@ -460,40 +460,42 @@ quite unlike a standard eZPublish setup! Also, it will take a considerable amoun
 Steps to set up a dedicated test environment and run the tests in it:
 
     # if you have a github auth token, it is a good idea to copy it now to Tests/docker/data/.composer/auth.json
-    ./Tests/teststack.sh build
-    ./Tests/teststack.sh runtests
-    ./Tests/teststack.sh stop
+    git clone --depth 1 --branch 0.1.0 https://github.com/tanoconsulting/euts.git teststack
+
+    ./teststack/teststack build
+    ./teststack/teststack runtests
+    ./teststack/teststack.sh stop
 
 You can also run a single test case:
 
-    ./Tests/teststack.sh runtests ./Tests/phpunit/01_CollectionsTest.php
+    ./teststack/teststack runtests ./Tests/phpunit/01_CollectionsTest.php
 
 Note: this will take some time the 1st time your run it, but it will be quicker on subsequent runs.
 Note: make sure to have enough disk space available.
 
 In case you want to run manually commands, such as the symfony console:
 
-    ./Tests/teststack.sh console cache:clear
+    ./teststack/teststack console cache:clear
 
 Or easily get to a database shell prompt:
 
-    ./Tests/teststack.sh dbconsole
+    ./teststack/teststack dbconsole
 
 Or command-line shell prompt to the Docker container where tests are run:
 
-    ./Tests/teststack.sh shell
+    ./teststack/teststack shell
 
 The tests in the Docker container run using the version of debian/php/eZPlatform kernel specified in the file
-`Tests/docker/docker-compose.yml`.
+`.euts.env`.
 If you want to test against a different version, feel free to:
-- create a file `Tests/docker/.env` and add to it any required env var (see file `.env.example` as guidance)
+- add to it any required var (see file `teststack/.euts.env.example` as guidance)
 - rebuild the test stack
 - run tests the usual way
 
 You can even keep multiple test stacks available in parallel, by using different env files, eg:
-- create a file `Tests/docker/.env.local` and add to it any required env var, starting with a unique `COMPOSE_PROJECT_NAME`
-- build the new test stack via `./Tests/teststack.sh -e .env.local build`
-- run the tests via: `./Tests/teststack.sh -e .env.local runtests`
+- create a file `.euts.env.local` and add to it any required env var, starting with a unique `COMPOSE_PROJECT_NAME`
+- build the new test stack via `./teststack/teststack. -e .euts.env.local build`
+- run the tests via: `./teststack/teststack -e .euts.env.local runtests`
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)
