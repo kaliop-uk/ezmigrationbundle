@@ -47,6 +47,7 @@ class EzMedia extends FileFieldHandler implements FieldValueConverterInterface
                 $filePath = $fieldValue['path'];
             }
             // new attribute names
+            $filePath = $fieldValue['path'];
             if (isset($fieldValue['filename'])) {
                 $fileName = $fieldValue['filename'];
             }

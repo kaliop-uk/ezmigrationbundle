@@ -1,3 +1,9 @@
+Version 5.15.1
+==============
+
+* Fixed: creating ezmedia fields starting from an array definition did not take into account the `path` element
+
+
 Version 5.15.0
 ==============
 
