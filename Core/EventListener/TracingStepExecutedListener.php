@@ -128,11 +128,11 @@ class TracingStepExecutedListener
                 $action = isset($dsl['mode']) ? ($dsl['mode'] == 'load' ? 'loaded' : ($dsl['mode'] . 'd')) : 'acted upon';
                 $verb = 'has';
                 $prefix = '';
+                $label = '';
                 if ($obj instanceof AbstractCollection || is_array($obj)) {
                     $count = count($obj);
                     if ($count == 0) {
                         $prefix = 'no ';
-                        $label = '';
                     } else {
                         $label = ' ' . $this->getObjectIdentifierAsString($obj);
                         if (count($obj) > 1) {
