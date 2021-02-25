@@ -50,7 +50,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
     {
         foreach (array('identifier', 'content_type_group', 'name_pattern', 'name', 'attributes') as $key) {
             if (!isset($step->dsl[$key])) {
-                throw new InvalidStepDefinitionExceptionn("The '$key' key is missing in a content type creation definition");
+                throw new InvalidStepDefinitionException("The '$key' key is missing in a content type creation definition");
             }
         }
 
