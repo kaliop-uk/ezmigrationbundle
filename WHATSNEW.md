@@ -1,9 +1,10 @@
-Version 5.??? (unreleased)
-==========================
+Version 5.15.2
+==============
 
 * Fixed: one php warning
 
 * Fixed: one php exception upon throwing an exception (for bad content_type/create steps)
+
 
 Version 5.15.1
 ==============
