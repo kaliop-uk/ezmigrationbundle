@@ -1,0 +1,40 @@
+-
+    type: content_type
+    mode: update
+    remove_drafts: true
+    match:
+        contenttype_identifier: image
+    attributes:
+        -
+            identifier: slide_format
+            type: ezselection
+            name:
+                fre-FR: Format
+            description: {  }
+            required: true
+            searchable: false
+            info-collector: false
+            disable-translation: false
+            category: content
+            position: 4
+            field-settings:
+                isMultiple: false
+                options: [Square, Landscape, Portrait]
+            validator-configuration: {  }
+
+-
+    type: content
+    mode: delete
+    match:
+        content_type_identifier: gallery_slide
+-
+    type: trash
+    mode: delete
+    match:
+        content_type_identifier: gallery_slide
+-
+    type: content_type
+    mode: delete
+    remove_drafts: true
+    match:
+        identifier: gallery_slide

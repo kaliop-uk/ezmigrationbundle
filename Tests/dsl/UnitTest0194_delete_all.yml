@@ -1,0 +1,21 @@
+-
+    type: content
+    mode: delete
+    match:
+        location_remote_id: f17baf9b7fac9fa91ea2c1f76dcbd39c
+-
+    type: content
+    mode: delete
+    match:
+        location_remote_id: b62b6f211fb326f77b9cfea6c6e57944
+-
+    type: content_type
+    mode: delete
+    match:
+        identifier: image
+
+-
+    type: content_type
+    mode: delete
+    match:
+        identifier: kaliop_ezimageasset

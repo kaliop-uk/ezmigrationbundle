@@ -1,0 +1,27 @@
+-
+    type: content
+    mode: create
+    content_type: image
+    parent_location: 2
+    priority: 0
+    is_hidden: false
+    sort_field: path
+    sort_order: ASC
+    remote_id: 0c6ca3b36823ab38b9c8a8b79d5b12fd
+    location_remote_id: f17baf9b7fac9fa91ea2c1f76dcbd39c
+    lang: fre-FR
+    section: 1
+    owner: 14
+    modification_date: 1556889738
+    publication_date: 1556889738
+    always_available: true
+    attributes:
+        name: 'eZPlatform img'
+        caption:
+            xml: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<section xmlns=\"http://docbook.org/ns/docbook\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:ezxhtml=\"http://ez.no/xmlns/ezpublish/docbook/xhtml\" xmlns:ezcustom=\"http://ez.no/xmlns/ezpublish/docbook/custom\" version=\"5.0-variant ezpublish-1.0\"><para>eZPLatform</para></section>\n"
+        image:
+            path: images/blank.jpg
+            filename: blank.jpg
+            alternativeText: ''
+        slide_format:
+            - 0
