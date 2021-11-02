@@ -20,7 +20,7 @@ trait EmbeddedRegexpReferenceResolverTrait
         $regexp = $this->getEmbeddedRegexp();
         return (bool) preg_match_all($regexp, $string, $matches);
     }
-    
+
     /**
      * Returns the $string with eventual refs resolved
      *
@@ -79,12 +79,12 @@ trait EmbeddedRegexpReferenceResolverTrait
      * Has to be implemented in the class which uses this trait
      * @return string
      */
-    abstract protected function getRegexp();
+    abstract public function getRegexp();
 
     /**
      * Has to be implemented in the class which uses this trait
      * @param string $stringIdentifier
      * @return mixed
      */
-    abstract protected function getReferenceValue($stringIdentifier);
+    abstract public function getReferenceValue($stringIdentifier);
 }
