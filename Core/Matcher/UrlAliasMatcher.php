@@ -95,8 +95,8 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
         foreach ($urlIds as $urlId) {
             try {
-                // return unique contents
-                $UrlAlias = $this->repository->getUrlAliaseservice()->load($urlId);
+                // return unique items
+                $UrlAlias = $this->repository->getUrlAliasService()->load($urlId);
                 $urls[$UrlAlias->id] = $UrlAlias;
             } catch(NotFoundException $e) {
                 if (!$tolerateMisses) {
@@ -121,7 +121,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
         foreach ($urls as $url) {
             try {
                 // return unique contents
-                $UrlAlias = $this->repository->getUrlAliaseservice()->lookup($url);
+                $UrlAlias = $this->repository->getUrlAliasService()->lookup($url);
                 $urls[$UrlAlias->id] = $UrlAlias;
             } catch(NotFoundException $e) {
                 if (!$tolerateMisses) {
@@ -140,7 +140,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
     {
         $urls = [];
 
-        foreach ($this->repository->getUrlAliaseservice()->listGlobalAliases() as $UrlAlias) {
+        foreach ($this->repository->getUrlAliasService()->listGlobalAliases() as $UrlAlias) {
             // return unique contents
             $urls[$UrlAlias->id] = $UrlAlias;
         }

@@ -93,10 +93,10 @@ class UrlWildcardManager extends RepositoryExecutor
                     $value = $urlWildcard->id;
                     break;
                 case 'source':
-                    $value = $urlWildcard->source;
+                    $value = $urlWildcard->sourceUrl;
                     break;
                 case 'destination':
-                    $value = $urlWildcard->destination;
+                    $value = $urlWildcard->destinationUrl;
                     break;
                 case 'forward':
                     $value = $urlWildcard->forward;
