@@ -12,12 +12,14 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
 
-    const MATCH_URL_ID = 'url_id';
+    const MATCH_URL_ID = 'url_id'; // NB: this is used to match a composite string $parentid-$md5, not the id column in the DB
     const MATCH_URL = 'url';
+    const MATCH_LOCATION_ID = 'location_id';
+    const MATCH_LOCATION_REMOTE_ID = 'location_remote_id';
 
     protected $allowedConditions = array(
         self::MATCH_ALL, self::MATCH_AND, self::MATCH_OR, self::MATCH_NOT,
-        self::MATCH_URL_ID, self::MATCH_URL,
+        self::MATCH_URL_ID, self::MATCH_URL, self::MATCH_LOCATION_ID, self::MATCH_LOCATION_REMOTE_ID,
         // aliases
         'id'
     );
@@ -59,6 +61,10 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
                 case self::MATCH_URL:
                     return new UrlAliasCollection($this->findUrlAliasesByUrl($values, $tolerateMisses));
+
+                case self::MATCH_LOCATION_ID:
+                case self::MATCH_LOCATION_REMOTE_ID:
+                    return new UrlAliasCollection($this->findUrlAliasesByLocation($values, $tolerateMisses));
 
                 case self::MATCH_ALL:
                     return new UrlAliasCollection($this->findAllUrlAliases());
@@ -123,6 +129,46 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 // return unique contents
                 $UrlAlias = $this->repository->getUrlAliasService()->lookup($url);
                 $urls[$UrlAlias->id] = $UrlAlias;
+            } catch(NotFoundException $e) {
+                if (!$tolerateMisses) {
+                    throw $e;
+                }
+            }
+        }
+
+        return $urls;
+    }
+
+    /**
+     * @param string[] $locationIds
+     * @param bool $tolerateMisses
+     * @param bool|null $custom when null, return both custom and non-custom aliases
+     * @return UrlAlias[]
+     * @throws NotFoundException
+     */
+    protected function findUrlAliasesByLocation(array $locationIds, $tolerateMisses = false, $custom = null)
+    {
+        $urls = [];
+
+        foreach ($locationIds as $locationId) {
+            try {
+                if (!is_int($locationId) && !ctype_digit($locationId)) {
+                    // presume it is a remote_id
+                    $location = $this->repository->getLocationService()->loadLocationByRemoteId($locationId);
+                } else {
+                    $location = $this->repository->getLocationService()->loadLocation($locationId);
+                }
+                // return unique items
+                if ($custom === null || !$custom) {
+                    foreach ($this->repository->getUrlAliasService()->listLocationAliases($location, false) as $UrlAlias) {
+                        $urls[$UrlAlias->id] = $UrlAlias;
+                    }
+                }
+                if ($custom === null || $custom) {
+                    foreach ($this->repository->getUrlAliasService()->listLocationAliases($location) as $UrlAlias) {
+                        $urls[$UrlAlias->id] = $UrlAlias;
+                    }
+                }
             } catch(NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
