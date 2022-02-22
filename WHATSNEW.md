@@ -1,3 +1,10 @@
+Version 5.16.0
+==============
+
+* New: command `migrate` and `mass_migrate` can pass down to children processes custom php.ini settings, such as f.e.
+  `memory_limit` and `error_reporting`. Usefult to run migrations as subprocesses in hostile environments
+
+
 Version 5.15.2
 ==============
 

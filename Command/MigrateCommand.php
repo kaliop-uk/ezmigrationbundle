@@ -55,6 +55,7 @@ class MigrateCommand extends AbstractCommand
             ->addOption('force-sigchild-enabled', null, InputOption::VALUE_NONE, "When using a separate php process to run each migration, tell Symfony that php was compiled with --enable-sigchild option")
             ->addOption('survive-disconnected-tty', null, InputOption::VALUE_NONE, "Keep on executing migrations even if the tty where output is written to gets removed. Useful if you run the command over an unstable ssh connection")
             ->addOption('set-reference', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "Inject references into the migrations. Format: --set-reference refname:value --set-reference ref2name:value2")
+            ->addOption('child-process-php-ini-config', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, "Passed using `-d` to child php processes when using separate-process. Format: --child-processes-php-ini-config memory_limit:-1 --child-processes-php-ini-config setting2:value2")
             ->addOption('child', null, InputOption::VALUE_NONE, "*DO NOT USE* Internal option for when forking separate processes")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:migrate</info> command loads and executes migrations:
@@ -115,7 +116,19 @@ EOT
             $builder = new ProcessBuilder();
             $executableFinder = new PhpExecutableFinder();
             if (false !== $php = $executableFinder->find()) {
-                $builder->setPrefix($php);
+                $prefix = array($php);
+
+                if ($input->getOption('child-process-php-ini-config')) {
+                    foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
+                        $ini = explode(':', $iniSpec, 2);
+                        if (count($ini) < 2 || $ini[0] === '') {
+                            throw new \Exception("Invalid php ini specification: '$iniSpec'");
+                        }
+                        $prefix[] = '-d ' . $ini[0] . '=' . $ini[1];
+                    }
+                }
+
+                $builder->setPrefix($prefix);
             }
             $builderArgs = $this->createChildProcessArgs($input);
         }
