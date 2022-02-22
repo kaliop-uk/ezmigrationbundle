@@ -208,7 +208,19 @@ EOT
             $builder = new ProcessBuilder();
             $executableFinder = new PhpExecutableFinder();
             if (false !== $php = $executableFinder->find()) {
-                $builder->setPrefix($php);
+                $prefix = array($php);
+
+                if ($input->getOption('child-process-php-ini-config')) {
+                    foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
+                        $ini = explode(':', $iniSpec, 2);
+                        if (count($ini) < 2 || $ini[0] === '') {
+                            throw new \Exception("Invalid php ini specification: '$iniSpec'");
+                        }
+                        $prefix[] = '-d ' . $ini[0] . '=' . $ini[1];
+                    }
+                }
+
+                $builder->setPrefix($prefix);
             }
 
             $builderArgs = parent::createChildProcessArgs($input);
@@ -487,6 +499,11 @@ EOT
         if ($input->getOption('set-reference')) {
             foreach($input->getOption('set-reference') as $refSpec) {
                 $builderArgs[] = '--set-reference=' . $refSpec;
+            }
+        }
+        if ($input->getOption('child-process-php-ini-config')) {
+            foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
+                $builderArgs[] = '--child-process-php-ini-config=' . $iniSpec;
             }
         }
         return $builderArgs;
