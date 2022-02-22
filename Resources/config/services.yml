@@ -85,6 +85,8 @@ parameters:
     ez_migration_bundle.executor.tag_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TagManager
     ez_migration_bundle.executor.trash_manager.class: Kaliop\eZMigrationBundle\Core\Executor\TrashManager
     ez_migration_bundle.executor.user_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserManager
+    ez_migration_bundle.executor.url_alias.class: Kaliop\eZMigrationBundle\Core\Executor\UrlAliasManager
+    ez_migration_bundle.executor.url_wildcard.class: Kaliop\eZMigrationBundle\Core\Executor\UrlWildcardManager
     ez_migration_bundle.executor.user_group_manager.class: Kaliop\eZMigrationBundle\Core\Executor\UserGroupManager
 
     ez_migration_bundle.content_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcherDirectLoad
@@ -100,6 +102,8 @@ parameters:
     ez_migration_bundle.section_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher
     ez_migration_bundle.tag_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher
     ez_migration_bundle.trash_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\TrashMatcher
+    ez_migration_bundle.url_alias_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UrlAliasMatcher
+    ez_migration_bundle.url_wildcard_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UrlWildcardMatcher
     ez_migration_bundle.user_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher
     ez_migration_bundle.user_group_matcher.class: Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher
 
@@ -502,6 +506,26 @@ services:
         tags:
             - { name: ez_migration_bundle.executor }
 
+    ez_migration_bundle.executor.url_alias:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.url_alias.class%'
+        arguments:
+            - '@ez_migration_bundle.url_alias_matcher'
+        calls:
+            - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
+        tags:
+            - { name: ez_migration_bundle.executor }
+
+    ez_migration_bundle.executor.url_wildcard:
+        parent: ez_migration_bundle.executor.repository
+        class: '%ez_migration_bundle.executor.url_wildcard.class%'
+        arguments:
+            - '@ez_migration_bundle.url_wildcard_matcher'
+        calls:
+            - [ 'setReferenceMatcher', [ '@ez_migration_bundle.reference_matcher' ] ]
+        tags:
+            - { name: ez_migration_bundle.executor }
+
     ez_migration_bundle.executor.user_group_manager:
         parent: ez_migration_bundle.executor.repository
         class: '%ez_migration_bundle.executor.user_group_manager.class%'
@@ -601,6 +625,16 @@ services:
             - '@ez_migration_bundle.user_matcher'
             - '%ez_migration_bundle.query_limit%'
 
+    ez_migration_bundle.url_alias_matcher:
+        class: '%ez_migration_bundle.url_alias_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+
+    ez_migration_bundle.url_wildcard_matcher:
+        class: '%ez_migration_bundle.url_wildcard_matcher.class%'
+        arguments:
+            - '@ezpublish.api.repository'
+            -
     ez_migration_bundle.user_matcher:
         class: '%ez_migration_bundle.user_matcher.class%'
         arguments:
