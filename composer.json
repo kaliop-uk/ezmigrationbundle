@@ -27,6 +27,7 @@
         "ezsystems/ezpublish-kernel": ">=5.4|>=2014.11",
         "mtdowling/jmespath.php": "2.*",
         "nikic/php-parser": "^2.0 || ^3.0 || ^4.0",
+        "symfony/expression-language": "*",
         "symfony/process": "*",
         "symfony/swiftmailer-bundle": "*",
         "symfony/validator": "*",

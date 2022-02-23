@@ -129,10 +129,10 @@ parameters:
     ez_migration_bundle.reference_resolver.chain_prefix.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ChainPrefixResolver
     ez_migration_bundle.reference_resolver.customreference.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\CustomReferenceResolver
     ez_migration_bundle.reference_resolver.content.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ContentResolver
+    ez_migration_bundle.reference_resolver.expression.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\ExpressionResolver
     ez_migration_bundle.reference_resolver.location.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver
     ez_migration_bundle.reference_resolver.loop.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LoopResolver
     ez_migration_bundle.reference_resolver.tag.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\TagResolver
-
     ez_migration_bundle.helper.limitation_converter.class: Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter
     ez_migration_bundle.helper.sort_converter.class: Kaliop\eZMigrationBundle\Core\Helper\SortConverter
     ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
@@ -807,8 +807,8 @@ services:
             -
                 - '@ez_migration_bundle.reference_resolver.customreference'
                 - '@ez_migration_bundle.reference_resolver.location'
-               # not enabled by default for v3, as it might break v1 migrations that don't expect it to be present
-               #- '@ez_migration_bundle.reference_resolver.content'
+                # not enabled by default for v3, as it might break v1 migrations that don't expect it to be present
+                #- '@ez_migration_bundle.reference_resolver.content'
                 - '@ez_migration_bundle.reference_resolver.tag'
 
     # @deprecated
@@ -817,6 +817,13 @@ services:
         arguments:
             - '@ez_migration_bundle.content_matcher'
 
+    ez_migration_bundle.reference_resolver.expression:
+        class: '%ez_migration_bundle.reference_resolver.expression.class%'
+        arguments:
+            - '@ez_migration_bundle.reference_resolver.customreference'
+        lazy: true
+
+    # @deprecated
     ez_migration_bundle.reference_resolver.location:
         class: '%ez_migration_bundle.reference_resolver.location.class%'
         arguments:
@@ -844,7 +851,10 @@ services:
     ez_migration_bundle.reference_resolver.customreference.flexible:
         class: '%ez_migration_bundle.reference_resolver.chain_prefix.class%'
         arguments:
-            - [ '@ez_migration_bundle.reference_resolver.customreference.base', '@ez_migration_bundle.reference_resolver.loop' ]
+            -
+                - '@ez_migration_bundle.reference_resolver.customreference.base'
+                - '@ez_migration_bundle.reference_resolver.loop'
+                - '@ez_migration_bundle.reference_resolver.expression'
 
     ### misc
 

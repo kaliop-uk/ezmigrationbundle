@@ -4,6 +4,37 @@ Version 5.16.0
 * New: command `migrate` and `mass_migrate` can pass down to children processes custom php.ini settings, such as f.e.
   `memory_limit` and `error_reporting`. Usefult to run migrations as subprocesses in hostile environments
 
+* New: multiple migration steps `url_alias` and `url_wildcard` are now available to manage urls aliases. Please read
+  their documentation in Resources/doc/DSL for details
+
+* New: everywhere a reference was previously resolved, ie. using `reference:myref` or `[reference:myref]` syntax
+  it is now possible to use `eval:expression` or `[eval:expression]`.
+
+  Ex: to take the value of an existing reference and add 1 to it: `[eval: 1 + resolve('reference:myref')]`
+
+  Ex: it is possible to add an element to an array-valued reference, with an admittedly cumbersome syntax, given here
+  as a self-contained example:
+
+      -
+          type: reference
+          mode: set
+          identifier: pippo
+          value: [a, b]
+      -
+          type: reference
+          mode: set
+          identifier: pippo
+          value: "eval: array_merge(resolve('reference:pippo'), ['c'])"
+          resolve_references: true
+          overwrite: true
+
+  The syntax for "expression" is the one of the Symfony ExpressionLanguage component. See: https://symfony.com/doc/current/components/expression_language/syntax.html
+
+  Note that this can be a BC break if you have existing migrations which might have the text `[eval:` in their data.
+  If this is a problem for your environment, you can fix it by overrideing the definition of Symfony service
+  `ez_migration_bundle.reference_resolver.customreference.flexible` and remove from its arguments the service
+  `@ez_migration_bundle.reference_resolver.expression`
+
 
 Version 5.15.2
 ==============
