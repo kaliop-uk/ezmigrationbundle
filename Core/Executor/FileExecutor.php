@@ -9,12 +9,15 @@ use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
 class FileExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
+    use NonScalarReferenceSetterTrait;
 
     protected $supportedStepTypes = array('file');
-    protected $supportedActions = array('load', 'save', 'copy', 'move', 'delete', 'append', 'prepend', 'exists');
+    protected $supportedActions = array('load', 'load_csv', 'save', 'copy', 'move', 'delete', 'append', 'prepend', 'exists');
 
     /** @var EmbeddedReferenceResolverBagInterface $referenceResolver */
     protected $referenceResolver;
+
+    protected $scalarReferences = array('count');
 
     /**
      * @param EmbeddedReferenceResolverBagInterface $referenceResolver
@@ -45,7 +48,7 @@ class FileExecutor extends AbstractExecutor
 
         $this->skipStepIfNeeded($step);
 
-        return $this->$action($step->dsl, $step->context);
+        return $action == 'load_csv' ? $this->$action($step) : $this->$action($step->dsl, $step->context);
     }
 
     /**
@@ -67,6 +70,61 @@ class FileExecutor extends AbstractExecutor
         $this->setReferences($fileName, $dsl);
 
         return file_get_contents($fileName);
+    }
+
+    /**
+     * @param MigrationStep $step
+     * @return string[][]
+     * @throws InvalidStepDefinitionException
+     * @throws \Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException
+     */
+    protected function load_csv($step)
+    {
+        if (!isset($step->dsl['expect'])) {
+            // for csv files, it makes sense that we expect them to have many rows
+            $step = new MigrationStep(
+                $step->type,
+                array_merge($step->dsl, array('expect' => self::$EXPECT_MANY)),
+                $step->context
+            );
+        }
+
+        $dsl = $step->dsl;
+
+        if (!isset($dsl['file'])) {
+            throw new InvalidStepDefinitionException("Can not load file: name missing");
+        }
+        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        if (!file_exists($fileName)) {
+            throw new \Exception("Can not load '$fileName': file missing");
+        }
+
+
+
+        $separator = isset($dsl['separator']) ? $dsl['separator'] : ',';
+        $enclosure = isset($dsl['enclosure']) ? $dsl['enclosure'] : '"';
+        $escape = isset($dsl['escape']) ? $dsl['escape'] : '\\';
+
+        $singleResult = ($this->expectedResultsType($step) == self::$RESULT_TYPE_SINGLE);
+
+        $data = array();
+        if (($handle = fopen($fileName, "r")) !== FALSE) {
+            while (($row = fgetcsv($handle, 0, $separator, $enclosure, $escape)) !== FALSE) {
+                $data[] = $row;
+                if ($singleResult && count($data) > 1) {
+                    break;
+                }
+            }
+            fclose($handle);
+        } else {
+            throw new \Exception("Can not load '$fileName'");
+        }
+
+        $this->validateResultsCount($data, $step);
+        $this->setDataReferences($data, $dsl, $singleResult);
+
+        // NB: this is one of the very few places where we return a nested array...
+        return $data;
     }
 
     /**
@@ -363,6 +421,47 @@ class FileExecutor extends AbstractExecutor
         return true;
     }
 
+    protected function setdataReferences($data, $dsl, $singleResult)
+    {
+        if (!array_key_exists('references', $dsl)) {
+            return false;
+        }
+
+        foreach ($dsl['references'] as $key => $reference) {
+            $reference = $this->parseReferenceDefinition($key, $reference);
+            switch ($reference['attribute']) {
+                case 'count':
+                    $value = count($data);
+                    break;
+                default:
+                    if (strpos($reference['attribute'], 'column.') !== 0) {
+                        throw new InvalidStepDefinitionException('File Executor does not support setting references for attribute ' . $reference['attribute']);
+                    }
+                    if (count($data)) {
+                        $colNum = substr($reference['attribute'], 7);
+                        if (!isset($data[0][$colNum])) {
+                            throw new \InvalidArgumentException('File Executor does not support setting references for attribute ' . $reference['attribute']);
+                        }
+                        $value = array_column($data, $colNum);
+                        if ($singleResult) {
+                            $value = reset($value);
+                        }
+                    } else {
+                        // we should validate the requested column name, but we can't...
+                        $value = array();
+                    }
+            }
+
+            $overwrite = false;
+            if (isset($reference['overwrite'])) {
+                $overwrite = $reference['overwrite'];
+            }
+            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+        }
+
+        return true;
+    }
+
     /**
      * Replaces any references inside a string
      *
@@ -373,5 +472,14 @@ class FileExecutor extends AbstractExecutor
     protected function resolveReferencesInText($text)
     {
         return $this->referenceResolver->ResolveEmbeddedReferences($text);
+    }
+
+    /**
+     * @param array $referenceDefinition
+     * @return bool
+     */
+    protected function isScalarReference($referenceDefinition)
+    {
+        return in_array($referenceDefinition['attribute'], $this->scalarReferences);
     }
 }

@@ -7,6 +7,8 @@ Version 5.16.0
 * New: multiple migration steps `url_alias` and `url_wildcard` are now available to manage urls aliases. Please read
   their documentation in Resources/doc/DSL for details
 
+* New: migration step `file/load_csv`, allows to easily initialize references long list of values
+
 * New: everywhere a reference was previously resolved, ie. using `reference:myref` or `[reference:myref]` syntax
   it is now possible to use `eval:expression` or `[eval:expression]`.
 
