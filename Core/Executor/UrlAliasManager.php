@@ -5,16 +5,21 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\Core\Matcher\UrlAliasMatcher;
 
+/**
+ * @todo allow refreshing non-custom location aliases
+ */
 class UrlAliasManager extends RepositoryExecutor
 {
     protected $supportedStepTypes = array('url_alias');
-    protected $supportedActions = array('create', 'load');
+    protected $supportedActions = array('create', 'load', 'cleanup', 'regenerate');
 
     protected $urlAliasMatcher;
+    protected $locationManager;
 
-    public function __construct(UrlAliasMatcher $urlAliasMatcher)
+    public function __construct(UrlAliasMatcher $urlAliasMatcher, LocationManager $locationManager)
     {
         $this->urlAliasMatcher = $urlAliasMatcher;
+        $this->locationManager = $locationManager;
     }
 
     protected function create($step)
@@ -54,7 +59,6 @@ class UrlAliasManager extends RepositoryExecutor
             $url = $urlAliasService->createUrlAlias($location, $step->dsl['path'], $languageCode, $forward, $alwaysAvailable);
         }
 
-
         $this->setReferences($url, $step);
 
         return $url;
@@ -71,7 +75,6 @@ class UrlAliasManager extends RepositoryExecutor
         return $urlCollection;
     }
 
-    /// @todo allow to delete only the custom aliases of a node
     protected function delete($step)
     {
         $urlCollection = $this->matchUrlAlias('delete', $step);
@@ -89,6 +92,25 @@ class UrlAliasManager extends RepositoryExecutor
         return $urlCollection;
     }
 
+    protected function regenerate($step)
+    {
+        $urlAliasService = $this->repository->getUrlAliasService();
+
+        foreach ($this->locationManager->matchLocations('refresh the system url aliases for', $step) as $location)
+        {
+            $urlAliasService->refreshSystemUrlAliasesForLocation($location);
+        }
+        
+        return true; 
+    }
+    
+    protected function cleanup($step)
+    {
+        $urlAliasService = $this->repository->getUrlAliasService();
+
+        return $urlAliasService->deleteCorruptedUrlAliases();
+    }
+    
     protected function matchUrlAlias($action, $step)
     {
         if (!isset($step->dsl['match'])) {
@@ -127,7 +149,7 @@ class UrlAliasManager extends RepositoryExecutor
                     $value = $urlAlias->path;
                     break;
                 case 'language_codes':
-                    /// @todo return a string?
+                    /// @todo should we return a string?
                     $value = $urlAlias->languageCodes;
                     break;
                 case 'always_available':

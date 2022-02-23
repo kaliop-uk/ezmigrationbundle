@@ -267,7 +267,7 @@ class LocationManager extends RepositoryExecutor
      * @return LocationCollection
      * @throws \Exception
      */
-    protected function matchLocations($action, $step)
+    public function matchLocations($action, $step)
     {
         if (!isset($step->dsl['location_id']) && !isset($step->dsl['match'])) {
             throw new InvalidStepDefinitionException("The id or a match condition is required to $action a location");

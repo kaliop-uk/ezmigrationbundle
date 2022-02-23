@@ -1,0 +1,54 @@
+# This migration showcases mixing custom SQL statements with ready-made yaml migration steps.
+# This combination can result in greater efficiency than using only ready-made yaml migration steps, as well as
+# allow extra customization of the data to act upon.
+# In this case:
+# - we add custom filtering based on content/version last modification date
+# - we try to avoid loading as few contents as possible in memory
+
+# First: remove old draft contents (1 Y)
+-
+    type: sql
+    mode: query
+    mysql: "SELECT DISTINCT(c.id) AS ids FROM ezcontentobject c WHERE c.status = 0 AND UNIX_TIMESTAMP() - c.modified > 31536000"
+    references:
+        contentIds: results.ids
+        contentsNum: count
+    expect: any
+-
+    type: reference
+    mode: dump
+    identifier: "reference:contentIds"
+    label: "Removing drafts contents older than 1Y: "
+-
+    type: content
+    mode: delete
+    match:
+        content_id: "reference:contentIds"
+    if:
+        "reference:contentsNum":
+            gt: 0
+
+# Then, remove all old draft versions of published contents
+-
+    type: sql
+    mode: query
+    mysql: "SELECT DISTINCT(c.id) AS ids FROM ezcontentobject c JOIN ezcontentobject_version v ON v.contentobject_id = c.id WHERE v.status IN (0, 5) AND c.status = 1 AND UNIX_TIMESTAMP() - v.modified > 31536000"
+    references:
+        contentIdsV: results.ids
+        contentsNumV: count
+    expect: any
+-
+    type: reference
+    mode: dump
+    identifier: "reference:contentIdsV"
+    label: "Removing draft versions older than 1Y from contents: "
+-
+    type: content_version
+    mode: delete
+    match:
+        content_id: "reference:contentIdsV"
+    match_versions:
+        status: draft
+    if:
+        "reference:contentsNumV":
+            gt: 0

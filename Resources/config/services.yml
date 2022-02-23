@@ -511,6 +511,7 @@ services:
         class: '%ez_migration_bundle.executor.url_alias.class%'
         arguments:
             - '@ez_migration_bundle.url_alias_matcher'
+            - '@ez_migration_bundle.executor.location_manager'
         calls:
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
         tags:

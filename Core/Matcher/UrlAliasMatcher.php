@@ -8,6 +8,9 @@ use Kaliop\eZMigrationBundle\API\Collection\UrlAliasCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
+/**
+ * @todo allow matching non-custom location aliases via matchUrlAlias()
+ */
 class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
 {
     use FlexibleKeyMatcherTrait;
@@ -38,6 +41,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
     }
 
     /**
+     * NB: by default, only custom aliases will be matched for locations
      * @param array $conditions key: condition, value: int / string / int[] / string[]
      * @param bool $tolerateMisses
      * @return UrlAliasCollection
@@ -67,6 +71,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
                     return new UrlAliasCollection($this->findUrlAliasesByLocation($values, $tolerateMisses));
 
                 case self::MATCH_ALL:
+                    /// @todo this will most likely not surface custom location aliases
                     return new UrlAliasCollection($this->findAllUrlAliases());
 
                 case self::MATCH_AND:
@@ -76,7 +81,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
                     return $this->matchOr($values, $tolerateMisses = false);
 
                 case self::MATCH_NOT:
-                    /// @todo this will not surface non-custom location aliases, which we do allow to match in other methods
+                    /// @todo this will most likely not surface custom location aliases
                     return new UrlAliasCollection(array_diff_key($this->findAllUrlAliases(), $this->matchUrlAlias($values, true)->getArrayCopy()));
             }
         }
@@ -84,14 +89,12 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
     protected function getConditionsFromKey($key)
     {
-        /// @todo should we allow to match by url ?
-        //if (is_int($key) || ctype_digit($key)) {
-            return array(self::MATCH_URL_ID => $key);
-        //}
+        // The value for url_id matching is a string, so hard to tell it apart from matching eg. by url
+        return array(self::MATCH_URL_ID => $key);
     }
 
     /**
-     * @param int[] $urlIds
+     * @param string[] $urlIds
      * @param bool $tolerateMisses
      * @return UrlAlias[]
      * @throws NotFoundException
@@ -141,13 +144,13 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
     }
 
     /**
-     * @param string[] $locationIds
+     * @param int[]|string[] $locationIds
      * @param bool $tolerateMisses
-     * @param bool|null $custom when null, return both custom and non-custom aliases
+     * @param bool|null $custom when null, return both custom and non-custom aliases. When false, only non-custom
      * @return UrlAlias[]
      * @throws NotFoundException
      */
-    protected function findUrlAliasesByLocation(array $locationIds, $tolerateMisses = false, $custom = null)
+    protected function findUrlAliasesByLocation(array $locationIds, $tolerateMisses = false, $custom = true)
     {
         $urls = [];
 
@@ -181,6 +184,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
     }
 
     /**
+     * @todo check: does this include all custom location aliases? If not, we should not allow matching with NOT
      * @return UrlAlias[]
      */
     protected function findAllUrlAliases()

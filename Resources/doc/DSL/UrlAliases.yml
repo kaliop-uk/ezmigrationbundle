@@ -80,3 +80,14 @@
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    # Delete global, system or custom URL alias pointing to non-existent Locations
+    type: url_alias
+    mode: cleanup
+
+-
+    # Regenerate system URL aliases pointing to the matched Locations
+    type: url_alias
+    mode: regenerate
+    match: # use the same conditions available for the `location/load` step
