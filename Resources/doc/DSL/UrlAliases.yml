@@ -1,0 +1,82 @@
+-
+    # Create a new url_alias
+    type: url_alias
+    mode: create
+    source: uri
+    destination: uri # the path to a (non-node) view. In alternative to destination_location
+    destination_location: int|string # location id or remote id. In alternative to destination
+    language_code: string|string[] # mandatory
+    forward: true|false # Optional, defaults to false
+    always_available: true|false # Optional, defaults to false
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+            # Supports: url_id, type, destination, source, language_code, always_available, is_history, is_custom, forward
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    # Delete an existing url_alias
+    type: url_alias
+    mode: delete
+    match: # Only one of the following can be specified
+        url_id: string # NB: formed by $parentid-$md5
+        url: string
+        location_id: int # NB: this can match many alises per location
+        location_remote_id: int # this can match many alises per location
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or code
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+            # Supports: url_id, type, destination, source, language_code, always_available, is_history, is_custom, forward
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+      # 'one': only one element should be matched; reference values will be scalars
+    # 'any': zero or more element should be matched; reference values will be arrays
+    # 'many': one or more element should be matched; reference values will be arrays
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    # Loads one or more existing url_alias, useful for setting references
+    type: url_alias
+    mode: load
+    match: # Only one of the following can be specified
+        url_id: string # NB: formed by $parentid-$md5
+        url: string
+        location_id: int # NB: this can match many alises per location
+        location_remote_id: int # this can match many alises per location
+    match_tolerate_misses: false # optional. Do not fail the execution if there is no item matching, when matching by id or code
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+        # long syntax:
+        -
+            identifier: referenceId # A string used to identify the reference
+            attribute: attributeId # An attribute to get the value of for the reference.
+            # Supports: url_id, type, destination, source, language_code, always_available, is_history, is_custom, forward
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
+    expect: one|any|many # Optional. If set, the number of matched items will be validated, and the type of values set to created references will change
+      # 'one': only one element should be matched; reference values will be scalars
+    # 'any': zero or more element should be matched; reference values will be arrays
+    # 'many': one or more element should be matched; reference values will be arrays
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

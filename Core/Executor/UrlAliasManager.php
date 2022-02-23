@@ -21,11 +21,16 @@ class UrlAliasManager extends RepositoryExecutor
     {
         $urlAliasService = $this->repository->getUrlAliasService();
 
-        if (!isset($step->dsl['source']) && !isset($step->dsl['source_location'])) {
-            throw new InvalidStepDefinitionException("Either the 'source' or 'source_location' key is required to create a new urlalias.");
+        if (!isset($step->dsl['destination']) && !isset($step->dsl['destination_location'])) {
+            throw new InvalidStepDefinitionException("Either the 'destination' or 'destination_location' key is required to create a new urlalias.");
         }
-        if (isset($step->dsl['source']) && isset($step->dsl['source_location'])) {
-            throw new InvalidStepDefinitionException("The 'source' and 'source_location' keys can not be used at the same time to create a new urlalias.");
+        if (isset($step->dsl['destination']) && isset($step->dsl['destination_location'])) {
+            throw new InvalidStepDefinitionException("The 'destination' and 'destination_location' keys can not be used at the same time to create a new urlalias.");
+        }
+        // be kind to users
+        if (isset($step->dsl['source']) && !isset($step->dsl['path'])) {
+            $step->dsl['path'] = $step->dsl['source'];
+            unset($step->dsl['source']);
         }
         if (!isset($step->dsl['path'])) {
             throw new InvalidStepDefinitionException("The 'path' key is required to create a new urlalias.");
@@ -37,13 +42,13 @@ class UrlAliasManager extends RepositoryExecutor
 
         $alwaysAvailable = isset($step->dsl['always_available']) ? $step->dsl['always_available'] : false;
 
-        if (isset($step->dsl['source'])) {
-            $url = $urlAliasService->createGlobalUrlAlias($step->dsl['source'], $step->dsl['path'], $languageCode, $forward, $alwaysAvailable);
+        if (isset($step->dsl['destination'])) {
+            $url = $urlAliasService->createGlobalUrlAlias($step->dsl['destination'], $step->dsl['path'], $languageCode, $forward, $alwaysAvailable);
         } else {
-            if (!is_int($step->dsl['source_location']) && !ctype_digit($step->dsl['source_location'])) {
-                $location = $this->repository->getLocationService()->loadLocationByRemoteId($step->dsl['source_location']);
+            if (!is_int($step->dsl['destination_location']) && !ctype_digit($step->dsl['destination_location'])) {
+                $location = $this->repository->getLocationService()->loadLocationByRemoteId($step->dsl['destination_location']);
             } else {
-                $location = $this->repository->getLocationService()->loadLocation($step->dsl['source_location']);
+                $location = $this->repository->getLocationService()->loadLocation($step->dsl['destination_location']);
             }
 
             $url = $urlAliasService->createUrlAlias($location, $step->dsl['path'], $languageCode, $forward, $alwaysAvailable);
@@ -66,6 +71,7 @@ class UrlAliasManager extends RepositoryExecutor
         return $urlCollection;
     }
 
+    /// @todo allow to delete only the custom aliases of a node
     protected function delete($step)
     {
         $urlCollection = $this->matchUrlAlias('delete', $step);
@@ -117,6 +123,7 @@ class UrlAliasManager extends RepositoryExecutor
                     $value = $urlAlias->destination;
                     break;
                 case 'path':
+                case 'source':
                     $value = $urlAlias->path;
                     break;
                 case 'language_codes':

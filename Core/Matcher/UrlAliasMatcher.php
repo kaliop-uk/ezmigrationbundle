@@ -76,6 +76,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
                     return $this->matchOr($values, $tolerateMisses = false);
 
                 case self::MATCH_NOT:
+                    /// @todo this will not surface non-custom location aliases, which we do allow to match in other methods
                     return new UrlAliasCollection(array_diff_key($this->findAllUrlAliases(), $this->matchUrlAlias($values, true)->getArrayCopy()));
             }
         }
