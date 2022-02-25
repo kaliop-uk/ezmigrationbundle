@@ -470,10 +470,18 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                         );
                         if (is_array($hashValue)) {
                             if (count($parts) == 2 && $fieldIdentifier === $parts[1]) {
-                                throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has an array value');
+                                $value = $hashValue;
+                            } else {
+                                $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
                             }
-                            /// @todo this does not give any guarantees regarding the cardinality of the matched stuff...
-                            $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
+                            // we do allow array values for refs, but not multi-level
+                            if (is_array($value)) {
+                                foreach($hashValue as $subValue) {
+                                    if (is_array($subValue) || is_object($subValue)) {
+                                        throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given value is an array with a non scalar element');
+                                    }
+                                }
+                            }
                         } else {
                             if (count($parts) > 2) {
                                 throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has a scalar value');
