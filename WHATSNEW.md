@@ -2,12 +2,14 @@ Version 5.16.0
 ==============
 
 * New: command `migrate` and `mass_migrate` can pass down to children processes custom php.ini settings, such as f.e.
-  `memory_limit` and `error_reporting`. Usefult to run migrations as subprocesses in hostile environments
+  `memory_limit` and `error_reporting`. Useful to run migrations as subprocesses in hostile environments
 
 * New: multiple migration steps `url_alias` and `url_wildcard` are now available to manage urls aliases. Please read
   their documentation in Resources/doc/DSL for details
 
 * New: migration step `file/load_csv`, allows to easily initialize references long list of values
+
+* Improved: it is now possible to set references to the value of content fields which are of type array
 
 * New: everywhere a reference was previously resolved, ie. using `reference:myref` or `[reference:myref]` syntax
   it is now possible to use `eval:expression` or `[eval:expression]`.
