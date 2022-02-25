@@ -39,6 +39,9 @@ Version 5.16.0
   `ez_migration_bundle.reference_resolver.customreference.flexible` and remove from its arguments the service
   `@ez_migration_bundle.reference_resolver.expression`
 
+* Improved: `content/update` steps will throw an exception if there is nothing to update in their definition. This might
+  happen f.e. if there is a typo in the yaml, and would be silently ignored
+
 
 Version 5.15.2
 ==============

@@ -239,6 +239,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $contentType[$contentInfo->contentTypeId] = $contentTypeService->loadContentType($contentInfo->contentTypeId);
             }
 
+            $updated = false;
+
             if (isset($step->dsl['attributes']) || isset($step->dsl['version_creator'])) {
                 $contentUpdateStruct = $contentService->newContentUpdateStruct();
 
@@ -254,6 +256,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 $draft = $contentService->createContentDraft($contentInfo, null, $versionCreator);
                 $contentService->updateContent($draft->versionInfo, $contentUpdateStruct);
                 $content = $contentService->publishVersion($draft->versionInfo);
+
+                $updated = true;
             }
 
             if (isset($step->dsl['always_available']) ||
@@ -261,6 +265,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 isset($step->dsl['owner']) ||
                 isset($step->dsl['modification_date']) ||
                 isset($step->dsl['publication_date'])) {
+
 
                 $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
 
@@ -286,20 +291,32 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 }
 
                 $content = $contentService->updateContentMetadata($content->contentInfo, $contentMetaDataUpdateStruct);
+
+                $updated = true;
             }
 
             if (isset($step->dsl['section'])) {
                 $this->setSection($content, $step->dsl['section']);
+
+                $updated = true;
             }
 
             if (isset($step->dsl['object_states'])) {
                 $this->setObjectStates($content, $step->dsl['object_states']);
+
+                $updated = true;
             }
 
             if (isset($step->dsl['main_location'])) {
                 $this->setMainLocation($content, $step->dsl['main_location']);
 
+                $updated = true;
             }
+
+            if (!$updated) {
+                throw new \Exception("Can not execute Content update because there is nothing to update in the migration step as defined.");
+            }
+
             $contentCollection[$key] = $content;
         }
 
