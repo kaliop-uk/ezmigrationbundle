@@ -34,31 +34,39 @@ class ExpressionResolver extends AbstractResolver implements ExpressionFunctionP
 
         $expressionLanguage = new ExpressionLanguage(null, array($this));
 
-        $resolver = $this->referenceResolver;
-
-        $expressionLanguage->register(
-            'resolve',
-            function ($str) {
-                /// @todo we could implement this via eg a static class var which holds a pointer to $this->referenceResolver
-                //return sprintf('(is_string(%1$s) ? FakerResolver::resolveExpressionLanguageReference(%1$s) : %1$s)', $str);
-                return "throw new \Exception('The \'resolve\' expression language operator can not be compiled, only evaluated'";
-            },
-            function ($arguments, $str) use ($resolver) {
-                if (!is_string($str)) {
-                    return $str;
-                }
-
-                return $resolver->resolveReference($str);
-            }
-        );
-
         return $expressionLanguage->evaluate($identifier);
     }
 
     public function getFunctions()
     {
-        return [
-            ExpressionFunction::fromPhp('array_merge'),
-        ];
+        $resolver = $this->referenceResolver;
+
+        return array(
+            new ExpressionFunction(
+                'resolve',
+                function ($str) {
+                    /// @todo we could implement this via eg a static class var which holds a pointer to $this->referenceResolver
+                    //return sprintf('(is_string(%1$s) ? FakerResolver::resolveExpressionLanguageReference(%1$s) : %1$s)', $str);
+                    return "throw new \Exception('The \'resolve\' expression language operator can not be compiled, only evaluated'";
+                },
+                function ($arguments, $str) use ($resolver) {
+                    if (!is_string($str)) {
+                        return $str;
+                    }
+
+                    return $resolver->resolveReference($str);
+                }
+            ),
+            new ExpressionFunction(
+                'array_merge',
+                function () {
+                    return sprintf('array_merge(%s)', implode(', ', func_get_args()));
+                },
+                function () {
+                    $args = func_get_args();
+                    return call_user_func_array('array_merge', array_splice($args, 1));
+                }
+            ),
+        );
     }
 }
