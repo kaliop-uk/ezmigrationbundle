@@ -1,0 +1,119 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+    test:
+        runs-on: ${{ matrix.operating-system }}
+        env:
+            SYMFONY_ENV: behat
+            DB_HOST: localhost
+            DB_TYPE: mysql
+            DB_EZ_USER: ezp
+            DB_EZ_PASSWORD: ezp
+            DB_EZ_DATABASE: behattestdb
+            EZ_COMPOSER_LOCK: ${{ matrix.ez_composer_lock }}
+            EZ_BUNDLES: ${{ matrix.ez_bundles }}
+            EZ_PACKAGES: ${{ matrix.ez_packages }}
+        strategy:
+            fail-fast: false
+            matrix:
+                # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+                # @todo check: will the tests fail when using ubuntu 20 (focal) and php 5.6 - 7.1? Known issue when using
+                #       an ssl stream context for connecting to localhost via https
+                operating-system: ['ubuntu-18.04'] # @todo add 'windows-latest'
+                #php: ['8.1', '8.0', '7.4', '7.3', '7.2', '7.1', '7.0', '5.6']
+                php: ['7.4', '7.3', '7.2', '7.1', '7.0', '5.6']
+                include:
+                    - php: 5.6
+                      ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
+                      ez_composer_lock: Tests/composer/composer-cp_2104111.lock
+                    - php: 7.0
+                      ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
+                      ez_packages: 'ezsystems/ezplatform:~1.7.9 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ez-matrix-bundle:^0.2.1 netgen/tagsbundle:^2.2 ezsystems/behatbundle:^6.3'
+                      ez_composer_lock: ''
+                    - php: 7.1
+                      ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
+                      ez_packages: 'ezsystems/ezplatform:~1.13.5 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ez-matrix-bundle:^0.2.1 netgen/tagsbundle:^2.2 ezsystems/behatbundle:^6.3'
+                      ez_composer_lock: ''
+                    - php: 7.2
+                      ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\EzPlatformMatrixFieldtypeBundle\EzPlatformMatrixFieldtypeBundle EzSystems\EzPlatformGraphQL\EzSystemsEzPlatformGraphQLBundle Netgen\TagsBundle\NetgenTagsBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle'
+                      ez_packages: 'ezsystems/ezplatform:~2.3.2 ezsystems/ezplatform-xmltext-fieldtype:^1.7 ezsystems/ezplatform-matrix-fieldtype:^1.0 netgen/tagsbundle:^3.2 ezsystems/behatbundle:^6.5 ezsystems/repository-forms:<=2.4 sensio/generator-bundle'
+                      ez_composer_lock: ''
+                    - php: 7.3
+                      ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\EzPlatformMatrixFieldtypeBundle\EzPlatformMatrixFieldtypeBundle EzSystems\EzPlatformGraphQL\EzSystemsEzPlatformGraphQLBundle Netgen\TagsBundle\NetgenTagsBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle'
+                      ez_packages: 'ezsystems/ezplatform:~2.4.2 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/ezplatform-matrix-fieldtype:^1.0 netgen/tagsbundle:^3.3 ezsystems/behatbundle:^6.5 sensio/generator-bundle'
+                      ez_composer_lock: ''
+                    - php: 7.4
+                      ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle Netgen\TagsBundle\NetgenTagsBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle'
+                      ez_packages: 'ezsystems/ezplatform:^2.5.15 ezsystems/ezplatform-xmltext-fieldtype:^1.9 netgen/tagsbundle:^3.4 ezsystems/behatbundle:^7.0 sensio/generator-bundle overblog/graphiql-bundle'
+                      ez_composer_lock: ''
+                    - php: 8.0
+                      ez_bundles: ''
+                      ez_packages: ''
+                      ez_composer_lock: ''
+                    - php: 8.1
+                      ez_bundles: ''
+                      ez_packages: ''
+                      ez_composer_lock: ''
+        steps:
+            -
+                uses: actions/checkout@v2
+            # Although this action is useful, we prefer to use the same script to set up php that we use for the
+            # docker image used for local testing. This allows us to make sure that script is always in good shape
+            #-
+            #    uses: shivammathur/setup-php@v2
+            #    with:
+            #        php-version: ${{ matrix.php }}
+            #        extensions: curl, dom, mbstring, xsl
+            #        ini-values: 'cgi.fix_pathinfo=1, always_populate_raw_post_data=-1'
+            #        #tools: phpunit/phpunit:a_version_compatible_with_php_5.3-5.5
+            #        # NB: this disables xdebug completely
+            #        coverage: none
+            -
+                run: |
+                    git clone --depth 1 --branch 0.1.0 https://github.com/tanoconsulting/euts.git teststack
+                    # just in case...
+                    chmod 755 ./teststack/bin/*.sh  ./teststack/bin/setup/*.sh
+            # Avoid downloading composer deps on every workflow. Is this useful/working for us?
+            #-
+            #    uses: actions/cache@v2
+            #    with:
+            #        path: /tmp/composer-cache
+            #        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+            -
+                run: 'sudo systemctl start mysql.service'
+            -
+                run: './teststack/bin/setup.sh'
+            -
+                if: ${{ matrix.php == '7.4' }}
+                run: |
+                    ./teststack/bin/runtests.sh -c coverage.clover
+                    if [ -f coverage.clover ]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+            -
+                if: ${{ matrix.php != '7.4' }}
+                run: './teststack/bin/runtests.sh'
+            -
+                if: ${{ failure() }}
+                run: |
+                    #env
+                    #php -i
+                    #ps auxwww
+                    #dpkg --list | grep php
+                    #ps auxwww | grep fpm
+                    #pwd
+                    #sudo env
+                    #systemctl status apache2.service
+                    #ls -la /etc/apache2/mods-enabled
+                    #ls -la /etc/apache2/conf-enabled
+                    #ls -la /etc/apache2/mods-available
+                    #ls -la /etc/apache2/conf-available
+                    #ls -la /etc/apache2/sites-available/
+                    #sudo cat /etc/apache2/envvars
+                    #sudo cat /etc/apache2/sites-available/000-default.conf
+                    #ls -ltr /var/log
+                    #ls -ltr /var/log/apache2
+                    #sudo cat /var/log/privoxy/*
+                    #sudo cat /var/log/apache2/error.log
+                    #sudo cat /var/log/apache2/other_vhosts_access.log
+                    sudo cat /var/log/php*.log
