@@ -23,41 +23,41 @@ jobs:
                 # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners for available os versions
                 # @todo add some tests running on 'windows-latest'
                 include:
-                    - php: 5.6
+                    - php: '5.6'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
                       ez_composer_lock: Tests/composer/composer-cp_2104111.lock
                       operating-system: 'ubuntu-18.04'
-                    - php: 7.0
+                    - php: '7.0'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
                       ez_packages: 'ezsystems/ezplatform:~1.7.9 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ez-matrix-bundle:^0.2.1 netgen/tagsbundle:^2.2 ezsystems/behatbundle:^6.3'
                       ez_composer_lock: ''
                       operating-system: 'ubuntu-18.04'
-                    - php: 7.1
+                    - php: '7.1'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
                       ez_packages: 'ezsystems/ezplatform:~1.13.5 ezsystems/ezplatform-xmltext-fieldtype:^1.1 ezsystems/ez-matrix-bundle:^0.2.1 netgen/tagsbundle:^2.2 ezsystems/behatbundle:^6.3'
                       ez_composer_lock: ''
                       operating-system: 'ubuntu-18.04'
-                    - php: 7.2
+                    - php: '7.2'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\EzPlatformMatrixFieldtypeBundle\EzPlatformMatrixFieldtypeBundle EzSystems\EzPlatformGraphQL\EzSystemsEzPlatformGraphQLBundle Netgen\TagsBundle\NetgenTagsBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle'
                       ez_packages: 'ezsystems/ezplatform:~2.3.2 ezsystems/ezplatform-xmltext-fieldtype:^1.7 ezsystems/ezplatform-matrix-fieldtype:^1.0 netgen/tagsbundle:^3.2 ezsystems/behatbundle:^6.5 ezsystems/repository-forms:<=2.4 sensio/generator-bundle'
                       ez_composer_lock: ''
                       operating-system: 'ubuntu-18.04'
-                    - php: 7.3
+                    - php: '7.3'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\EzPlatformMatrixFieldtypeBundle\EzPlatformMatrixFieldtypeBundle EzSystems\EzPlatformGraphQL\EzSystemsEzPlatformGraphQLBundle Netgen\TagsBundle\NetgenTagsBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle'
                       ez_packages: 'ezsystems/ezplatform:~2.4.2 ezsystems/ezplatform-xmltext-fieldtype:^1.8 ezsystems/ezplatform-matrix-fieldtype:^1.0 netgen/tagsbundle:^3.3 ezsystems/behatbundle:^6.5 sensio/generator-bundle'
                       ez_composer_lock: ''
                       operating-system: 'ubuntu-18.04'
-                    - php: 7.4
+                    - php: '7.4'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle Netgen\TagsBundle\NetgenTagsBundle Lolautruche\EzCoreExtraBundle\EzCoreExtraBundle'
                       ez_packages: 'ezsystems/ezplatform:^2.5.15 ezsystems/ezplatform-xmltext-fieldtype:^1.9 netgen/tagsbundle:^3.4 ezsystems/behatbundle:^7.0 sensio/generator-bundle overblog/graphiql-bundle'
                       ez_composer_lock: ''
                       operating-system: 'ubuntu-18.04'
-#                    - php: 8.0
+#                    - php: "8.0"
 #                      ez_bundles: ''
 #                      ez_packages: ''
 #                      ez_composer_lock: ''
 #                      operating-system: 'ubuntu-20.04'
-#                    - php: 8.1
+#                    - php: "8.1"
 #                      ez_bundles: ''
 #                      ez_packages: ''
 #                      ez_composer_lock: ''
