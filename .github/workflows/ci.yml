@@ -9,6 +9,7 @@ jobs:
             SYMFONY_ENV: behat
             DB_HOST: localhost
             DB_TYPE: mysql
+            DB_ROOT_PASSWORD: root
             DB_EZ_USER: ezp
             DB_EZ_PASSWORD: ezp
             DB_EZ_DATABASE: behattestdb
@@ -20,8 +21,6 @@ jobs:
             fail-fast: false
             matrix:
                 # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners for available os versions
-                # @todo check: will the tests fail when using ubuntu 20 (focal) and php 5.6 - 7.1? Known issue when using
-                #       an ssl stream context for connecting to localhost via https
                 # @todo add some tests running on 'windows-latest'
                 include:
                     - php: 5.6
