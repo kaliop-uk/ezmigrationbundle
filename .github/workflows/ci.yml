@@ -19,7 +19,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+                # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners for available os versions
                 # @todo check: will the tests fail when using ubuntu 20 (focal) and php 5.6 - 7.1? Known issue when using
                 #       an ssl stream context for connecting to localhost via https
                 # @todo add some tests running on 'windows-latest'
@@ -57,10 +57,12 @@ jobs:
 #                      ez_bundles: ''
 #                      ez_packages: ''
 #                      ez_composer_lock: ''
+#                      operating-system: 'ubuntu-20.04'
 #                    - php: 8.1
 #                      ez_bundles: ''
 #                      ez_packages: ''
 #                      ez_composer_lock: ''
+#                      operating-system: 'ubuntu-20.04'
         steps:
             -
                 uses: actions/checkout@v2
