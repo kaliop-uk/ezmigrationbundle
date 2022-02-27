@@ -12,6 +12,7 @@ jobs:
             DB_EZ_USER: ezp
             DB_EZ_PASSWORD: ezp
             DB_EZ_DATABASE: behattestdb
+            PHP_VERSION: ${{ matrix.php }}
             EZ_COMPOSER_LOCK: ${{ matrix.ez_composer_lock }}
             EZ_BUNDLES: ${{ matrix.ez_bundles }}
             EZ_PACKAGES: ${{ matrix.ez_packages }}
