@@ -23,7 +23,7 @@ jobs:
                 #       an ssl stream context for connecting to localhost via https
                 #operating-system: ['ubuntu-18.04'] # @todo add 'windows-latest'
                 #php: ['8.1', '8.0', '7.4', '7.3', '7.2', '7.1', '7.0', '5.6']
-                php: ['7.4', '7.3', '7.2', '7.1', '7.0', '5.6']
+                #php: ['7.4', '7.3', '7.2', '7.1', '7.0', '5.6']
                 include:
                     - php: 5.6
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
@@ -54,14 +54,14 @@ jobs:
                       ez_packages: 'ezsystems/ezplatform:^2.5.15 ezsystems/ezplatform-xmltext-fieldtype:^1.9 netgen/tagsbundle:^3.4 ezsystems/behatbundle:^7.0 sensio/generator-bundle overblog/graphiql-bundle'
                       ez_composer_lock: ''
                       operating-system: 'ubuntu-18.04'
-                    - php: 8.0
-                      ez_bundles: ''
-                      ez_packages: ''
-                      ez_composer_lock: ''
-                    - php: 8.1
-                      ez_bundles: ''
-                      ez_packages: ''
-                      ez_composer_lock: ''
+#                    - php: 8.0
+#                      ez_bundles: ''
+#                      ez_packages: ''
+#                      ez_composer_lock: ''
+#                    - php: 8.1
+#                      ez_bundles: ''
+#                      ez_packages: ''
+#                      ez_composer_lock: ''
         steps:
             -
                 uses: actions/checkout@v2
