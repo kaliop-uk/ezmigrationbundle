@@ -149,7 +149,7 @@ EOT
         $this->writeln("<info>Starting queued processes...</info>");
 
         $total = count($toExecute);
-        $this->migrationsDone = array(0, 0, 0);
+        $this->migrationsDone = array(Migration::STATUS_DONE => 0, Migration::STATUS_FAILED => 0, Migration::STATUS_SKIPPED => 0);
 
         $processManager = new ProcessManager();
         $processManager->runParallel($processes, $concurrency, 500, array($this, 'onChildProcessOutput'));
