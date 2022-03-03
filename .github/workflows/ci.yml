@@ -25,7 +25,8 @@ jobs:
                 include:
                     - php: '5.6'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
-                      ez_composer_lock: Tests/composer/composer-cp_2104111.lock
+                      ez_packages: 'ezsystems/ezpublish-community:~2014.11.1 ezsystems/ez-matrix-bundle:^0.1 netgen/tagsbundle:^2.0 ezsystems/behatbundle:^5.4'
+                      #ez_composer_lock: Tests/composer/composer-cp_2104111.lock
                       operating-system: 'ubuntu-18.04'
                     - php: '7.0'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\EzPlatformXmlTextFieldTypeBundle\EzSystemsEzPlatformXmlTextFieldTypeBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
