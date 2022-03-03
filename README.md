@@ -451,9 +451,9 @@ It is recommended to run the tests suite using a dedicated eZPublish installatio
 #### Setting up a dedicated test environment for the bundle
 
 A safer choice to run the tests of the bundle is to set up a dedicated environment, similar to the one used when the test
-suite is run on Travis.
+suite is run on GitHub Actions.
 The advantages are multiple: on one hand you can start with any version of eZPublish you want; on the other you will
-be more confident that any tests you add or modify will also pass on Travis.
+be more confident that any tests you add or modify will also pass on GitHub.
 The disadvantages are that you will need Docker and Docker-compose, and that the environment you will use will look
 quite unlike a standard eZPublish setup! Also, it will take a considerable amount of disk space and time to build.
 
