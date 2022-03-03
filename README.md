@@ -502,7 +502,7 @@ You can even keep multiple test stacks available in parallel, by using different
 [![Latest Stable Version](https://poser.pugx.org/kaliop/ezmigrationbundle/v/stable)](https://packagist.org/packages/kaliop/ezmigrationbundle)
 [![Total Downloads](https://poser.pugx.org/kaliop/ezmigrationbundle/downloads)](https://packagist.org/packages/kaliop/ezmigrationbundle)
 
-[![Build Status](https://travis-ci.com/kaliop-uk/ezmigrationbundle.svg?branch=master)](https://travis-ci.com/kaliop-uk/ezmigrationbundle)
+[![Build Status](https://github.com/kaliop-uk/ezmigrationbundle/actions/workflows/ci.yml/badge.svg)](https://github.com/kaliop-uk/ezmigrationbundle/actions/workflows/ci.yml)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)
 [![Code Coverage](https://codecov.io/gh/kaliop-uk/ezmigrationbundle/branch/master/graph/badge.svg)](https://codecov.io/gh/kaliop-uk/ezmigrationbundle)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/7f16a049-a738-44ae-b947-f39401aec2d5/mini.png)](https://insight.sensiolabs.com/projects/7f16a049-a738-44ae-b947-f39401aec2d5)
