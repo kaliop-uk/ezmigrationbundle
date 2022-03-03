@@ -146,6 +146,8 @@ class LocationManager extends RepositoryExecutor
 
         foreach ($locationCollection as $key => $location) {
 
+            $updated = false;
+
             if (isset($step->dsl['priority'])
                 || isset($step->dsl['sort_field'])
                 || isset($step->dsl['sort_order'])
@@ -170,6 +172,8 @@ class LocationManager extends RepositoryExecutor
                 }
 
                 $location = $locationService->updateLocation($location, $locationUpdateStruct);
+
+                $updated = true;
             }
 
             // Check if visibility needs to be updated
@@ -179,6 +183,8 @@ class LocationManager extends RepositoryExecutor
                 } else {
                     $location = $locationService->unhideLocation($location);
                 }
+
+                $updated = true;
             }
 
             // Move or swap location
@@ -193,6 +199,8 @@ class LocationManager extends RepositoryExecutor
 
                 // we have to reload the location to be able to set references to the modified data
                 $location = $locationService->loadLocation($location->id);
+
+                $updated = true;
             } elseif (isset($step->dsl['swap_with_location'])) {
                 // Swap locations
                 $swapLocationId = $step->dsl['swap_with_location'];
@@ -204,6 +212,8 @@ class LocationManager extends RepositoryExecutor
 
                 // we have to reload the location to be able to set references to the modified data
                 $location = $locationService->loadLocation($location->id);
+
+                $updated = true;
             }
 
             // make the location the main one
@@ -212,6 +222,12 @@ class LocationManager extends RepositoryExecutor
 
                 //have to reload the location so that correct data can be set as reference
                 $location = $locationService->loadLocation($location->id);
+
+                $updated = true;
+            }
+
+            if (!$updated) {
+                throw new \Exception("Can not execute Location update because there is nothing to update in the migration step as defined.");
             }
 
             $locationCollection[$key] = $location;
