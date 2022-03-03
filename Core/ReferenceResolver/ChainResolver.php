@@ -131,9 +131,10 @@ class ChainResolver implements EmbeddedReferenceResolverBagInterface, Enumerable
         $refs = array();
 
         foreach ($this->resolvers as $resolver) {
-            if (! $resolver instanceof EnumerableReferenceResolverInterface) {
-                throw new \Exception("Could not enumerate references because of chained resolver of type: " . get_class($resolver));
-            }
+            // Disabled - we now allow chaining enumerable and non-enumerable sets
+            //if (! $resolver instanceof EnumerableReferenceResolverInterface) {
+            //    throw new \Exception("Could not enumerate references because of chained resolver of type: " . get_class($resolver));
+            //}
 
             // later resolvers are stronger (see getReferenceValue)
             $refs = array_merge($refs, $resolver->listReferences());
