@@ -7,7 +7,7 @@ jobs:
         runs-on: ${{ matrix.operating-system }}
         env:
             SYMFONY_ENV: behat
-            DB_HOST: localhost
+            DB_HOST: 127.0.0.1
             DB_TYPE: mysql
             DB_ROOT_PASSWORD: root
             DB_EZ_USER: ezp

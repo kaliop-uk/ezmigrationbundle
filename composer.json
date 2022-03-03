@@ -73,5 +73,10 @@
             "type": "github",
             "url": "https://github.com/sponsors/tanoconsulting"
         }
-    ]
+    ],
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    }
 }
