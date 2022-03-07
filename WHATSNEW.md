@@ -1,20 +1,12 @@
-Version 5.16.0
+Version 6.0.0
 ==============
-
-* New: command `migrate` and `mass_migrate` can pass down to children processes custom php.ini settings, such as f.e.
-  `memory_limit` and `error_reporting`. Useful to run migrations as subprocesses in hostile environments
-
-* New: multiple migration steps `url_alias` and `url_wildcard` are now available to manage urls aliases. Please read
-  their documentation in Resources/doc/DSL for details
-
-* New: migration step `file/load_csv`, allows to easily initialize references long list of values
-
-* Improved: it is now possible to set references to the value of content fields which are of type array
 
 * New: everywhere a reference was previously resolved, ie. using `reference:myref` or `[reference:myref]` syntax
   it is now possible to use `eval:expression` or `[eval:expression]`.
 
   Ex: to take the value of an existing reference and add 1 to it: `[eval: 1 + resolve('reference:myref')]`
+
+    Ex: to take the value of an existing reference and concatenate 'a' to it: `[eval: resolve('reference:myref') ~ 'a']`
 
   Ex: it is possible to add an element to an array-valued reference, with an admittedly cumbersome syntax, given here
   as a self-contained example:
@@ -33,11 +25,22 @@ Version 5.16.0
           overwrite: true
 
   The syntax for "expression" is the one of the Symfony ExpressionLanguage component. See: https://symfony.com/doc/current/components/expression_language/syntax.html
+  Custom functions made available are `md5` and `array_merge`
 
   Note that this can be a BC break if you have existing migrations which might have the text `[eval:` in their data.
-  If this is a problem for your environment, you can fix it by overrideing the definition of Symfony service
+  If this is a problem for your environment, you can fix it by overriding the definition of Symfony service
   `ez_migration_bundle.reference_resolver.customreference.flexible` and remove from its arguments the service
   `@ez_migration_bundle.reference_resolver.expression`
+
+* New: multiple migration steps `url_alias` and `url_wildcard` are now available to manage urls aliases. Please read
+  their documentation in Resources/doc/DSL for details
+
+* New: migration step `file/load_csv`, allows to easily initialize references long list of values
+
+* New: command `migrate` and `mass_migrate` can pass down to children processes custom php.ini settings, such as f.e.
+  `memory_limit` and `error_reporting`. Useful to run migrations as subprocesses in hostile environments
+
+* Improved: it is now possible to set references to the value of content fields which are of type array
 
 * Improved: `content/update` and `location/update` steps will throw an exception if there is nothing to update in their
   definition. This might happen f.e. if there is a typo in the yaml, and was silently ignored beforehand

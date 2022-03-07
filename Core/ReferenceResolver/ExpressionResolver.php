@@ -67,6 +67,16 @@ class ExpressionResolver extends AbstractResolver implements ExpressionFunctionP
                     return call_user_func_array('array_merge', array_splice($args, 1));
                 }
             ),
+            new ExpressionFunction(
+                'md5',
+                function ($value) {
+                    return sprintf('md5(%s)', $value);
+                },
+                function ($arguments, $value) {
+                    $args = func_get_args();
+                    return md5($value);
+                }
+            ),
         );
     }
 }
