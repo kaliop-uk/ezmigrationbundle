@@ -2,12 +2,14 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Exception\LoopBreakException;
+use Kaliop\eZMigrationBundle\API\Exception\LoopContinueException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\MigrationService;
 use Kaliop\eZMigrationBundle\Core\ReferenceResolver\LoopResolver;
-use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
-use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
 
 class LoopExecutor extends AbstractExecutor
 {
@@ -76,15 +78,23 @@ class LoopExecutor extends AbstractExecutor
             foreach ($over as $key => $value) {
                 $this->loopResolver->loopStep($key, $value);
 
-                foreach ($step->dsl['steps'] as $j => $stepDef) {
-                    $type = $stepDef['type'];
-                    unset($stepDef['type']);
-                    $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
-                    try {
-                        $result = $stepExecutors[$j]->execute($subStep);
-                    } catch(MigrationStepSkippedException $e) {
-                        // all ok, continue the loop
+                try {
+                    foreach ($step->dsl['steps'] as $j => $stepDef) {
+                        $type = $stepDef['type'];
+                        unset($stepDef['type']);
+                        $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
+                        try {
+                            $result = $stepExecutors[$j]->execute($subStep);
+                        } catch(MigrationStepSkippedException $e) {
+                            // all ok, continue the loop
+                        } catch(LoopContinueException $e) {
+                            // all ok, move to the next iteration
+                            break;
+                        }
                     }
+                } catch(LoopBreakException $e) {
+                    // all ok, exit the loop
+                    break;
                 }
             }
         } else {
@@ -93,15 +103,23 @@ class LoopExecutor extends AbstractExecutor
 
                 $this->loopResolver->loopStep();
 
-                foreach ($step->dsl['steps'] as $j => $stepDef) {
-                    $type = $stepDef['type'];
-                    unset($stepDef['type']);
-                    $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
-                    try {
-                        $result = $stepExecutors[$j]->execute($subStep);
-                    } catch(MigrationStepSkippedException $e) {
-                        // all ok, continue the loop
+                try {
+                    foreach ($step->dsl['steps'] as $j => $stepDef) {
+                        $type = $stepDef['type'];
+                        unset($stepDef['type']);
+                        $subStep = new MigrationStep($type, $stepDef, array_merge($step->context, array()));
+                        try {
+                            $result = $stepExecutors[$j]->execute($subStep);
+                        } catch(MigrationStepSkippedException $e) {
+                            // all ok, continue the loop
+                        } catch(LoopContinueException $e) {
+                            // all ok, move to the next iteration
+                            break;
+                        }
                     }
+                } catch(LoopBreakException $e) {
+                    // all ok, exit the loop
+                    break;
                 }
             }
         }

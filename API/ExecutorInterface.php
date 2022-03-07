@@ -2,6 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\API;
 
+use Kaliop\eZMigrationBundle\API\Exception\LoopBreakException;
+use Kaliop\eZMigrationBundle\API\Exception\LoopContinueException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
@@ -27,6 +29,8 @@ interface ExecutorInterface
      *
      * @param MigrationStep $step
      * @return mixed the results of the execution step are wrapped in an event which can be listened to
+     * @throws LoopBreakException
+     * @throws LoopContinueException
      * @throws MigrationAbortedException
      * @throws MigrationStepSkippedException
      * @throws MigrationSuspendedException
