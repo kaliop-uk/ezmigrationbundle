@@ -78,8 +78,8 @@ class LoopExecutor extends AbstractExecutor
     protected function loopRepeat($dsl, $context)
     {
         $repeat = $this->referenceResolver->resolveReference($dsl['repeat']);
-        if (!ctype_digit($repeat) || $repeat < 0) {
-            throw new InvalidStepDefinitionException("Invalid step definition: 'repeat' is not a positive integer");
+        if ((!is_int($repeat) && !ctype_digit($repeat)) || $repeat < 0) {
+            throw new InvalidStepDefinitionException("Invalid step definition: '$repeat' is not a positive integer");
         }
 
         $stepExecutors = $this->validateSteps($dsl);
