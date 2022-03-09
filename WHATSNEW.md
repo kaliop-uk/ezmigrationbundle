@@ -35,6 +35,8 @@ Version 6.0.0
 * New: multiple migration steps `url_alias` and `url_wildcard` are now available to manage urls aliases. Please read
   their documentation in Resources/doc/DSL for details
 
+* New: migration steps `loop/break` and `loop/continue`
+
 * New: migration step `file/load_csv`, allows to easily initialize references long list of values
 
 * New: command `migrate` and `mass_migrate` can pass down to children processes custom php.ini settings, such as f.e.
