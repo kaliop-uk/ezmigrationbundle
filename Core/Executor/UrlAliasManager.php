@@ -33,15 +33,14 @@ class UrlAliasManager extends RepositoryExecutor
             throw new InvalidStepDefinitionException("The 'destination' and 'destination_location' keys can not be used at the same time to create a new urlalias.");
         }
         // be kind to users
-        if (!isset($step->dsl['source']) && isset($step->dsl['path'])) {
-            $step->dsl['source'] = $step->dsl['path'];
-            unset($step->dsl['path']);
-        }
-        if (!isset($step->dsl['source'])) {
+        if (!isset($step->dsl['source']) && !isset($step->dsl['path'])) {
             throw new InvalidStepDefinitionException("The 'source' key is required to create a new urlalias.");
         }
-
-        $path = $this->referenceResolver->resolveReference($step->dsl['source']);
+        if (isset($step->dsl['source'])) {
+            $path = $this->referenceResolver->resolveReference($step->dsl['source']);
+        } else {
+            $path = $this->referenceResolver->resolveReference($step->dsl['path']);
+        }
 
         $languageCode = isset($step->dsl['language_code']) ? $this->referenceResolver->resolveReference($step->dsl['language_code']) : null;
 
@@ -52,11 +51,13 @@ class UrlAliasManager extends RepositoryExecutor
         if (isset($step->dsl['destination'])) {
             $url = $urlAliasService->createGlobalUrlAlias($this->referenceResolver->resolveReference($step->dsl['destination']), $path, $languageCode, $forward, $alwaysAvailable);
         } else {
-            /// @todo Should we resolve refs in $step->dsl['destination_location']? What if it is a remote_id in the form of 'reference:hello'
-            if (!is_int($step->dsl['destination_location']) && !ctype_digit($step->dsl['destination_location'])) {
-                $location = $this->repository->getLocationService()->loadLocationByRemoteId($step->dsl['destination_location']);
+            /// @todo Should we always resolve refs in $step->dsl['destination_location']? What if it is a remote_id in the form of 'reference:hello'
+            $destination = $this->referenceResolver->resolveReference($step->dsl['destination_location']);
+
+            if (!is_int($destination) && !ctype_digit($destination)) {
+                $location = $this->repository->getLocationService()->loadLocationByRemoteId($destination);
             } else {
-                $location = $this->repository->getLocationService()->loadLocation($step->dsl['destination_location']);
+                $location = $this->repository->getLocationService()->loadLocation($destination);
             }
 
             $url = $urlAliasService->createUrlAlias($location, $path, $languageCode, $forward, $alwaysAvailable);
