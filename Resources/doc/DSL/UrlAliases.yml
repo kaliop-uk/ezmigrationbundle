@@ -2,12 +2,12 @@
     # Create a new url_alias
     type: url_alias
     mode: create
-    source: uri
-    destination: uri # the path to a (non-node) view. In alternative to destination_location
+    source: uri # References will be resolved
+    destination: uri # the path to a (non-node) view. In alternative to destination_location. References will be resolved
     destination_location: int|string # location id or remote id. In alternative to destination
-    language_code: string|string[] # mandatory
-    forward: true|false # Optional, defaults to false
-    always_available: true|false # Optional, defaults to false
+    language_code: string|string[] # mandatory. References will be resolved
+    forward: true|false # Optional, defaults to false. References will be resolved
+    always_available: true|false # Optional, defaults to false. References will be resolved
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

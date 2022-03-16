@@ -33,30 +33,33 @@ class UrlAliasManager extends RepositoryExecutor
             throw new InvalidStepDefinitionException("The 'destination' and 'destination_location' keys can not be used at the same time to create a new urlalias.");
         }
         // be kind to users
-        if (isset($step->dsl['source']) && !isset($step->dsl['path'])) {
-            $step->dsl['path'] = $step->dsl['source'];
-            unset($step->dsl['source']);
+        if (!isset($step->dsl['source']) && isset($step->dsl['path'])) {
+            $step->dsl['source'] = $step->dsl['path'];
+            unset($step->dsl['path']);
         }
-        if (!isset($step->dsl['path'])) {
-            throw new InvalidStepDefinitionException("The 'path' key is required to create a new urlalias.");
+        if (!isset($step->dsl['source'])) {
+            throw new InvalidStepDefinitionException("The 'source' key is required to create a new urlalias.");
         }
 
-        $languageCode = isset($step->dsl['language_code']) ? $step->dsl['language_code'] : null;
+        $path = $this->referenceResolver->resolveReference($step->dsl['source']);
 
-        $forward = isset($step->dsl['forward']) ? $step->dsl['forward'] : false;
+        $languageCode = isset($step->dsl['language_code']) ? $this->referenceResolver->resolveReference($step->dsl['language_code']) : null;
 
-        $alwaysAvailable = isset($step->dsl['always_available']) ? $step->dsl['always_available'] : false;
+        $forward = isset($step->dsl['forward']) ? $this->referenceResolver->resolveReference($step->dsl['forward']) : false;
+
+        $alwaysAvailable = isset($step->dsl['always_available']) ? $this->referenceResolver->resolveReference($step->dsl['always_available']) : false;
 
         if (isset($step->dsl['destination'])) {
-            $url = $urlAliasService->createGlobalUrlAlias($step->dsl['destination'], $step->dsl['path'], $languageCode, $forward, $alwaysAvailable);
+            $url = $urlAliasService->createGlobalUrlAlias($this->referenceResolver->resolveReference($step->dsl['destination']), $path, $languageCode, $forward, $alwaysAvailable);
         } else {
+            /// @todo Should we resolve refs in $step->dsl['destination_location']? What if it is a remote_id in the form of 'reference:hello'
             if (!is_int($step->dsl['destination_location']) && !ctype_digit($step->dsl['destination_location'])) {
                 $location = $this->repository->getLocationService()->loadLocationByRemoteId($step->dsl['destination_location']);
             } else {
                 $location = $this->repository->getLocationService()->loadLocation($step->dsl['destination_location']);
             }
 
-            $url = $urlAliasService->createUrlAlias($location, $step->dsl['path'], $languageCode, $forward, $alwaysAvailable);
+            $url = $urlAliasService->createUrlAlias($location, $path, $languageCode, $forward, $alwaysAvailable);
         }
 
         $this->setReferences($url, $step);
@@ -100,17 +103,17 @@ class UrlAliasManager extends RepositoryExecutor
         {
             $urlAliasService->refreshSystemUrlAliasesForLocation($location);
         }
-        
-        return true; 
+
+        return true;
     }
-    
+
     protected function cleanup($step)
     {
         $urlAliasService = $this->repository->getUrlAliasService();
 
         return $urlAliasService->deleteCorruptedUrlAliases();
     }
-    
+
     protected function matchUrlAlias($action, $step)
     {
         if (!isset($step->dsl['match'])) {

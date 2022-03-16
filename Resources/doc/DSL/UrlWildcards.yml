@@ -4,7 +4,7 @@
     mode: create
     source: uri # eg: ...
     destination: uri # eg: ...
-    forward: true|false # Optional, defaults to false
+    forward: true|false # Optional, defaults to false. References will be resolved
     # The list in references tells the manager to store specific values for later use by other steps in the current migration.
     # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
     references: # Optional

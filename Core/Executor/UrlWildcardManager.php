@@ -28,9 +28,11 @@ class UrlWildcardManager extends RepositoryExecutor
             throw new InvalidStepDefinitionException("The 'destination' key is required to create a new urlwildcard.");
         }
 
-        $forward = isset($step->dsl['forward']) ? $step->dsl['forward'] : false;
+        $forward = isset($step->dsl['forward']) ? $this->referenceResolver->resolveReference($step->dsl['forward']) : false;
 
-        $url = $urlWildcardService->create($step->dsl['source'], $step->dsl['destination'], $forward);
+        $url = $urlWildcardService->create(
+            $this->referenceResolver->resolveReference($step->dsl['source']),
+            $this->referenceResolver->resolveReference($step->dsl['destination']), $forward);
 
         $this->setReferences($url, $step);
 
