@@ -85,4 +85,27 @@ abstract class AbstractCommand extends ContainerAwareCommand
             }
         }
     }
+
+    /**
+     * "Canonicalizes" the paths which are subpaths of the application
+     * @param string[] $paths
+     * @return string[]
+     */
+    protected function normalizePaths($paths)
+    {
+        $rootDir = realpath($this->getContainer()->get('kernel')->getRootDir() . '/..') . '/';
+        foreach($paths as $i => $path) {
+            if ($path === $rootDir || $path === './') {
+                $paths[$i] = './';
+            } else if (strpos($path, './') === 0) {
+                $paths[$i] = substr($path, 2);
+            // q: should we also call realpath on $path? what if there are symlinks at play?
+            } elseif (strpos($path, $rootDir) === 0 ) {
+                $paths[$i] = substr($path, strlen($rootDir));
+            } elseif ($path === '') {
+                unset($paths[$i]);
+            }
+        }
+        return $paths;
+    }
 }

@@ -76,10 +76,12 @@ class Filesystem implements LoaderInterface
 
         $definitions = array();
         foreach ($paths as $path) {
+            // we normalize all paths and try to make them relative to the current dir
             if (is_file($path)) {
-                $definitions[basename($path)] = $returnFilename ? $path : new MigrationDefinition(
+                $path = realpath($path);
+                $definitions[basename($path)] = $returnFilename ? $this->normalizePath($path) : new MigrationDefinition(
                     basename($path),
-                    $path,
+                    $this->normalizePath($path),
                     file_get_contents($path)
                 );
             } elseif (is_dir($path)) {
@@ -88,7 +90,7 @@ class Filesystem implements LoaderInterface
                         $definitions[$file->getFilename()] =
                             $returnFilename ? $file->getRealPath() : new MigrationDefinition(
                                 $file->getFilename(),
-                                $file->getRealPath(),
+                                $this->normalizePath($file->getRealPath()),
                                 file_get_contents($file->getRealPath())
                             );
                     }
@@ -100,5 +102,16 @@ class Filesystem implements LoaderInterface
         ksort($definitions);
 
         return $definitions;
+    }
+
+    /**
+     * @param string $path should be an absolute path
+     * @return string the same path, but relative to current root dir if it is a subpath
+     */
+    protected function normalizePath($path)
+    {
+        $rootDir = realpath($this->kernel->getRootDir() . '/..') . '/';
+        // note: we handle the case of 'current dir', but path is expected to include a filename...
+        return $path === $rootDir ? './' : preg_replace('#^' . preg_quote($rootDir, '#'). '#', '', $path);
     }
 }

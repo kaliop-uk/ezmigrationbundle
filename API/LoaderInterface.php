@@ -9,7 +9,7 @@ interface LoaderInterface
 {
     /**
      * @param array $paths either dir names or file names
-     * @return string[] migrations definitions. key: name, value: path
+     * @return string[] migrations definitions. key: name, value: path (preferably, relative to the app's root dir)
      * @throws \Exception
      */
     public function listAvailableDefinitions(array $paths = array());

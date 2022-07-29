@@ -82,11 +82,20 @@ class Migration extends TableStorage implements StorageHandlerInterface
             if ($status !== null) {
                 $exps[] = $q->expr->eq('status', $q->bindValue($status));
             }
-            if (is_array($paths) && count($paths)) {
-                $pexps = array();
-                foreach($paths as $path) {
-                    /// @todo use a proper db-aware escaping function
-                    $pexps[] = $q->expr->like('path', "'" . str_replace(array('_', '%', "'"), array('\_', '\%', "''"), $path).'%' . "'");
+            if (is_array($paths)) {
+                foreach ($paths as $i => $path) {
+                    if ($path === '') {
+                        unset($paths[$i]);
+                    }
+                }
+                if (count($paths)) {
+                    $pexps = array();
+                    foreach ($paths as $path) {
+                        // NB: this works fine only as long both the paths stored in the db and the ones passed in follow
+                        //     the same convention regarding path normalization
+                        /// @todo use a proper db-aware escaping function
+                        $pexps[] = $q->expr->like('path', "'" . str_replace(array('_', '%', "'"), array('\_', '\%', "''"), $path) . '%' . "'");
+                    }
                 }
                 $exps[] = $q->expr->lor($pexps);
             }

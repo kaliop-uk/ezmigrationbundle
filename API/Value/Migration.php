@@ -21,10 +21,15 @@ class Migration extends AbstractValue
     // the ones below are not yet supported
     const STATUS_PARTIALLY_DONE = 5;
 
+    /** @var string */
     protected $name;
+    /** @var string */
     protected $md5;
+    /** @var string full path including the filename, relative to the app's root dir */
     protected $path;
+    /** @var int|null timestamp */
     protected $executionDate;
+    /** @var int */
     protected $status;
     protected $executionError;
 

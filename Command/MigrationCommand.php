@@ -173,7 +173,7 @@ EOT
                 }
 
                 $migrationService->addMigration($migrationDefinition);
-                $output->writeln('<info>Added migration' . $migrationDefinition->path . '</info>');
+                $output->writeln('<info>Added migration ' . $migrationDefinition->path . '</info>');
             }
 
             return 0;
@@ -201,7 +201,7 @@ EOT
 
             foreach ($migrationDefinitionCollection as $migrationDefinition) {
                 $migrationService->skipMigration($migrationDefinition);
-                $output->writeln('<info>Migration' . $migrationDefinition->path . ' marked as skipped</info>');
+                $output->writeln('<info>Migration ' . $migrationDefinition->path . ' marked as skipped</info>');
             }
 
             return 0;

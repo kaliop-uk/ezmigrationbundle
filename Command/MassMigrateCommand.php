@@ -75,7 +75,7 @@ EOT
 
         $force = $input->getOption('force');
 
-        $toExecute = $this->buildMigrationsList($input->getOption('path'), $migrationService, $force, $isChild);
+        $toExecute = $this->buildMigrationsList($this->normalizePaths($input->getOption('path')), $migrationService, $force, $isChild);
 
         if (!count($toExecute)) {
             $this->writeln('<info>No migrations to execute</info>');

@@ -18,10 +18,14 @@ class MigrationDefinition extends AbstractValue
     const STATUS_PARSED = 1;
     const STATUS_INVALID = 2;
 
+    /** @var string filename */
     protected $name;
+    /** @var string full path including the filename, relative to the app's root dir */
     protected $path;
     protected $rawDefinition;
+    /** @var int */
     protected $status = 0;
+    /** @var MigrationStepsCollection */
     protected $steps;
     protected $parsingError;
 

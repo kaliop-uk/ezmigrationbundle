@@ -48,8 +48,9 @@ EOT
         $migrationsService = $this->getMigrationService();
 
         $displayPath = $input->getOption('show-path');
-        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($input->getOption('path'));
-        $migrations = $migrationsService->getMigrationsByPaths($input->getOption('path'));
+        $paths = $this->normalizePaths($input->getOption('path'));
+        $migrationDefinitions = $migrationsService->getMigrationsDefinitions($paths);
+        $migrations = $migrationsService->getMigrationsByPaths($paths);
 
         if (!count($migrationDefinitions) && !count($migrations)) {
             $output->writeln('<info>No migrations found</info>');
