@@ -20,7 +20,7 @@ class MigrationDefinition extends AbstractValue
 
     /** @var string filename */
     protected $name;
-    /** @var string full path including the filename, relative to the app's root dir */
+    /** @var string full path including the filename, relative to the app's root dir if contained within it */
     protected $path;
     protected $rawDefinition;
     /** @var int */

@@ -25,7 +25,7 @@ class Migration extends AbstractValue
     protected $name;
     /** @var string */
     protected $md5;
-    /** @var string full path including the filename, relative to the app's root dir */
+    /** @var string full path including the filename, relative to the app's root dir if contained within it */
     protected $path;
     /** @var int|null timestamp */
     protected $executionDate;
