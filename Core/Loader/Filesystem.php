@@ -74,9 +74,17 @@ class Filesystem implements LoaderInterface
             }
         }
 
+        $rootDir = realpath($this->kernel->getRootDir() . '/..') . '/';
+
         $definitions = array();
         foreach ($paths as $path) {
-            // we normalize all paths and try to make them relative to the current dir
+            // we normalize all paths and try to make them relative to the root dir, both in input and output
+            if ($path === './') {
+                $path = $rootDir;
+            } elseif ($path[0] !== '/') {
+                $path = $rootDir . $path;
+            }
+
             if (is_file($path)) {
                 $path = realpath($path);
                 $definitions[basename($path)] = $returnFilename ? $this->normalizePath($path) : new MigrationDefinition(
@@ -88,7 +96,7 @@ class Filesystem implements LoaderInterface
                 foreach (new \DirectoryIterator($path) as $file) {
                     if ($file->isFile()) {
                         $definitions[$file->getFilename()] =
-                            $returnFilename ? $file->getRealPath() : new MigrationDefinition(
+                            $returnFilename ? $this->normalizePath($file->getRealPath()) : new MigrationDefinition(
                                 $file->getFilename(),
                                 $this->normalizePath($file->getRealPath()),
                                 file_get_contents($file->getRealPath())
@@ -111,7 +119,7 @@ class Filesystem implements LoaderInterface
     protected function normalizePath($path)
     {
         $rootDir = realpath($this->kernel->getRootDir() . '/..') . '/';
-        // note: we handle the case of 'current dir', but path is expected to include a filename...
+        // note: we handle the case of 'path = root dir', but path is expected to include a filename...
         return $path === $rootDir ? './' : preg_replace('#^' . preg_quote($rootDir, '#'). '#', '', $path);
     }
 }

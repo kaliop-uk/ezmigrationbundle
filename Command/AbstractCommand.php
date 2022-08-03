@@ -87,7 +87,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
     }
 
     /**
-     * "Canonicalizes" the paths which are subpaths of the application
+     * "Canonicalizes" the paths which are subpaths of the application's root dir
      * @param string[] $paths
      * @return string[]
      */

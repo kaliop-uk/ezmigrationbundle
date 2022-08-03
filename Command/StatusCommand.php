@@ -58,6 +58,7 @@ EOT
         }
 
         // create a unique list of all migrations (coming from db) and definitions (coming from disk)
+
         $index = array();
         foreach ($migrationDefinitions as $migrationDefinition) {
             $index[$migrationDefinition->name] = array('definition' => $migrationDefinition);
@@ -78,6 +79,21 @@ EOT
                         }
                     } catch (\Exception $e) {
                         /// @todo one day we should be able to limit the kind of exceptions we have to catch here...
+                    }
+                }
+            }
+        }
+
+        // In case the user has passed in path(s), and there are migration defs in those paths which have the same name
+        // as executed/skipped migrations in the db which are outside the path, they will be listed as 'to execute',
+        // which is misleading. We add the following loop to fix that, so that the status command will match more closely
+        // the 'migrate' command
+        if (count($paths)) {
+            foreach($index as $migrationName => $data) {
+                if (!isset($data['migration'])) {
+                    $migration = $migrationsService->getMigration($migrationName);
+                    if ($migration !== null) {
+                        $index[$migration->name]['migration'] = $migration;
                     }
                 }
             }
@@ -189,7 +205,7 @@ EOT
                         if (md5($migrationDefinition->rawDefinition) != $migration->md5) {
                             $notes[] = '<comment>The migration definition file has now a different checksum</comment>';
                         }
-                        if ($migrationDefinition->path != $migrationDefinition->path) {
+                        if ($migrationDefinition->path != $migration->path) {
                             $notes[] = '<comment>The migration definition file has now moved</comment>';
                         }
                     }

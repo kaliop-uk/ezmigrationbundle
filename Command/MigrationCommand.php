@@ -11,7 +11,8 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
- * Command to execute the available migration definitions.
+ * Command to manipulate the available migrations / migration definitions.
+ * @todo should we split off the actions used to manipulate migration defs into a separate command `MigrationDefinition` ?
  */
 class MigrationCommand extends AbstractCommand
 {
@@ -38,9 +39,11 @@ The <info>kaliop:migration:migration</info> command allows you to manually delet
 
     <info>./ezpublish/console kaliop:migration:migration --delete migration_name</info>
 
-As well as manually adding migrations to the migration table:
+As well as manually adding migrations to the migration table, or marking them as skipped:
 
     <info>./ezpublish/console kaliop:migration:migration --add /path/to/migration_definition</info>
+
+    <info>./ezpublish/console kaliop:migration:migration --skip /path/to/migration_definition</info>
 EOT
             );
     }
@@ -67,6 +70,7 @@ EOT
         if ($input->getOption('info')) {
             $output->writeln('');
 
+            /// @todo if we are passed a path, we could give the user a more specific warning than what we get back from the storage layer
             $migration = $migrationService->getMigration($migrationNameOrPath);
             if ($migration == null) {
                 throw new \InvalidArgumentException(sprintf('The migration "%s" does not exist in the migrations table.', $migrationNameOrPath));
@@ -110,7 +114,8 @@ EOT
             $output->writeln('Definition md5: <info>' . $migration->md5 . '</info>');
 
             if ($migration->path != '') {
-                // q: what if we have a loader which does not work with is_file? We could probably remove this check...
+                // q: what if we have a loader which does not work with is_file? We could probably remove this check
+                // or, better, add a method `$migrationService->migrationDefinitionExists`...
                 if (is_file($migration->path)) {
                     try {
                         $migrationDefinitionCollection = $migrationService->getMigrationsDefinitions(array($migration->path));
@@ -180,6 +185,7 @@ EOT
         }
 
         if ($input->getOption('delete')) {
+            /// @todo if we are passed a path, we could give the user a more specific warning than what we get back from the storage layer
             $migration = $migrationService->getMigration($migrationNameOrPath);
             if ($migration == null) {
                 throw new \InvalidArgumentException(sprintf('The migration "%s" does not exist in the migrations table.', $migrationNameOrPath));
