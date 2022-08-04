@@ -447,7 +447,7 @@ The bundle uses PHPUnit to run functional tests.
 
 To run the tests:
 
-    export KERNEL_DIR=ezpublish (or 'app' for ezplatform setups)
+    export KERNEL_DIR=app (or 'ezpublish' for ezpublish 5.4/cp setups)
     export SYMFONY_ENV=behat (or whatever your environment is)
 
     bin/phpunit --stderr -c vendor/kaliop/ezmigrationbundle/phpunit.xml.dist
@@ -468,7 +468,10 @@ quite unlike a standard eZPublish setup! Also, it will take a considerable amoun
 Steps to set up a dedicated test environment and run the tests in it:
 
     # if you have a github auth token, it is a good idea to copy it now to Tests/docker/data/.composer/auth.json
-    git clone --depth 1 --branch 0.1.0 https://github.com/tanoconsulting/euts.git teststack
+    git clone --depth 1 --branch 0.4.0 https://github.com/tanoconsulting/euts.git teststack
+
+    # this config sets up a test environment with eZPlatform 2.5 running on php 7.4 / debian bullseye
+    export TESTSTACK_CONFIG_FILE=Tests/environment/.euts.2.5.env
 
     ./teststack/teststack build
     ./teststack/teststack runtests
@@ -494,9 +497,11 @@ Or command-line shell prompt to the Docker container where tests are run:
     ./teststack/teststack shell
 
 The tests in the Docker container run using the version of debian/php/eZPlatform kernel specified in the file
-`.euts.env`. If no such file is present, some defaults are used, you can check the documentation in ./teststack/README.md
-to fins out what they are.
-If you want to test against a different version, feel free to:
+`Tests/environment/.euts.2.5.env`, as specified in env var `TESTSTACK_CONFIG_FILE`.
+If no value is set for that environment variable, a file named `.euts.env` is looked for.
+If no such file is present, some defaults are used, you can check the documentation in ./teststack/README.md to find out
+what they are.
+If you want to test against a different version of eZ/php/debian, feel free to:
 - create the `.euts.env` file, if it does not exist
 - add to it any required var (see file `teststack/.euts.env.example` as guidance)
 - rebuild the test stack
