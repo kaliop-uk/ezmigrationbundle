@@ -49,32 +49,32 @@ class GenerateCommand extends AbstractCommand
             ->setHelp(<<<EOT
 The <info>kaliop:migration:generate</info> command generates a skeleton migration definition file:
 
-    <info>php ezpublish/console kaliop:migration:generate bundleName</info>
+    <info>php bin/console kaliop:migration:generate bundleName</info>
 
 You can optionally specify the file type to generate with <info>--format</info>, as well a name for the migration:
 
-    <info>php ezpublish/console kaliop:migration:generate --format=json bundleName migrationName</info>
+    <info>php bin/console kaliop:migration:generate --format=json bundleName migrationName</info>
 
 For SQL type migration you can optionally specify the database server type the migration is for with <info>--dbserver</info>:
 
-    <info>php ezpublish/console kaliop:migration:generate --format=sql bundleName</info>
+    <info>php bin/console kaliop:migration:generate --format=sql bundleName</info>
 
 For content/content_type/language/object_state/role/section migrations you need to specify the entity that you want to generate the migration for:
 
-    <info>php ezpublish/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14 --lang=all bundleName</info>
+    <info>php bin/console kaliop:migration:generate --type=content --match-type=content_id --match-value=10,14 --lang=all bundleName</info>
 
 For role type migration you will receive a yaml file with the current role definition. You must define ALL the policies
 you wish for the role. Any not defined will be removed. Example for updating an existing role:
 
-    <info>php ezpublish/console kaliop:migration:generate --type=role --mode=update --match-type=identifier --match-value=Anonymous bundleName</info>
+    <info>php bin/console kaliop:migration:generate --type=role --mode=update --match-type=identifier --match-value=Anonymous bundleName</info>
 
 For freeform php migrations, you will receive a php class definition
 
-    <info>php ezpublish/console kaliop:migration:generate --format=php bundlename classname</info>
+    <info>php bin/console kaliop:migration:generate --format=php bundlename classname</info>
 
 To list all available migration types for generation, as well as the corresponding match-types, run:
 
-    <info>php ezpublish/console ka:mig:gen --list-types</info>
+    <info>php bin/console ka:mig:gen --list-types</info>
 
 Note that you can pass in a custom directory path instead of a bundle name, but, if you do, you will have to use the <info>--path</info>
 option when you run the <info>migrate</info> command.

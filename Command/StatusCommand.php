@@ -31,11 +31,11 @@ class StatusCommand extends AbstractCommand
             ->setHelp(<<<EOT
 The <info>kaliop:migration:status</info> command displays the status of all available migrations:
 
-    <info>./ezpublish/console kaliop:migration:status</info>
+    <info>php bin/console kaliop:migration:status</info>
 
 You can optionally specify the path to migration versions with <info>--path</info>:
 
-    <info>./ezpublish/console kaliop:migrations:status --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
+    <info>php bin/console kaliop:migration:status --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
 EOT
             );
     }

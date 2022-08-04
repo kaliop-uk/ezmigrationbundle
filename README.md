@@ -21,7 +21,7 @@ NB: for eZPlatform 3 and later, head on to https://github.com/tanoconsulting/ezm
 
 In either `require` or `require-dev` at the end of the bundle list in the composer.json file add:
 
-    "kaliop/ezmigrationbundle": "^5.0"
+    "kaliop/ezmigrationbundle": "^6.0"
 
 Save it and run
 
@@ -62,6 +62,14 @@ Note: the command `kaliop:migration:update` is kept around for compatibility, an
 To get the latest version, you can update the bundle to the latest available version by using `composer`
 
     composer update kaliop/ezmigrationbundle
+
+### Upgrading from version 5.x to version 6
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
+
+* Run the migration named `20220101000200_FixExecutedMigrationsPaths.php`, eg:
+
+        php bin/console kaliop:migration:migrate --path vendor/kaliop/ezmigrationbundle/MigrationVersions
 
 ### Upgrading from version 4.x to version 5
 
@@ -113,7 +121,7 @@ The bundle provides a command to easily generate a new blank migration definitio
 
 For example:
 
-    php ezpublish/console kaliop:migration:generate --format=yml MyProjectBundle
+    php bin/console kaliop:migration:generate --format=yml MyProjectBundle
 
 The above command will place a new yml skeleton file in the `MigrationVersions` directory of the MyProjectBundle bundle.
 
@@ -129,7 +137,7 @@ _(the contents of the skeleton Yaml file are stored as twig template)_
 To see all the migrations definitions available in the system and whether they have been applied or not simply run the
 status command in your eZPublish 5 root directory:
 
-    php ezpublish/console kaliop:migration:status
+    php bin/console kaliop:migration:status
 
 The list of migrations which have been already applied is stored in the database, in a table named `kaliop_migrations`.
 The bundle will automatically create the table if needed.
@@ -139,7 +147,7 @@ In case you need to use a different name for that table, you can change the Symf
 
 To apply all available migrations run the migrate command in your eZPublish 5 root directory:
 
-     php ezpublish/console kaliop:migration:migrate
+     php bin/console kaliop:migration:migrate
 
 NB: if you just executed the above command and got an error message because the migration definition file that you had
 just generated is invalid, do not worry - that is by design. Head on to the next paragraph...
@@ -151,7 +159,7 @@ specify the use of another admin account by passing the `-a` flag.
 
 To apply a single migration run the migrate command passing it the path to its definition, as follows:
 
-    php ezpublish/console kaliop:migration:migrate --path=src/MyNamespace/MyBundle/MigrationVersions/20160803193400_a_migration.yml
+    php bin/console kaliop:migration:migrate --path=src/MyNamespace/MyBundle/MigrationVersions/20160803193400_a_migration.yml
 
 NB: you can specify as well a folder with the `--path` flag, in which case all the migration definitions contained in that
 folder will be executed.
@@ -208,7 +216,7 @@ For more specific needs, you can also use 2 other types of migrations:
 
 Example command to generate an SQL migration definition:
 
-     php ezpublish/console kaliop:migration:generate MyBundle create-new-table --format=sql
+     php bin/console kaliop:migration:generate MyBundle create-new-table --format=sql
 
 This will create the following file, which you are free to edit:
 
@@ -234,7 +242,7 @@ queries, you are better off splitting them, either in many .sql migrations, or i
 If the type of manipulation that you need to do is too complex for either YML or SQL, you can use a php class as
 migration definition. To generate a PHP migration definition, execute:
 
-     php ezpublish/console kaliop:migration:generate MyBundle AMigrationClass --format=php
+     php bin/console kaliop:migration:generate MyBundle AMigrationClass --format=php
 
 This will create the following file, which you are free to edit:
 
@@ -257,7 +265,7 @@ in a yaml migration. See the [relevant DSL](Resources/doc/DSL/Service.yml) for d
 
 The easiest way to re-execute a migration in 'failed' status, is to remove it from the migrations table:
 
-    php ezpublish/console kaliop:migration:migration migration_name --delete
+    php bin/console kaliop:migration:migration migration_name --delete
 
 After removing the information about the migration from the migrations table, running the `migrate` command will execute it again.
 
@@ -406,7 +414,7 @@ update migration that has the complete specification of the role as it currently
 
 Example command to create such a migration:
 
-    php ezpublish/console kaliop:migration:generate --type=role --mode=update --match-type=identifier --match-value=Anonymous bundleName
+    php bin/console kaliop:migration:generate --type=role --mode=update --match-type=identifier --match-value=Anonymous bundleName
 
 ### When dumping a Content into a yml migration via the `generate` command, the list of attributes is empty
 
@@ -486,8 +494,10 @@ Or command-line shell prompt to the Docker container where tests are run:
     ./teststack/teststack shell
 
 The tests in the Docker container run using the version of debian/php/eZPlatform kernel specified in the file
-`.euts.env`.
+`.euts.env`. If no such file is present, some defaults are used, you can check the documentation in ./teststack/README.md
+to fins out what they are.
 If you want to test against a different version, feel free to:
+- create the `.euts.env` file, if it does not exist
 - add to it any required var (see file `teststack/.euts.env.example` as guidance)
 - rebuild the test stack
 - run tests the usual way

@@ -60,11 +60,11 @@ class MigrateCommand extends AbstractCommand
             ->setHelp(<<<EOT
 The <info>kaliop:migration:migrate</info> command loads and executes migrations:
 
-    <info>./ezpublish/console kaliop:migration:migrate</info>
+    <info>php bin/console kaliop:migration:migrate</info>
 
 You can optionally specify the path to migration definitions with <info>--path</info>:
 
-    <info>./ezpublish/console kaliop:migrations:migrate --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
+    <info>php bin/console kaliop:migration:migrate --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
 
 Use -v and -vv options to get troubleshooting information on the execution of each step in the migration(s).
 EOT

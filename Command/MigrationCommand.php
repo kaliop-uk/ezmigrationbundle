@@ -37,13 +37,13 @@ class MigrationCommand extends AbstractCommand
             ->setHelp(<<<EOT
 The <info>kaliop:migration:migration</info> command allows you to manually delete migrations versions from the migration table:
 
-    <info>./ezpublish/console kaliop:migration:migration --delete migration_name</info>
+    <info>php bin/console kaliop:migration:migration --delete migration_name</info>
 
 As well as manually adding migrations to the migration table, or marking them as skipped:
 
-    <info>./ezpublish/console kaliop:migration:migration --add /path/to/migration_definition</info>
+    <info>php bin/console kaliop:migration:migration --add /path/to/migration_definition</info>
 
-    <info>./ezpublish/console kaliop:migration:migration --skip /path/to/migration_definition</info>
+    <info>php bin/console kaliop:migration:migration --skip /path/to/migration_definition</info>
 EOT
             );
     }
