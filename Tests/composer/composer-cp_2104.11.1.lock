@@ -1037,16 +1037,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.8.3",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "1afdd860a2566ed3c2b0b4a3de6e23434a79ec85"
+                "reference": "e98e3e6d4f86621a9b75f623996e6bbdeb4b9318"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/1afdd860a2566ed3c2b0b4a3de6e23434a79ec85",
-                "reference": "1afdd860a2566ed3c2b0b4a3de6e23434a79ec85",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/e98e3e6d4f86621a9b75f623996e6bbdeb4b9318",
+                "reference": "e98e3e6d4f86621a9b75f623996e6bbdeb4b9318",
                 "shasum": ""
             },
             "require": {
@@ -1067,7 +1067,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7-dev"
+                    "dev-master": "1.9-dev"
                 }
             },
             "autoload": {
@@ -1104,7 +1104,7 @@
                     "homepage": "https://github.com/Nyholm"
                 },
                 {
-                    "name": "M√°rk S√°gi-Kaz√°r",
+                    "name": "M·rk S·gi-Kaz·r",
                     "email": "mark.sagikazar@gmail.com",
                     "homepage": "https://github.com/sagikazarmark"
                 },
@@ -1127,7 +1127,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/1.8.3"
+                "source": "https://github.com/guzzle/psr7/tree/1.9.0"
             },
             "funding": [
                 {
@@ -1143,7 +1143,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-10-05T13:56:00+00:00"
+            "time": "2022-06-20T21:43:03+00:00"
         },
         {
             "name": "hautelook/templated-uri-bundle",
@@ -2032,7 +2032,7 @@
             ],
             "authors": [
                 {
-                    "name": "Pablo D√≠ez",
+                    "name": "Pablo DÌez",
                     "email": "pablodip@gmail.com"
                 }
             ],
@@ -4428,20 +4428,21 @@
                 "issues": "https://github.com/Behat/Symfony2Extension/issues",
                 "source": "https://github.com/Behat/Symfony2Extension/tree/master"
             },
+            "abandoned": "friends-of-behat/symfony-extension",
             "time": "2018-04-20T15:48:23+00:00"
         },
         {
             "name": "behat/transliterator",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Behat/Transliterator.git",
-                "reference": "3c4ec1d77c3d05caa1f0bf8fb3aae4845005c7fc"
+                "reference": "34490b42c5225687d9449e6476e66a03c62c43ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Behat/Transliterator/zipball/3c4ec1d77c3d05caa1f0bf8fb3aae4845005c7fc",
-                "reference": "3c4ec1d77c3d05caa1f0bf8fb3aae4845005c7fc",
+                "url": "https://api.github.com/repos/Behat/Transliterator/zipball/34490b42c5225687d9449e6476e66a03c62c43ff",
+                "reference": "34490b42c5225687d9449e6476e66a03c62c43ff",
                 "shasum": ""
             },
             "require": {
@@ -4450,12 +4451,12 @@
             "require-dev": {
                 "chuyskywalker/rolling-curl": "^3.1",
                 "php-yaoi/php-yaoi": "^1.0",
-                "phpunit/phpunit": "^4.8.36|^6.3"
+                "phpunit/phpunit": "^4.8.36 || ^6.5.14 || ^8.5.25"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2-dev"
+                    "dev-master": "1.x-dev"
                 }
             },
             "autoload": {
@@ -4475,9 +4476,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Behat/Transliterator/issues",
-                "source": "https://github.com/Behat/Transliterator/tree/v1.3.0"
+                "source": "https://github.com/Behat/Transliterator/tree/v1.4.0"
             },
-            "time": "2020-01-14T16:39:13+00:00"
+            "time": "2022-03-30T09:16:18+00:00"
         },
         {
             "name": "clue/stream-filter",
@@ -4514,7 +4515,7 @@
             ],
             "authors": [
                 {
-                    "name": "Christian L√ºck",
+                    "name": "Christian L¸ck",
                     "email": "christian@clue.engineering"
                 }
             ],
@@ -4610,16 +4611,16 @@
         },
         {
             "name": "composer/ca-bundle",
-            "version": "1.3.1",
+            "version": "1.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "4c679186f2aca4ab6a0f1b0b9cf9252decb44d0b"
+                "reference": "30897edbfb15e784fe55587b4f73ceefd3c4d98c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/4c679186f2aca4ab6a0f1b0b9cf9252decb44d0b",
-                "reference": "4c679186f2aca4ab6a0f1b0b9cf9252decb44d0b",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/30897edbfb15e784fe55587b4f73ceefd3c4d98c",
+                "reference": "30897edbfb15e784fe55587b4f73ceefd3c4d98c",
                 "shasum": ""
             },
             "require": {
@@ -4666,7 +4667,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
-                "source": "https://github.com/composer/ca-bundle/tree/1.3.1"
+                "source": "https://github.com/composer/ca-bundle/tree/1.3.3"
             },
             "funding": [
                 {
@@ -4682,7 +4683,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-10-28T20:44:15+00:00"
+            "time": "2022-07-20T07:14:26+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -5528,7 +5529,7 @@
             ],
             "authors": [
                 {
-                    "name": "J√©r√¥me Vieilledent",
+                    "name": "JÈrÙme Vieilledent",
                     "email": "jerome.vieilledent@ez.no"
                 },
                 {
@@ -5755,26 +5756,26 @@
         },
         {
             "name": "incenteev/composer-parameter-handler",
-            "version": "v2.1.4",
+            "version": "v2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Incenteev/ParameterHandler.git",
-                "reference": "084befb11ec21faeadcddefb88b66132775ff59b"
+                "reference": "e1dd118763503f7fd766f907013e1d76d525fcc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Incenteev/ParameterHandler/zipball/084befb11ec21faeadcddefb88b66132775ff59b",
-                "reference": "084befb11ec21faeadcddefb88b66132775ff59b",
+                "url": "https://api.github.com/repos/Incenteev/ParameterHandler/zipball/e1dd118763503f7fd766f907013e1d76d525fcc4",
+                "reference": "e1dd118763503f7fd766f907013e1d76d525fcc4",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
-                "symfony/yaml": "^2.3 || ^3.0 || ^4.0 || ^5.0"
+                "symfony/yaml": "^2.3 || ^3.0 || ^4.0 || ^5.0 || ^6.0"
             },
             "require-dev": {
                 "composer/composer": "^1.0@dev",
-                "symfony/filesystem": "^2.3 || ^3 || ^4 || ^5",
-                "symfony/phpunit-bridge": "^4.0 || ^5.0"
+                "symfony/filesystem": "^2.3 || ^3 || ^4 || ^5 || ^6.0",
+                "symfony/phpunit-bridge": "^3.4.47 || ^4.4.41 || ^5.4.8 || ^6.0"
             },
             "type": "library",
             "extra": {
@@ -5804,9 +5805,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Incenteev/ParameterHandler/issues",
-                "source": "https://github.com/Incenteev/ParameterHandler/tree/v2.1.4"
+                "source": "https://github.com/Incenteev/ParameterHandler/tree/v2.1.5"
             },
-            "time": "2020-03-17T21:10:00+00:00"
+            "time": "2022-05-25T10:57:22+00:00"
         },
         {
             "name": "knplabs/knp-menu",
@@ -6083,7 +6084,7 @@
             ],
             "authors": [
                 {
-                    "name": "P√°draic Brady",
+                    "name": "P·draic Brady",
                     "email": "padraic.brady@gmail.com",
                     "homepage": "http://blog.astrumfutura.com"
                 },
@@ -6115,16 +6116,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.26.1",
+            "version": "1.27.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "c6b00f05152ae2c9b04a448f99c7590beb6042f5"
+                "reference": "904713c5929655dc9b97288b69cfeedad610c9a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/c6b00f05152ae2c9b04a448f99c7590beb6042f5",
-                "reference": "c6b00f05152ae2c9b04a448f99c7590beb6042f5",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/904713c5929655dc9b97288b69cfeedad610c9a1",
+                "reference": "904713c5929655dc9b97288b69cfeedad610c9a1",
                 "shasum": ""
             },
             "require": {
@@ -6185,7 +6186,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Seldaek/monolog/issues",
-                "source": "https://github.com/Seldaek/monolog/tree/1.26.1"
+                "source": "https://github.com/Seldaek/monolog/tree/1.27.1"
             },
             "funding": [
                 {
@@ -6197,7 +6198,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-28T08:32:12+00:00"
+            "time": "2022-06-09T08:53:42+00:00"
         },
         {
             "name": "netgen/ngsymfonytools",
@@ -6327,12 +6328,12 @@
             ],
             "authors": [
                 {
-                    "name": "P√°draic Brady",
+                    "name": "P·draic Brady",
                     "email": "padraic.brady@gmail.com",
                     "homepage": "http://blog.astrumfutura.com"
                 },
                 {
-                    "name": "Th√©o Fidry",
+                    "name": "ThÈo Fidry",
                     "email": "theo.fidry@gmail.com"
                 }
             ],
@@ -6390,7 +6391,7 @@
             ],
             "authors": [
                 {
-                    "name": "P√°draic Brady",
+                    "name": "P·draic Brady",
                     "email": "padraic.brady@gmail.com",
                     "homepage": "http://blog.astrumfutura.com"
                 }
@@ -6456,7 +6457,7 @@
             ],
             "authors": [
                 {
-                    "name": "M√°rk S√°gi-Kaz√°r",
+                    "name": "M·rk S·gi-Kaz·r",
                     "email": "mark.sagikazar@gmail.com"
                 }
             ],
@@ -6521,7 +6522,7 @@
             ],
             "authors": [
                 {
-                    "name": "M√°rk S√°gi-Kaz√°r",
+                    "name": "M·rk S·gi-Kaz·r",
                     "email": "mark.sagikazar@gmail.com"
                 }
             ],
@@ -6586,7 +6587,7 @@
                     "email": "geloen.eric@gmail.com"
                 },
                 {
-                    "name": "M√°rk S√°gi-Kaz√°r",
+                    "name": "M·rk S·gi-Kaz·r",
                     "email": "mark.sagikazar@gmail.com"
                 }
             ],
@@ -6661,7 +6662,7 @@
             ],
             "authors": [
                 {
-                    "name": "M√°rk S√°gi-Kaz√°r",
+                    "name": "M·rk S·gi-Kaz·r",
                     "email": "mark.sagikazar@gmail.com"
                 }
             ],
@@ -6713,7 +6714,7 @@
             ],
             "authors": [
                 {
-                    "name": "M√°rk S√°gi-Kaz√°r",
+                    "name": "M·rk S·gi-Kaz·r",
                     "email": "mark.sagikazar@gmail.com"
                 }
             ],
@@ -6831,7 +6832,7 @@
             ],
             "authors": [
                 {
-                    "name": "M√°rk S√°gi-Kaz√°r",
+                    "name": "M·rk S·gi-Kaz·r",
                     "email": "mark.sagikazar@gmail.com"
                 },
                 {
@@ -8499,7 +8500,7 @@
             ],
             "authors": [
                 {
-                    "name": "Pablo D√≠ez",
+                    "name": "Pablo DÌez",
                     "email": "pablodip@gmail.com"
                 }
             ],
@@ -8776,16 +8777,16 @@
         },
         {
             "name": "zetacomponents/cache",
-            "version": "1.6.1",
+            "version": "1.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zetacomponents/Cache.git",
-                "reference": "fe7a38c0aaba1c41bdb13cdfee517470d6dee8b1"
+                "reference": "52325c3b3ca1e55fa91bbe2be4bb943abf144fa4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zetacomponents/Cache/zipball/fe7a38c0aaba1c41bdb13cdfee517470d6dee8b1",
-                "reference": "fe7a38c0aaba1c41bdb13cdfee517470d6dee8b1",
+                "url": "https://api.github.com/repos/zetacomponents/Cache/zipball/52325c3b3ca1e55fa91bbe2be4bb943abf144fa4",
+                "reference": "52325c3b3ca1e55fa91bbe2be4bb943abf144fa4",
                 "shasum": ""
             },
             "require": {
@@ -8843,9 +8844,9 @@
             "homepage": "https://github.com/zetacomponents",
             "support": {
                 "issues": "https://github.com/zetacomponents/Cache/issues",
-                "source": "https://github.com/zetacomponents/Cache/tree/1.6.1"
+                "source": "https://github.com/zetacomponents/Cache/tree/1.6.2"
             },
-            "time": "2021-11-29T14:45:23+00:00"
+            "time": "2022-07-19T15:21:24+00:00"
         },
         {
             "name": "zetacomponents/configuration",
@@ -9211,16 +9212,16 @@
         },
         {
             "name": "zetacomponents/feed",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zetacomponents/Feed.git",
-                "reference": "dee83c5dd19929e28135fb2ceda66f4e0da15143"
+                "reference": "008a9a73415aca41ee8be95b51edc23d5224822b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zetacomponents/Feed/zipball/dee83c5dd19929e28135fb2ceda66f4e0da15143",
-                "reference": "dee83c5dd19929e28135fb2ceda66f4e0da15143",
+                "url": "https://api.github.com/repos/zetacomponents/Feed/zipball/008a9a73415aca41ee8be95b51edc23d5224822b",
+                "reference": "008a9a73415aca41ee8be95b51edc23d5224822b",
                 "shasum": ""
             },
             "require": {
@@ -9275,9 +9276,9 @@
             "homepage": "https://github.com/zetacomponents",
             "support": {
                 "issues": "https://github.com/zetacomponents/Feed/issues",
-                "source": "https://github.com/zetacomponents/Feed/tree/1.4.1"
+                "source": "https://github.com/zetacomponents/Feed/tree/1.4.2"
             },
-            "time": "2022-02-11T17:54:40+00:00"
+            "time": "2022-03-06T16:25:56+00:00"
         },
         {
             "name": "zetacomponents/image-analysis",
