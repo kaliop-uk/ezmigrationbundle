@@ -48,6 +48,9 @@
             type: ezfloat
             name: ezfloat
             identifier: ezfloat
+            # required to pass tests with ezp 5.4/cp and some mysql config
+            validator-configuration:
+                FloatValueValidator: { minFloatValue: -9999.99, maxFloatValue: 9999.99 }
         # @todo ezgmaplocation fieldType seems to be enabled by default, but the db table might *not* be present...
         #-
         #    type: ezgmaplocation
