@@ -51,6 +51,9 @@ Version 6.0.0
   This should help when copying the eZ database between different environments, such as fe. Prod and QA, which reside
   in different root directories in their respective servers/VMs, and then running `kaliop:migration:status`.
 
+  BC BREAK: the paths reported for migration definitions by commands `status` and `info` will now most often not be
+  absolute paths, but relative paths instead
+
   BC BREAK: if you are running the migration commands from a directory which is not the application's root dir, and use
   the `--path` option with a relative path, be aware that the path will now resolve to the app's root dir instead of the
   current dir

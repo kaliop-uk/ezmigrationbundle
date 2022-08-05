@@ -27,7 +27,7 @@ class StatusCommand extends AbstractCommand
             ->addOption('sort-by', null, InputOption::VALUE_REQUIRED, "Supported sorting order: name, execution", 'name')
             ->addOption('summary', null, InputOption::VALUE_NONE, "Only print summary information")
             ->addOption('todo', null, InputOption::VALUE_NONE, "Only print list of migrations to execute (full path to each)")
-            ->addOption('show-path', null, InputOption::VALUE_NONE, "Print migration path instead of status")
+            ->addOption('show-path', null, InputOption::VALUE_NONE, "Print migration path instead of notes")
             ->setHelp(<<<EOT
 The <info>kaliop:migration:status</info> command displays the status of all available migrations:
 
@@ -70,12 +70,16 @@ EOT
                 $index[$migration->name] = array('migration' => $migration);
 
                 // no definition, but a migration is there. Check if the definition sits elsewhere on disk than we expect it to be...
-                // q: what if we have a loader which does not work with is_file? Could we remove this check?
-                if ($migration->path != '' && is_file($migration->path)) {
+                // q: what if we have a loader which does not work with is_file? Could we remove this check? Also, path
+                // is usually relative to the app's root dir
+                if ($migration->path != '' /*&& is_file($migration->path)*/) {
                     try {
                         $migrationDefinitionCollection = $migrationsService->getMigrationsDefinitions(array($migration->path));
                         if (count($migrationDefinitionCollection)) {
+                            // the migration has been executed, but it is in a path outside what we are examining here.
+                            // We  add it as a note
                             $index[$migration->name]['definition'] = $migrationDefinitionCollection->reset();
+                            $index[$migration->name]['notes'] = array('<comment>The migration definition file is in a custom path</comment>');
                         }
                     } catch (\Exception $e) {
                         /// @todo one day we should be able to limit the kind of exceptions we have to catch here...
@@ -208,6 +212,9 @@ EOT
                         if ($migrationDefinition->path != $migration->path) {
                             $notes[] = '<comment>The migration definition file has now moved</comment>';
                         }
+                    }
+                    if (isset($value['notes'])) {
+                        $notes = array_merge($notes, $value['notes']);
                     }
                     $notes = implode(' ', $notes);
                 }

@@ -164,6 +164,7 @@ EOT
         foreach ($toExecute as $name => $migrationDefinition) {
 
             // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
+            /// @todo should we save their 'skipped' status in the db?
             if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
                 $output->writeln("<comment>Skipping $name</comment>");
                 $skipped++;

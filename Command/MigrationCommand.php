@@ -115,8 +115,9 @@ EOT
 
             if ($migration->path != '') {
                 // q: what if we have a loader which does not work with is_file? We could probably remove this check
-                // or, better, add a method `$migrationService->migrationDefinitionExists`...
-                if (is_file($migration->path)) {
+                // or, better, add a method `$migrationService->migrationDefinitionExists` / use a specific exception in getMigrationsDefinitions...
+                // Note also that $migration->path can not be used as is, as it is usually relative to the app's root dir
+                //if (is_file($migration->path)) {
                     try {
                         $migrationDefinitionCollection = $migrationService->getMigrationsDefinitions(array($migration->path));
                         if (count($migrationDefinitionCollection)) {
@@ -137,9 +138,9 @@ EOT
                         /// @todo one day we should be able to limit the kind of exceptions we have to catch here...
                         $output->writeln('Definition parsing error: <error>' . $e->getMessage() . '</error>');
                     }
-                } else {
-                    $output->writeln('Definition error: <error>The migration definition file can not be found any more</error>');
-                }
+                //} else {
+                //    $output->writeln('Definition error: <error>The migration definition file can not be found any more</error>');
+                //}
             }
 
             $output->writeln('');
