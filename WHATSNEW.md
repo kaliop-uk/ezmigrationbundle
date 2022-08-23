@@ -32,6 +32,19 @@ Version 6.0.0
   `ez_migration_bundle.reference_resolver.customreference.flexible` and remove from its arguments the service
   `@ez_migration_bundle.reference_resolver.expression`
 
+* New: for migration steps `content/create` and `content/update`, when content fields of type eZBinaryFile, eZImage or eZMedia
+  are defined using array syntax (instead of a single string defining the file path), references are now resolved for each
+  element of the array. Eg:
+
+      -
+          type: content
+          mode: create
+          content_type: an_image_type
+          attributes:
+              image_field:
+                  path: 'reference:a-reference-name'
+                  alternativeText: 'looking good'
+
 * New: multiple migration steps `url_alias/...` and `url_wildcard/...` are now available to manage urls aliases. Please read
   their documentation in Resources/doc/DSL for details
 
@@ -117,7 +130,7 @@ Version 5.14.0
   `teststack.sh runtests -- --coverage-html=/some-dir`. Note that it might take a long time to run
 
 * Improved: allow to run unit tests on a PostgreSQL database instead of MySQL. At the moment this works correctly
-  for testing against eZPublish Platform but not against eZPlatorm 1/2/3
+  for testing against eZPublish Platform but not against eZPlatorm 1/2
 
 * Deprecated: matching using keys: `contenttype_id`, `contenttypegroup_id`, `objectstate_id`, `objectstategroup_id`,
   `usergroup_id` has been deprecated in favour of `content_type_id`, `content_type_group_id`, `object_state_id`,

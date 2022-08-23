@@ -38,6 +38,7 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
         $fieldSettings = null;
         foreach($fieldValue as $key => $val) {
 
+            // NB: this might result in double reference-resolving when the original value is a string, given preResolveReferences...
             $val = $this->referenceResolver->resolveReference($val);
 
             if (is_string($val)) {

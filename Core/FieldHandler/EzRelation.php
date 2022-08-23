@@ -38,6 +38,7 @@ class EzRelation extends AbstractFieldHandler implements FieldValueImporterInter
         }
 
         // 1. resolve relations
+        // NB: this might result in double reference-resolving when the original value is a string, given preResolveReferences...
         $id = $this->referenceResolver->resolveReference($id);
         // 2. resolve remote ids
         $id = $this->contentMatcher->matchOneByKey($id)->id;

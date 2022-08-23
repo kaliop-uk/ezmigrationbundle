@@ -26,12 +26,12 @@ class EzImage extends FileFieldHandler implements FieldValueConverterInterface
         } else if (is_string($fieldValue)) {
             $filePath = $fieldValue;
         } else {
-            $filePath = $fieldValue['path'];
+            $filePath = $this->referenceResolver->resolveReference($fieldValue['path']);
             if (isset($fieldValue['alt_text'])) {
-                $altText = $fieldValue['alt_text'];
+                $altText = $this->referenceResolver->resolveReference($fieldValue['alt_text']);
             }
             if (isset($fieldValue['filename'])) {
-                $fileName = $fieldValue['filename'];
+                $fileName = $this->referenceResolver->resolveReference($fieldValue['filename']);
             }
         }
 
@@ -39,6 +39,7 @@ class EzImage extends FileFieldHandler implements FieldValueConverterInterface
         $realFilePath = dirname($context['path']) . '/images/' . $filePath;
 
         // but in the past, when using a string, this worked as well as an absolute path, so we have to support it as well
+        /// @todo atm this does not work for files from content fields in cluster mode
         if (!is_file($realFilePath) && is_file($filePath)) {
             $realFilePath = $filePath;
         }
@@ -66,6 +67,7 @@ class EzImage extends FileFieldHandler implements FieldValueConverterInterface
             return null;
         }
 
+        /// @todo we should handle clustered configurations, to give back the absolute path on disk rather than the 'virtual' one
         return array(
             'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($fieldValue->uri) : $fieldValue->uri),
             'filename'=> $fieldValue->fileName,

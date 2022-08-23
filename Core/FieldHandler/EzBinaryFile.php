@@ -24,12 +24,12 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
         } if (is_string($fieldValue)) {
             $filePath = $fieldValue;
         } else {
-            $filePath = $fieldValue['path'];
+            $filePath = $this->referenceResolver->resolveReference($fieldValue['path']);
             if (isset($fieldValue['filename'])) {
-                $fileName = $fieldValue['filename'];
+                $fileName = $this->referenceResolver->resolveReference($fieldValue['filename']);
             }
             if (isset($fieldValue['mime_type'])) {
-                $mimeType = $fieldValue['mime_type'];
+                $mimeType = $this->referenceResolver->resolveReference($fieldValue['mime_type']);
             }
         }
 
@@ -37,6 +37,7 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
         $realFilePath = dirname($context['path']) . '/files/' . $filePath;
 
         // but in the past, when using a string, this worked as well as an absolute path, so we have to support it as well
+        /// @todo atm this does not work for files from content fields in cluster mode
         if (!is_file($realFilePath) && is_file($filePath)) {
             $realFilePath = $filePath;
         }
@@ -61,8 +62,6 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
      * @param \eZ\Publish\Core\FieldType\BinaryFile\Value $fieldValue
      * @param array $context
      * @return array
-     *
-     * @todo check if this works in ezplatform
      */
     public function fieldValueToHash($fieldValue, array $context = array())
     {
@@ -70,6 +69,7 @@ class EzBinaryFile extends FileFieldHandler implements FieldValueConverterInterf
             return null;
         }
         $binaryFile = $this->ioService->loadBinaryFile($fieldValue->id);
+        /// @todo we should handle clustered configurations, to give back the absolute path on disk rather than the 'virtual' one
         return array(
             'path' => realpath($this->ioRootDir) . '/' . ($this->ioDecorator ? $this->ioDecorator->undecorate($binaryFile->uri) : $binaryFile->uri),
             'filename'=> $fieldValue->fileName,
