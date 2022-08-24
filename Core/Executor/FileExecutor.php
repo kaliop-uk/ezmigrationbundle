@@ -99,11 +99,9 @@ class FileExecutor extends AbstractExecutor
             throw new \Exception("Can not load '$fileName': file missing");
         }
 
-
-
-        $separator = isset($dsl['separator']) ? $dsl['separator'] : ',';
-        $enclosure = isset($dsl['enclosure']) ? $dsl['enclosure'] : '"';
-        $escape = isset($dsl['escape']) ? $dsl['escape'] : '\\';
+        $separator = isset($dsl['separator']) ? $this->referenceResolver->resolveReference($dsl['separator']) : ',';
+        $enclosure = isset($dsl['enclosure']) ? $this->referenceResolver->resolveReference($dsl['enclosure']) : '"';
+        $escape = isset($dsl['escape']) ? $this->referenceResolver->resolveReference($dsl['escape']) : '\\';
 
         $singleResult = ($this->expectedResultsType($step) == self::$RESULT_TYPE_SINGLE);
 
@@ -188,7 +186,7 @@ class FileExecutor extends AbstractExecutor
 
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
 
-        $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
+        $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($fileName)) {
             throw new \Exception("Can not save file '$fileName: file already exists");
         }
@@ -294,7 +292,7 @@ class FileExecutor extends AbstractExecutor
         $this->setReferences($fileName, $dsl);
 
         $to = $this->referenceResolver->resolveReference($dsl['to']);
-        $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
+        $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($to)) {
             throw new \Exception("Can not copy file to '$to: file already exists");
         }
@@ -326,7 +324,7 @@ class FileExecutor extends AbstractExecutor
         $this->setReferences($fileName, $dsl);
 
         $to = $this->referenceResolver->resolveReference($dsl['to']);
-        $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
+        $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($to)) {
             throw new \Exception("Can not move to '$to': file already exists");
         }
@@ -421,7 +419,7 @@ class FileExecutor extends AbstractExecutor
         return true;
     }
 
-    protected function setdataReferences($data, $dsl, $singleResult)
+    protected function setDataReferences($data, $dsl, $singleResult)
     {
         if (!array_key_exists('references', $dsl)) {
             return false;

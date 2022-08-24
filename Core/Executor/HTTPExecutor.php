@@ -66,7 +66,7 @@ class HTTPExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Can not execute http call without 'uri' in the step definition");
         }
 
-        $method = isset($dsl['method']) ? $dsl['method'] : 'GET';
+        $method = isset($dsl['method']) ? $this->referenceResolver->resolveReference($dsl['method']) : 'GET';
 
         $uri = $this->resolveReferencesInText($dsl['uri']);
 
@@ -75,7 +75,7 @@ class HTTPExecutor extends AbstractExecutor
         $body = isset($dsl['body']) ? $this->resolveReferencesInText($dsl['body']) : null;
 
         if (isset($dsl['client'])) {
-            $client = $this->container->get('httplug.client.'.$dsl['client']);
+            $client = $this->container->get('httplug.client.'.$this->referenceResolver->resolveReference($dsl['client']));
         } else {
             $client = $this->container->get('httplug.client');
         }

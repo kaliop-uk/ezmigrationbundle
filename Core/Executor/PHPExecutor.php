@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
@@ -13,10 +14,14 @@ class PHPExecutor extends AbstractExecutor
     protected $supportedStepTypes = array('php');
     protected $mandatoryInterface = 'Kaliop\eZMigrationBundle\API\MigrationInterface';
     protected $container;
+    /** @var ReferenceResolverInterface */
+    protected $referenceResolver;
 
-    public function __construct(ContainerInterface $container)
+    // we keep the referenceResolver optional for BC
+    public function __construct(ContainerInterface $container, ReferenceResolverInterface $referenceResolver = null)
     {
         $this->container = $container;
+        $this->referenceResolver = $referenceResolver;
     }
 
     /**
@@ -33,7 +38,7 @@ class PHPExecutor extends AbstractExecutor
         if (!isset($dsl['class'])) {
             throw new InvalidStepDefinitionException("Missing 'class' for php migration step");
         }
-        $class = $dsl['class'];
+        $class = $this->referenceResolver ? $this->referenceResolver->resolveReference($dsl['class']) : $dsl['class'];
 
         $this->skipStepIfNeeded($step);
 

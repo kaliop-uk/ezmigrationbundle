@@ -296,6 +296,7 @@ services:
         class: '%ez_migration_bundle.executor.php.class%'
         arguments:
             - '@service_container'
+            - '@ez_migration_bundle.reference_resolver.customreference'
         calls:
             - ['setReferenceMatcher', ['@ez_migration_bundle.reference_matcher']]
         tags:

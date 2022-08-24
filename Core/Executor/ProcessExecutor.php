@@ -72,6 +72,7 @@ class ProcessExecutor extends AbstractExecutor
 
         if (isset($dsl['arguments'])) {
             foreach($dsl['arguments'] as $arg) {
+                /// @todo should this be recursive?
                 $builderArgs[] = $this->referenceResolver->resolveReference($arg);
             }
         }
@@ -83,25 +84,26 @@ class ProcessExecutor extends AbstractExecutor
         // allow long migrations processes by default
         $timeout = $this->defaultTimeout;
         if (isset($dsl['timeout'])) {
-            $timeout = $dsl['timeout'];
+            $timeout = $this->referenceResolver->resolveReference($dsl['timeout']);
         }
         $process->setTimeout($timeout);
 
         if (isset($dsl['working_directory'])) {
-            $process->setWorkingDirectory($dsl['working_directory']);
+            $process->setWorkingDirectory($this->referenceResolver->resolveReference($dsl['working_directory']));
         }
 
+        /// @todo should we support false/true ?
         if (isset($dsl['disable_output'])) {
             $process->disableOutput();
         }
 
         if (isset($dsl['environment'])) {
-            $process->setEnv($dsl['environment']);
+            $process->setEnv($this->referenceResolver->resolveReference($dsl['environment']));
         }
 
         $process->run();
 
-        if (isset($dsl['fail_on_error']) && $dsl['fail_on_error']) {
+        if (isset($dsl['fail_on_error']) && $this->referenceResolver->resolveReference($dsl['fail_on_error'])) {
             if (($exitCode = $process->getExitCode()) != 0) {
                 throw new \Exception("Process failed with exit code: $exitCode", $exitCode);
             }
