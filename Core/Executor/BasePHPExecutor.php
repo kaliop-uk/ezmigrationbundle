@@ -50,6 +50,8 @@ abstract class BasePHPExecutor extends AbstractExecutor
                     $value = $exception ? $exception->getCode() : null;
                     break;
                 case 'exception_message':
+                // BC
+                case 'exception_text':
                     $value = $exception ? $exception->getMessage() : null;
                     break;
                 case 'exception_file':
