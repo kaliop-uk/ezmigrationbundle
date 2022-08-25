@@ -3,11 +3,69 @@
     mode: call_function
     function: time
     references:
-        kmb_test_40_current_time: result
+        kmb_test_41_current_time: result
 
 -
     type: assert
     target: reference
-    identifier: reference:kmb_test_40_current_time
+    identifier: reference:kmb_test_41_current_time
     test:
         GreaterThan: 1640991600 # 1/1/2022
+
+-
+    type: php
+    mode: call_static_method
+    class: MigrateTest
+    method: returnInput
+    arguments: [42]
+    references:
+        kmb_test_41_results: result
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_41_results
+    test:
+        equals: 42
+
+-
+    type: php
+    mode: call_static_method
+    # This class is guaranteed to be defined, as it is the one running this test...
+    class: MigrateTest
+    method: returnException
+    arguments: ['the meaning of life', 42]
+    catch: ErrorException
+    references:
+        kmb_test_41_exception_message: exception_message
+        kmb_test_41_exception_code: exception_code
+        kmb_test_41_exception_file: exception_file
+        kmb_test_41_exception_line: exception_line
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_41_exception_message
+    test:
+        equals: 'the meaning of life'
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_41_exception_code
+    test:
+        equals: 42
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_41_exception_file
+    test:
+        contains: 04_MigrateTest.php
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_41_exception_line
+    test:
+        GreaterThan: 380

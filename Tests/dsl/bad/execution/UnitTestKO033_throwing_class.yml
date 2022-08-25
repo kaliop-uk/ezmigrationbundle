@@ -1,0 +1,6 @@
+-
+    type: php
+    mode: call_static_method
+    # This class is guaranteed to be defined, as it is the one running this test...
+    class: MigrateTest
+    method: returnException

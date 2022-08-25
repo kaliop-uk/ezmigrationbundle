@@ -372,4 +372,14 @@ class MigrateTest extends MigrationExecutingTest
 
         return $repository;
     }
+
+    public static function returnInput($in)
+    {
+        return $in;
+    }
+
+    public static function returnException($message = '', $code = 0, $class = 'ErrorException')
+    {
+        throw new $class($message, $code);
+    }
 }
