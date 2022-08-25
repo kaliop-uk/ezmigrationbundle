@@ -57,7 +57,8 @@ class ExpressionResolver extends AbstractResolver implements ExpressionFunctionP
                     return $resolver->resolveReference($str);
                 }
             ),
-            new ExpressionFunction(
+            // 'md5' and 'array_merge' are available via step php/call_function. let's not pollute this
+            /*new ExpressionFunction(
                 'array_merge',
                 function () {
                     return sprintf('array_merge(%s)', implode(', ', func_get_args()));
@@ -76,7 +77,7 @@ class ExpressionResolver extends AbstractResolver implements ExpressionFunctionP
                     $args = func_get_args();
                     return md5($value);
                 }
-            ),
+            ),*/
         );
     }
 }

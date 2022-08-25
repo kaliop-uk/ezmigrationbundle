@@ -19,7 +19,7 @@ class StepExecutedListener
         $result = $event->getResult();
 
         if ($event->getResult() === null && $event->getStep()->type !== 'assert' && $event->getStep()->type !== 'void'
-            && $event->getStep()->type !== 'service') {
+            && $event->getStep()->type !== 'service' && $event->getStep()->type !== 'php') {
             throw new \Exception('Received null as step execution event result');
         }
 

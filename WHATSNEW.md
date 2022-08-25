@@ -5,27 +5,10 @@ Version 6.0.0
   it is now possible to use `eval:expression` or `[eval:expression]`.
 
   The syntax for "expression" is the one of the Symfony ExpressionLanguage component. See: https://symfony.com/doc/current/components/expression_language/syntax.html
-  Custom functions made available are `md5` and `array_merge`
 
   Ex: to take the value of an existing reference and add 1 to it: `[eval: 1 + resolve('reference:myref')]`
 
   Ex: to take the value of an existing reference and concatenate 'a' to it: `[eval: resolve('reference:myref') ~ 'a']`
-
-  Ex: it is possible to add an element to an array-valued reference, with an admittedly cumbersome syntax, given here
-  as a self-contained example:
-
-      -
-          type: reference
-          mode: set
-          identifier: pippo
-          value: [a, b]
-      -
-          type: reference
-          mode: set
-          identifier: pippo
-          value: "eval: array_merge(resolve('reference:pippo'), ['c'])"
-          resolve_references: true
-          overwrite: true
 
   BC BREAK: note that this can be an issue if you have existing migrations which might have the text `[eval:` in their data.
   If this is a problem for your environment, you can fix it by overriding the definition of Symfony service
@@ -37,6 +20,22 @@ Version 6.0.0
 
 * New: migration steps `php/call_function` and `php/call_static_method`, to ease one-off calling php code as part of a
   yaml migration. See the [relevant DSL](Resources/doc/DSL/PHP.yml) for details.
+
+  Ex: it is possible to add an element to an array-valued reference, with an admittedly cumbersome syntax, given here
+  as a self-contained example:
+
+      -
+          type: reference
+          mode: set
+          identifier: pippo
+          value: [a, b]
+      -
+          type: php
+          mode: call_function
+          function: array_merge
+          arguments: ['reference:pippo', ['c']]
+          references:
+              pluto: result
 
 * New: migration steps `loop/break` and `loop/continue`
 
