@@ -35,7 +35,7 @@
     class: MigrateTest
     method: returnException
     arguments: ['the meaning of life', 42]
-    catch: ErrorException
+    catch: '\ErrorException'
     references:
         kmb_test_41_exception_message: exception_message
         kmb_test_41_exception_code: exception_code
