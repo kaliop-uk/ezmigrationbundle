@@ -10,4 +10,4 @@
     target: reference
     identifier: reference:kmb_test_40_current_time
     test:
-        gt: 1640991600 # 1/1/2022
+        GreaterThan: 1640991600 # 1/1/2022

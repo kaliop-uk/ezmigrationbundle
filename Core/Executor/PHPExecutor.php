@@ -56,7 +56,7 @@ class PHPExecutor extends BasePHPExecutor
         $this->skipStepIfNeeded($step);
 
         $action = str_replace('_', '', ucwords($action, '_'));
-        return $action === 'call_static_method' ? $this->$action($step->dsl, $step->context, $checkInterface) : $this->$action($step->dsl, $step->context);
+        return $action === 'call_static_method' ? $this->$action($dsl, $step->context, $checkInterface) : $this->$action($dsl, $step->context);
     }
 
     protected function callFunction($dsl, $context)
