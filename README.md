@@ -63,51 +63,7 @@ To get the latest version, you can update the bundle to the latest available ver
 
     composer update kaliop/ezmigrationbundle
 
-### Upgrading from version 5.x to version 6
-
-* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
-
-* Run the migration named `20220101000200_FixExecutedMigrationsPaths.php`, eg:
-
-        php bin/console kaliop:migration:migrate --path vendor/kaliop/ezmigrationbundle/MigrationVersions
-
-### Upgrading from version 4.x to version 5
-
-* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
-
-* Nothing else is required, unless you have one of the following:
-
-    - code which extends the migration bundle code/apis
-    - old migrations, that you want to play again with the updated bundle, which have text values which include the string '[reference:xxx]'
-      where 'xxx' stands for any sequence of characters
-
-    For both cases, the fix is to apply manual changes to your code / migrations.
-
-### Upgrading from version 3.x to version 4
-
-* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
-
-* Nothing else is required, unless you have one of the following:
-
-    - code which extends the migration bundle code/apis
-    - code which depends on parsing the output of the `migrate` command and relies on its exact format
-
-    For both cases, the fix is to apply manual changes to your code.
-
-### Upgrading from version 2.x to version 3
-
-* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
-
-* Nothing else is required, unless you have one of the following:
-
-    - migrations definitions generated using extension versions 1.x or 2.x, yet to be applied
-    - code which extends the migration bundle code/apis
-
-    For both cases, the fix is to apply manual changes to your code/migrations.
-
-### Upgrading from version 1.x to version 2
-
-Please read the [dedicated documentation page](Resources/doc/Upgrading/1.x_to_2.0.md)
+For upgrades from one major version to the following ones, see the instructions at the bottom of this readme.
 
 
 ## Getting started
@@ -261,6 +217,9 @@ the reason why the php classes used as migrations should not use namespaces.
 *NB* it is also possible to run any method of any existing Symfony service just by declaring it as migration step
 in a yaml migration. See the [relevant DSL](Resources/doc/DSL/Service.yml) for details.
 
+*NB* it is also possible to run any existing php function or static class method just by declaring it as migration step
+in a yaml migration. See the [relevant DSL](Resources/doc/DSL/PHP.yml) for details.
+
 ### Re-executing failed migrations
 
 The easiest way to re-execute a migration in 'failed' status, is to remove it from the migrations table:
@@ -385,6 +344,11 @@ and the corresponding php class:
             name: Topbar-hover-color
             identifier: topbar-hover-color
 
+* when eZ is set up in cluster mode, if you are setting references to the path of a content field of type ezimage,
+  ezbinaryfile or ezmedia, or generating a migration for creating/updating it, the value you will get for the path will
+  not be the absolute path on disk, but the path relative to the 'nfsvar' directory, which makes it unsuitable for
+  being used directly in eg. a content/create migration.
+
 
 ## Frequently asked questions
 
@@ -420,6 +384,10 @@ Example command to create such a migration:
 
 A: this is most likely due to using a bad language configuration
 
+### Are there examples of common tasks requiring complex migrations?
+
+A: yes, please take a look at Resources/doc/Cookbook/
+
 
 ## Extending the bundle
 
@@ -429,7 +397,7 @@ The bundle has been designed to be easily extended in many ways, such as:
 * adding support for custom/complex field-types
 * adding support for completely new actions in the Yml definitions
 * adding support for a new file format for storing migration definitions
-* adding support for a new resolver for the custom references in the migration definitions
+* adding support for new resolvers for the custom references in the migration definitions
 * taking over the way that the migrations definitions are loaded from the filesystem or stored in the database
 * etc...
 
@@ -511,6 +479,55 @@ You can even keep multiple test stacks available in parallel, by using different
 - create a file `.euts.env.local` and add to it any required env var, starting with a unique `COMPOSE_PROJECT_NAME`
 - build the new test stack via `./teststack/teststack. -e .euts.env.local build`
 - run the tests via: `./teststack/teststack -e .euts.env.local runtests`
+
+
+## Major version upgrades
+
+### Upgrading from version 5.x to version 6
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
+
+* Run the migration named `20220101000200_FixExecutedMigrationsPaths.php`, eg:
+
+        php bin/console kaliop:migration:migrate --path vendor/kaliop/ezmigrationbundle/MigrationVersions
+
+### Upgrading from version 4.x to version 5
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
+
+* Nothing else is required, unless you have one of the following:
+
+    - code which extends the migration bundle code/apis
+    - old migrations, that you want to play again with the updated bundle, which have text values which include the string '[reference:xxx]'
+      where 'xxx' stands for any sequence of characters
+
+  For both cases, the fix is to apply manual changes to your code / migrations.
+
+### Upgrading from version 3.x to version 4
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
+
+* Nothing else is required, unless you have one of the following:
+
+    - code which extends the migration bundle code/apis
+    - code which depends on parsing the output of the `migrate` command and relies on its exact format
+
+  For both cases, the fix is to apply manual changes to your code.
+
+### Upgrading from version 2.x to version 3
+
+* Make sure you read carefully all the BC notes in the [release notes](WHATSNEW.md)
+
+* Nothing else is required, unless you have one of the following:
+
+    - migrations definitions generated using extension versions 1.x or 2.x, yet to be applied
+    - code which extends the migration bundle code/apis
+
+  For both cases, the fix is to apply manual changes to your code/migrations.
+
+### Upgrading from version 1.x to version 2
+
+Please read the [dedicated documentation page](Resources/doc/Upgrading/1.x_to_2.0.md)
 
 
 [![License](https://poser.pugx.org/kaliop/ezmigrationbundle/license)](https://packagist.org/packages/kaliop/ezmigrationbundle)

@@ -1,4 +1,6 @@
-# Executing symfony Services methods as migration steps
+# Executing Symfony Services methods as migration steps.
+#
+# NB: see also PHP.yml for other wys of executing php in yml migration definitions
 
 -
     type: service

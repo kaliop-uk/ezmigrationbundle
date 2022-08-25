@@ -35,6 +35,9 @@ Version 6.0.0
 * New: multiple migration steps `url_alias/...` and `url_wildcard/...` are now available to manage urls aliases. Please read
   their documentation in Resources/doc/DSL for details
 
+* New: migration steps `php/call_function` and `php/call_static_method`, to ease one-off calling php code as part of a
+  yaml migration. See the [relevant DSL](Resources/doc/DSL/PHP.yml) for details.
+
 * New: migration steps `loop/break` and `loop/continue`
 
 * New: migration step `file/load_csv`, allows to easily initialize references long list of values
