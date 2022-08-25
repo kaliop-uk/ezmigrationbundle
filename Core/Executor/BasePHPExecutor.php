@@ -73,31 +73,6 @@ abstract class BasePHPExecutor extends AbstractExecutor
         return true;
     }
 
-    protected function handleException($exception, $dsl)
-    {
-        $catch = false;
-
-        // allow to specify a set of exceptions to tolerate
-        if (isset($dsl['catch'])) {
-            if (is_array($dsl['catch'])) {
-                $caught = $dsl['catch'];
-            } else {
-                $caught = array($dsl['catch']);
-            }
-
-            foreach ($caught as $baseException) {
-                if (is_subclass_of($exception, $baseException)) {
-                    $catch = true;
-                    break;
-                }
-            }
-        }
-
-        if (!$catch) {
-            throw $exception;
-        }
-    }
-
     protected function getArguments($dsl)
     {
         if (isset($dsl['arguments'])) {
@@ -130,5 +105,30 @@ abstract class BasePHPExecutor extends AbstractExecutor
         $this->setReferences($result, $exception, $dsl);
 
         return $result;
+    }
+
+    protected function handleException($exception, $dsl)
+    {
+        $catch = false;
+
+        // allow to specify a set of exceptions to tolerate
+        if (isset($dsl['catch'])) {
+            if (is_array($dsl['catch'])) {
+                $caught = $dsl['catch'];
+            } else {
+                $caught = array($dsl['catch']);
+            }
+
+            foreach ($caught as $baseException) {
+                if (is_a($exception, $baseException)) {
+                    $catch = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$catch) {
+            throw $exception;
+        }
     }
 }
