@@ -23,7 +23,9 @@
     type: migration
     mode: sleep
     seconds: xxx # integer
-
+    if: # Optional. If set, the migration will be halted paused the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
 -
     # Suspend execution of a migration: 'freeze" execution at the current step and let the `migrate command finish.
     # The migration will be resumed when running the `command ka:mi:resume`, and the 'until' condition will be checked again,

@@ -32,9 +32,16 @@ Version 6.0.0
   `ez_migration_bundle.reference_resolver.customreference.flexible` and remove from its arguments the service
   `@ez_migration_bundle.reference_resolver.expression`
 
-* New: for migration steps `content/create` and `content/update`, when content fields of type eZBinaryFile, eZImage or eZMedia
-  are defined using array syntax (instead of a single string defining the file path), references are now resolved for each
-  element of the array. Eg:
+* New: multiple migration steps `url_alias/...` and `url_wildcard/...` are now available to manage urls aliases. Please read
+  their documentation in Resources/doc/DSL for details
+
+* New: migration steps `loop/break` and `loop/continue`
+
+* New: migration step `file/load_csv`, allows to easily initialize references long list of values
+
+* New: for migration steps `content/create` and `content/update`, when content fields of type eZBinaryFile, eZImage or
+  eZMedia are defined using array syntax (instead of a single string defining the file path), references are now resolved
+  for each element of the array. Eg:
 
       -
           type: content
@@ -45,12 +52,13 @@ Version 6.0.0
                   path: 'reference:a-reference-name'
                   alternativeText: 'looking good'
 
-* New: multiple migration steps `url_alias/...` and `url_wildcard/...` are now available to manage urls aliases. Please read
-  their documentation in Resources/doc/DSL for details
+* New: references are now resolved in the following migration step elements: `file/load_csv/separator`, `file/load_csv/enclosure`,
+  `file/load_csv/escape`, `file/save/overwrite`, `file/copy/overwrite`, `file/move/overwrite`, `http/call/method`,
+  `http/call/client`, `migration/cancel/message`, `migration/fail/message`, `migration/sleep/seconds` `migration/suspend/message`
+  `migration/suspend/sleep`, `process/run/timeout`, `process/run/working_directory`, `process/run/environment`,
+  `process/run/fail_on_error`,
 
-* New: migration steps `loop/break` and `loop/continue`
-
-* New: migration step `file/load_csv`, allows to easily initialize references long list of values
+* New: migration step `migration/sleep` now supports the `if` clause
 
 * New: command `migrate` and `mass_migrate` can pass down to children processes custom php.ini settings, such as f.e.
   `memory_limit` and `error_reporting`. Useful to run migrations as subprocesses in hostile environments
