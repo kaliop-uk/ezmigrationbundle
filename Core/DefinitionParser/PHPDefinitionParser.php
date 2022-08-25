@@ -51,6 +51,8 @@ class PHPDefinitionParser implements DefinitionParserInterface
 
                 include_once($definition->path);
 
+                // we leave these checks to be done by the PHPExecutor
+                /*
                 if (!class_exists($className)) {
                     $status = MigrationDefinition::STATUS_INVALID;
                     $message = "The migration definition file should contain a valid class '$className'";
@@ -60,7 +62,7 @@ class PHPDefinitionParser implements DefinitionParserInterface
                         $status = MigrationDefinition::STATUS_INVALID;
                         $message = "The migration definition class '$className' should implement the interface '{$this->mandatoryInterface}'";
                     }
-                }
+                }*/
             } catch (Error $e) {
                 $status = MigrationDefinition::STATUS_INVALID;
                 $message = "The migration definition file '{$definition->path}' is not valid php'";

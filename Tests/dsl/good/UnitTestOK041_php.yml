@@ -1,0 +1,13 @@
+-
+    type: php
+    mode: call_function
+    function: time
+    references:
+        kmb_test_40_current_time: result
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_40_current_time
+    test:
+        gt: 1640991600 # 1/1/2022
