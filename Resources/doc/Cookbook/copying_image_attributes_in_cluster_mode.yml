@@ -1,0 +1,43 @@
+# This sample migration shows how to create a content with an ezimage field with the image being a copy of the ezimage
+# field of another content, when the CMS is set up in cluster mode.
+
+# 1. load the old content with the ezimage field and set a reference to the path of the image's original file.
+#    In this case the name of the ezimage field is 'image'
+-
+    type: content
+    mode: load
+    match:
+        location_remote_id: 123aremoteid456etc
+    references:
+        -
+            identifier: old-path-ref
+            attribute: attributes.image.path
+
+# 2. fix the value we got, to obtain the actual path to the image file as found on disk.
+#    In this case, the cms is installed in '/app', and the clusterized dfs-data dir is '/mnt/dfsdata/'
+-
+    type: php
+    mode: call_function
+    function: str_replace
+    arguments: ['/app/ezpublish_legacy/', '/mnt/dfsdata/', 'reference:old-path-ref']
+    references:
+        new-path-ref: result
+
+# 3. optional: check the value we got
+#-
+#    type: reference
+#    mode: dump
+#    identifier: "reference:new-path-ref"
+#    label: 'absolute path of image file: '
+
+# 4. create the new content.
+#    In this case, the content class is called 'image', and its ezimage field is also called 'image'
+-
+    type: content
+    mode: create
+    content_type: image
+    parent_location: 456aremoteid789etc
+    attributes:
+        name: 'A copied image'
+        image:
+            path: 'reference:new-path-ref'
