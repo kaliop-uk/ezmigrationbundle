@@ -1,0 +1,99 @@
+# Move all children of location A to location B, taking into account that:
+# - the children could be many thousands. To cope, we avoid both loading all contents in memory at the same time, and
+#   creating huge db transactions. In order for that to happen, the migration should be run with `--no-transactions`;
+# - live traffic to the website should not be disrupted while the migration runs. To achieve that, we sleep 10 seconds
+#   between every action, which should prevent overloading either the database or the search engine;
+# - some children contents could already have a location in B. In that case, we just remove their location in A
+
+# 1: we use references to keep the migration tidier
+-
+    type: reference
+    mode: set
+    identifier: old_parent_location
+    value: 123456 # change this!
+-
+    type: reference
+    mode: set
+    identifier: new_parent_location
+    value: 3456789 # change this!
+
+# 2: load all children locations
+-
+    type: location
+    mode: load
+    match:
+        parent_location_id: 'reference:old_parent_location'
+    expect: many
+    references:
+        -
+            identifier: location_ids
+            attribute: location_id
+
+# 3: loop over children locations, and either move or remove them
+-
+    type: loop
+    over: "reference:location_ids"
+    steps:
+        # In order to find if the child already has a .location in parent B, we need to do two loads
+        -
+            type: content
+            mode: load
+            match:
+                location_id: 'loop:value'
+            references:
+                -
+                    identifier: content_id
+                    attribute: content_id
+                    overwrite: true
+        -
+            type: location
+            mode: load
+            match:
+                and:
+                    - parent_location_id: 'reference:new_parent_location'
+                    - content_id: 'reference:content_id'
+            expect: any
+            references:
+                -
+                    identifier: already_there
+                    attribute: count
+                    overwrite: true
+        # carry out the removal operation if needed, and print a debug message
+        -   type: reference
+            mode: dump
+            identifier: 'loop:value'
+            label: 'removing location: '
+            if:
+                "reference:already_there":
+                    gt: 0
+        -
+            type: location
+            mode: delete
+            match:
+                location_id: 'loop:value'
+            if:
+                "reference:already_there":
+                    gt: 0
+        # otherwise, move the location, and print a debug message
+        -
+            type: reference
+            mode: dump
+            identifier: 'loop:value'
+            label: 'moving location: '
+            if:
+                "reference:already_there":
+                    lt: 1
+        -
+            type: location
+            mode: update
+            match:
+                location_id: 'loop:value'
+            parent_location_id: 'reference:new_parent_location'
+            if:
+                "reference:already_there":
+                    lt: 1
+        # give the DB and search engine some room to breathe
+        -
+            type: migration
+            mode: sleep
+            seconds: 10
