@@ -57,6 +57,9 @@ class ExpressionResolver extends AbstractResolver implements ExpressionFunctionP
                     return $resolver->resolveReference($str);
                 }
             ),
+
+            /// @todo we should allow end users to easily tag sf services to be exposed inside `eval`
+
             // 'md5' and 'array_merge' are available via step php/call_function. let's not pollute this
             /*new ExpressionFunction(
                 'array_merge',

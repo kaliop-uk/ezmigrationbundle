@@ -285,6 +285,8 @@ and the corresponding php class:
         }
     }
 
+Event Subscribers are supported as an alternative to Event Listeners, as is standard with Symfony projects.
+
 
 ## Known Issues and limitations
 

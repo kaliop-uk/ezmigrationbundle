@@ -15,9 +15,6 @@ Version 6.0.0
   `ez_migration_bundle.reference_resolver.customreference.flexible` and remove from its arguments the service
   `@ez_migration_bundle.reference_resolver.expression`
 
-* New: multiple migration steps `url_alias/...` and `url_wildcard/...` are now available to manage urls aliases. Please read
-  their documentation in Resources/doc/DSL for details
-
 * New: migration steps `php/call_function` and `php/call_static_method`, to ease one-off calling php code as part of a
   yaml migration. See the [relevant DSL](Resources/doc/DSL/PHP.yml) for details.
 
@@ -37,9 +34,12 @@ Version 6.0.0
           references:
               pluto: result
 
+* New: multiple migration steps `url_alias/...` and `url_wildcard/...` are now available to manage urls aliases. Please read
+  their documentation in [UrlAliases.yml](Resources/doc/DSL/UrlAliases.yml) and [UrlWildcards.yml](Resources/doc/DSL/UrlWildcards.yml) for details
+
 * New: migration steps `loop/break` and `loop/continue`
 
-* New: migration step `file/load_csv`, allows to easily initialize references long list of values
+* New: migration step `file/load_csv`, allows to easily initialize references with long list of values
 
 * New: for migration steps `content/create` and `content/update`, when content fields of type eZBinaryFile, eZImage or
   eZMedia are defined using array syntax (instead of a single string defining the file path), references are now resolved
