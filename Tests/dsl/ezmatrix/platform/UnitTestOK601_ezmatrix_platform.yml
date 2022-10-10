@@ -40,7 +40,7 @@
                 title: 'This is a title'
                 release_info: 'Warsaw 2000'
     references:
-        - kmb_061_obj_rid: content_remote_id
+        kmb_061_obj_rid: content_remote_id
 
 -
     type: migration_definition
