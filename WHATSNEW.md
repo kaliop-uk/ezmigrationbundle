@@ -11,6 +11,9 @@ Version 6.1.0 (unreleased)
                   - content_type_identifier: file
                   - attribute: {'file': empty}
 
+* Fix: migrations creating/updating contents with an `ezmatrix` field would result in corrupted data. Also, trying
+  to create a content/create migration for a content with an `ezmatrix` field would lead to a crash
+
 * Fix: migrations creating/updating contents with an `ezmatrix` field used to work with an undocumented yaml format,
   up to version 5.14.0. We now allow that format to be used as well, besides the preferred format - although such format
   most likely does not work with the ezsystems/ezplatform-matrix-fieldtype bundle and is to be considered deprecated
