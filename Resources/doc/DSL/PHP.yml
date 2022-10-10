@@ -1,0 +1,54 @@
+# Executing php functions or static class methods in yml migration definitions.
+#
+# NB: functions and methods using arguments by reference are untested - they might work or not at all.
+# NB: atm there is no support for enforcing a given autoloading mechanism to ensure that the desired class or function are
+#     available by the time the migration step is executed
+#
+# See also Services.yml for executing methods of Symfony services
+
+-
+    type: php
+    mode: call_function
+    function: myFunction # a string, or a reference
+    arguments: # an array of arguments
+        - 'hello world'
+        - reference:someref # references will be resolved (if they occupy the whole argument; not if they part of a bunch of text)
+    catch:
+        - '\InvalidArgumentException' # an array of exceptions that will be silenced if they are thrown during execution of the service method
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+            # long syntax:
+            -
+                identifier: referenceId # A string used to identify the reference
+                attribute: # An attribute to get the value of for the reference. Supports: result, exception_code, exception_message, exception_file, exception_line
+                overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    type: php
+    mode: call_static_method
+    class: myClass
+    method: myFunction # a string, or a reference
+    arguments: # an array of arguments
+        - 'hello world'
+        - reference:someref # references will be resolved (if they occupy the whole argument; not if they part of of a bunch of text)
+    catch:
+        - '\InvalidArgumentException' # an array of exceptions that will be silenced if they are thrown during execution of the service method
+    # The list in references tells the manager to store specific values for later use by other steps in the current migration.
+    # NB: these are NEW VARIABLES THAT YOU ARE CREATING. They are not used in the current migration step!
+    references: # Optional
+        # short syntax:
+        referenceId: attributeId # (possible values and meaning are explained for the 'long syntax')
+          # long syntax:
+            -
+            identifier: referenceId # A string used to identify the reference
+            attribute: # An attribute to get the value of for the reference. Supports: result, exception_code, exception_message, exception_file, exception_line
+            overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
