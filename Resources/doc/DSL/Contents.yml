@@ -73,6 +73,10 @@
         # ezcountry
         attribute17: [IT, ESP, 41, Taiwan] # Either Alpha2, Alpha3, IDC or Name array of the countries, as defined in %ezpublish.fieldType.ezcountry.data%.
                                            # A single value can be provided also as string instead of array
+        # ezmatrix, both the ezplatform and community version
+        attribute18: # nb: the keys must match column identifiers
+            - { authors: 'Author A, Author B', title: 'Lorem ipsum', release_info: '2012' }
+            - { authors: 'Author 1, Author 2', title: 'Lorem ipsum dolor sit amet', release_info: 'R info abc' }
     always_available: true|false # Optional, will default to content type defaultAlwaysAvailable
     is_hidden: true|false # Optional
     lang: xxx-YY # Optional, will fallback to default language if not provided (--default-language option or 'eng-GB' by default)

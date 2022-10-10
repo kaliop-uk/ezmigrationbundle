@@ -24,6 +24,10 @@ class EzMatrix extends AbstractFieldHandler implements FieldValueConverterInterf
 
         if ($this->usingLegacyFieldType()) {
             $rows = array();
+            // BC with migrations which used to be valid before version 5.14 - see issue #250
+            if (count($fieldValue) === 2 && isset($fieldValue['columns']) && isset($fieldValue['rows'])) {
+                $fieldValue = $fieldValue['rows'];
+            }
             foreach($fieldValue as $data) {
                 $rows[] = new \EzSystems\MatrixBundle\FieldType\Matrix\Row($data);
             }
