@@ -137,14 +137,31 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\LocationRemoteId($values);
 
             case self::MATCH_ATTRIBUTE:
+                /// @todo support filtering on multiple fields - in that case wrap many criteria in an AND one
+                if (count($values) > 1) {
+                    throw new InvalidMatchConditionsException("Can not use " . self::MATCH_ATTRIBUTE . " as comparison operator for multiple attributes. Use an AND condition instead");
+                }
                 $spec = reset($values);
                 $attribute = key($values);
-                $match = reset($spec);
-                $operator = key($spec);
-                if (!isset(self::$operatorsMap[$operator])) {
-                    throw new InvalidMatchConditionsException("Can not use '$operator' as comparison operator for attributes");
+                if (is_array($spec)) {
+                    if (count($spec) > 1) {
+                        throw new InvalidMatchConditionsException("Can not use multiple operators for matching attribute $attribute");
+                    }
+                    $match = reset($spec);
+                    $operator = key($spec);
+                    if (!isset(self::$operatorsMap[$operator])) {
+                        throw new InvalidMatchConditionsException("Can not use '$operator' as comparison operator for attributes");
+                    }
+                    return new Query\Criterion\Field($attribute, self::$operatorsMap[$operator], $match);
+                } else {
+                    /// @todo make the list of unary operators more flexible
+                    switch($spec) {
+                        case 'empty':
+                            return new Query\Criterion\IsFieldEmpty($attribute);
+                        default:
+                            throw new InvalidMatchConditionsException("Can not use '$spec' as comparison operator for attributes");
+                    }
                 }
-                return new Query\Criterion\Field($attribute, self::$operatorsMap[$operator], $match);
 
             case 'contenttype_id':
             case self::MATCH_CONTENT_TYPE_ID:

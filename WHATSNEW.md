@@ -1,3 +1,17 @@
+Version 6.1.0 (unreleased)
+==========================
+
+* New: when matching contents, it is now possible to filter based on empty fields, eg:
+
+      -
+          type: content
+          mode: load
+          match:
+              and:
+                  - content_type_identifier: file
+                  - attribute: {'file': empty}
+
+
 Version 6.0.0
 =============
 

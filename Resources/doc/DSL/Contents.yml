@@ -142,7 +142,9 @@
         location_remote_id: xxx # string|string[]
         attribute:
             _attr_name_:
-                _operator_: value # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+                _operator_: _value_ # _operator_: eq, gt, gte, lt, lte, in, between, like; value: depending on the attribute type
+        attribute:
+            _attr_name_: empty # used to match empty fields
         content_type_id: yyy # int|int[] a content type id
         content_type_identifier: yyy # string|string[] a content type identifier
         creation_date:
