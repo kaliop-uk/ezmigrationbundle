@@ -41,6 +41,20 @@
                 authors: 'Athor I, Author II'
                 title: 'This is a title'
                 release_info: 'Warsaw 2000'
+    references:
+        - kmb_061_obj_rid: content_remote_id
+
+-
+    type: migration_definition
+    mode: generate
+    file: /tmp/unit_test_generated_migration_061.json
+    migration_type: content
+    migration_mode: create
+    match:
+        type: content_remote_id
+        value: 'reference:kmb_061_obj_rid'
+
+# @todo check that the generated content's matrix field has 3 rows
 
 -
     type: content
