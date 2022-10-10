@@ -1,3 +1,9 @@
+Version 5.7.4
+=============
+
+* Fix: backport fix for issue #232: badmethod signature for EmbeddedRegexpReferenceResolverTrait
+
+
 Version 5.7.3
 =============
 
@@ -40,11 +46,11 @@ Version 5.7.0
                 -
                     identifier: archived_versions_for_2893941
                     attribute: version_no
-                    
-* New: migration step: `content_version/delete` can now match the versions based on status, as well as using 
+
+* New: migration step: `content_version/delete` can now match the versions based on status, as well as using
     complex conditions based on and/or/not
 
-* New: when manipulating content versions, it is now possible to set references to `version_no` and `version_status` 
+* New: when manipulating content versions, it is now possible to set references to `version_no` and `version_status`
 
 * BC changes:
 
@@ -104,7 +110,7 @@ Version 5.5.1
         will need to adjust the definition of methods `Math` and `MatchOne`
 
     - when migrations are generated that specify a Location, tag `content_id` is now used where `contentobject_id` was
-        beforehand for indicating a sort order, and `location_id` is used where `node_id` was 
+        beforehand for indicating a sort order, and `location_id` is used where `node_id` was
 
 
 Version 5.5.0
@@ -126,7 +132,7 @@ Version 5.4
 
 * Fix: changing ContentTypeGroup upon updating ContentType
 
-* Fix: setting custom modification date on Content Create (ticket #173) 
+* Fix: setting custom modification date on Content Create (ticket #173)
 
 * New: it is now possible to create or update a Content setting multiple translations at the same time. Ex:
 
@@ -142,7 +148,7 @@ Version 5.4
 
     *Note* that in order for the content definition to be considered valid "multi-langauge", ALL attributes values must
     be specified using a language key. The following example is thus _invalid_:
-    
+
             attributes:
                 title:
                     eng-GB: hello world in eng-GB
@@ -157,8 +163,8 @@ Version 5.4
                 "reference:some_id":
                     satisfies: "value % 3 == 0"
 
-    Here  the migration step would only be executed if the Id stored in the reference is divisible by 3.    
-    
+    Here  the migration step would only be executed if the Id stored in the reference is divisible by 3.
+
 * New: it is now possible to loop over arrays, achieving the same as a php `foreach` call. Ex:
 
         -
@@ -171,7 +177,7 @@ Version 5.4
                     identifier: loopref
                     value: "We have found key: [loop:key] and value: [loop:value]"
                     overwrite: true
-                
+
     This should be useful f.e. in conjunction with references of type array, introduced in version 5.1
 
 
@@ -187,7 +193,7 @@ Version 5.3
 
 * New: it is now possible to use the `lang` key for filtering when matching contents
 
-* New: it is now possible to alter the Groups that a ContentType belongs to in `content_type/update` steps 
+* New: it is now possible to alter the Groups that a ContentType belongs to in `content_type/update` steps
 
 * New migration steps: `user/load` and `user_group/load`, which can be useful to set references
 
@@ -206,7 +212,7 @@ Version 5.2
 
 *  New: the `status` command got a `todo` option. When using it, all that is printed is the list of the migrations to
     execute (full path to each file). This can be useful fe. in shell scripts that want to execute each migration
-    separately 
+    separately
 
 * Fix: one case where array values where tried to be resolved as references (introduced in 5.1)
 
@@ -244,7 +250,7 @@ Version 5.1
 
 * New: its is now possible to set references to a tag `keyword`
 
-* New: it is easier to create/update tags in a single language (the main language of current siteaccess is used if unspecified) 
+* New: it is easier to create/update tags in a single language (the main language of current siteaccess is used if unspecified)
 
 * BC changes:
 
@@ -256,12 +262,12 @@ Version 5.0
 ===========
 
 * New: everywhere references are accepted, text strings can now be used as well, which embed the reference within square
-    brackets. This will lead to the substitution of the text within brackets with the value of the reference. 
-    
+    brackets. This will lead to the substitution of the text within brackets with the value of the reference.
+
     Example: assuming that the 'myref' reference has a value of 99
 
     Possible before:
-        
+
     ```
     match:
         content_id: "reference:myref"
@@ -269,7 +275,7 @@ Version 5.0
      ```
 
     Possible now:
-    
+
     ```
     match:
         remote_content_id: "something [reference:myref] times different"
@@ -288,7 +294,7 @@ Version 5.0
 
 * New: when creating and updating ContentType definitions, it is possible to use a reference to define each field. The
     value of the reference must be an array with all the usual keys: 'name', 'searchable', etc...
-    This makes it easy to define multiple ContentTypes sharing fields with the same definition such as f.e. the 'title' 
+    This makes it easy to define multiple ContentTypes sharing fields with the same definition such as f.e. the 'title'
 
     ```
     attributes:
@@ -304,7 +310,7 @@ Version 5.0
     `eng-GB` we will default to the first language in the list of languages set up for the current siteaccess (this is
     usually found in the `ezpublish.yml` config file)
 
-* New: the bundle is now tested on Travis with eZPlatform 2 besides eZPlatform 1 and eZPublish 5 
+* New: the bundle is now tested on Travis with eZPlatform 2 besides eZPlatform 1 and eZPublish 5
 
 * BC changes:
 
@@ -334,7 +340,7 @@ Version 4.7
 * New: it is now possible to define the following parameters using siteaccess-aware configuration:
 
     `kaliop_bundle_migration.version_directory`, `ez_migration_bundle.table_name`, `ez_migration_bundle.context_table_name`
-    
+
     This is useful when you have multi-site eZPlatform installations which do not share a single Repository database, and
     as such might need to execute different sets of migrations for each site.
 
@@ -371,7 +377,7 @@ Version 4.4
 * New: added a new loader class to allow scanning the Migrations folders recursively for migrations files. Useful when
     you have a massive number of migration files and keeping them in a single folder hits the filesystem limits.
     At the moment, the only way to enable this is to redefine the alias in your app configuration, ie:
-    
+
             ez_migration_bundle.loader:
                 alias: ez_migration_bundle.loader.filesystem_recursive
 
@@ -396,7 +402,7 @@ Version 4.3
     This fixes issue #134.
     *BC note*: if you use Solr Search Engine Bundle and the find the new behaviour undesireable, you can easily switch
     back to the previous one by altering the value for parameters `ez_migration_bundle.content_matcher.class` and
-    `ez_migration_bundle.location_matcher.class` 
+    `ez_migration_bundle.location_matcher.class`
 
 * New: migration step: `migration/sleep` to delay execution of a migration for a fixed number of seconds
 
@@ -441,7 +447,7 @@ Version 4.1
 
 * New: operation 'load' 'tag' can be used to set references to existing tags properties
 
-* New: operation 'update' 'tag' is supported 
+* New: operation 'update' 'tag' is supported
 
 * Improved: better validation of the definition of fields of type eZSelection for ContentType creation/update
 
@@ -474,7 +480,7 @@ Version 4.0 RC-4
 * New: it is now possible to set a reference to a Content State by using a syntax similar to f.e. `object_state.ez_lock` to
     specify the desired State Group
 
-* New: allow to use a reference for Migration/Suspend when comparing to a date 
+* New: allow to use a reference for Migration/Suspend when comparing to a date
 
 * New: allow to set references to the number of items matched whenever updating/deleting any entity from the repository
     (contents, locations, etc...)
@@ -556,7 +562,7 @@ Version 4.0 RC-1
     Matching when using 'and' and 'or' is also more efficient
 
 * New: it is possible to use a 'not', 'attribute', 'content_type_id', 'content_type_identifier', 'creation_date', 'depth',
-    'group', 'modification_date', 'object_state', 'owner', 'priority', 'section', 'subtree' and 'visibility' condition 
+    'group', 'modification_date', 'object_state', 'owner', 'priority', 'section', 'subtree' and 'visibility' condition
     when matching Locations.
     Matching when using 'and' and 'or' is also more efficient
 
@@ -575,9 +581,9 @@ Version 4.0 RC-1
 
     - the code will start targeting php 5.6 as minimum version starting with this release
 
-    - the following interfaces have been modified: MigrationGeneratorInterface, StorageHandlerInterface, 
+    - the following interfaces have been modified: MigrationGeneratorInterface, StorageHandlerInterface,
 
-    - the following deprecated interfaces have been removed: ComplexFieldInterface 
+    - the following deprecated interfaces have been removed: ComplexFieldInterface
 
     - lots of refactoring in the Core (non API) classes. If you have extended them, be prepared for some porting work
 
@@ -629,12 +635,12 @@ Version 3.5
     *NB* the algorithm used for the sorting of ContentType fields has changed compared to previous versions, for both
     creation and update:
     - mixing fields with a specified position and without it results in the fields without position to always go last
-    - for consistent results, it is recommended to always either specify the position for all fields or to none 
+    - for consistent results, it is recommended to always either specify the position for all fields or to none
     - the eZ4 Admin Interface does *not* display the actual field position, and shows 10,20,30 instead... In order to
          see the _real_ position that fields currently have it is recommended to generate a ContentType `create` migration
 
 * New: better support for content fields of type `ezmedia`:
-    - it is now possible to put the binary files next to the migration file, in a subfolder named 'media', similar to 
+    - it is now possible to put the binary files next to the migration file, in a subfolder named 'media', similar to
         what was already possible for ezimage and ezbinaryfile
     - the attributes to be used in the migration yml to define an ezmedia field are more consistent with the others
     - the path to the media binary file in generated migrations has become an absolute path
@@ -651,7 +657,7 @@ Version 3.5
 
 * New: it is now possible to set references to many more attributes when creating/updating Locations:
     location_id, location_remote_id, always_available, content_id, content_type_id, content_type_identifier,
-    current_version_no, depth, is_hidden, main_language_code, main_location_id, main_language_code, modification_date, 
+    current_version_no, depth, is_hidden, main_language_code, main_location_id, main_language_code, modification_date,
     name, owner_id, parent_location_id, path, position, priority, publication_date, section_id, sort_field, sort_order
 
 * New: two new migration steps are available: `content/load` and `location/load`.
@@ -689,7 +695,7 @@ Version 3.5
 
 * Improved: make it easier to run the test suite outside of Travis and revamp test instructions
 
-* Fix: content creation from the `generate` command would fail if a field of type Relation has no value 
+* Fix: content creation from the `generate` command would fail if a field of type Relation has no value
 
 * Fix: section updates would fail at setting the name
 
@@ -704,13 +710,13 @@ Version 3.4
 * Added a new event: `ez_migration.migration_aborted` that can be listened to by user code, triggered when a
     `MigrationAbortedException` is thrown by a migration executor
 
-* Fix BC with custom Complex FieldType handlers created by extending the bundle (bug introduced in 3.2) 
+* Fix BC with custom Complex FieldType handlers created by extending the bundle (bug introduced in 3.2)
 
 
 Version 3.3
 ===========
 
-* Fixed: on content creation, assigning a section by identifier instead of id 
+* Fixed: on content creation, assigning a section by identifier instead of id
 
 * New: allow setting section upon UserGroup creation and update
 
@@ -732,7 +738,7 @@ Version 3.3
 Version 3.2.2
 =============
 
-* Fixed: do not throw an exception when running the migration:migration --delete command and the migrations table is missing 
+* Fixed: do not throw an exception when running the migration:migration --delete command and the migrations table is missing
 
 
 Version 3.2.1
@@ -755,8 +761,8 @@ Version 3.2.0
 * User group's "parent_group_id": if a string provided, it is considered referencing a user group's remote_id instead of
     its id
 
-* It is now possible to match the entities to update/delete using composite conditions with `and` and `or`: 
-    
+* It is now possible to match the entities to update/delete using composite conditions with `and` and `or`:
+
         match:
             or:
                 -
@@ -766,13 +772,13 @@ Version 3.2.0
                         -
                             content_type: folder
                         -
-                            parent_location_id: 42 
+                            parent_location_id: 42
 
     NB: the match operations using composite conditions are not yet optimized for speed or memory usage!
 
 * When updating/deleting Roles, Object States, Object State Groups, Content Types and Content Type Groups, it is now
-    possible to match 'all' items. 
-    
+    possible to match 'all' items.
+
         match:
             all: ~
 
@@ -781,10 +787,10 @@ Version 3.2.0
         match:
             not:
                 identifier: something
-    
+
     Note: 'delete all' migrations will most likely not work as long as you have any remaining content...
 
-    NB: it is not yet possible to match Content, Location or Tag using the `not` condition  
+    NB: it is not yet possible to match Content, Location or Tag using the `not` condition
 
 * Extend the `generate` Command to generate migrations for existing Contents and ContentTypes besides Roles;
     it is also possible to generate both _create_, _update_ and _delete_ migrations, and to have a single migration
@@ -842,7 +848,7 @@ Version 3.0.0
 =============
 
 * New: it is now possible to store migration definitions in json format instead of yaml.
-    The json format is not documented separately, as it is identical in structure to the yaml one. 
+    The json format is not documented separately, as it is identical in structure to the yaml one.
 
 * New: the 'migrate' command learned to give information ion the executed steps when using the `-v` option
 
@@ -864,7 +870,7 @@ Version 3.0.0
 * New: it is now possible to specify a file name and mime type when creating/updating content fields of type image and
     binary file
 
-* New: references are now resolved for user_id and group_id when assigning Roles 
+* New: references are now resolved for user_id and group_id when assigning Roles
 
 * New: the `parent_location` and `other_parent_locations` tags in Content creation, as well as `parent_location` in
     Location creation will now try to identify the desired Location by its remote id when a non integer value is used
@@ -882,7 +888,7 @@ Version 3.0.0
 * New: made it easier to allow custom references types to be substituted in xmltext and richtext fields
 
 * New: it is now possible to use a priority to the services tagged to act as complex field handlers
- 
+
 * New: added 2 events to which you can listen to implement custom logic just-before and just-after migration steps are
     executed:
 
@@ -890,14 +896,14 @@ Version 3.0.0
 
     * ez_migration.step_executed => listeners receive a StepExecutedEvent event instance
 
-* New: it is now possible to add resolvers for custom references using tagged services. The tag to use is: 
-    `ez_migration_bundle.reference_resolver.customreference`. 
-    For an example, see the test UnitTestOK010_customrefs.yml and class 
+* New: it is now possible to add resolvers for custom references using tagged services. The tag to use is:
+    `ez_migration_bundle.reference_resolver.customreference`.
+    For an example, see the test UnitTestOK010_customrefs.yml and class
     Kaliop\eZMigrationBundle\Tests\helper\CustomReferenceResolver
 
 *  New: it is now possible to inject field type handlers for scalar field types, as well as for field type handlers
      that only affect the field type of a single content type.
-     This gives greater flexibility in deciding which types of references are resolved for each field when creating 
+     This gives greater flexibility in deciding which types of references are resolved for each field when creating
      or updating contents
 
 * Changed: removed unused Behat and Phpunit tests
@@ -915,7 +921,7 @@ Version 3.0.0
     * renamed the `other_Locations` tag for content creation to `other_parent_locations`. The old syntax works but is deprecated
 
     * Creation and update of content: the format use to specify the attributes has been simplified. The old format is
-        still working but is considered deprecated and will be removed in the future 
+        still working but is considered deprecated and will be removed in the future
 
     * Updating and deleting of Users, User Groups, Roles and Content Types: usage of a `match` key is allowed; previous
         ways of defining elements to match are deprecated
@@ -945,7 +951,7 @@ Version 3.0.0
     * when adding locations without defining sort field and sort order, the defaults from the content type definition
         are used, instead of publication-date/asc
 
-    * references to 'tag:' and 'location:' will not be resolved any more in fields of type Object Relation and 
+    * references to 'tag:' and 'location:' will not be resolved any more in fields of type Object Relation and
         Object Relation List. On the other hand non-integer strings will be resolved as remote-content-ids
 
     * changes for developers who extended the bundle: too many to be listed here. New interfaces where added, existing
@@ -955,7 +961,7 @@ Version 3.0.0
 Version 2.5.1
 =============
 
-* Fix: bring back the support for resolving 'location:<remote_id>' tags as was done in version 1.X of the extension 
+* Fix: bring back the support for resolving 'location:<remote_id>' tags as was done in version 1.X of the extension
 
 * New: better error messages on content creation/update when content fields do not validate (issue #84)
 
@@ -995,13 +1001,13 @@ Version 2.4
 
 * BC BREAK: for developers extending the bundle: the method `endMigration` in interface `StorageHandlerInterface` has
     acquired a new parameter.
-    Also, the unused DefinitionHandlerInterface has been removed. 
+    Also, the unused DefinitionHandlerInterface has been removed.
 
 
 Version 2.3
 ===========
 
-* New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped 
+* New: the 'migration' command learned a `--skip` option, to tag migrations as to be skipped
 
 * BC BREAK: for developers extending the bundle: the interface `StorageHandlerInterface` has acquired a new method
 
@@ -1027,13 +1033,13 @@ Version 2.1.0
     This allow to use it subsequently when assigning a role with subtree limitation
 
 * Fix: the documentation describing usage of the 'match' keyword for updating/deleting contents and locations was
-    incorrect 
+    incorrect
 
 * Fix: the documentation describing usage of the 'limitations' keyword for managing roles was incorrect
 
 * Fix: Role creation would not work when using eZPlatform
 
-* BC BREAK: the 'limitation' keyword used to describe role assignments has been replaced by 'limitations' 
+* BC BREAK: the 'limitation' keyword used to describe role assignments has been replaced by 'limitations'
     (it was documented using the plural form before)
 
 
@@ -1055,7 +1061,7 @@ The main changes are:
 
 * the `generate` command takes an optional 2nd argument, it make it easier to create migration definition files with
     a meaningful name other than "placeholder".
-    The options it supports also changed and behave differently from before. 
+    The options it supports also changed and behave differently from before.
 
 * the `status` command displays much more information than before:
 
@@ -1071,7 +1077,7 @@ The main changes are:
 * the `migrate` command now prevents concurrent execution of the same migration, stores in the database the reason of
     failure of execution, warns of invalid migration definitions before execution, makes proper usage of database
     transactions. It also has a new option to disable the wrapping of each migration in a database transaction and
-    probably more 
+    probably more
 
 * it is now possible to specify the language to be used for content creation, either in the yml definition file, or
     using a command-line option (the value set in yml file takes precedence)
@@ -1108,12 +1114,12 @@ The main changes are:
         if matching the object remote id failed). You can use the 'match' key instead
 
     - the remote_id of the main location of a content is not updated automatically any more when the remote_id
-        of the content is. You can use a separate step in your migration for that 
+        of the content is. You can use a separate step in your migration for that
 
     - the 'identifier' field used to identify content types can now be a reference
 
     - when specifying values for a field of type 'ezauthor', it is not necessary to have a sub-key named 'authors'
-    
+
     - when creating/updating contents, values for more 'complex' field types are supported via usage of the
         fromHash method. F.e. the ezcountry field type is now supported.
         The details of the hash structure have to be looked up in docs or code for each field type
@@ -1129,9 +1135,9 @@ The main changes are:
     - references can now be used when updating or deleting user groups to identify the group(s) to act upon
 
     - references can now be used in ids when updating or deleting users to identify the users(s) to act upon
-    
+
     - when creating/updating users, it is possible to assign them to a single group
-    
+
     - deprecated keys:
         * 'group' for user group delete operations, in favour of 'id'
         * 'object_id' and 'remote_id' for content update operations, in favour of 'match'
