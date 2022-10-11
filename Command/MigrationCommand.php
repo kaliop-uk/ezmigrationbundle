@@ -32,14 +32,25 @@ class MigrationCommand extends AbstractCommand
             ->addOption('info', null, InputOption::VALUE_NONE, "Get info about the specified migration.")
             ->addOption('add', null, InputOption::VALUE_NONE, "Add the specified migration definition.")
             ->addOption('skip', null, InputOption::VALUE_NONE, "Mark the specified migration as skipped.")
+            ->addOption('fail', null, InputOption::VALUE_NONE, "Mark the specified migration as failed.")
             ->addOption('no-interaction', 'n', InputOption::VALUE_NONE, "Do not ask any interactive question.")
             ->addArgument('migration', InputArgument::REQUIRED, 'The migration to add/skip (filename with full path) or detail/delete (plain migration name).', null)
             ->setHelp(<<<EOT
-The <info>kaliop:migration:migration</info> command allows you to manually delete migrations versions from the migration table:
+The <info>kaliop:migration:migration</info> command allows you to manually manage migrations.
+
+To see detailed information about a migration or migration definition:
+
+    <info>php bin/console kaliop:migration:migration --info migration_name</info>
+
+    <info>php bin/console kaliop:migration:migration --info /path/to/migration_definition.yml</info>
+
+To remove a migration from the migration table, or mark it as failed:
 
     <info>php bin/console kaliop:migration:migration --delete migration_name</info>
 
-As well as manually adding migrations to the migration table, or marking them as skipped:
+    <info>php bin/console kaliop:migration:migration --fail migration_name</info>
+
+To manually add migration definitions to the migration table, or marking them as skipped:
 
     <info>php bin/console kaliop:migration:migration --add /path/to/migration_definition</info>
 
@@ -60,8 +71,9 @@ EOT
         $this->setOutput($output);
         $this->setVerbosity($output->getVerbosity());
 
-        if (!$input->getOption('add') && !$input->getOption('delete') && !$input->getOption('skip') && !$input->getOption('info')) {
-            throw new \InvalidArgumentException('You must specify whether you want to --add, --delete, --skip or --info the specified migration.');
+        if (!$input->getOption('add') && !$input->getOption('delete') && !$input->getOption('skip') &&
+            !$input->getOption('info') && !$input->getOption('fail')) {
+            throw new \InvalidArgumentException('You must specify whether you want to --add, --delete, --skip, --fail or --info the specified migration.');
         }
 
         $migrationService = $this->getMigrationService();
@@ -185,14 +197,23 @@ EOT
             return 0;
         }
 
-        if ($input->getOption('delete')) {
+        if ($input->getOption('delete') || $input->getOption('fail')) {
             /// @todo if we are passed a path, we could give the user a more specific warning than what we get back from the storage layer
             $migration = $migrationService->getMigration($migrationNameOrPath);
             if ($migration == null) {
                 throw new \InvalidArgumentException(sprintf('The migration "%s" does not exist in the migrations table.', $migrationNameOrPath));
             }
 
-            $migrationService->deleteMigration($migration);
+            if ($input->getOption('delete')) {
+                $migrationService->deleteMigration($migration);
+            } else {
+                $errorMessage = 'Manually failed on ' . date("Y-m-d H:i:s");
+                if ($migration->executionError != '') {
+                    $errorMessage .= ". Previous notes: " . $migration->executionError;
+                }
+                $migrationService->failMigration($migration, $errorMessage);
+            }
+
 
             return 0;
         }

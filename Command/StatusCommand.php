@@ -33,7 +33,7 @@ The <info>kaliop:migration:status</info> command displays the status of all avai
 
     <info>php bin/console kaliop:migration:status</info>
 
-You can optionally specify the path to migration versions with <info>--path</info>:
+You can optionally specify the path to migration definitions with <info>--path</info>:
 
     <info>php bin/console kaliop:migration:status --path=/path/to/bundle/version_directory --path=/path/to/bundle/version_directory/single_migration_file</info>
 EOT

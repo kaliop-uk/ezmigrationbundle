@@ -272,7 +272,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
      *
      * @param MigrationDefinition $migrationDefinition
      * @return APIMigration
-     * @throws \Exception If the migration was already executed or executing
+     * @throws \Exception If the migration was already executed or is executing
      */
     public function skipMigration(MigrationDefinition $migrationDefinition)
     {
@@ -281,7 +281,8 @@ class Migration extends TableStorage implements StorageHandlerInterface
 
     /**
      * @param MigrationDefinition $migrationDefinition
-     * @param int $status
+     * @param int $status NB: atm not all statuses are supported the same way. IE. logical checks against the db data
+     *                    will be done for some statuses but not for others
      * @param string $action
      * @param bool $force
      * @return APIMigration

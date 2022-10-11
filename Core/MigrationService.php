@@ -232,6 +232,27 @@ class MigrationService implements ContextProviderInterface
     }
 
     /**
+     * Not to be called by external users for normal use cases, you should use executeMigration() instead.
+     * NB: will act regardless of current migration status.
+     *
+     * @param Migration $migration
+     */
+    public function failMigration(Migration $migration, $errorMessage)
+    {
+        return $this->storageHandler->endMigration(
+            new Migration(
+                $migration->name,
+                $migration->md5,
+                $migration->path,
+                $migration->executionDate,
+                Migration::STATUS_FAILED,
+                $errorMessage
+            ),
+            true
+        );
+    }
+
+    /**
      * Parses a migration definition, return a parsed definition.
      * If there is a parsing error, the definition status will be updated accordingly
      *

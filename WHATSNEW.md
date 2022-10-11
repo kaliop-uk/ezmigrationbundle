@@ -11,6 +11,10 @@ Version 6.1.0 (unreleased)
                   - content_type_identifier: file
                   - attribute: {'file': empty}
 
+* New: command `k:m:migration` learned action `--fail`. It should be used sparingly, only to set manully to failed status
+  migrations which for any reason got stuck in an incorrect status, f.e. those which are still listed as `executing`
+  after the corresponding process is terminated
+
 * Fix: migrations creating/updating contents with an `ezmatrix` field would result in corrupted data. Also, trying
   to create a content/create migration for a content with an `ezmatrix` field would lead to a crash
 
@@ -19,7 +23,7 @@ Version 6.1.0 (unreleased)
   most likely does not work with the ezsystems/ezplatform-matrix-fieldtype bundle and is to be considered deprecated
   (see issue #250 for details).
 
-* Fix: make error messages from subprocesses be echoed to the console when running `migrate -p` with eZP 2.0 and later
+* Fix: make error messages from subprocesses be echoed to the console when running `k:m:migrate -p` with eZP 2.0 and later
 
 * BC change (for developers extending the bundle): const `Kaliop\eZMigrationBundle\Command\MigrateCommand::VERBOSITY_CHILD`
   has been transformed into static variable `Kaliop\eZMigrationBundle\Command\MigrateCommand::$VERBOSITY_CHILD`
