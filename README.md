@@ -139,7 +139,7 @@ A simple example of a migration to create a 'folder' content is:
 In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of Contents
 - creation, update and deletion of ContentTypes
-- creation, update and  deletion of ContentTypeGroups
+- creation, update and deletion of ContentTypeGroups
 - deletion of Content Versions
 - creation and deletion of Languages
 - creation, update and deletion of Locations
@@ -148,6 +148,7 @@ In a Yaml migration, you can define the following types of actions:
 - creation, update and deletion of Roles
 - creation, update and deletion of Sections
 - creation and deletion of Tags (from the Netgen Tags Bundle)
+- creation and deletion of URL aliases and wildcards
 - creation, update and deletion of Users
 - creation, update and deletion of UserGroups
 - purging and recovering Contents from the Trash
@@ -155,10 +156,12 @@ In a Yaml migration, you can define the following types of actions:
 - execution of SQL queries
 - execution of command-line scripts
 - execution of methods of Symfony services
+- execution of php functions and static methods
 - execution of http calls
 - sending of email
 - looping over arrays and executing one of the above actions on each element
 - canceling, snoozing or suspending the migration itself
+- generating and saving new migration definitions
 
 The docs describing all supported parameters are in the [DSL Language description](Resources/doc/DSL/README.md)
 
@@ -324,6 +327,8 @@ Event Subscribers are supported as an alternative to Event Listeners, as is stan
     - increase the maximum amount of memory allowed for the php script by running it with option '-d memory_limit=-1'
     - execute the migration command using a Symfony environment which has reduced logging and kernel debug disabled:
         the default configuration for the `dev` environment is known to leak memory
+    - transform the migration, where possible, into one which loads and modifies contents one by one in a loop, instead
+        of modifying them all in a single action
 
 * if you get fatal errors with the message 'You cannot create a service ("request") of an inactive scope ("request")',
     take a look at the following issue for a possible explanation and ideas for workarounds:
@@ -349,7 +354,7 @@ Event Subscribers are supported as an alternative to Event Listeners, as is stan
 * when eZ is set up in cluster mode, if you are setting references to the path of a content field of type ezimage,
   ezbinaryfile or ezmedia, or generating a migration for creating/updating it, the value you will get for the path will
   not be the absolute path on disk, but the path relative to the 'nfsvar' directory, which makes it unsuitable for
-  being used directly in eg. a content/create migration.
+  being used directly in eg. a content/create migration. Check out the example in the Cookbook for how to deal with this.
 
 
 ## Frequently asked questions
@@ -390,6 +395,11 @@ A: this is most likely due to using a bad language configuration
 
 A: yes, please take a look at Resources/doc/Cookbook/
 
+### Can I run an external tool (command-line script) as part of a migration?
+
+A: sure. Take a look at the [relevant dsl](Resources/doc/DSL/Processes.yml) and [cookbook example](Resources/doc/Cookbook/generate_screenshot_of_video.yml)
+  for details.
+
 
 ## Extending the bundle
 
@@ -408,6 +418,9 @@ and give it an appropriate tag (the class implementing service should of course 
 
 To find out the names of the tags that you need to implement, as well as for all the other services which you can
 override, take a look at the [services.yml file](Resources/config/services.yml).
+
+It is also possible to define custom event listeners/subscribers to expand migration execution logic. See the dedicated
+paragraphs above for more details.
 
 ### Running tests
 

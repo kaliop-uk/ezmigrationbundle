@@ -1,0 +1,47 @@
+# This example shows how to to fill an image field with a 'screenshot' taken from a video field of the same content.
+# In doing so, it makes use of anexternal tool, via executing it on the command-line.
+#
+# It is based on the 'video' content class to have 3 fields:
+# - 'file': the video file itself (type: media)
+# - 'screenshot': the field that will hold the screenshot (type: image)
+# - 'screenshot_frame': an integer field, used to specify the time in the video at which the screenshot is taken (type: integer)
+
+# set references to the video-specific fields
+-
+    type: content
+    mode: load
+    match:
+        content_id: 1234567890
+    references:
+        -
+            identifier: video_path
+            attribute: attributes.file.path
+        -
+            identifier: screenshot_path
+            attribute: attributes.screenshot.path
+        -
+            identifier: screenshot_frame
+            attribute: attributes.screenshot_frame
+
+# run 'avconv' to generate the screenshot (avconv is a fork of ffmpeg, available by default on debian 8)
+-
+    type: process
+    mode: run
+    command: avconv
+    arguments:
+        - '-i'
+        - 'reference:video_path'
+        - '-y'
+        - '-ss'
+        - 'reference:screenshot_frame'
+        - '/tmp/test.jpg'
+
+# upload the generated file to the screenshot field and re-publish the content
+-
+    type: content
+    mode: update
+    match:
+        content_id: 1234567890
+    attributes:
+        screenshot:
+            path: "/tmp/test.jpg"
