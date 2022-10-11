@@ -19,6 +19,11 @@ Version 6.1.0 (unreleased)
   most likely does not work with the ezsystems/ezplatform-matrix-fieldtype bundle and is to be considered deprecated
   (see issue #250 for details).
 
+* Fix: make error messages from subprocesses be echoed to the console when running `migrate -p` with eZP 2.0 and later
+
+* BC change (for developers extending the bundle): const `Kaliop\eZMigrationBundle\Command\MigrateCommand::VERBOSITY_CHILD`
+  has been transformed into static variable `Kaliop\eZMigrationBundle\Command\MigrateCommand::$VERBOSITY_CHILD`
+
 
 Version 6.0.0
 =============

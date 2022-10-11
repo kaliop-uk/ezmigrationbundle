@@ -64,7 +64,7 @@ EOT
         $isChild = $input->getOption('child');
 
         if ($isChild && $output->getVerbosity() <= OutputInterface::VERBOSITY_NORMAL) {
-            $this->setVerbosity(self::VERBOSITY_CHILD);
+            $this->setVerbosity(self::$VERBOSITY_CHILD);
         }
 
         $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
@@ -240,12 +240,12 @@ EOT
         foreach ($toExecute as  $name => $migrationDefinition) {
             // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
             if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-                $this->writeln("<comment>Skipping migration (invalid definition?) Path: ".$migrationDefinition->path."</comment>", self::VERBOSITY_CHILD);
+                $this->writeln("<comment>Skipping migration (invalid definition?) Path: ".$migrationDefinition->path."</comment>", self::$VERBOSITY_CHILD);
                 $skipped++;
                 continue;
             }
 
-            $this->writeln("<info>Processing $name</info>", self::VERBOSITY_CHILD);
+            $this->writeln("<info>Processing $name</info>", self::$VERBOSITY_CHILD);
 
             if ($input->getOption('separate-process')) {
 
@@ -301,7 +301,7 @@ EOT
             $this->writeErrorln("\n<error>Migration execution aborted</error>");
         }
 
-        $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, missed: $missed", self::VERBOSITY_CHILD);
+        $this->writeln("Migrations executed: $executed, failed: $failed, skipped: $skipped, missed: $missed", self::$VERBOSITY_CHILD);
 
         // We do not return an error code > 0 if migrations fail but , but only on proper fatals.
         // The parent will analyze the output of the child process to gather the number of executed/failed migrations anyway
@@ -336,7 +336,7 @@ EOT
                     $this->writeErrorln($msg, OutputInterface::VERBOSITY_QUIET, OutputInterface::OUTPUT_RAW);
                 } else {
                     // swallow output of child processes in quiet mode
-                    $this->writeLn($msg, self::VERBOSITY_CHILD, OutputInterface::OUTPUT_RAW);
+                    $this->writeLn($msg, self::$VERBOSITY_CHILD, OutputInterface::OUTPUT_RAW);
                 }
             }
         }

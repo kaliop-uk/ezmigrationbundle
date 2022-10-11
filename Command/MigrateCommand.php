@@ -21,8 +21,8 @@ use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
  */
 class MigrateCommand extends AbstractCommand
 {
-    // in between QUIET and NORMAL
-    const VERBOSITY_CHILD = 0.5;
+    // in between QUIET and NORMAL. Sadly the OutputInterface consts changed somewhere between Symfony 2 and 3
+    static $VERBOSITY_CHILD = 0.5;
 
     protected $subProcessTimeout = 86400;
     protected $subProcessErrorString = '';
@@ -69,6 +69,10 @@ You can optionally specify the path to migration definitions with <info>--path</
 Use -v and -vv options to get troubleshooting information on the execution of each step in the migration(s).
 EOT
             );
+
+            if (self::$VERBOSITY_CHILD <= OutputInterface::VERBOSITY_QUIET) {
+                self::$VERBOSITY_CHILD = (OutputInterface::VERBOSITY_QUIET + OutputInterface::VERBOSITY_NORMAL) / 2;
+            }
     }
 
     /**
@@ -86,7 +90,7 @@ EOT
         $this->setVerbosity($output->getVerbosity());
 
         if ($input->getOption('child') && $output->getVerbosity() <= OutputInterface::VERBOSITY_NORMAL) {
-            $this->setVerbosity(self::VERBOSITY_CHILD);
+            $this->setVerbosity(self::$VERBOSITY_CHILD);
         }
 
         $this->getContainer()->get('ez_migration_bundle.step_executed_listener.tracing')->setOutput($output);
@@ -186,7 +190,6 @@ EOT
                 } catch (\Exception $e) {
                     $failed++;
 
-
                     $errorMessage = $e->getMessage();
                     // we probably have already echoed the error message while the subprocess was executing, avoid repeating it
                     if ($errorMessage != $this->subProcessErrorString) {
@@ -285,7 +288,7 @@ EOT
             ->getProcess();
 
         if ($feedback) {
-            $this->writeln('<info>Executing: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_VERBOSE);
+            $this->writeln('<info>Executing: ' . $process->getCommandLine() . '</info>', OutputInterface::VERBOSITY_NORMAL);
         }
 
         $this->subProcessErrorString = '';
@@ -297,7 +300,7 @@ EOT
         // NB: if the subprocess writes to stderr then terminates with non-0 exit code, this will lead us to echoing the
         // error text twice, once here and once at the end of execution of this command.
         // In order to avoid that, since we can not know at this time what the subprocess exit code will be, we
-        // do print the error text now, and compare it to what we gt at the end...
+        // do print the error text now, and compare it to what we get at the end...
         $process->run(
             $feedback ?
                 function($type, $buffer) {
@@ -306,7 +309,7 @@ EOT
                         $this->writeErrorln($buffer, OutputInterface::VERBOSITY_QUIET, OutputInterface::OUTPUT_RAW);
                     } else {
                         // swallow output of child processes in quiet mode
-                        $this->writeLn($buffer, self::VERBOSITY_CHILD, OutputInterface::OUTPUT_RAW);
+                        $this->writeLn($buffer, self::$VERBOSITY_CHILD, OutputInterface::OUTPUT_RAW);
                     }
                 }
                 :
