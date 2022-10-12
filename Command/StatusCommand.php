@@ -289,7 +289,7 @@ EOT
                 ksort($index);
                 break;
             default:
-                throw new MigrationBundleException("Unsupported sort order: '$sortBy'");
+                throw new \InvalidArgumentException("Unsupported sort order: '$sortBy'");
         }
     }
 }

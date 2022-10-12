@@ -215,7 +215,7 @@ EOT
                     foreach ($input->getOption('child-process-php-ini-config') as $iniSpec) {
                         $ini = explode(':', $iniSpec, 2);
                         if (count($ini) < 2 || $ini[0] === '') {
-                            throw new MigrationBundleException("Invalid php ini specification: '$iniSpec'");
+                            throw new \InvalidArgumentException("Invalid php ini specification: '$iniSpec'");
                         }
                         $prefix[] = '-d ' . $ini[0] . '=' . $ini[1];
                     }

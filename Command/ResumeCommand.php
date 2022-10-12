@@ -64,10 +64,10 @@ EOT
         if ($migrationName != null) {
             $suspendedMigration = $migrationService->getMigration($migrationName);
             if (!$suspendedMigration) {
-                throw new MigrationBundleException("Migration '$migrationName' not found");
+                throw new \RuntimeException("Migration '$migrationName' not found");
             }
             if ($suspendedMigration->status != Migration::STATUS_SUSPENDED) {
-                throw new MigrationBundleException("Migration '$migrationName' is not suspended, can not resume it");
+                throw new \RuntimeException("Migration '$migrationName' is not suspended, can not resume it");
             }
 
             $suspendedMigrations = array($suspendedMigration);
@@ -102,7 +102,7 @@ EOT
             foreach ($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
                 if (count($ref) < 2 || $ref[0] === '') {
-                    throw new MigrationBundleException("Invalid reference specification: '$refSpec'");
+                    throw new \InvalidArgumentException("Invalid reference specification: '$refSpec'");
                 }
                 $forcedRefs[$ref[0]] = $ref[1];
             }
