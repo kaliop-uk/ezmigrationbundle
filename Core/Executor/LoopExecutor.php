@@ -99,14 +99,14 @@ class LoopExecutor extends AbstractExecutor
                     $subStep = new MigrationStep($type, $stepDef, array_merge($context, array()));
                     try {
                         $result = $stepExecutors[$j]->execute($subStep);
-                    } catch(MigrationStepSkippedException $e) {
+                    } catch (MigrationStepSkippedException $e) {
                         // all ok, continue the loop
-                    } catch(LoopContinueException $e) {
+                    } catch (LoopContinueException $e) {
                         // all ok, move to the next iteration
                         break;
                     }
                 }
-            } catch(LoopBreakException $e) {
+            } catch (LoopBreakException $e) {
                 // all ok, exit the loop
                 break;
             }
@@ -135,14 +135,14 @@ class LoopExecutor extends AbstractExecutor
                     $subStep = new MigrationStep($type, $stepDef, array_merge($context, array()));
                     try {
                         $result = $stepExecutors[$j]->execute($subStep);
-                    } catch(MigrationStepSkippedException $e) {
+                    } catch (MigrationStepSkippedException $e) {
                         // all ok, continue the loop
-                    } catch(LoopContinueException $e) {
+                    } catch (LoopContinueException $e) {
                         // all ok, move to the next iteration
                         break;
                     }
                 }
-            } catch(LoopBreakException $e) {
+            } catch (LoopBreakException $e) {
                 // all ok, exit the loop
                 break;
             }

@@ -116,7 +116,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 $user = $this->repository->getUserService()->loadUser($userId);
 
                 $users[$user->id] = $user;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -142,7 +142,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 $user = $this->repository->getUserService()->loadUserByLogin($login);
 
                 $users[$user->id] = $user;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -191,7 +191,7 @@ class UserMatcher extends RepositoryMatcher implements KeyMatcherInterface
 
             try {
                 $group = $this->repository->getUserService()->loadUserGroup($groupId);
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if ($tolerateMisses) {
                     continue;
                 } else {

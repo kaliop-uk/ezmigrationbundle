@@ -103,7 +103,7 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 $role = $this->repository->getRoleService()->loadRole($roleId);
                 $roles[$role->id] = $role;
             /// @todo should we survive as well UnauthorizedException ? It seems to be a different kind of error than non-existing roles...
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -130,7 +130,7 @@ class RoleMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 $role = $this->repository->getRoleService()->loadRoleByIdentifier($roleIdentifier);
                 $roles[$role->id] = $role;
             /// @todo should we survive as well UnauthorizedException ? It seems to be a different kind of error than non-existing roles...
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

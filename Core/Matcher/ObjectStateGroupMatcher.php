@@ -104,7 +104,7 @@ class ObjectStateGroupMatcher extends RepositoryMatcher implements KeyMatcherInt
                 // return unique contents
                 $objectStateGroup = $this->repository->getObjectStateService()->loadObjectStateGroup($objectStateGroupId);
                 $objectStateGroups[$objectStateGroup->id] = $objectStateGroup;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

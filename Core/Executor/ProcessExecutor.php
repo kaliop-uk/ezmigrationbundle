@@ -72,7 +72,7 @@ class ProcessExecutor extends AbstractExecutor
         $builderArgs = array($this->referenceResolver->resolveReference($dsl['command']));
 
         if (isset($dsl['arguments'])) {
-            foreach($dsl['arguments'] as $arg) {
+            foreach ($dsl['arguments'] as $arg) {
                 /// @todo should this be recursive?
                 $builderArgs[] = $this->referenceResolver->resolveReference($arg);
             }

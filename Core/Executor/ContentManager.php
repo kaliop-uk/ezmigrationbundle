@@ -495,7 +495,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             }
                             // we do allow array values for refs, but not multi-level
                             if (is_array($value)) {
-                                foreach($hashValue as $subValue) {
+                                foreach ($hashValue as $subValue) {
                                     if (is_array($subValue) || is_object($subValue)) {
                                         throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given value is an array with a non scalar element');
                                     }
@@ -577,7 +577,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     $locations = $locationService->loadLocations($content->contentInfo);
                     if (count($locations) > 1) {
                         $otherParentLocations = array();
-                        foreach($locations as $otherLocation) {
+                        foreach ($locations as $otherLocation) {
                             if ($otherLocation->id != $location->id) {
                                 $otherParentLocations[] = $otherLocation->parentLocationId;
                             }
@@ -628,7 +628,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 }
 
                 $attributes = array();
-                foreach($languages as $lang) {
+                foreach ($languages as $lang) {
                     foreach ($content->getFieldsByLanguage($lang) as $fieldIdentifier => $field) {
                         $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
                         $fieldValue = $this->fieldHandlerManager->fieldValueToHash(

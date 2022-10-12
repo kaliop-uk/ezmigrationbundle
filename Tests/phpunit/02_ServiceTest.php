@@ -29,7 +29,7 @@ class ServiceTest extends CommandExecutingTest implements ExecutorInterface
 
         $migrations = $ms->getMigrationsByStatus(Migration::STATUS_DONE);
         $this->assertGreaterThanOrEqual(1, $migrations->count());
-        foreach($migrations as $migration) {
+        foreach ($migrations as $migration) {
             $this->assertEquals(Migration::STATUS_DONE, $migration->status, 'Fetched migration has unexpected status');
         }
 
@@ -48,7 +48,7 @@ class ServiceTest extends CommandExecutingTest implements ExecutorInterface
 
         $migrations = $ms->getMigrationsByStatus(Migration::STATUS_TODO);
         $this->assertGreaterThanOrEqual(2, $migrations->count());
-        foreach($migrations as $migration) {
+        foreach ($migrations as $migration) {
             $this->assertEquals(Migration::STATUS_TODO, $migration->status, 'Fetched migration has unexpected status');
         }
         $migrations = $ms->getMigrationsByStatus(Migration::STATUS_TODO, 1);

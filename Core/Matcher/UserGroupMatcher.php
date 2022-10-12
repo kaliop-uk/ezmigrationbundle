@@ -109,7 +109,7 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 $userGroup = $this->repository->getUserService()->loadUserGroup($userGroupId);
 
                 $userGroups[$userGroup->id] = $userGroup;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -139,7 +139,7 @@ class UserGroupMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 $userGroup = $this->repository->getUserService()->loadUserGroup($content->id);
 
                 $userGroups[$userGroup->id] = $userGroup;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

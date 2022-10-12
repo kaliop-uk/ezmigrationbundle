@@ -37,7 +37,7 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
 
         // allow user to pass in selection values by name
         $fieldSettings = null;
-        foreach($fieldValue as $key => $val) {
+        foreach ($fieldValue as $key => $val) {
 
             // NB: this might result in double reference-resolving when the original value is a string, given preResolveReferences...
             $val = $this->referenceResolver->resolveReference($val);
@@ -49,7 +49,7 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
                     if ($fieldSettings === null) {
                         $fieldSettings = $this->loadFieldSettings($context['contentTypeIdentifier'], $context['fieldIdentifier']);
                     }
-                    foreach($fieldSettings['options'] as $pos => $name) {
+                    foreach ($fieldSettings['options'] as $pos => $name) {
                         if ($name === $val) {
                             $fieldValue[$key] = $pos;
                             break;

@@ -133,7 +133,7 @@ EOT
 
         $processes = array();
         /** @var MigrationDefinition $migrationDefinition */
-        foreach($paths as $path => $count) {
+        foreach ($paths as $path => $count) {
             $this->writeln("<info>Queueing processing of: $path ($count migrations)</info>", OutputInterface::VERBOSITY_VERBOSE);
 
             $process = $builder
@@ -212,7 +212,7 @@ EOT
                 $prefix = array($php);
 
                 if ($input->getOption('child-process-php-ini-config')) {
-                    foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
+                    foreach ($input->getOption('child-process-php-ini-config') as $iniSpec) {
                         $ini = explode(':', $iniSpec, 2);
                         if (count($ini) < 2 || $ini[0] === '') {
                             throw new MigrationBundleException("Invalid php ini specification: '$iniSpec'");
@@ -281,7 +281,7 @@ EOT
                     $this->executeMigrationInProcess($migrationDefinition, $force, $migrationService, $input);
 
                     $executed++;
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     $failed++;
 
                     $errorMessage = $e->getMessage();
@@ -366,7 +366,7 @@ EOT
 
         // filter away all migrations except 'to do' ones
         $toExecute = array();
-        foreach($migrationDefinitions as $name => $migrationDefinition) {
+        foreach ($migrationDefinitions as $name => $migrationDefinition) {
             if (!isset($migrations[$name]) || (($migration = $migrations[$name]) && in_array($migration->status, $allowedStatuses))) {
                 $toExecute[$name] = $isChild ? $migrationService->parseMigrationDefinition($migrationDefinition) : $migrationDefinition;
             }
@@ -421,7 +421,7 @@ EOT
     protected function groupMigrationsByPath($toExecute)
     {
         $paths = array();
-        foreach($toExecute as $name => $migrationDefinition) {
+        foreach ($toExecute as $name => $migrationDefinition) {
             $path = dirname($migrationDefinition->path);
             if (!isset($paths[$path])) {
                 $paths[$path] = 1;
@@ -498,12 +498,12 @@ EOT
             $builderArgs[] = '--separate-process';
         }
         if ($input->getOption('set-reference')) {
-            foreach($input->getOption('set-reference') as $refSpec) {
+            foreach ($input->getOption('set-reference') as $refSpec) {
                 $builderArgs[] = '--set-reference=' . $refSpec;
             }
         }
         if ($input->getOption('child-process-php-ini-config')) {
-            foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
+            foreach ($input->getOption('child-process-php-ini-config') as $iniSpec) {
                 $builderArgs[] = '--child-process-php-ini-config=' . $iniSpec;
             }
         }

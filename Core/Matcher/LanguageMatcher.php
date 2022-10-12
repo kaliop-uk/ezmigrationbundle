@@ -99,7 +99,7 @@ class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 // return unique contents
                 $language = $this->repository->getContentLanguageService()->loadLanguageById($languageId);
                 $languages[$language->id] = $language;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -124,7 +124,7 @@ class LanguageMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 // return unique contents
                 $language = $this->repository->getContentLanguageService()->loadLanguage($languageIdentifier);
                 $languages[$language->id] = $language;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

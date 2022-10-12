@@ -89,7 +89,7 @@ class ReferenceMatcher extends AbstractMatcher
 
             switch ($key) {
                 case self::MATCH_AND:
-                    foreach($values as $subCriterion) {
+                    foreach ($values as $subCriterion) {
                         $value = $this->match($subCriterion);
                         if (!reset($value)) {
                             return $value;
@@ -98,7 +98,7 @@ class ReferenceMatcher extends AbstractMatcher
                     return array(true);
 
                 case self::MATCH_OR:
-                    foreach($values as $subCriterion) {
+                    foreach ($values as $subCriterion) {
                         $value = $this->match($subCriterion);
                         if (reset($value)) {
                             return $value;

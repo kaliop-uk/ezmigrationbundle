@@ -199,7 +199,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
     {
         $migrationService = $this->migrationService;
         $executors = $migrationService->listExecutors();
-        foreach($executors as $key => $name) {
+        foreach ($executors as $key => $name) {
             $executor = $migrationService->getExecutor($name);
             if (!$executor instanceof MigrationGeneratorInterface) {
                 unset($executors[$key]);

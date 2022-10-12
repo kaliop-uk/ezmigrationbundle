@@ -112,7 +112,7 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                 // return unique contents
                 $contentType = $this->repository->getContentTypeService()->loadContentType($contentTypeId);
                 $contentTypes[$contentType->id] = $contentType;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -137,7 +137,7 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                 // return unique contents
                 $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($contentTypeIdentifier);
                 $contentTypes[$contentType->id] = $contentType;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -161,7 +161,7 @@ class ContentTypeMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                 // return unique contents
                 $contentType = $this->repository->getContentTypeService()->loadContentTypeByRemoteId($contentTypeRemoteId);
                 $contentTypes[$contentType->id] = $contentType;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

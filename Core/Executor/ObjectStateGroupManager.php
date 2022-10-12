@@ -247,10 +247,10 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
             if ($mode != 'delete') {
                 $names = array();
                 $descriptions = array();
-                foreach($objectStateGroup->languageCodes as $languageCode) {
+                foreach ($objectStateGroup->languageCodes as $languageCode) {
                     $names[$languageCode] =  $objectStateGroup->getName($languageCode);
                 }
-                foreach($objectStateGroup->languageCodes as $languageCode) {
+                foreach ($objectStateGroup->languageCodes as $languageCode) {
                     $descriptions[$languageCode] =  $objectStateGroup->getDescription($languageCode);
                 }
                 $groupData = array_merge(

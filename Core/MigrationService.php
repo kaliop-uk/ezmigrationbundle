@@ -501,7 +501,7 @@ class MigrationService implements ContextProviderInterface
         $this->contextHandler->restoreCurrentContext($migration->name);
 
         if ($forcedReferences) {
-            foreach($forcedReferences as $name => $value) {
+            foreach ($forcedReferences as $name => $value) {
                 $this->referenceResolver->addReference($name, $value, true);
             }
         }

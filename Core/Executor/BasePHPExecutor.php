@@ -84,7 +84,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
 
             $args = $dsl['arguments'];
 
-            foreach($args as &$val) {
+            foreach ($args as &$val) {
                 $val = $this->resolveReferencesRecursively($val);
             }
         } else {

@@ -36,11 +36,11 @@ class LocationMatcherDirectLoad extends LocationMatcher
             $locations = array();
             switch ($key) {
                 case self::MATCH_LOCATION_ID:
-                    foreach($match as $locationId) {
+                    foreach ($match as $locationId) {
                         try {
                             $location = $this->repository->getLocationService()->loadLocation($locationId);
                             $locations[$location->id] = $location;
-                        } catch(NotFoundException $e) {
+                        } catch (NotFoundException $e) {
                             if (!$tolerateMisses) {
                                 throw $e;
                             }
@@ -48,11 +48,11 @@ class LocationMatcherDirectLoad extends LocationMatcher
                     }
                     break;
                 case self::MATCH_LOCATION_REMOTE_ID:
-                    foreach($match as $locationRemoteId) {
+                    foreach ($match as $locationRemoteId) {
                         try {
                             $location = $this->repository->getLocationService()->loadLocationByRemoteId($locationRemoteId);
                             $locations[$location->id] = $location;
-                        } catch(NotFoundException $e) {
+                        } catch (NotFoundException $e) {
                             if (!$tolerateMisses) {
                                 throw $e;
                             }

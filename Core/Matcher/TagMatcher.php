@@ -132,7 +132,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
                 // return unique contents
                 $tag = $this->tagService->loadTag($tagId);
                 $tags[$tag->id] = $tag;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -161,7 +161,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
                 foreach ($this->tagService->loadTagChildren($tag) as $childTag) {
                     $tags[$childTag->id] = $childTag;
                 }
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -222,7 +222,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
                 // return unique contents
                 $tag = $this->tagService->loadTagByRemoteId($tagRemoteId);
                 $tags[$tag->id] = $tag;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

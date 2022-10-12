@@ -124,7 +124,7 @@ EOT
                 $prefix = array($php);
 
                 if ($input->getOption('child-process-php-ini-config')) {
-                    foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
+                    foreach ($input->getOption('child-process-php-ini-config') as $iniSpec) {
                         $ini = explode(':', $iniSpec, 2);
                         if (count($ini) < 2 || $ini[0] === '') {
                             throw new MigrationBundleException("Invalid php ini specification: '$iniSpec'");
@@ -150,7 +150,7 @@ EOT
 
         if ($input->getOption('set-reference') && !$input->getOption('separate-process')) {
             $refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
-            foreach($input->getOption('set-reference') as $refSpec) {
+            foreach ($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
                 if (count($ref) < 2 || $ref[0] === '') {
                     throw new MigrationBundleException("Invalid reference specification: '$refSpec'");
@@ -516,7 +516,7 @@ EOT
             $builderArgs[] = '--no-transactions';
         }
         if ($input->getOption('set-reference')) {
-            foreach($input->getOption('set-reference') as $refSpec) {
+            foreach ($input->getOption('set-reference') as $refSpec) {
                 $builderArgs[] = '--set-reference=' . $refSpec;
             }
         }

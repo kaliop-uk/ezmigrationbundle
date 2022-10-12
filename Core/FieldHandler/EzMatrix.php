@@ -65,11 +65,11 @@ class EzMatrix extends AbstractFieldHandler implements FieldValueConverterInterf
         $data = array();
 
         if ($this->usingLegacyFieldType()) {
-            foreach($fieldValue->rows as $row) {
+            foreach ($fieldValue->rows as $row) {
                 $data[] = $row->toArray();
             }
         } else {
-            foreach($fieldValue->getRows() as $row) {
+            foreach ($fieldValue->getRows() as $row) {
                 $data[] = $row->getCells();
             }
         }

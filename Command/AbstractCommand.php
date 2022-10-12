@@ -94,7 +94,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function normalizePaths($paths)
     {
         $rootDir = realpath($this->getContainer()->get('kernel')->getRootDir() . '/..') . '/';
-        foreach($paths as $i => $path) {
+        foreach ($paths as $i => $path) {
             if ($path === $rootDir || $path === './') {
                 $paths[$i] = './';
             } else if (strpos($path, './') === 0) {

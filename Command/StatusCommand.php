@@ -94,7 +94,7 @@ EOT
         // which is misleading. We add the following loop to fix that, so that the status command will match more closely
         // the 'migrate' command
         if (count($paths)) {
-            foreach($index as $migrationName => $data) {
+            foreach ($index as $migrationName => $data) {
                 if (!isset($data['migration'])) {
                     $migration = $migrationsService->getMigration($migrationName);
                     if ($migration !== null) {

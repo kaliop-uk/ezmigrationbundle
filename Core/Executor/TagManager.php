@@ -359,7 +359,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
     protected function getTagKeywords($tag)
     {
         $out = array();
-        foreach($tag->languageCodes as $languageCode) {
+        foreach ($tag->languageCodes as $languageCode) {
             $out[$languageCode] = $tag->getKeyword($languageCode);
         }
         return $out;

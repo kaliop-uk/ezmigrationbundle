@@ -36,7 +36,7 @@ class ContextHandler
     public function storeCurrentContext($migrationName)
     {
         $context = array();
-        foreach($this->providers as $label => $provider) {
+        foreach ($this->providers as $label => $provider) {
             $context[$label] = $provider->getCurrentContext($migrationName);
         }
 
@@ -53,7 +53,7 @@ class ContextHandler
         if (!is_array($context)) {
             throw new MigrationBundleException("No execution context found associated with migration '$migrationName'");
         }
-        foreach($this->providers as $label => $provider) {
+        foreach ($this->providers as $label => $provider) {
             if (isset($context[$label])) {
                 $provider->restoreContext($migrationName, $context[$label]);
             }

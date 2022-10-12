@@ -93,7 +93,7 @@ class UrlWildcardMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                 // return unique contents
                 $urlWildcard = $this->repository->getURLWildcardService()->load($urlId);
                 $urls[$urlWildcard->id] = $urlWildcard;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

@@ -474,10 +474,10 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             return $this->compareArraysForSorting($p1['limitations'], $p2['limitations']);
             $p1LimIds = array();
             $p2LimIds = array();
-            foreach($p1['limitations'] as $lim) {
+            foreach ($p1['limitations'] as $lim) {
                 $p1LimIds = $lim['identifier'];
             }
-            foreach($p2['limitations'] as $lim) {
+            foreach ($p2['limitations'] as $lim) {
                 $p2LimIds = $lim['identifier'];
             }
             /// @todo if limitations identifier are the same, sort by lim. values...

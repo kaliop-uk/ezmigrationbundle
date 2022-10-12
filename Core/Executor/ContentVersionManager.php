@@ -167,7 +167,7 @@ class ContentVersionManager extends ContentManager
 
     protected function versionStatusToHash($status)
     {
-        foreach(ContentVersionMatcher::STATUS_MAP as $own => $ez) {
+        foreach (ContentVersionMatcher::STATUS_MAP as $own => $ez) {
             if ($status == $ez) {
                 return $own;
             }

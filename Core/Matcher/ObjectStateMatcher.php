@@ -104,7 +104,7 @@ class ObjectStateMatcher extends RepositoryMatcher implements KeyMatcherInterfac
                 // return unique contents
                 $objectState = $this->repository->getObjectStateService()->loadObjectState($objectStateId);
                 $objectStates[$objectState->id] = $objectState;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

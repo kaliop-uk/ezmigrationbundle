@@ -99,7 +99,7 @@ EOT
         $forcedRefs = array();
         if ($input->getOption('set-reference') /*&& !$input->getOption('separate-process')*/) {
             $refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
-            foreach($input->getOption('set-reference') as $refSpec) {
+            foreach ($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
                 if (count($ref) < 2 || $ref[0] === '') {
                     throw new MigrationBundleException("Invalid reference specification: '$refSpec'");
@@ -111,7 +111,7 @@ EOT
         $executed = 0;
         $failed = 0;
 
-        foreach($suspendedMigrations as $suspendedMigration) {
+        foreach ($suspendedMigrations as $suspendedMigration) {
             $output->writeln("<info>Resuming {$suspendedMigration->name}</info>");
 
             try {

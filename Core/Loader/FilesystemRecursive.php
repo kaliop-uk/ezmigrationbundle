@@ -18,7 +18,7 @@ class FilesystemRecursive extends Filesystem
         if (empty($paths)) {
             $paths = array();
             /** @var $bundle \Symfony\Component\HttpKernel\Bundle\BundleInterface */
-            foreach($this->kernel->getBundles() as $bundle)
+            foreach ($this->kernel->getBundles() as $bundle)
             {
                 $path = $bundle->getPath() . "/" . $this->versionDirectory;
                 if (is_dir($path)) {
@@ -28,7 +28,7 @@ class FilesystemRecursive extends Filesystem
         }
 
         $definitions = array();
-        foreach($paths as $path) {
+        foreach ($paths as $path) {
             if (is_file($path)) {
                 $definitions[basename($path)] = $returnFilename ? $path : new MigrationDefinition(
                     basename($path),

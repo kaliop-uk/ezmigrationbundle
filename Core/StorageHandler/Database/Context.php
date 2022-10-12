@@ -127,7 +127,7 @@ class Context extends TableStorage implements ContextStorageHandlerInterface
         foreach ($schema->toSql($dbPlatform) as $sql) {
             try {
                 $this->dbHandler->exec($sql);
-            } catch(QueryException $e) {
+            } catch (QueryException $e) {
                 // work around limitations in both Mysql and Doctrine
                 // @see https://github.com/kaliop-uk/ezmigrationbundle/issues/176
                 if (strpos($e->getMessage(), '1071 Specified key was too long; max key length is 767 bytes') !== false &&

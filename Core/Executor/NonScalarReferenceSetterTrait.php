@@ -130,7 +130,7 @@ trait NonScalarReferenceSetterTrait
      */
     protected function hasNonScalarReferences($referencesDefinition)
     {
-        foreach($referencesDefinition as $key => $referenceDefinition) {
+        foreach ($referencesDefinition as $key => $referenceDefinition) {
             $referenceDefinition = $this->parseReferenceDefinition($key, $referenceDefinition);
             if (!$this->isScalarReference($referenceDefinition))
             {

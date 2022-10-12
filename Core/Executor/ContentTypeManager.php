@@ -248,7 +248,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                 }
 
                 // Add new attributes
-                foreach($newFieldDefinitions as $newFieldDefinition) {
+                foreach ($newFieldDefinitions as $newFieldDefinition) {
                     if ($newFieldDefinition->position == 0) {
                         $newFieldDefinition->position = ++$maxFieldDefinitionPos;
                     }
@@ -385,7 +385,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     break;
                 case 'content_type_groups_ids':
                     $value = [];
-                    foreach($contentType->contentTypeGroups as $existingGroup) {
+                    foreach ($contentType->contentTypeGroups as $existingGroup) {
                         $value[] = $existingGroup->id;
                     }
                     break;
@@ -789,7 +789,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
         $contentTypeGroupId = $contentTypeGroup->id;
 
-        foreach($contentType->contentTypeGroups as $existingGroup) {
+        foreach ($contentType->contentTypeGroups as $existingGroup) {
             if ($existingGroup->id === $contentTypeGroupId) {
                 return;
             }
@@ -805,7 +805,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
         $contentTypeGroupId = $contentTypeGroup->id;
 
-        foreach($contentType->contentTypeGroups as $existingGroup) {
+        foreach ($contentType->contentTypeGroups as $existingGroup) {
             if ($existingGroup->id === $contentTypeGroupId) {
                 $contentTypeService = $this->repository->getContentTypeService();
                 $contentTypeService->unassignContentTypeGroup($contentType, $contentTypeGroup);

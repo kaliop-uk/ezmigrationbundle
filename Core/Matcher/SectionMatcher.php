@@ -103,7 +103,7 @@ class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 // return unique contents
                 $section = $this->repository->getSectionService()->loadSection($sectionId);
                 $sections[$section->id] = $section;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -128,7 +128,7 @@ class SectionMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 // return unique contents
                 $section = $this->repository->getSectionService()->loadSectionByIdentifier($sectionIdentifier);
                 $sections[$section->id] = $section;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }

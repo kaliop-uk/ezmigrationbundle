@@ -37,11 +37,11 @@ class ContentMatcherDirectLoad extends ContentMatcher
             $contents = array();
             switch ($key) {
                 case self::MATCH_CONTENT_ID:
-                    foreach($match as $contentId) {
+                    foreach ($match as $contentId) {
                         try {
                             $content = $this->repository->getContentService()->loadContent($contentId);
                             $contents[$content->id] = $content;
-                        } catch(NotFoundException $e) {
+                        } catch (NotFoundException $e) {
                             if (!$tolerateMisses) {
                                 throw $e;
                             }
@@ -49,11 +49,11 @@ class ContentMatcherDirectLoad extends ContentMatcher
                     }
                     break;
                 case self::MATCH_CONTENT_REMOTE_ID:
-                    foreach($match as $contentRemoteId) {
+                    foreach ($match as $contentRemoteId) {
                         try {
                             $content = $this->repository->getContentService()->loadContentByRemoteId($contentRemoteId);
                             $contents[$content->id] = $content;
-                        } catch(NotFoundException $e) {
+                        } catch (NotFoundException $e) {
                             if (!$tolerateMisses) {
                                 throw $e;
                             }

@@ -141,7 +141,7 @@ class MigrationExecutor extends AbstractExecutor
         $dsl['mode'] = 'load';
         // be kind to users and allow them not to specify this explicitly
         if (isset($dsl['references'])) {
-            foreach($dsl['references'] as &$refDef) {
+            foreach ($dsl['references'] as &$refDef) {
                 $refDef['overwrite'] = true;
             }
         }

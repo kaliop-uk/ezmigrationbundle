@@ -54,7 +54,7 @@ abstract class TableStorage
      */
     protected function injectTableCreationOptions(Table $table)
     {
-        foreach($this->tableCreationOptions as $key => $value) {
+        foreach ($this->tableCreationOptions as $key => $value) {
             $table->addOption($key, $value);
         }
     }

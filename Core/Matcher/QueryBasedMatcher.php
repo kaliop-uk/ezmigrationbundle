@@ -180,7 +180,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::CREATED, self::$operatorsMap[$operator], $match);
 
             case self::MATCH_GROUP:
-                foreach($values as &$value) {
+                foreach ($values as &$value) {
                     if (!ctype_digit($value)) {
                         $value = $this->groupMatcher->matchOneByKey($value)->id;
                     }
@@ -199,7 +199,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\DateMetadata(Query\Criterion\DateMetadata::MODIFIED, self::$operatorsMap[$operator], $match);
 
             case self::MATCH_OBJECT_STATE:
-                foreach($values as &$value) {
+                foreach ($values as &$value) {
                     if (!ctype_digit($value)) {
                         $value = $this->stateMatcher->matchOneByKey($value)->id;
                     }
@@ -207,7 +207,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\ObjectStateId($values);
 
             case self::MATCH_OWNER:
-                foreach($values as &$value) {
+                foreach ($values as &$value) {
                     if (!ctype_digit($value)) {
                         $value = $this->userMatcher->matchOneByKey($value)->id;
                     }
@@ -227,7 +227,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                 return new Query\Criterion\ParentLocationId($locationIds);
 
             case self::MATCH_SECTION:
-                foreach($values as &$value) {
+                foreach ($values as &$value) {
                     if (!ctype_digit($value)) {
                         $value = $this->sectionMatcher->matchOneByKey($value)->id;
                     }
@@ -248,7 +248,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
 
             case self::MATCH_AND:
                 $subCriteria = array();
-                foreach($values as $subCriterion) {
+                foreach ($values as $subCriterion) {
                     $value = reset($subCriterion);
                     $subCriteria[] = $this->getQueryCriterion(key($subCriterion), $value);
                 }
@@ -256,7 +256,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
 
             case self::MATCH_OR:
                 $subCriteria = array();
-                foreach($values as $subCriterion) {
+                foreach ($values as $subCriterion) {
                     $value = reset($subCriterion);
                     $subCriteria[] = $this->getQueryCriterion(key($subCriterion), $value);
                 }

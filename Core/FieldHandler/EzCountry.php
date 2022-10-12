@@ -41,7 +41,7 @@ class EzCountry extends AbstractFieldHandler implements FieldValueImporterInterf
             $fieldValue = array($fieldValue);
         }
         if (!$refsResolved) {
-            foreach($fieldValue as $key => $countryValue) {
+            foreach ($fieldValue as $key => $countryValue) {
                 $fieldValue[$key] = $this->referenceResolver->resolveReference($countryValue);
             }
         }

@@ -108,7 +108,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 // return unique items
                 $UrlAlias = $this->repository->getUrlAliasService()->load($urlId);
                 $urls[$UrlAlias->id] = $UrlAlias;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -133,7 +133,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
                 // return unique contents
                 $UrlAlias = $this->repository->getUrlAliasService()->lookup($url);
                 $urls[$UrlAlias->id] = $UrlAlias;
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
@@ -173,7 +173,7 @@ class UrlAliasMatcher extends RepositoryMatcher implements KeyMatcherInterface
                         $urls[$UrlAlias->id] = $UrlAlias;
                     }
                 }
-            } catch(NotFoundException $e) {
+            } catch (NotFoundException $e) {
                 if (!$tolerateMisses) {
                     throw $e;
                 }
