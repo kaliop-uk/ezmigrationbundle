@@ -5,7 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 use eZ\Publish\API\Repository\Exceptions\UnauthorizedException ;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Content;
-use \eZ\Publish\API\Repository\Values\Content\VersionInfo;
+use eZ\Publish\API\Repository\Values\Content\VersionInfo;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\Collection\VersionInfoCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
