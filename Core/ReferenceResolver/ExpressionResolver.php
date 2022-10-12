@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
@@ -47,7 +48,7 @@ class ExpressionResolver extends AbstractResolver implements ExpressionFunctionP
                 function ($str) {
                     /// @todo we could implement this via eg a static class var which holds a pointer to $this->referenceResolver
                     //return sprintf('(is_string(%1$s) ? FakerResolver::resolveExpressionLanguageReference(%1$s) : %1$s)', $str);
-                    return "throw new \Exception('The \'resolve\' expression language operator can not be compiled, only evaluated'";
+                    return "throw new MigrationBundleException('The \'resolve\' expression language operator can not be compiled, only evaluated'";
                 },
                 function ($arguments, $str) use ($resolver) {
                     if (!is_string($str)) {

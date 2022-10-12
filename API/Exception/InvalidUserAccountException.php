@@ -2,7 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\API\Exception;
 
-class InvalidUserAccountException extends \Exception
+class InvalidUserAccountException extends MigrationBundleException
 {
 
 }

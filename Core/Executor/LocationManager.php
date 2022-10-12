@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\Values\Content\Location;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\Collection\LocationCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
@@ -136,7 +137,7 @@ class LocationManager extends RepositoryExecutor
         $this->validateResultsCount($locationCollection, $step);
 
         if (count($locationCollection) > 1 && isset($step->dsl['swap_with_location'])) {
-            throw new \Exception("Can not execute Location update because multiple locations match, and a swap_with_location is specified in the dsl.");
+            throw new MigrationBundleException("Can not execute Location update because multiple locations match, and a swap_with_location is specified in the dsl.");
         }
 
         // support legacy tag: parent_location_id
@@ -227,7 +228,7 @@ class LocationManager extends RepositoryExecutor
             }
 
             if (!$updated) {
-                throw new \Exception("Can not execute Location update because there is nothing to update in the migration step as defined.");
+                throw new MigrationBundleException("Can not execute Location update because there is nothing to update in the migration step as defined.");
             }
 
             $locationCollection[$key] = $location;

@@ -2,6 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\API\Exception;
 
-class InvalidSortConditionsException extends \Exception
+class InvalidSortConditionsException extends MigrationBundleException
 {
 }

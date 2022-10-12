@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
+use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\FieldType\Selection\Value as SelectionValue;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
-use \eZ\Publish\API\Repository\Repository;
 
 class EzSelection extends AbstractFieldHandler implements FieldValueImporterInterface, FieldDefinitionConverterInterface
 {
@@ -83,7 +84,7 @@ class EzSelection extends AbstractFieldHandler implements FieldValueImporterInte
     {
         foreach ($settingsHash['options'] as $key => $value) {
             if (!is_int($key) && !ctype_digit($key)) {
-                throw new \Exception("The list of values allowed for an eZSelection field can only use integer keys, found: '$key'");
+                throw new MigrationBundleException("The list of values allowed for an eZSelection field can only use integer keys, found: '$key'");
             }
         }
         return $settingsHash;

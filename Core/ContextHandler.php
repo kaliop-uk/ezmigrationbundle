@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core;
 
 use Kaliop\eZMigrationBundle\API\ContextStorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\ContextProviderInterface;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 
 /**
  * Takes care of storing / restoring all necessary migration execution context information, acting as a "multiplexer":
@@ -50,7 +51,7 @@ class ContextHandler
     {
         $context = $this->storageHandler->loadMigrationContext($migrationName);
         if (!is_array($context)) {
-            throw new \Exception("No execution context found associated with migration '$migrationName'");
+            throw new MigrationBundleException("No execution context found associated with migration '$migrationName'");
         }
         foreach($this->providers as $label => $provider) {
             if (isset($context[$label])) {

@@ -5,7 +5,7 @@ namespace Kaliop\eZMigrationBundle\API\Exception;
 /**
  * Throw this exception in any step to suspend the migration
  */
-class MigrationSuspendedException extends \Exception
+class MigrationSuspendedException extends MigrationBundleException
 {
     public function __construct($message = "", $code = 0, \Exception $previous = null)
     {

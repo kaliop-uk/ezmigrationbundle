@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\Content\Language;
 use Kaliop\eZMigrationBundle\API\Collection\LanguageCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\LanguageMatcher;
@@ -244,7 +245,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
                     );
                     break;
                 default:
-                    throw new \Exception("Executor 'language' doesn't support mode '$mode'");
+                    throw new MigrationBundleException("Executor 'language' doesn't support mode '$mode'");
             }
 
             $data[] = $languageData;

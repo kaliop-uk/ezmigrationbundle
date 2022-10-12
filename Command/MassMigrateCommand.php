@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -214,7 +215,7 @@ EOT
                     foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
                         $ini = explode(':', $iniSpec, 2);
                         if (count($ini) < 2 || $ini[0] === '') {
-                            throw new \Exception("Invalid php ini specification: '$iniSpec'");
+                            throw new MigrationBundleException("Invalid php ini specification: '$iniSpec'");
                         }
                         $prefix[] = '-d ' . $ini[0] . '=' . $ini[1];
                     }

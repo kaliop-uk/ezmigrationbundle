@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
 class EzRichText extends AbstractFieldHandler implements FieldValueImporterInterface
@@ -11,7 +12,7 @@ class EzRichText extends AbstractFieldHandler implements FieldValueImporterInter
     public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
     {
         if (! $referenceResolver instanceof EmbeddedReferenceResolverInterface) {
-            throw new \Exception("Reference resolver injected into EzRichText field handler should implement EmbeddedReferenceResolverInterface");
+            throw new MigrationBundleException("Reference resolver injected into EzRichText field handler should implement EmbeddedReferenceResolverInterface");
         }
         parent::setReferenceResolver($referenceResolver);
     }

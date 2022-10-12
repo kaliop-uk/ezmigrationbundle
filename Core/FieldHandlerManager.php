@@ -2,10 +2,11 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use eZ\Publish\API\Repository\FieldTypeService;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
 use Kaliop\eZMigrationBundle\API\FieldDefinitionConverterInterface;
 use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
-use eZ\Publish\API\Repository\FieldTypeService;
 
 class FieldHandlerManager
 {
@@ -28,7 +29,7 @@ class FieldHandlerManager
     {
         // This is purely BC; at some point we will typehint to FieldValueImporterInterface
         if (!$fieldHandler instanceof FieldValueImporterInterface) {
-            throw new \Exception("Can not register object of class '" . get_class($fieldHandler) . "' as field handler because it does not support the desired interface");
+            throw new MigrationBundleException("Can not register object of class '" . get_class($fieldHandler) . "' as field handler because it does not support the desired interface");
         }
 
         if ($contentTypeIdentifier == null) {
@@ -173,6 +174,6 @@ class FieldHandlerManager
             return $this->fieldTypeMap['*'][$fieldTypeIdentifier];
         }
 
-        throw new \Exception("No complex field handler registered for field '$fieldTypeIdentifier' in content type '$contentTypeIdentifier'");
+        throw new MigrationBundleException("No complex field handler registered for field '$fieldTypeIdentifier' in content type '$contentTypeIdentifier'");
     }
 }

@@ -12,6 +12,7 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\Core\MigrationService;
 use Kaliop\eZMigrationBundle\Core\Process\Process;
 use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
@@ -126,7 +127,7 @@ EOT
                     foreach($input->getOption('child-process-php-ini-config') as $iniSpec) {
                         $ini = explode(':', $iniSpec, 2);
                         if (count($ini) < 2 || $ini[0] === '') {
-                            throw new \Exception("Invalid php ini specification: '$iniSpec'");
+                            throw new MigrationBundleException("Invalid php ini specification: '$iniSpec'");
                         }
                         $prefix[] = '-d ' . $ini[0] . '=' . $ini[1];
                     }
@@ -152,7 +153,7 @@ EOT
             foreach($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
                 if (count($ref) < 2 || $ref[0] === '') {
-                    throw new \Exception("Invalid reference specification: '$refSpec'");
+                    throw new MigrationBundleException("Invalid reference specification: '$refSpec'");
                 }
                 $refResolver->addReference($ref[0], $ref[1], true);
             }
@@ -327,7 +328,7 @@ EOT
                 }
                 $errorOutput .= ")";
             }
-            throw new \Exception($errorOutput);
+            throw new MigrationBundleException($errorOutput);
         }
 
         // There are cases where the separate process dies halfway but does not return a non-zero code.
@@ -337,7 +338,7 @@ EOT
 
         if (!$migration) {
             // q: shall we add the migration to the db as failed? In doubt, we let it become a ghost, disappeared without a trace...
-            throw new \Exception("After the separate process charged to execute the migration finished, the migration can not be found in the database any more.");
+            throw new MigrationBundleException("After the separate process charged to execute the migration finished, the migration can not be found in the database any more.");
         } else if ($migration->status == Migration::STATUS_STARTED) {
             $errorMsg = "The separate process charged to execute the migration left it in 'started' state. Most likely it died halfway through execution.";
             $migrationService->endMigration(New Migration(
@@ -348,7 +349,7 @@ EOT
                 Migration::STATUS_FAILED,
                 ($migration->executionError != '' ? ($errorMsg . ' ' . $migration->executionError) : $errorMsg)
             ));
-            throw new \Exception($errorMsg);
+            throw new MigrationBundleException($errorMsg);
         }
     }
 
@@ -390,7 +391,7 @@ EOT
                             $migrationDefinition = $migrationDefinitions->reset();
                             $toExecute[$migration->name] = $migrationService->parseMigrationDefinition($migrationDefinition);
                         } else {
-                            throw new \Exception("Migration definition not found at path '$migration->path'");
+                            throw new MigrationBundleException("Migration definition not found at path '$migration->path'");
                         }
                     } catch (\Exception $e) {
                         $this->writeErrorln("Error while loading definition for migration '{$migration->name}' registered in the database, skipping it: " . $e->getMessage());
@@ -537,7 +538,7 @@ EOT
             if (is_file("$kernelDir/../bin/console")) {
                 return "$kernelDir/../bin/console";
             }
-            throw new \Exception("Can not determine the name of the symfony console file in use for running as separate process");
+            throw new MigrationBundleException("Can not determine the name of the symfony console file in use for running as separate process");
         }
 
         return $_SERVER['argv'][0]; // sf console

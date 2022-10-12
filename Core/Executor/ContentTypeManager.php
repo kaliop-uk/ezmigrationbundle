@@ -8,6 +8,7 @@ use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
@@ -149,7 +150,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $this->validateResultsCount($contentTypeCollection, $step);
 
         if (count($contentTypeCollection) > 1 && array_key_exists('new_identifier', $step->dsl)) {
-            throw new \Exception("Can not execute Content Type update because multiple Content Types match, and a new_identifier is specified in the dsl.");
+            throw new MigrationBundleException("Can not execute Content Type update because multiple Content Types match, and a new_identifier is specified in the dsl.");
         }
 
         $contentTypeService = $this->repository->getContentTypeService();
@@ -506,7 +507,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     );
                     break;
                 default:
-                    throw new \Exception("Executor 'content_type' doesn't support mode '$mode'");
+                    throw new MigrationBundleException("Executor 'content_type' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {

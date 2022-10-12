@@ -3,10 +3,11 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
-use Symfony\Component\Process\Process;
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
+use Symfony\Component\Process\Process;
 
 class ProcessExecutor extends AbstractExecutor
 {
@@ -105,7 +106,7 @@ class ProcessExecutor extends AbstractExecutor
 
         if (isset($dsl['fail_on_error']) && $this->referenceResolver->resolveReference($dsl['fail_on_error'])) {
             if (($exitCode = $process->getExitCode()) != 0) {
-                throw new \Exception("Process failed with exit code: $exitCode", $exitCode);
+                throw new MigrationBundleException("Process failed with exit code: $exitCode", $exitCode);
             }
         }
 

@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Helper;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 
 class SortConverter
 {
@@ -53,7 +54,7 @@ class SortConverter
             }
         }
 
-        throw new \Exception("Unknown sort field: '$value'");
+        throw new MigrationBundleException("Unknown sort field: '$value'");
     }
 
     /**

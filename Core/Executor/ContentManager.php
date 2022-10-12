@@ -12,6 +12,7 @@ use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Kaliop\eZMigrationBundle\API\Collection\ContentCollection;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use Kaliop\eZMigrationBundle\Core\Helper\SortConverter;
@@ -227,7 +228,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $this->validateResultsCount($contentCollection, $step);
 
         if (count($contentCollection) > 1 && isset($step->dsl['main_location'])) {
-            throw new \Exception("Can not execute Content update because multiple contents match, and a main_location section is specified in the dsl.");
+            throw new MigrationBundleException("Can not execute Content update because multiple contents match, and a main_location section is specified in the dsl.");
         }
 
         $contentType = array();
@@ -314,7 +315,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
 
             if (!$updated) {
-                throw new \Exception("Can not execute Content update because there is nothing to update in the migration step as defined.");
+                throw new MigrationBundleException("Can not execute Content update because there is nothing to update in the migration step as defined.");
             }
 
             $contentCollection[$key] = $content;
@@ -607,7 +608,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     );
                     break;
                 default:
-                    throw new \Exception("Executor 'content' doesn't support mode '$mode'");
+                    throw new MigrationBundleException("Executor 'content' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {
@@ -684,7 +685,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         foreach ($fields as $fieldIdentifier => $fieldLanguages) {
             foreach ($fieldLanguages as $language => $fieldValue) {
                 if (!isset($contentType->fieldDefinitionsByIdentifier[$fieldIdentifier])) {
-                    throw new \Exception("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
+                    throw new MigrationBundleException("Field '$fieldIdentifier' is not present in content type '{$contentType->identifier}'");
                 }
 
                 $fieldDefinition = $contentType->fieldDefinitionsByIdentifier[$fieldIdentifier];
@@ -812,7 +813,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         }
 
         if ($location->contentInfo->id != $content->id) {
-            throw new \Exception("Can not set main location {$location->id} to content {$content->id} as it belongs to another object");
+            throw new MigrationBundleException("Can not set main location {$location->id} to content {$content->id} as it belongs to another object");
         }
 
         $contentService = $this->repository->getContentService();

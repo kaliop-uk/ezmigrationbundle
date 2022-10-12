@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
@@ -83,7 +84,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         $this->validateResultsCount($roleCollection, $step);
 
         if (count($roleCollection) > 1 && isset($step->dsl['new_name'])) {
-            throw new \Exception("Can not execute Role update because multiple roles match, and a new_name is specified in the dsl.");
+            throw new MigrationBundleException("Can not execute Role update because multiple roles match, and a new_name is specified in the dsl.");
         }
 
         $roleService = $this->repository->getRoleService();
@@ -249,7 +250,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     );
                     break;
                 default:
-                    throw new \Exception("Executor 'role' doesn't support mode '$mode'");
+                    throw new MigrationBundleException("Executor 'role' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {
@@ -259,7 +260,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
 
                     foreach ($policy->getLimitations() as $limitation) {
                         if (!($limitation instanceof Limitation)) {
-                            throw new \Exception("The role contains an invalid limitation for policy {$policy->module}/{$policy->function}, we can not reliably generate its definition.");
+                            throw new MigrationBundleException("The role contains an invalid limitation for policy {$policy->module}/{$policy->function}, we can not reliably generate its definition.");
                         }
                         $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
                     }
@@ -388,7 +389,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     }
                     break;
                 default:
-                    throw new \Exception("Unsupported type '{$assign['type']}'");
+                    throw new MigrationBundleException("Unsupported type '{$assign['type']}'");
             }
         }
     }
@@ -415,7 +416,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     }
                     break;
                 default:
-                    throw new \Exception("Unsupported type '{$assign['type']}'");
+                    throw new MigrationBundleException("Unsupported type '{$assign['type']}'");
             }
         }
     }

@@ -2,7 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\API\Exception;
 
-class MigrationStepExecutionException extends \Exception
+class MigrationStepExecutionException extends MigrationBundleException
 {
     public function __construct($message = "", $step = 0, \Exception $previous = null)
     {

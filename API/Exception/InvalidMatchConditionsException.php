@@ -2,6 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\API\Exception;
 
-class InvalidMatchConditionsException extends \Exception
+class InvalidMatchConditionsException extends MigrationBundleException
 {
 }

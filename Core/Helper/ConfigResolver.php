@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Helper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use Kaliop\eZMigrationBundle\API\ConfigResolverInterface as KMBConfigResolverInterface;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 
 /**
  * Helps with BC: allows a parameter to be defined either as dynamic (siteaccess-aware) or as simple Sf parameter
@@ -32,7 +33,7 @@ class ConfigResolver implements KMBConfigResolverInterface
     {
         $parsed = explode('.', $paramName, 2);
         if (count($parsed) === 1) {
-            throw new \Exception("Parameter '$paramName' is not in the good format for flexible configuration resolving");
+            throw new MigrationBundleException("Parameter '$paramName' is not in the good format for flexible configuration resolving");
         }
 
         if ($this->ezConfigResolver->hasParameter($parsed[1], $parsed[0], $scope)) {

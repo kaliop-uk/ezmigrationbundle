@@ -3,10 +3,12 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+
 /**
  * Command to resume suspended migrations.
  *
@@ -62,10 +64,10 @@ EOT
         if ($migrationName != null) {
             $suspendedMigration = $migrationService->getMigration($migrationName);
             if (!$suspendedMigration) {
-                throw new \Exception("Migration '$migrationName' not found");
+                throw new MigrationBundleException("Migration '$migrationName' not found");
             }
             if ($suspendedMigration->status != Migration::STATUS_SUSPENDED) {
-                throw new \Exception("Migration '$migrationName' is not suspended, can not resume it");
+                throw new MigrationBundleException("Migration '$migrationName' is not suspended, can not resume it");
             }
 
             $suspendedMigrations = array($suspendedMigration);
@@ -100,7 +102,7 @@ EOT
             foreach($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
                 if (count($ref) < 2 || $ref[0] === '') {
-                    throw new \Exception("Invalid reference specification: '$refSpec'");
+                    throw new MigrationBundleException("Invalid reference specification: '$refSpec'");
                 }
                 $forcedRefs[$ref[0]] = $ref[1];
             }

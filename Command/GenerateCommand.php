@@ -12,6 +12,7 @@ use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\MatcherInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Event\MigrationGeneratedEvent;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 
 /**
  * @todo allow passing in more context options, esp. for content/generate migrations
@@ -251,7 +252,7 @@ EOT
                 $template = $migrationType . 'Migration.' . $fileType . '.twig';
                 $templatePath = $this->getApplication()->getKernel()->getBundle($this->thisBundle)->getPath() . '/Resources/views/MigrationTemplate/';
                 if (!is_file($templatePath . $template)) {
-                    throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
+                    throw new MigrationBundleException("The combination of migration type '$migrationType' is not supported with format '$fileType'");
                 }
 
                 $code = $this->getContainer()->get('twig')->render($this->thisBundle . ':MigrationTemplate:' . $template, $parameters);
@@ -268,7 +269,7 @@ EOT
                 // Generate migration file by executor
                 $executors = $this->getGeneratingExecutors();
                 if (!in_array($migrationType, $executors)) {
-                    throw new \Exception("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
+                    throw new MigrationBundleException("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
                 }
                 /** @var MigrationGeneratorInterface $executor */
                 $executor = $this->getMigrationService()->getExecutor($migrationType);
@@ -301,7 +302,7 @@ EOT
                         $code = json_encode($data, JSON_PRETTY_PRINT);
                         break;
                     default:
-                        throw new \Exception("The combination of migration type '$migrationType' is not supported with format '$fileType'");
+                        throw new MigrationBundleException("The combination of migration type '$migrationType' is not supported with format '$fileType'");
                 }
         }
 

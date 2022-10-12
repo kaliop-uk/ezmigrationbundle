@@ -6,6 +6,7 @@ use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 class SQLExecutor extends AbstractExecutor
@@ -70,7 +71,7 @@ class SQLExecutor extends AbstractExecutor
         $dbType = strtolower(preg_replace('/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()->getName()));
 
         if (!isset($step->dsl[$dbType])) {
-            throw new \Exception("Current database type '$dbType' is not supported by the SQL migration");
+            throw new MigrationBundleException("Current database type '$dbType' is not supported by the SQL migration");
         }
         $sql = $step->dsl[$dbType];
 
@@ -92,7 +93,7 @@ class SQLExecutor extends AbstractExecutor
         $dbType = strtolower(preg_replace('/([0-9]+|Platform)/', '', $conn->getDatabasePlatform()->getName()));
 
         if (!isset($step->dsl[$dbType])) {
-            throw new \Exception("Current database type '$dbType' is not supported by the SQL migration");
+            throw new MigrationBundleException("Current database type '$dbType' is not supported by the SQL migration");
         }
         $sql = $step->dsl[$dbType];
 

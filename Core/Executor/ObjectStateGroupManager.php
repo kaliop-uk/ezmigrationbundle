@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
@@ -91,7 +92,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
         $this->validateResultsCount($groupsCollection, $step);
 
         if (count($groupsCollection) > 1 && isset($step->dsl['identifier'])) {
-            throw new \Exception("Can not execute Object State Group update because multiple groups match, and an identifier is specified in the dsl.");
+            throw new MigrationBundleException("Can not execute Object State Group update because multiple groups match, and an identifier is specified in the dsl.");
         }
 
         foreach ($groupsCollection as $objectStateGroup) {
@@ -240,7 +241,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
                     );
                     break;
                 default:
-                    throw new \Exception("Executor 'object_state_group' doesn't support mode '$mode'");
+                    throw new MigrationBundleException("Executor 'object_state_group' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {

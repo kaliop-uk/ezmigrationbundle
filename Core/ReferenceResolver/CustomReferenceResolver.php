@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableReferenceResolverInterface;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ContextProviderInterface;
 
 /**
@@ -35,7 +36,7 @@ class CustomReferenceResolver extends AbstractResolver implements ReferenceResol
     {
         $identifier = $this->getReferenceIdentifier($identifier);
         if (!array_key_exists($identifier, $this->references)) {
-            throw new \Exception("No reference set with identifier '$identifier'");
+            throw new MigrationBundleException("No reference set with identifier '$identifier'");
         }
 
         return $this->references[$identifier];
@@ -53,7 +54,7 @@ class CustomReferenceResolver extends AbstractResolver implements ReferenceResol
     public function addReference($identifier, $value, $overwrite = false)
     {
         if (array_key_exists($identifier, $this->references) && !$overwrite) {
-            throw new \Exception("A reference with identifier '$identifier' already exists");
+            throw new MigrationBundleException("A reference with identifier '$identifier' already exists");
         }
 
         $this->references[$identifier] = $value;

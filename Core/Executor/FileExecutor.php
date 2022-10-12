@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\EmbeddedReferenceResolverBagInterface;
 
@@ -64,7 +65,7 @@ class FileExecutor extends AbstractExecutor
         }
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         if (!file_exists($fileName)) {
-            throw new \Exception("Can not load '$fileName': file missing");
+            throw new MigrationBundleException("Can not load '$fileName': file missing");
         }
 
         $this->setReferences($fileName, $dsl);
@@ -96,7 +97,7 @@ class FileExecutor extends AbstractExecutor
         }
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         if (!file_exists($fileName)) {
-            throw new \Exception("Can not load '$fileName': file missing");
+            throw new MigrationBundleException("Can not load '$fileName': file missing");
         }
 
         $separator = isset($dsl['separator']) ? $this->referenceResolver->resolveReference($dsl['separator']) : ',';
@@ -115,7 +116,7 @@ class FileExecutor extends AbstractExecutor
             }
             fclose($handle);
         } else {
-            throw new \Exception("Can not load '$fileName'");
+            throw new MigrationBundleException("Can not load '$fileName'");
         }
 
         $this->validateResultsCount($data, $step);
@@ -188,7 +189,7 @@ class FileExecutor extends AbstractExecutor
 
         $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($fileName)) {
-            throw new \Exception("Can not save file '$fileName: file already exists");
+            throw new MigrationBundleException("Can not save file '$fileName: file already exists");
         }
 
         $return = file_put_contents($fileName, $contents);
@@ -286,7 +287,7 @@ class FileExecutor extends AbstractExecutor
 
         $fileName = $this->referenceResolver->resolveReference($dsl['from']);
         if (!file_exists($fileName)) {
-            throw new \Exception("Can not copy file '$fileName': file missing");
+            throw new MigrationBundleException("Can not copy file '$fileName': file missing");
         }
 
         $this->setReferences($fileName, $dsl);
@@ -294,11 +295,11 @@ class FileExecutor extends AbstractExecutor
         $to = $this->referenceResolver->resolveReference($dsl['to']);
         $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($to)) {
-            throw new \Exception("Can not copy file to '$to: file already exists");
+            throw new MigrationBundleException("Can not copy file to '$to: file already exists");
         }
 
         if (!copy($fileName, $to)) {
-            throw new \Exception("Can not copy file '$fileName' to '$to': operation failed");
+            throw new MigrationBundleException("Can not copy file '$fileName' to '$to': operation failed");
         }
 
         return true;
@@ -318,7 +319,7 @@ class FileExecutor extends AbstractExecutor
 
         $fileName = $this->referenceResolver->resolveReference($dsl['from']);
         if (!file_exists($fileName)) {
-            throw new \Exception("Can not move file '$fileName': file missing");
+            throw new MigrationBundleException("Can not move file '$fileName': file missing");
         }
 
         $this->setReferences($fileName, $dsl);
@@ -326,11 +327,11 @@ class FileExecutor extends AbstractExecutor
         $to = $this->referenceResolver->resolveReference($dsl['to']);
         $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($to)) {
-            throw new \Exception("Can not move to '$to': file already exists");
+            throw new MigrationBundleException("Can not move to '$to': file already exists");
         }
 
         if (!rename($fileName, $to)) {
-            throw new \Exception("Can not move file '$fileName': operation failed");
+            throw new MigrationBundleException("Can not move file '$fileName': operation failed");
         }
 
         return true;
@@ -350,13 +351,13 @@ class FileExecutor extends AbstractExecutor
 
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         if (!file_exists($fileName)) {
-            throw new \Exception("Can not move delete '$fileName': file missing");
+            throw new MigrationBundleException("Can not move delete '$fileName': file missing");
         }
 
         $this->setReferences($fileName, $dsl);
 
         if (!unlink($fileName)) {
-            throw new \Exception("Can not delete file '$fileName': operation failed");
+            throw new MigrationBundleException("Can not delete file '$fileName': operation failed");
         }
 
         return true;
@@ -378,7 +379,7 @@ class FileExecutor extends AbstractExecutor
         $stats = stat($fileName);
 
         if (!$stats) {
-            throw new \Exception("Can not set references for file '$fileName': stat failed");
+            throw new MigrationBundleException("Can not set references for file '$fileName': stat failed");
         }
 
         foreach ($dsl['references'] as $key => $reference) {

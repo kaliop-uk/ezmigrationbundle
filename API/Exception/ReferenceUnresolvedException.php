@@ -2,6 +2,6 @@
 
 namespace Kaliop\eZMigrationBundle\API\Exception;
 
-class ReferenceUnresolvedException extends \Exception
+class ReferenceUnresolvedException extends MigrationBundleException
 {
 }

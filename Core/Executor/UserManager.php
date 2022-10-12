@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\User\User;
 use Kaliop\eZMigrationBundle\API\Collection\UserCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\UserMatcher;
 
@@ -108,7 +109,7 @@ class UserManager extends RepositoryExecutor
         $this->validateResultsCount($userCollection, $step);
 
         if (count($userCollection) > 1 && isset($step->dsl['email'])) {
-            throw new \Exception("Can not execute User update because multiple users match, and an email section is specified in the dsl.");
+            throw new MigrationBundleException("Can not execute User update because multiple users match, and an email section is specified in the dsl.");
         }
 
         $userService = $this->repository->getUserService();

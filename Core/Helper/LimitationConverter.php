@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Helper;
 
 use eZ\Publish\API\Repository\Values\User\Limitation;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\Core\Matcher\LocationMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeMatcher;
@@ -112,7 +113,7 @@ class LimitationConverter
                 $siteAccesses = array_flip($this->siteAccessList);
                 foreach ($values as $value) {
                     if (!isset($siteAccesses[$value])) {
-                        throw new \Exception("SiteAccess '$value' is not configured");
+                        throw new MigrationBundleException("SiteAccess '$value' is not configured");
                     }
                     $retValues[] = (string)$siteAccesses[$value];
                 }

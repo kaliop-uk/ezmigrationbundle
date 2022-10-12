@@ -6,6 +6,7 @@ use Kaliop\eZMigrationBundle\API\LoaderInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
 use Kaliop\eZMigrationBundle\API\ConfigResolverInterface;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -104,7 +105,7 @@ class Filesystem implements LoaderInterface
                     }
                 }
             } else {
-                throw new \Exception("Path '$path' is neither a file nor directory");
+                throw new MigrationBundleException("Path '$path' is neither a file nor directory");
             }
         }
         ksort($definitions);

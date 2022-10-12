@@ -3,9 +3,10 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PHPExecutor extends BasePHPExecutor
 {
@@ -95,7 +96,7 @@ class PHPExecutor extends BasePHPExecutor
         }
 
         if (!class_exists($class)) {
-            throw new \Exception("Class '$class' for php migration step does not exist");
+            throw new MigrationBundleException("Class '$class' for php migration step does not exist");
         }
 
         if (!isset($dsl['method'])) {

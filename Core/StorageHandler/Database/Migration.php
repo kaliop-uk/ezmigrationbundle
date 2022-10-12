@@ -9,6 +9,7 @@ use eZ\Publish\Core\Persistence\Database\QueryException;
 use eZ\Publish\Core\Persistence\Database\SelectQuery;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationCollection;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\Value\Migration as APIMigration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 
@@ -168,7 +169,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         try {
             $conn->insert($this->tableName, $this->migrationToArray($migration));
         } catch (UniqueConstraintViolationException $e) {
-            throw new \Exception("Migration '{$migrationDefinition->name}' already exists");
+            throw new MigrationBundleException("Migration '{$migrationDefinition->name}' already exists");
         }
 
         return $migration;
@@ -205,7 +206,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
     public function endMigration(APIMigration $migration, $force = false)
     {
         if ($migration->status == APIMigration::STATUS_STARTED) {
-            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be ended as its status is 'started'...");
+            throw new MigrationBundleException($this->getEntityName($migration)." '{$migration->name}' can not be ended as its status is 'started'...");
         }
 
         $this->createTableIfNeeded();
@@ -232,13 +233,13 @@ class Migration extends TableStorage implements StorageHandlerInterface
         if (!is_array($existingMigrationData)) {
             // commit to release the lock
             $conn->commit();
-            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be ended as it is not found");
+            throw new MigrationBundleException($this->getEntityName($migration)." '{$migration->name}' can not be ended as it is not found");
         }
 
         if (($existingMigrationData['status'] != APIMigration::STATUS_STARTED) && !$force) {
             // commit to release the lock
             $conn->commit();
-            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be ended as it is not executing");
+            throw new MigrationBundleException($this->getEntityName($migration)." '{$migration->name}' can not be ended as it is not executing");
         }
 
         $conn->update(
@@ -316,19 +317,19 @@ class Migration extends TableStorage implements StorageHandlerInterface
             if ($existingMigrationData['status'] == APIMigration::STATUS_STARTED) {
                 // commit to release the lock
                 $conn->commit();
-                throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it is already executing");
+                throw new MigrationBundleException("Migration '{$migrationDefinition->name}' can not be $action as it is already executing");
             }
             // fail if it was already already done, unless in 'force' mode
             if (!$force) {
                 if ($existingMigrationData['status'] == APIMigration::STATUS_DONE) {
                     // commit to release the lock
                     $conn->commit();
-                    throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already executed");
+                    throw new MigrationBundleException("Migration '{$migrationDefinition->name}' can not be $action as it was already executed");
                 }
                 if ($existingMigrationData['status'] == APIMigration::STATUS_SKIPPED) {
                     // commit to release the lock
                     $conn->commit();
-                    throw new \Exception("Migration '{$migrationDefinition->name}' can not be $action as it was already skipped");
+                    throw new MigrationBundleException("Migration '{$migrationDefinition->name}' can not be $action as it was already skipped");
                 }
             }
 
@@ -394,7 +395,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         if (!is_array($existingMigrationData)) {
             // commit immediately, to release the lock and avoid deadlocks
             $conn->commit();
-            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be resumed as it is not found");
+            throw new MigrationBundleException($this->getEntityName($migration)." '{$migration->name}' can not be resumed as it is not found");
         }
 
         // migration exists
@@ -403,7 +404,7 @@ class Migration extends TableStorage implements StorageHandlerInterface
         if ($existingMigrationData['status'] != APIMigration::STATUS_SUSPENDED) {
             // commit to release the lock
             $conn->commit();
-            throw new \Exception($this->getEntityName($migration)." '{$migration->name}' can not be resumed as it is not suspended");
+            throw new MigrationBundleException($this->getEntityName($migration)." '{$migration->name}' can not be resumed as it is not suspended");
         }
 
         $migration = new APIMigration(

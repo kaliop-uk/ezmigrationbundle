@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\KeyMatcherInterface;
 
 /**
@@ -64,7 +65,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     public function matchTag(array $conditions, $tolerateMisses = false)
     {
         if ($this->tagService == null) {
-            throw new \Exception('Netgen TAG Bundle is required to use tag matching');
+            throw new MigrationBundleException('Netgen TAG Bundle is required to use tag matching');
         }
 
         $this->validateConditions($conditions);

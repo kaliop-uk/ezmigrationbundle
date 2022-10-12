@@ -5,6 +5,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ContentTypeGroupCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ContentTypeGroupMatcher;
@@ -218,7 +219,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
                         );
                     break;
                 default:
-                    throw new \Exception("Executor 'content_type_group' doesn't support mode '$mode'");
+                    throw new MigrationBundleException("Executor 'content_type_group' doesn't support mode '$mode'");
             }
 
             $data[] = $contentTypeGroupData;

@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ObjectState\ObjectState;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
@@ -107,7 +108,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
         $this->validateResultsCount($stateCollection, $step);
 
         if (count($stateCollection) > 1 && isset($step->dsl['identifier'])) {
-            throw new \Exception("Can not execute Object State update because multiple states match, and an identifier is specified in the dsl.");
+            throw new MigrationBundleException("Can not execute Object State update because multiple states match, and an identifier is specified in the dsl.");
         }
 
         $objectStateService = $this->repository->getObjectStateService();
@@ -260,7 +261,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
                     );
                     break;
                 default:
-                    throw new \Exception("Executor 'object_state_group' doesn't support mode '$mode'");
+                    throw new MigrationBundleException("Executor 'object_state_group' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {

@@ -2,11 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
+use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use eZ\Publish\API\Repository\Repository;
 use Kaliop\eZMigrationBundle\API\Collection\MigrationDefinitionCollection;
 use Kaliop\eZMigrationBundle\API\StorageHandlerInterface;
 use Kaliop\eZMigrationBundle\API\LoaderInterface;
@@ -17,6 +16,7 @@ use Kaliop\eZMigrationBundle\API\Value\Migration;
 use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepExecutionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationAbortedException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationSuspendedException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
 use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
@@ -24,6 +24,7 @@ use Kaliop\eZMigrationBundle\API\Event\BeforeStepExecutionEvent;
 use Kaliop\eZMigrationBundle\API\Event\StepExecutedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationAbortedEvent;
 use Kaliop\eZMigrationBundle\API\Event\MigrationSuspendedEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class MigrationService implements ContextProviderInterface
 {
@@ -285,7 +286,7 @@ class MigrationService implements ContextProviderInterface
             }
         }
 
-        throw new \Exception("No parser available to parse migration definition '{$migrationDefinition->name}'");
+        throw new MigrationBundleException("No parser available to parse migration definition '{$migrationDefinition->name}'");
     }
 
     /**
@@ -309,7 +310,7 @@ class MigrationService implements ContextProviderInterface
         }
 
         if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-            throw new \Exception("Can not execute " . $this->getEntityName($migrationDefinition). " '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
+            throw new MigrationBundleException("Can not execute " . $this->getEntityName($migrationDefinition). " '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
         /// @todo add support for setting in $migrationContext a userContentType, userGroupContentType ?
@@ -480,12 +481,12 @@ class MigrationService implements ContextProviderInterface
     public function resumeMigration(Migration $migration, $useTransaction = true, array $forcedReferences = array())
     {
         if ($migration->status != Migration::STATUS_SUSPENDED) {
-            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': it is not in suspended status");
+            throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': it is not in suspended status");
         }
 
         $migrationDefinitions = $this->getMigrationsDefinitions(array($migration->path));
         if (!count($migrationDefinitions)) {
-            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': its definition is missing");
+            throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': its definition is missing");
         }
 
         $defs = $migrationDefinitions->getArrayCopy();
@@ -493,7 +494,7 @@ class MigrationService implements ContextProviderInterface
 
         $migrationDefinition = $this->parseMigrationDefinition($migrationDefinition);
         if ($migrationDefinition->status == MigrationDefinition::STATUS_INVALID) {
-            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': {$migrationDefinition->parsingError}");
+            throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': {$migrationDefinition->parsingError}");
         }
 
         // restore context
@@ -506,11 +507,11 @@ class MigrationService implements ContextProviderInterface
         }
 
         if (!isset($this->migrationContext[$migration->name])) {
-            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is missing");
+            throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is missing");
         }
         $restoredContext = $this->migrationContext[$migration->name];
         if (!is_array($restoredContext) || !isset($restoredContext['context']) || !isset($restoredContext['step'] )) {
-            throw new \Exception("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is invalid");
+            throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is invalid");
         }
 
         // update migration status

@@ -5,7 +5,7 @@ namespace Kaliop\eZMigrationBundle\API\Exception;
 /**
  * Throw this exception in any step when in a loop, and you want the loop to move to the next iteration
  */
-class LoopContinueException extends \Exception
+class LoopContinueException extends MigrationBundleException
 {
     public function __construct($message = "", $code = 0, \Exception $previous = null)
     {

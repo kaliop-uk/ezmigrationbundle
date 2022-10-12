@@ -2,6 +2,7 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverInterface;
 
 class ChainRegexpResolver extends ChainResolver implements RegexpBasedResolverInterface
@@ -9,7 +10,7 @@ class ChainRegexpResolver extends ChainResolver implements RegexpBasedResolverIn
     public function addResolver(ReferenceResolverInterface $resolver)
     {
         if (!$resolver instanceof RegexpBasedResolverInterface) {
-            throw new \Exception("Can not add resolver of class " . get_class($resolver) . " to a chain regexp resolver");
+            throw new MigrationBundleException("Can not add resolver of class " . get_class($resolver) . " to a chain regexp resolver");
         }
 
         parent::addResolver($resolver);

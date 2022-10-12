@@ -2,6 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\Core\ReferenceResolver;
 
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
+
 /**
  * A class which eases creating reference resolvers based on prefix strings.
  */
@@ -83,6 +85,6 @@ abstract class PrefixBasedResolver implements PrefixBasedResolverInterface
                 return array('prefix' => $prefix, 'identifier' => preg_replace($regexp, '', $stringIdentifier));
             }
         }
-        throw new \Exception("Can not match reference with identifier '$stringIdentifier'");
+        throw new MigrationBundleException("Can not match reference with identifier '$stringIdentifier'");
     }
 }
