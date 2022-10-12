@@ -1,0 +1,64 @@
+# This migration shows an example implementation of 'upsert' logic, which is: create an item if it does not yet exist,
+# and update it to match the desired representation if it already exists.
+#
+# A lot of implementation details are worthy of note. Most of them originate from the fact that many items in the CMS
+# repository are complex entities which do not behave the same way as a single row of data does in a database table:
+#
+# - it is up to the user to decide what is the identifier used to discriminate between an existing or non-existing item.
+#   It could be the content id, its remote-id, a combination of parent-location-id and name, etc. In any case, care
+#   should be taken so that the identifier will only ever match either 0 or 1 items, but not more
+#
+# - in order to guarantee that the same result is obtained in both the 'creation' and the 'update' cases of the upsert,
+#   all properties of the item should be specified in the migration. For Content items this includes f.e. the remote-id,
+#   section-id, etc... It is left to the user to decide if properties such as last-modification-date should also be updated
+#   or not
+#
+# - when the item to be modified is a Content, there are multiple strategies which could be picked up for the 'update'
+#   part of the upsert. Fe. we could delete the existing content and create a new one it its place, but that would loose
+#   all existing children. Or we could first create a new content then and use the `swap` action to replace the one at
+#   its current location, but that would wreak havoc in all configuration parameters based on the content-id.
+#   Finally, we can use the most simple way, which is to use an `update` action. But even that has some limitations, as
+#   it can not be used to update the content-type
+#
+# - also: what about multilocated Contents: should an upsert operation include making sure that a Content's locations
+#   are all exactly as specified, and remove any existing extra location, or should that be left to a separate migration?
+
+-
+    type: content
+    mode: update
+    # In this case the identifier chosen for the item is the remote-id
+    match:
+        # to avoid typing mistakes in repeating twice the values of rid etc., we use yaml's anchor/alias system
+        content_remote_id: &rid xxx
+    # To avoid repeating the list of attributes twice, we also use yaml's anchor/alias system
+    attributes: &attrs
+        # NB: this list should include _all_ attributes for the given contenType
+        attribute1: value1
+        attribute2: value2
+    # Here, add any other property that you want to make sure has a specific value, in case the current content has a
+    # different value instead. Eg: always_available, lang, object_states, owner, priority, section, etc...
+    # Since we used the remote-id as identifier, no need to try to update it
+    section: &sn 1
+    always_available: &aa true
+    # ...
+    # This avoids an exception to be thrown if there are no matching contents
+    match_tolerate_misses: true
+    # We set a reference to the number of updated items, to be used in the next steps
+    references:
+        matched: count
+
+-
+    type: content
+    mode: create
+    content_type: my_special_folder
+    parent_location: 222
+    remote_id: *rid
+    attributes: *attrs
+    section: *sn
+    always_available: *aa
+    # Here, add any other property that you want to make sure has a specific value. At the very least, this should
+    # include all properties specified in the `update` step above
+    # ...
+    if:
+        "reference:matched":
+            eq: 0
