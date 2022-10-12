@@ -394,7 +394,7 @@ Example command to create such a migration:
 
 A: this is most likely due to using a bad language configuration
 
-### Are there examples of common tasks requiring complex migrations?
+### Are there examples of implementing common tasks which require complex migrations?
 
 A: yes, please take a look in folder [Resources/doc/Cookbook/](Resources/doc/Cookbook/)
 
