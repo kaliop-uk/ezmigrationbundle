@@ -2,14 +2,15 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
+use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
-use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
-use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 use Netgen\TagsBundle\API\Repository\Values\Tags\Tag;
+
 /**
  * Handles tag migrations.
  */
@@ -337,7 +338,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'tag' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'tag' doesn't support mode '$mode'");
             }
 
             $data[] = $tagData;

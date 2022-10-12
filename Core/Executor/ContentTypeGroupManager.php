@@ -219,7 +219,7 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
                         );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'content_type_group' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'content_type_group' doesn't support mode '$mode'");
             }
 
             $data[] = $contentTypeGroupData;

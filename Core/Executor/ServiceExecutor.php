@@ -2,10 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ServiceExecutor extends BasePHPExecutor
 {

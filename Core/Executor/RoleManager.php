@@ -2,17 +2,17 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use eZ\Publish\API\Repository\Values\User\Role;
 use eZ\Publish\API\Repository\RoleService;
 use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Values\User\Limitation;
+use eZ\Publish\API\Repository\Values\User\Role;
 use Kaliop\eZMigrationBundle\API\Collection\RoleCollection;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
-use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter;
 use Kaliop\eZMigrationBundle\Core\Matcher\RoleMatcher;
-use eZ\Publish\API\Repository\Values\User\Limitation;
 
 /**
  * Handles role migrations.
@@ -250,7 +250,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'role' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'role' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {
@@ -389,7 +389,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     }
                     break;
                 default:
-                    throw new MigrationBundleException("Unsupported type '{$assign['type']}'");
+                    throw new InvalidStepDefinitionException("Unsupported type '{$assign['type']}'");
             }
         }
     }
@@ -416,7 +416,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     }
                     break;
                 default:
-                    throw new MigrationBundleException("Unsupported type '{$assign['type']}'");
+                    throw new InvalidStepDefinitionException("Unsupported type '{$assign['type']}'");
             }
         }
     }

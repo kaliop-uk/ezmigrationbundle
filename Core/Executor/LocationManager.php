@@ -221,14 +221,15 @@ class LocationManager extends RepositoryExecutor
             if (isset($step->dsl['is_main'])) {
                 $this->setMainLocation($location);
 
-                //have to reload the location so that correct data can be set as reference
+                // have to reload the location so that correct data can be set as reference
                 $location = $locationService->loadLocation($location->id);
 
                 $updated = true;
             }
 
             if (!$updated) {
-                throw new MigrationBundleException("Can not execute Location update because there is nothing to update in the migration step as defined.");
+                /// @todo check: should we throw before executing changes?
+                throw new InvalidStepDefinitionException("Can not execute Location update because there is nothing to update in the migration step as defined.");
             }
 
             $locationCollection[$key] = $location;

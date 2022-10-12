@@ -130,6 +130,7 @@ class ReferenceExecutor extends AbstractExecutor
         }
 
         if (!is_array($data)) {
+            // the error is not in the step definition here, but rather in the data file
             throw new MigrationBundleException("Invalid step definition: file does not contain an array of key/value pairs");
         }
 
@@ -160,6 +161,7 @@ class ReferenceExecutor extends AbstractExecutor
         $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
 
         if (is_file($fileName) && !$overwrite) {
+            // the error is not in the step definition, really, but in external circumstances
             throw new MigrationBundleException("Invalid step definition: file '$fileName' for saving references already exists");
         }
 
@@ -194,7 +196,7 @@ class ReferenceExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Invalid step definition: miss 'identifier' for dumping reference");
         }
         if (!$this->referenceResolver->isReference($dsl['identifier'])) {
-            throw new MigrationBundleException("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");
+            throw new InvalidStepDefinitionException("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");
         }
         if (isset($context['output']) && $context['output'] instanceof OutputInterface && $context['output']->isQuiet()) {
             return $this->referenceResolver->resolveReference($dsl['identifier']);

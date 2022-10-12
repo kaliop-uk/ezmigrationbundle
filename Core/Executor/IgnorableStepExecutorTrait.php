@@ -2,8 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
-use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationStepSkippedException;
+use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 trait IgnorableStepExecutorTrait
 {

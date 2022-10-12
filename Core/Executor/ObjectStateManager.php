@@ -3,13 +3,13 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\ObjectState\ObjectState;
+use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateMatcher;
-use Kaliop\eZMigrationBundle\API\Collection\ObjectStateCollection;
-use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
-use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 
 /**
  * Handles object-state migrations.
@@ -261,7 +261,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'object_state_group' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'object_state_group' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {

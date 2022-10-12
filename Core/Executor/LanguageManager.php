@@ -245,7 +245,7 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'language' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'language' doesn't support mode '$mode'");
             }
 
             $data[] = $languageData;

@@ -315,7 +315,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             }
 
             if (!$updated) {
-                throw new MigrationBundleException("Can not execute Content update because there is nothing to update in the migration step as defined.");
+                /// @todo check: should we not throw before attempting to make any changes, in case the migration is run without transactions?
+                throw new InvalidStepDefinitionException("Can not execute Content update because there is nothing to update in the migration step as defined.");
             }
 
             $contentCollection[$key] = $content;
@@ -608,7 +609,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'content' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'content' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {

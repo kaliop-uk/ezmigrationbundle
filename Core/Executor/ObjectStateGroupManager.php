@@ -6,9 +6,9 @@ use eZ\Publish\API\Repository\Values\ObjectState\ObjectStateGroup;
 use Kaliop\eZMigrationBundle\API\Collection\ObjectStateGroupCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
-use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
-use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
 use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
+use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
+use Kaliop\eZMigrationBundle\Core\Matcher\ObjectStateGroupMatcher;
 
 /**
  * Handles object-state-group migrations.
@@ -241,7 +241,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'object_state_group' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'object_state_group' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {

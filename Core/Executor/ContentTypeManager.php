@@ -19,7 +19,7 @@ use Kaliop\eZMigrationBundle\Core\FieldHandlerManager;
 use JmesPath\Env as JmesPath;
 
 /**
- * Handles content type migrations
+ * Handles content type migrations.
  */
 class ContentTypeManager extends RepositoryExecutor implements MigrationGeneratorInterface, EnumerableMatcherInterface
 {
@@ -507,7 +507,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'content_type' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'content_type' doesn't support mode '$mode'");
             }
 
             if ($mode != 'delete') {

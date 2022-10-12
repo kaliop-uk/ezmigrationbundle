@@ -63,21 +63,21 @@ class MigrationDefinitionExecutor extends AbstractExecutor
     protected function generate($dsl, $context)
     {
         if (!isset($dsl['migration_type'])) {
-            throw new MigrationBundleException("Invalid step definition: miss 'migration_type'");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'migration_type'");
         }
         $migrationType = $this->referenceResolver->resolveReference($dsl['migration_type']);
         if (!isset($dsl['migration_mode'])) {
-            throw new MigrationBundleException("Invalid step definition: miss 'migration_mode'");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'migration_mode'");
         }
         $migrationMode = $this->referenceResolver->resolveReference($dsl['migration_mode']);
         if (!isset($dsl['match']) || !is_array($dsl['match'])) {
-            throw new MigrationBundleException("Invalid step definition: miss 'match' to determine what to generate migration definition for");
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'match' to determine what to generate migration definition for");
         }
         $match = $dsl['match'];
 
         $executors = $this->getGeneratingExecutors();
         if (!in_array($migrationType, $executors)) {
-            throw new MigrationBundleException("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
+            throw new InvalidStepDefinitionException("It is not possible to generate a migration of type '$migrationType': executor not found or not a generator");
         }
         /** @var MigrationGeneratorInterface $executor */
         $executor = $this->migrationService->getExecutor($migrationType);
@@ -149,7 +149,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
                 $code = json_encode($definition, JSON_PRETTY_PRINT);
                 break;
             default:
-                throw new MigrationBundleException("Can not save migration definition to a file of type '$ext'");
+                throw new InvalidStepDefinitionException("Can not save migration definition to a file of type '$ext'");
         }
 
         $dir = dirname($fileName);

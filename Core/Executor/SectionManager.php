@@ -4,10 +4,10 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use eZ\Publish\API\Repository\Values\Content\Section;
 use Kaliop\eZMigrationBundle\API\Collection\SectionCollection;
+use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\MigrationGeneratorInterface;
-use Kaliop\eZMigrationBundle\API\EnumerableMatcherInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\SectionMatcher;
 
 /**
@@ -224,7 +224,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
                     );
                     break;
                 default:
-                    throw new MigrationBundleException("Executor 'section' doesn't support mode '$mode'");
+                    throw new InvalidStepDefinitionException("Executor 'section' doesn't support mode '$mode'");
             }
 
             $data[] = $sectionData;
