@@ -174,6 +174,7 @@ class SQLExecutor extends AbstractExecutor
                     if (count($result)) {
                         $colName = substr($reference['attribute'], 8);
                         if (!isset($result[0][$colName])) {
+                            /// @todo use a MigrationBundleException ?
                             throw new \InvalidArgumentException('Sql Executor does not support setting references for attribute ' . $reference['attribute']);
                         }
                         $value = array_column($result, $colName);

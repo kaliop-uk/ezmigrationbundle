@@ -60,7 +60,6 @@ abstract class BasePHPExecutor extends AbstractExecutor
                 case 'exception_line':
                     $value = $exception ? $exception->getLine() : null;
                     break;
-
                 default:
                     throw new InvalidStepDefinitionException('Service executor does not support setting references for attribute ' . $reference['attribute']);
             }

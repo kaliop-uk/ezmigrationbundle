@@ -436,6 +436,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         $fieldDefinition = $contentType->getFieldDefinition($fieldIdentifier);
                         $hashValue = $this->fieldDefinitionToHash($contentType, $fieldDefinition, $step->context);
                         if (count($parts) == 2 && $fieldIdentifier === $parts[1]) {
+                            /// @todo use a MigrationBundleException ?
                             throw new \InvalidArgumentException('Content Type Manager does not support setting references for attribute ' . $reference['attribute'] . ': please specify an attribute definition sub element');
                         }
                         $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));

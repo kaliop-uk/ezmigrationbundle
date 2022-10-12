@@ -439,6 +439,7 @@ class FileExecutor extends AbstractExecutor
                     if (count($data)) {
                         $colNum = substr($reference['attribute'], 7);
                         if (!isset($data[0][$colNum])) {
+                            /// @todo use a MigrationBundleException ?
                             throw new \InvalidArgumentException('File Executor does not support setting references for attribute ' . $reference['attribute']);
                         }
                         $value = array_column($data, $colNum);

@@ -497,12 +497,14 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             if (is_array($value)) {
                                 foreach ($hashValue as $subValue) {
                                     if (is_array($subValue) || is_object($subValue)) {
+                                        /// @todo use a MigrationBundleException ?
                                         throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given value is an array with a non scalar element');
                                     }
                                 }
                             }
                         } else {
                             if (count($parts) > 2) {
+                                /// @todo use a MigrationBundleException ?
                                 throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given attribute has a scalar value');
                             }
                             $value = $hashValue;

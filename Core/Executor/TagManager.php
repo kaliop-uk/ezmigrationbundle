@@ -241,7 +241,6 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
                 case 'remote_id':
                     $value = $tag->remoteId;
                     break;
-
                 default:
                     throw new InvalidStepDefinitionException('Tag Manager does not support setting references for attribute ' . $reference['attribute']);
             }
