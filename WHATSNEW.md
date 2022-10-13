@@ -1,5 +1,5 @@
-Version 6.1.0 (unreleased)
-==========================
+Version 6.1.0
+=============
 
 * New: when matching contents, it is now possible to filter based on empty fields, eg:
 
