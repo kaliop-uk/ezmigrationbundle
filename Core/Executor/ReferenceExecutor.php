@@ -91,7 +91,7 @@ class ReferenceExecutor extends AbstractExecutor
             }
         }
 
-        $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
+        $overwrite = isset($dsl['overwrite']) ? $dsl['overwrite'] : false;
         $this->referenceResolver->addReference($dsl['identifier'], $value, $overwrite);
 
         return $value;
@@ -105,7 +105,7 @@ class ReferenceExecutor extends AbstractExecutor
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
-        $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
+        $overwrite = isset($dsl['overwrite']) ? $dsl['overwrite'] : false;
 
         if (!is_file($fileName) && is_file(dirname($context['path']) . '/references/' . $fileName)) {
             $fileName = dirname($context['path']) . '/references/' . $fileName;
@@ -158,7 +158,7 @@ class ReferenceExecutor extends AbstractExecutor
         $fileName = $this->referenceResolver->resolveReference($dsl['file']);
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
-        $overwrite = isset($dsl['overwrite']) ? $overwrite = $dsl['overwrite'] : false;
+        $overwrite = isset($dsl['overwrite']) ? $dsl['overwrite'] : false;
 
         if (is_file($fileName) && !$overwrite) {
             // the error is not in the step definition, really, but in external circumstances
