@@ -97,6 +97,7 @@ jobs:
                 run: |
                     ./teststack/bin/runtests.sh -c coverage.clover
                     if [ -f coverage.clover ]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+                    if [ -f coverage.clover ]; then curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov && ./codecov -t ${CODECOV_TOKEN} -f coverage.clover; fi
             -
                 if: ${{ matrix.php != '7.4' }}
                 run: './teststack/bin/runtests.sh'
