@@ -261,7 +261,7 @@ EOT
      */
     protected function sortMigrationIndex(array &$index, $sortBy)
     {
-        switch($sortBy) {
+        switch ($sortBy) {
             case 'execution':
                 uasort($index, function($m1, $m2) {
                     if (isset($m1['migration']) && $m1['migration']->executionDate !== null) {

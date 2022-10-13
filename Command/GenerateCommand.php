@@ -162,7 +162,7 @@ EOT
         }
 
         // allow to generate migrations for many entities
-        if (strpos($matchValue, ',') !== false ) {
+        if (strpos($matchValue, ',') !== false) {
             $matchValue = explode(',', $matchValue);
         }
 

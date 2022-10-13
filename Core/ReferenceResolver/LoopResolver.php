@@ -36,7 +36,7 @@ class LoopResolver extends AbstractResolver implements EnumerableReferenceResolv
      */
     public function getReferenceValue($identifier)
     {
-        switch(substr($identifier, 5)) {
+        switch (substr($identifier, 5)) {
             case 'iteration':
                 $current = end($this->stack);
                 return $current['step'];

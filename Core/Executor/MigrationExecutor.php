@@ -147,7 +147,7 @@ class MigrationExecutor extends AbstractExecutor
         }
         $step = new MigrationStep($dsl['type'], $dsl, $context);
 
-        switch($dsl['type']) {
+        switch ($dsl['type']) {
             case 'content':
                 return $this->contentManager->execute($step);
             case 'location':

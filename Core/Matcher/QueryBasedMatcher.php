@@ -155,7 +155,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
                     return new Query\Criterion\Field($attribute, self::$operatorsMap[$operator], $match);
                 } else {
                     /// @todo make the list of unary operators more flexible
-                    switch($spec) {
+                    switch ($spec) {
                         case 'empty':
                             return new Query\Criterion\IsFieldEmpty($attribute);
                         default:
@@ -301,7 +301,7 @@ abstract class QueryBasedMatcher extends RepositoryMatcher
 
             $direction = $this->hash2SortOrder($sortItem['sort_order']);
 
-            switch($sortItem['sort_field']) {
+            switch ($sortItem['sort_field']) {
                 case self::SORT_CONTENT_ID:
                     $out[] = new SortClause\ContentId($direction);
                     break;

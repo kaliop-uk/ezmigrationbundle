@@ -100,7 +100,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
             } else if (strpos($path, './') === 0) {
                 $paths[$i] = substr($path, 2);
             // q: should we also call realpath on $path? what if there are symlinks at play?
-            } elseif (strpos($path, $rootDir) === 0 ) {
+            } elseif (strpos($path, $rootDir) === 0) {
                 $paths[$i] = substr($path, strlen($rootDir));
             } elseif ($path === '') {
                 unset($paths[$i]);

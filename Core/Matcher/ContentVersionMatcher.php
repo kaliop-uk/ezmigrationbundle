@@ -204,7 +204,7 @@ class ContentVersionMatcher extends RepositoryMatcher implements MatcherInterfac
         $i = 0;
         foreach ($contentVersions as $versionKey => $versionInfo) {
             foreach ($values as $acceptedVersionNo) {
-                if ($acceptedVersionNo > 0 ) {
+                if ($acceptedVersionNo > 0) {
                     if ($acceptedVersionNo == $versionInfo->versionNo) {
                         $versions[$versionKey] = $versionInfo;
                         break;

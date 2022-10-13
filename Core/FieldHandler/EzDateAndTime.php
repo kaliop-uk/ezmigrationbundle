@@ -78,6 +78,6 @@ class EzDateAndTime extends AbstractFieldHandler implements FieldValueConverterI
         if (0 != $dateInterval->s) {
             $format[] = $dateInterval->s.' seconds';
         }
-        return implode( ', ', $format);
+        return implode(', ', $format);
     }
 }

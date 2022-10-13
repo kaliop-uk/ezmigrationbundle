@@ -262,7 +262,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
         // allow setting *some* refs even when we have 0 or N matches
         foreach ($referencesDefinition as $key => $reference) {
             $reference = $this->parseReferenceDefinition($key, $reference);
-            switch($reference['attribute']) {
+            switch ($reference['attribute']) {
 
                 case 'count':
                     $value = count($entity);

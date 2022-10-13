@@ -510,7 +510,7 @@ class MigrationService implements ContextProviderInterface
             throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is missing");
         }
         $restoredContext = $this->migrationContext[$migration->name];
-        if (!is_array($restoredContext) || !isset($restoredContext['context']) || !isset($restoredContext['step'] )) {
+        if (!is_array($restoredContext) || !isset($restoredContext['context']) || !isset($restoredContext['step'])) {
             throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is invalid");
         }
 
@@ -532,7 +532,7 @@ class MigrationService implements ContextProviderInterface
      * @param bool|null $forceSigchildEnabled
      * @return array
      */
-    protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null, $forceSigchildEnabled = null )
+    protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null, $forceSigchildEnabled = null)
     {
         $properties = array();
 

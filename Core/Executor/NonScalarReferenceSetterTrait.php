@@ -37,7 +37,7 @@ trait NonScalarReferenceSetterTrait
         // q2: why not just check for Countable interface instead of AbstractCollection? Or at least allow ArrayIterators and ObjectIterators
         if (is_array($results) || $results instanceof AbstractCollection) {
             $expectedResultsCount = $this->expectedResultsCount($step);
-            switch($expectedResultsCount) {
+            switch ($expectedResultsCount) {
                 case self::$EXPECT_UNSPECIFIED:
                 case self::$EXPECT_ANY:
                     break;
@@ -62,7 +62,7 @@ trait NonScalarReferenceSetterTrait
      */
     protected function expectedResultsType($step)
     {
-        switch($this->expectedResultsCount($step)) {
+        switch ($this->expectedResultsCount($step)) {
             case 1:
                 return self::$RESULT_TYPE_SINGLE;
             case 0:
@@ -104,7 +104,7 @@ trait NonScalarReferenceSetterTrait
 
         // BC
         if (isset($step->dsl['references_type'])) {
-            switch($step->dsl['references_type']) {
+            switch ($step->dsl['references_type']) {
                 case 'array':
                     return self::$EXPECT_ANY;
                 case 'scalar':
