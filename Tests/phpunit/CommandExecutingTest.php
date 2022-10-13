@@ -139,7 +139,8 @@ abstract class CommandExecutingTestBase extends KernelTestCase
 // Auto-adapt to PHPUnit 8 that added a `void` return-type to the setUp/tearDown methods
 /// @todo check: can we leave this to the parent class from Symfony?
 if (method_exists(\ReflectionMethod::class, 'hasReturnType') && (new \ReflectionMethod(TestCase::class, 'tearDown'))->hasReturnType()) {
-    abstract class CommandExecutingTest extends CommandExecutingTestBase
+    // eval is required for php 5.6 compatibility
+    eval('abstract class CommandExecutingTest extends CommandExecutingTestBase
     {
         protected function setUp(): void
         {
@@ -150,7 +151,7 @@ if (method_exists(\ReflectionMethod::class, 'hasReturnType') && (new \Reflection
         {
             $this->doTearDown();
         }
-    }
+    }');
 }else {
     abstract class CommandExecutingTest extends CommandExecutingTestBase
     {
