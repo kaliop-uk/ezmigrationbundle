@@ -31,7 +31,7 @@
         "mtdowling/jmespath.php": "2.*"
     },
     "require-dev": {
-        "mikey179/vfsStream": "~1.2.0",
+        "mikey179/vfsstream": "~1.2.0",
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "phpunit/phpunit": "~4.0",
         "codeclimate/php-test-reporter": "~0.4"
