@@ -553,5 +553,5 @@ Please read the [dedicated documentation page](Resources/doc/Upgrading/1.x_to_2.
 [![Total Downloads](https://poser.pugx.org/kaliop/ezmigrationbundle/downloads)](https://packagist.org/packages/kaliop/ezmigrationbundle)
 
 [![Build Status](https://github.com/kaliop-uk/ezmigrationbundle/actions/workflows/ci.yml/badge.svg)](https://github.com/kaliop-uk/ezmigrationbundle/actions/workflows/ci.yml)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=master)
-[![Code Coverage](https://codecov.io/gh/kaliop-uk/ezmigrationbundle/branch/master/graph/badge.svg)](https://codecov.io/gh/kaliop-uk/ezmigrationbundle)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/kaliop-uk/ezmigrationbundle/?branch=main)
+[![Code Coverage](https://codecov.io/gh/kaliop-uk/ezmigrationbundle/branch/main/graph/badge.svg)](https://codecov.io/gh/kaliop-uk/ezmigrationbundle)

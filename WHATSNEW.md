@@ -25,6 +25,8 @@ Version 6.1.0 (unreleased)
 
 * Fix: make error messages from subprocesses be echoed to the console when running `k:m:migrate -p` with eZP 2.0 and later
 
+* Change: renamed `master` branch on Github to `main`
+
 * BC change (for developers extending the bundle): const `Kaliop\eZMigrationBundle\Command\MigrateCommand::VERBOSITY_CHILD`
   has been transformed into static variable `Kaliop\eZMigrationBundle\Command\MigrateCommand::$VERBOSITY_CHILD`
 
