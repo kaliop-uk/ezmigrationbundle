@@ -27,6 +27,8 @@ Version 6.1.0 (unreleased)
 
 * Improved: bumped the version of phpunit used to run the tests from 4.x/5.x to 5.x/8.x
 
+* Improved: updated documentation in README and in Cookbooks
+
 * Changed: renamed `master` branch on Github to `main`
 
 * BC change (for developers extending the bundle): const `Kaliop\eZMigrationBundle\Command\MigrateCommand::VERBOSITY_CHILD`

@@ -161,6 +161,13 @@ EOT
                 $errorOutput = $process->getErrorOutput();
                 if ($errorOutput === '') {
                     $errorOutput = "(process used to execute migrations failed with no stderr output. Its exit code was: " . $process->getExitCode();
+                    // We go out of our way to help the user finding the cause of the error.
+                    /// @todo another cause we might check for in case of an empty $errorOutput is when error_reporting
+                    ///       does not include fatal errors (E_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR?)
+                    $errorLog = ini_get("error_log");
+                    if ($errorLog != '' && $errorLog != 'syslog') {
+                        $errorOutput .= ". Error details might be in file $errorLog";
+                    }
                     if ($process->getExitCode() == -1) {
                         $errorOutput .= ". If you are using Debian or Ubuntu linux, please consider using the --force-sigchild-enabled option.";
                     }
