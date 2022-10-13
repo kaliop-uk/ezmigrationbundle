@@ -33,7 +33,7 @@
         "symfony/var-dumper": "*"
     },
     "require-dev": {
-        "mikey179/vfsStream": "~1.2.0",
+        "mikey179/vfsstream": "~1.2.0",
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "php-http/mock-client": "*",
         "phpunit/phpunit": "~4.0 || ~5.0",
