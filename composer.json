@@ -21,7 +21,7 @@
         "ext-pdo": "*"
     },
     "require-dev": {
-        "mikey179/vfsStream": "~1.2.0",
+        "mikey179/vfsstream": "~1.2.0",
         "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "phpunit/phpunit": "~4.0"
     },
