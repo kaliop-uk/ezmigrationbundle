@@ -79,7 +79,7 @@ jobs:
             #        coverage: none
             -
                 run: |
-                    #git clone --depth 1 --branch 0.1.0 https://github.com/tanoconsulting/euts.git teststack
+                    #git clone --depth 1 --branch 0.4.2 https://github.com/tanoconsulting/euts.git teststack
                     git clone --depth 1 https://github.com/tanoconsulting/euts.git teststack
                     # just in case...
                     chmod 755 ./teststack/bin/*.sh  ./teststack/bin/setup/*.sh

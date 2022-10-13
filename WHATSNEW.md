@@ -15,17 +15,19 @@ Version 6.1.0 (unreleased)
   migrations which for any reason got stuck in an incorrect status, f.e. those which are still listed as `executing`
   after the corresponding process is terminated
 
-* Fix: migrations creating/updating contents with an `ezmatrix` field would result in corrupted data. Also, trying
+* Fixed: migrations creating/updating contents with an `ezmatrix` field would result in corrupted data. Also, trying
   to create a content/create migration for a content with an `ezmatrix` field would lead to a crash
 
-* Fix: migrations creating/updating contents with an `ezmatrix` field used to work with an undocumented yaml format,
+* Fixed: migrations creating/updating contents with an `ezmatrix` field used to work with an undocumented yaml format,
   up to version 5.14.0. We now allow that format to be used as well, besides the preferred format - although such format
   most likely does not work with the ezsystems/ezplatform-matrix-fieldtype bundle and is to be considered deprecated
   (see issue #250 for details).
 
-* Fix: make error messages from subprocesses be echoed to the console when running `k:m:migrate -p` with eZP 2.0 and later
+* Fixed: make error messages from subprocesses be echoed to the console when running `k:m:migrate -p` with eZP 2.0 and later
 
-* Change: renamed `master` branch on Github to `main`
+* Improved: bumped the version of phpunit used to run the tests from 4.x/5.x to 5.x/8.x
+
+* Changed: renamed `master` branch on Github to `main`
 
 * BC change (for developers extending the bundle): const `Kaliop\eZMigrationBundle\Command\MigrateCommand::VERBOSITY_CHILD`
   has been transformed into static variable `Kaliop\eZMigrationBundle\Command\MigrateCommand::$VERBOSITY_CHILD`
@@ -977,9 +979,9 @@ Version 4.1
 ===========
 
 * New: allow to set the 'name' and 'description' in many languages in a single 'create' or 'update' operation for ContentType.
-    This is possible both for the ContentType itself as well as for all its attributes
+    This is possible both for the ContentType itself and for all its attributes
 
-* Fix: when updating a ContentType defined in many languages, do not loose 'name' and 'description' set in other languages
+* Fix: when updating a ContentType defined in many languages, do not lose 'name' and 'description' set in other languages
 
 * New: allow to set references to the 'name' and 'description' of a ContentType
 
@@ -1071,7 +1073,7 @@ Version 4.0 RC-1
     time and memory taken
 
 * New: the `ka:mi:migration` command learned a new `--info` action to give detailed information on a single migration
-    migration at a time
+    at a time
 
 * New: the `ka:mi:status` command learned a new `--summary` option to print only the number of migrations per status
 
@@ -1574,7 +1576,7 @@ Version 2.1.0
 =============
 
 * New: it is now possible to set a reference to the path of a created Content/Location.
-    This allow to use it subsequently when assigning a role with subtree limitation
+    This allows to use it subsequently when assigning a role with subtree limitation
 
 * Fix: the documentation describing usage of the 'match' keyword for updating/deleting contents and locations was
     incorrect
@@ -1628,7 +1630,7 @@ The main changes are:
 
 * a new command `migration` is available. For the moment, it allows to delete existing migrations from the database
     table, making it possible to retry migrations which previously failed, as well as to manually add to the table
-    migration definitions which are outside of the expected paths.
+    migration definitions which are outside the expected paths.
 
 * php migrations are now fully supported (they used to have naming problems fpr the generated php classes)
 

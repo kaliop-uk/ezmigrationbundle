@@ -1,11 +1,12 @@
 <?php
 
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
+use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
-abstract class CommandExecutingTest extends KernelTestCase
+abstract class CommandExecutingTestBase extends KernelTestCase
 {
     protected $leftovers = array();
 
@@ -19,8 +20,7 @@ abstract class CommandExecutingTest extends KernelTestCase
     // tell to phpunit not to mess with ezpublish legacy global vars...
     protected $backupGlobalsBlacklist = array('eZCurrentAccess');
 
-    /// @todo if we want to be compatible with phpunit >= 8.0, we should do something akin to https://github.com/symfony/framework-bundle/blob/4.3/Test/ForwardCompatTestTrait.php
-    protected function setUp()
+    protected function doSetUp()
     {
         $this->_container = $this->bootContainer();
 
@@ -53,7 +53,7 @@ abstract class CommandExecutingTest extends KernelTestCase
         return $out;
     }
 
-    protected function tearDown()
+    protected function doTearDown()
     {
         foreach ($this->leftovers as $file) {
             unlink($file);
@@ -67,7 +67,10 @@ abstract class CommandExecutingTest extends KernelTestCase
         }
 
         // shuts down the kernel etc...
-        parent::tearDown();
+        // Since we added the BC trick with doSetup/doTeardown, this would be a loop. So we do all here
+        //parent::tearDown();
+        static::ensureKernelShutdown();
+        static::$kernel = null;
     }
 
     /**
@@ -130,5 +133,35 @@ abstract class CommandExecutingTest extends KernelTestCase
     {
         $params = array_merge(['command' => $commandName], $params);
         return new ArrayInput($params);
+    }
+}
+
+// Auto-adapt to PHPUnit 8 that added a `void` return-type to the setUp/tearDown methods
+/// @todo check: can we leave this to the parent class from Symfony?
+if (method_exists(\ReflectionMethod::class, 'hasReturnType') && (new \ReflectionMethod(TestCase::class, 'tearDown'))->hasReturnType()) {
+    abstract class CommandExecutingTest extends CommandExecutingTestBase
+    {
+        protected function setUp(): void
+        {
+            $this->doSetUp();
+        }
+
+        protected function tearDown(): void
+        {
+            $this->doTearDown();
+        }
+    }
+}else {
+    abstract class CommandExecutingTest extends CommandExecutingTestBase
+    {
+        protected function setUp()
+        {
+            $this->doSetUp();
+        }
+
+        protected function tearDown()
+        {
+            $this->doTearDown();
+        }
     }
 }

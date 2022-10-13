@@ -7,17 +7,15 @@
     "authors": [
         {
             "name": "Gaetano Giunta",
-            "email": "ggiunta@kaliop.com",
+            "email": "ggiunta@tanoconsulting.com",
             "role": "Lead Developer"
         },
         {
             "name": "Daniel Clements",
-            "email": "dclements@kaliop.com",
             "role": "Developer"
         },
         {
             "name": "Peter Halasz",
-            "email": "peter.halasz@kaliop.co.uk",
             "role": "Original author"
         }
     ],
@@ -34,12 +32,10 @@
         "symfony/var-dumper": "*"
     },
     "require-dev": {
-        "mikey179/vfsstream": "~1.2.0",
-        "polishsymfonycommunity/symfony2-mocker-extension": "*",
         "php-http/mock-client": "*",
-        "phpunit/phpunit": "~4.0 || ~5.0",
-        "codeclimate/php-test-reporter": "~0.4",
-        "roave/security-advisories": "dev-disablechecks as dev-master"
+        "phpunit/phpunit": "^5.0 || ^8.5.14",
+        "roave/security-advisories": "dev-disablechecks as dev-master",
+        "yoast/phpunit-polyfills": "*"
     },
     "suggest": {
         "php-http/httplug-bundle": "Required for usage of HTTP/CALL migration steps"

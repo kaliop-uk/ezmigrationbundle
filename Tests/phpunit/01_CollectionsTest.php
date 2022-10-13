@@ -9,17 +9,17 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
  * Tests the 'filtering' features of the collections. Plain usage as array is already tested by the rest of the suite
  * @todo should we extend just KernelTestCase ?
  */
-class CollectionsTest extends CommandExecutingTest
+abstract class CollectionsTest extends CommandExecutingTest
 {
-    // phpunit compat layer: 4.8 => 6.x
-    public function expectException($exception)
+    // phpunit compat layer: 4.x => 8.x
+    /*public function expectException($exception)
     {
         if (method_exists($this, 'setExpectedException')) {
             parent::setExpectedException($exception);
         } else {
             parent::expectException($exception);
         }
-    }
+    }*/
 
     public function testValidElements1()
     {
