@@ -62,9 +62,10 @@ class Filesystem implements LoaderInterface
      */
     protected function getDefinitions(array $paths = array(), $returnFilename = false)
     {
-        // if no paths defined, we look in all bundles
+        // if no paths defined, we look in all available paths
         if (empty($paths)) {
             $paths = array();
+            // Add the bundle paths
             /** @var $bundle \Symfony\Component\HttpKernel\Bundle\BundleInterface */
             foreach ($this->kernel->getBundles() as $bundle)
             {
@@ -72,6 +73,12 @@ class Filesystem implements LoaderInterface
                 if (is_dir($path)) {
                     $paths[] = $path;
                 }
+            }
+            // Also look for migrations in app directory
+            $app_dir = $this->kernel->getRootDir();
+            $app_dir = $app_dir . "/" . $this->versionDirectory;
+            if (is_dir($app_dir)) {
+                $paths[] = $app_dir;
             }
         }
 
