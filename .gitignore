@@ -1,5 +1,6 @@
 /.idea
 /.euts*
+/.phpunit.result.cache
 /composer
 /composer.lock
 /composer.phar

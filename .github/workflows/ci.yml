@@ -25,7 +25,9 @@ jobs:
                 include:
                     - php: '5.6'
                       ez_bundles: 'Kaliop\eZMigrationBundle\EzMigrationBundle EzSystems\MatrixBundle\EzSystemsMatrixBundle Netgen\TagsBundle\NetgenTagsBundle'
-                      #ez_packages: 'ezsystems/ezpublish-community:~2014.11.1 ezsystems/ez-matrix-bundle:^0.1 netgen/tagsbundle:^2.0 ezsystems/behatbundle:^5.4.2'
+                      # in this case ez_packages is ignored for dependencies installation, but it is used by teststack
+                      # scripts as indicator of the ezp version in use
+                      ez_packages: 'ezsystems/ezpublish-community:~2014.11.1'
                       ez_composer_lock: Tests/composer/composer-cp_2104.11.1.lock
                       operating-system: 'ubuntu-20.04'
                     - php: '7.0'

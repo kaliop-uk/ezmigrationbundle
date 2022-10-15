@@ -453,8 +453,8 @@ quite unlike a standard eZPublish setup! Also, it will take a considerable amoun
 
 Steps to set up a dedicated test environment and run the tests in it:
 
-    # if you have a github auth token, it is a good idea to copy it now to Tests/docker/data/.composer/auth.json
     git clone --depth 1 https://github.com/tanoconsulting/euts.git teststack
+    # if you have a github auth token, it is a good idea to copy it now to teststack/docker/data/.composer/auth.json
 
     # this config sets up a test environment with eZPlatform 2.5 running on php 7.4 / debian bullseye
     export TESTSTACK_CONFIG_FILE=Tests/environment/.euts.2.5.env
