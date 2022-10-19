@@ -98,7 +98,7 @@ class HTTPExecutor extends AbstractExecutor
      */
     protected function setReferences(ResponseInterface $response, $dsl)
     {
-        if (!array_key_exists('references', $dsl)) {
+        if (!array_key_exists('references', $dsl) || !count($dsl['references'])) {
             return false;
         }
 

@@ -37,7 +37,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
      */
     protected function setReferences($result, \Exception $exception = null, $dsl)
     {
-        if (!array_key_exists('references', $dsl) || !count($step->dsl['references'])) {
+        if (!array_key_exists('references', $dsl) || !count($dsl['references'])) {
             return false;
         }
 
