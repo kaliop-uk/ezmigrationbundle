@@ -371,7 +371,7 @@ class FileExecutor extends AbstractExecutor
      */
     protected function setReferences($fileName, $dsl)
     {
-        if (!array_key_exists('references', $dsl)) {
+        if (!array_key_exists('references', $dsl) || !count($step->dsl['references'])) {
             return false;
         }
 
@@ -422,7 +422,7 @@ class FileExecutor extends AbstractExecutor
 
     protected function setDataReferences($data, $dsl, $singleResult)
     {
-        if (!array_key_exists('references', $dsl)) {
+        if (!array_key_exists('references', $dsl) || !count($step->dsl['references'])) {
             return false;
         }
 

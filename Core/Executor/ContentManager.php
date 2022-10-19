@@ -493,7 +493,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             } else {
                                 $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
                             }
-                            // we do allow array values for refs, but not multi-level
+                            // we do allow array values for refs, but not objects/resources
+                            /// @todo this check should probably be left for the referenceResolver itself to do
                             if (is_array($value)) {
                                 foreach ($hashValue as $subValue) {
                                     if (is_array($subValue) || is_object($subValue)) {

@@ -133,7 +133,7 @@ class SQLExecutor extends AbstractExecutor
 
     protected function setExecReferences($result, $step)
     {
-        if (!array_key_exists('references', $step->dsl)) {
+        if (!array_key_exists('references', $step->dsl) || !count($step->dsl['references'])) {
             return false;
         }
 
@@ -153,11 +153,13 @@ class SQLExecutor extends AbstractExecutor
             }
             $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
+
+        return true;
     }
 
     protected function setQueryReferences($result, $step, $singleResult)
     {
-        if (!array_key_exists('references', $step->dsl)) {
+        if (!array_key_exists('references', $step->dsl) || !count($step->dsl['references'])) {
             return false;
         }
 
@@ -193,6 +195,8 @@ class SQLExecutor extends AbstractExecutor
             }
             $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
+
+        return true;
     }
 
     /**

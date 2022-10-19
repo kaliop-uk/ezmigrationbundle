@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
@@ -196,6 +197,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
     /**
      * Sets references to certain attributes of the items returned by steps.
+     * Should be called after validateResultsCount in cases where one or many items could be used to get reference values from
      *
      * @param \Object|AbstractCollection $item
      * @param MigrationStep $step
@@ -205,18 +207,26 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     protected function setReferences($item, $step)
     {
-        if (!array_key_exists('references', $step->dsl)) {
+        if (!array_key_exists('references', $step->dsl) || !count($step->dsl['references'])) {
             return false;
         }
 
         $referencesDefs = $this->setScalarReferences($item, $step->dsl['references']);
 
+        if (!count($referencesDefs)) {
+            // Save some cpu and return early.
+            // We return true because some scalar ref was set, or we would have exited at the top of the method
+            return true;
+        }
+
         // this check is now done immediately after matching
         //$this->insureResultsCountCompatibility($item, $referencesDefs, $step);
 
+        // NB: there is no valid yml atm which could result in expectedResultsType returning 'unspecified' here, but
+        // we should take care in case this changes in the future
         $multivalued = ($this->expectedResultsType($step) == self::$RESULT_TYPE_MULTIPLE);
 
-        if ($item instanceof AbstractCollection  || is_array($item)) {
+        if ($item instanceof AbstractCollection || is_array($item)) {
             $items = $item;
         } else {
             $items = array($item);
@@ -226,6 +236,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
         foreach ($items as $item) {
             $itemReferencesValues = $this->getReferencesValues($item, $referencesDefs, $step);
             if (!$multivalued) {
+                // $itemReferencesValues will be an array with key=refName
                 $referencesValues = $itemReferencesValues;
             } else {
                 foreach ($itemReferencesValues as $refName => $refValue) {
@@ -244,8 +255,18 @@ abstract class RepositoryExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            // q: is the usage of count() and array() correct here ? esp for the case we want scalar refs ?
-            $this->referenceResolver->addReference($reference['identifier'], count($referencesValues) ? $referencesValues[$reference['identifier']] : array(), $overwrite);
+            $referenceIdentifier = $reference['identifier'];
+            if (!array_key_exists($referenceIdentifier, $referencesValues)) {
+                if (count($items)) {
+                    // internal error
+                    throw new MigrationBundleException("Interanl error: getReferencesValues did not return reference '$referenceIdentifier' in class " . get_class($this));
+                } else {
+                    // we "know" this ia a request for multivalued refs. If we were expecting only one item, and got none,
+                    // an exception would have been thrown before reaching here
+                    $referencesValues[$referenceIdentifier] = array();
+                }
+            }
+            $this->referenceResolver->addReference($referenceIdentifier, $referencesValues[$referenceIdentifier], $overwrite);
         }
 
         return true;

@@ -164,7 +164,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
     protected function setReferences($result, $dsl)
     {
-        if (!array_key_exists('references', $dsl)) {
+        if (!array_key_exists('references', $dsl) || !count($step->dsl['references'])) {
             return false;
         }
 
@@ -189,6 +189,8 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
             $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
         }
+
+        return true;
     }
 
     /**

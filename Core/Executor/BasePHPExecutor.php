@@ -36,7 +36,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
      */
     protected function setReferences($result, \Exception $exception = null, $dsl)
     {
-        if (!array_key_exists('references', $dsl)) {
+        if (!array_key_exists('references', $dsl) || !count($step->dsl['references'])) {
             return false;
         }
 
@@ -44,6 +44,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
             $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'result':
+                    /// @todo check that ref is a scalar or an array. Either here or at a lower level?
                     $value = $result;
                     break;
                 case 'exception_code':

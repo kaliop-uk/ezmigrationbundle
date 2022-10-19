@@ -9,7 +9,10 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 /**
  * A trait used by Executors which allow to set non-scalar values to references.
- * ATM besides scalars we support arrays and collections as reference values
+ * In this context non-scalar means values which will become arrays when the "results" they are taken from are also multiple,
+ * whereas scalar values are the ones which do not change their type, regardles of the number of results.
+ * Example of a scalar reference: the matched item's count. Non scalar reference: the matched item's ids
+ * ATM we support arrays and collections as results to get reference values from.
  */
 trait NonScalarReferenceSetterTrait
 {
@@ -33,7 +36,7 @@ trait NonScalarReferenceSetterTrait
      */
     protected function validateResultsCount($results, $step)
     {
-        // q: what if we get a scalar result but we expect an array/collection ?
+        /// @todo what if we get a scalar result but we expect an array/collection (any/many items)?
         // q2: why not just check for Countable interface instead of AbstractCollection? Or at least allow ArrayIterators and ObjectIterators
         if (is_array($results) || $results instanceof AbstractCollection) {
             $expectedResultsCount = $this->expectedResultsCount($step);
@@ -116,8 +119,14 @@ trait NonScalarReferenceSetterTrait
 
         // if there are references to set, except the always_scalar ones, then we want a single result
         // (unless the user told us so via the 'expect' tag)
-        if (isset($step->dsl['references']) && $this->hasNonScalarReferences($step->dsl['references'])) {
-            return 1;
+        if (isset($step->dsl['references'])) {
+            if ($this->hasNonScalarReferences($step->dsl['references'])) {
+                return 1;
+            } else {
+                /// @todo what if the only references the user is asking for are the ones which are always scalar? should
+                ///       we presume that in such situation the only reasonable expectde return type is 'any', or is it
+                ///       better to just leave it as unspecified?
+            }
         }
 
         return self::$EXPECT_UNSPECIFIED;
