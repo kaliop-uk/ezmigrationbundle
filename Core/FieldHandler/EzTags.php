@@ -3,10 +3,10 @@
 namespace Kaliop\eZMigrationBundle\Core\FieldHandler;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
-use Kaliop\eZMigrationBundle\API\FieldValueImporterInterface;
+use Kaliop\eZMigrationBundle\API\FieldValueConverterInterface;
 use Kaliop\eZMigrationBundle\Core\Matcher\TagMatcher;
 
-class EzTags extends AbstractFieldHandler implements FieldValueImporterInterface
+class EzTags extends AbstractFieldHandler implements FieldValueConverterInterface
 {
     protected $tagMatcher;
 
@@ -32,6 +32,9 @@ class EzTags extends AbstractFieldHandler implements FieldValueImporterInterface
                 throw new InvalidStepDefinitionException('Definition of EzTags field is incorrect: each element of the tags array must be an array with one element');
             }
 
+            # @todo support single-value elements too? if numeric, it is a tag id, if it is a string it is... what?
+            #       it could be either a tag's remote id or a keyword...
+
             $identifier = reset($def);
             $type = key($def);
 
@@ -43,5 +46,17 @@ class EzTags extends AbstractFieldHandler implements FieldValueImporterInterface
         }
 
         return new \Netgen\TagsBundle\Core\FieldType\Tags\Value(array_values($tags));
+    }
+
+    /**
+     * @var \Netgen\TagsBundle\Core\FieldType\Tags\Value $fieldValue
+     */
+    public function fieldValueToHash($fieldValue, array $context = array())
+    {
+        $out = array();
+        foreach ($fieldValue->tags as $tag) {
+            $out[] = array('id' => $tag->id);
+        }
+        return $out;
     }
 }
