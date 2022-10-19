@@ -60,11 +60,11 @@
             longitude: null
         # eztags, setting 2-or-more tags
         attribute14:
-            # one tag
+            # this will add one tag, identified by its id
             - id: 12
-            #  one tag
+            # this will add one tag, identified by its remote_id
             - remote_id: abc
-            # zero or more tags
+            # this will add zero or more tags, matched by keyword
             - keyword: hello
         # ezselection, multiple values
         attribute15: [ 1, "option 2" ] # array of selection options ids or textual values
