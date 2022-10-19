@@ -494,14 +494,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                                 $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
                             }
                             // we do allow array values for refs, but not objects/resources
-                            /// @todo this check should probably be left for the referenceResolver itself to do
-                            if (is_array($value)) {
-                                foreach ($hashValue as $subValue) {
-                                    if (is_array($subValue) || is_object($subValue)) {
-                                        /// @todo use a MigrationBundleException ?
-                                        throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given value is an array with a non scalar element');
-                                    }
-                                }
+                            if (!$this->isValidReferenceValue($value)) {
+                                throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given value has a non scalar/array element');
                             }
                         } else {
                             if (count($parts) > 2) {

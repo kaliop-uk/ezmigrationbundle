@@ -204,6 +204,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      * @return boolean
      * @throws \InvalidArgumentException When trying to set a reference to an unsupported attribute
      * @todo should we allow to be passed in plain arrays, ArrayIterators and ObjectIterators as well as Collections?
+     * @todo move to NonScalarReferenceSetterTrait?
      */
     protected function setReferences($item, $step)
     {

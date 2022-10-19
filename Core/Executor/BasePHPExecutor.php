@@ -3,6 +3,7 @@
 namespace Kaliop\eZMigrationBundle\Core\Executor;
 
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 
 abstract class BasePHPExecutor extends AbstractExecutor
@@ -44,7 +45,9 @@ abstract class BasePHPExecutor extends AbstractExecutor
             $reference = $this->parseReferenceDefinition($key, $reference);
             switch ($reference['attribute']) {
                 case 'result':
-                    /// @todo check that ref is a scalar or an array. Either here or at a lower level?
+                    if (!$this->isValidReferenceValue($result)) {
+                        throw new MigrationBundleException("PHP executor cam not set references for attribute 'result': it is not a scalar or array");
+                    }
                     $value = $result;
                     break;
                 case 'exception_code':
@@ -62,7 +65,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
                     $value = $exception ? $exception->getLine() : null;
                     break;
                 default:
-                    throw new InvalidStepDefinitionException('Service executor does not support setting references for attribute ' . $reference['attribute']);
+                    throw new InvalidStepDefinitionException('PHP executor does not support setting references for attribute ' . $reference['attribute']);
             }
 
             $overwrite = false;
