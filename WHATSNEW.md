@@ -1,5 +1,5 @@
-Version 6.2.0 (unreleased)
-==========================
+Version 6.2.0
+=============
 
 * Fixed: migrations created using `kaliop:migration:generate` would create yml which was not valid for import, for content
   fields of type eztags
