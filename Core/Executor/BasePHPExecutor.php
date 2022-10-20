@@ -6,27 +6,13 @@ use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\ReferenceResolverBagInterface;
 
+/**
+ * @property ReferenceResolverBagInterface $referenceResolver
+ */
 abstract class BasePHPExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
-
-    /** @var ReferenceResolverBagInterface $referenceResolver */
-    protected $referenceResolver;
-
-    /**
-     * @todo should be moved into the reference resolver classes
-     */
-    protected function resolveReferencesRecursively($match)
-    {
-        if (is_array($match)) {
-            foreach ($match as $condition => $values) {
-                $match[$condition] = $this->resolveReferencesRecursively($values);
-            }
-            return $match;
-        } else {
-            return $this->referenceResolver->resolveReference($match);
-        }
-    }
+    use ReferenceSetterTrait;
 
     /**
      * @param $result
@@ -46,7 +32,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
             switch ($reference['attribute']) {
                 case 'result':
                     if (!$this->isValidReferenceValue($result)) {
-                        throw new MigrationBundleException("PHP executor cam not set references for attribute 'result': it is not a scalar or array");
+                        throw new MigrationBundleException("PHP executor can not set references for attribute 'result': it is not a scalar or array");
                     }
                     $value = $result;
                     break;
@@ -72,7 +58,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $this->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;

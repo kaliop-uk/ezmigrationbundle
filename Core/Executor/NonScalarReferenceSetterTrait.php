@@ -11,8 +11,9 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
  * A trait used by Executors which allow to set non-scalar values to references.
  * In this context non-scalar means values which will become arrays when the "results" they are taken from are also multiple,
  * whereas scalar values are the ones which do not change their type, regardles of the number of results.
- * Example of a scalar reference: the matched item's count. Non scalar reference: the matched item's ids
- * ATM we support arrays and collections as results to get reference values from.
+ * Example of a scalar reference: the matched items' count. Non scalar reference: the matched items' ids
+ * ATM we only support arrays and collections as results to get reference values from.
+ * NB: requires trait ReferenceSetterTrait to be implemented.
  */
 trait NonScalarReferenceSetterTrait
 {

@@ -44,9 +44,9 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         $sectionCreateStruct = $sectionService->newSectionCreateStruct();
 
-        $sectionIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $sectionIdentifier = $this->resolveReference($step->dsl['identifier']);
         $sectionCreateStruct->identifier = $sectionIdentifier;
-        $sectionCreateStruct->name = $this->referenceResolver->resolveReference($step->dsl['name']);
+        $sectionCreateStruct->name = $this->resolveReference($step->dsl['name']);
 
         $section = $sectionService->createSection($sectionCreateStruct);
 
@@ -80,10 +80,10 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
             $sectionUpdateStruct = $sectionService->newSectionUpdateStruct();
 
             if (isset($step->dsl['identifier'])) {
-                $sectionUpdateStruct->identifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+                $sectionUpdateStruct->identifier = $this->resolveReference($step->dsl['identifier']);
             }
             if (isset($step->dsl['name'])) {
-                $sectionUpdateStruct->name = $this->referenceResolver->resolveReference($step->dsl['name']);
+                $sectionUpdateStruct->name = $this->resolveReference($step->dsl['name']);
             }
 
             $section = $sectionService->updateSection($section, $sectionUpdateStruct);
@@ -130,7 +130,7 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->sectionMatcher->match($match, $tolerateMisses);
     }

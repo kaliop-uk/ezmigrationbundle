@@ -8,8 +8,8 @@ use Kaliop\eZMigrationBundle\API\ExecutorInterface;
 
 abstract class AbstractExecutor implements ExecutorInterface
 {
-    /// @todo not all subclasses of this do set references. We should move the trait to a dedicated subcalss
-    use ReferenceSetterTrait;
+    /// @todo check if all child classes do use this
+    use ReferenceResolverTrait;
 
     protected $supportedStepTypes = array();
 

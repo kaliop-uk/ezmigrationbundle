@@ -9,6 +9,9 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
 use Symfony\Component\Process\Process;
 
+/**
+ * @property ReferenceResolverBagInterface $referenceResolver
+ */
 class ProcessExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
@@ -17,9 +20,6 @@ class ProcessExecutor extends AbstractExecutor
     protected $supportedActions = array('run');
 
     protected $defaultTimeout = 86400;
-
-    /** @var ReferenceResolverBagInterface $referenceResolver */
-    protected $referenceResolver;
 
     /**
      * @param ReferenceResolverBagInterface $referenceResolver
@@ -69,12 +69,12 @@ class ProcessExecutor extends AbstractExecutor
         $builder = new ProcessBuilder();
 
         // mandatory args and options
-        $builderArgs = array($this->referenceResolver->resolveReference($dsl['command']));
+        $builderArgs = array($this->resolveReference($dsl['command']));
 
         if (isset($dsl['arguments'])) {
             foreach ($dsl['arguments'] as $arg) {
                 /// @todo should this be recursive?
-                $builderArgs[] = $this->referenceResolver->resolveReference($arg);
+                $builderArgs[] = $this->resolveReference($arg);
             }
         }
 
@@ -85,12 +85,12 @@ class ProcessExecutor extends AbstractExecutor
         // allow long migrations processes by default
         $timeout = $this->defaultTimeout;
         if (isset($dsl['timeout'])) {
-            $timeout = $this->referenceResolver->resolveReference($dsl['timeout']);
+            $timeout = $this->resolveReference($dsl['timeout']);
         }
         $process->setTimeout($timeout);
 
         if (isset($dsl['working_directory'])) {
-            $process->setWorkingDirectory($this->referenceResolver->resolveReference($dsl['working_directory']));
+            $process->setWorkingDirectory($this->resolveReference($dsl['working_directory']));
         }
 
         /// @todo should we support false/true ?
@@ -99,12 +99,12 @@ class ProcessExecutor extends AbstractExecutor
         }
 
         if (isset($dsl['environment'])) {
-            $process->setEnv($this->referenceResolver->resolveReference($dsl['environment']));
+            $process->setEnv($this->resolveReference($dsl['environment']));
         }
 
         $process->run();
 
-        if (isset($dsl['fail_on_error']) && $this->referenceResolver->resolveReference($dsl['fail_on_error'])) {
+        if (isset($dsl['fail_on_error']) && $this->resolveReference($dsl['fail_on_error'])) {
             if (($exitCode = $process->getExitCode()) != 0) {
                 throw new MigrationBundleException("Process failed with exit code: $exitCode", $exitCode);
             }
@@ -147,7 +147,7 @@ class ProcessExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $this->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;

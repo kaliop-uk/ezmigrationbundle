@@ -75,7 +75,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         $contentTypeService = $this->repository->getContentTypeService();
 
         $contentTypeIdentifier = $step->dsl['content_type'];
-        $contentTypeIdentifier = $this->referenceResolver->resolveReference($contentTypeIdentifier);
+        $contentTypeIdentifier = $this->resolveReference($contentTypeIdentifier);
         /// @todo use a contenttypematcher
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
 
@@ -96,7 +96,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         }
 
         if (isset($step->dsl['section'])) {
-            $sectionKey = $this->referenceResolver->resolveReference($step->dsl['section']);
+            $sectionKey = $this->resolveReference($step->dsl['section']);
             $section = $this->sectionMatcher->matchOneByKey($sectionKey);
             $contentCreateStruct->sectionId = $section->id;
         }
@@ -127,7 +127,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             isset($step->dsl['main_location']) ? $step->dsl['main_location'] : null
         );
         // 1st resolve references
-        $locationId = $this->referenceResolver->resolveReference($locationId);
+        $locationId = $this->resolveReference($locationId);
         // 2nd allow to specify the location via remote_id
         $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
         $locationCreateStruct = $locationService->newLocationCreateStruct($locationId);
@@ -164,7 +164,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         );
         if (isset($other_locations)) {
             foreach ($other_locations as $locationId) {
-                $locationId = $this->referenceResolver->resolveReference($locationId);
+                $locationId = $this->resolveReference($locationId);
                 $locationId = $this->locationManager->matchLocationByKey($locationId)->id;
                 $secondaryLocationCreateStruct = $locationService->newLocationCreateStruct($locationId);
                 array_push($locations, $secondaryLocationCreateStruct);
@@ -378,11 +378,11 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        $offset = isset($step->dsl['match_offset']) ? $this->referenceResolver->resolveReference($step->dsl['match_offset']) : 0;
-        $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
-        $sort = isset($step->dsl['match_sort']) ? $this->referenceResolver->resolveReference($step->dsl['match_sort']) : array();
+        $offset = isset($step->dsl['match_offset']) ? $this->resolveReference($step->dsl['match_offset']) : 0;
+        $limit = isset($step->dsl['match_limit']) ? $this->resolveReference($step->dsl['match_limit']) : 0;
+        $sort = isset($step->dsl['match_sort']) ? $this->resolveReference($step->dsl['match_sort']) : array();
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->contentMatcher->match($match, $sort, $offset, $limit, $tolerateMisses);
     }
@@ -493,7 +493,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                             } else {
                                 $value = JmesPath::search(implode('.', array_slice($parts, 1)), array($fieldIdentifier => $hashValue));
                             }
-                            // we do allow array values for refs, but not objects/resources
+                            // we do allow array values for refs, but not objects/resources. Q: will hashValue ever have objects in it?
                             if (!$this->isValidReferenceValue($value)) {
                                 throw new \InvalidArgumentException('Content Manager does not support setting references for attribute ' . $reference['attribute'] . ': the given value has a non scalar/array element');
                             }
@@ -782,7 +782,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
     protected function setSection(Content $content, $sectionKey)
     {
-        $sectionKey = $this->referenceResolver->resolveReference($sectionKey);
+        $sectionKey = $this->resolveReference($sectionKey);
         $section = $this->sectionMatcher->matchOneByKey($sectionKey);
 
         $sectionService = $this->repository->getSectionService();
@@ -792,7 +792,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     protected function setObjectStates(Content $content, array $stateKeys)
     {
         foreach ($stateKeys as $stateKey) {
-            $stateKey = $this->referenceResolver->resolveReference($stateKey);
+            $stateKey = $this->resolveReference($stateKey);
             /** @var \eZ\Publish\API\Repository\Values\ObjectState\ObjectState $state */
             $state = $this->objectStateMatcher->matchOneByKey($stateKey);
 
@@ -803,7 +803,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
     protected function setMainLocation(Content $content, $locationId)
     {
-        $locationId = $this->referenceResolver->resolveReference($locationId);
+        $locationId = $this->resolveReference($locationId);
         if (is_int($locationId) || ctype_digit($locationId)) {
             $location = $this->repository->getLocationService()->loadLocation($locationId);
         } else {
@@ -856,7 +856,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
             /// @todo we should find a way to signal to the field handler that references have been resolved already for this value,
             ///       to avoid multiple passes of reference resolution
             if (is_string($value) && $this->fieldHandlerManager->doPreResolveStringReferences($fieldTypeIdentifier, $contentTypeIdentifier)) {
-                $value = $this->referenceResolver->resolveReference($value);
+                $value = $this->resolveReference($value);
             }
             // inject info about the current content type and field into the context
             // q: why not let the fieldHandlerManager do that ?
@@ -884,7 +884,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
         // q: do we really want this to happen by default on all scalar field values?
         // Note: if you want this *not* to happen, register a complex field for your scalar field...
-        $value = $this->referenceResolver->resolveReference($value);
+        $value = $this->resolveReference($value);
 
         return $value;
     }
@@ -896,7 +896,7 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      */
     protected function getUser($userKey)
     {
-        $userKey = $this->referenceResolver->resolveReference($userKey);
+        $userKey = $this->resolveReference($userKey);
         return $this->userMatcher->matchOneByKey($userKey);
     }
 

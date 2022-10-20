@@ -9,6 +9,9 @@ use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 use Swift_Message;
 use Swift_Attachment;
 
+/**
+ * @property EmbeddedReferenceResolverBagInterface $referenceResolver
+ */
 class MailExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
@@ -17,8 +20,6 @@ class MailExecutor extends AbstractExecutor
     protected $supportedActions = array('send');
 
     protected $mailService;
-    /** @var ReferenceResolverInterface $referenceResolver */
-    protected $referenceResolver;
 
     /**
      * MailExecutor constructor.
@@ -89,17 +90,19 @@ class MailExecutor extends AbstractExecutor
             $message->setBody($this->resolveReferencesInText($dsl['body']));
         }
         if (isset($dsl['attach'])) {
-            $path = $this->resolveReferencesRecursively($dsl['attach']);
-            // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
-            $attachment = dirname($context['path']) . '/' . $path;
-            if (!is_file($attachment)) {
-                $attachment = $path;
+            $paths = $this->resolveReferencesRecursively($dsl['attach']);
+            foreach((array)$paths as $path) {
+                // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
+                $attachment = dirname($context['path']) . '/' . $path;
+                if (!is_file($attachment)) {
+                    $attachment = $path;
+                }
+                $message->attach(Swift_Attachment::fromPath($attachment));
             }
-            $message->attach(Swift_Attachment::fromPath($attachment));
         }
 
         if (isset($dsl['priority'])) {
-            $message->setPriority($this->resolveReferencesRecursively($dsl['priority']));
+            $message->setPriority($this->resolveReference($dsl['priority']));
         }
         if (isset($dsl['read_receipt_to'])) {
             $message->setReadReceiptTo($this->resolveReferencesRecursively($dsl['read_receipt_to']));
@@ -120,21 +123,6 @@ class MailExecutor extends AbstractExecutor
 
         // q: what to return?
         return true;
-    }
-
-    /**
-     * @todo should be moved into the reference resolver classes
-     */
-    protected function resolveReferencesRecursively($match)
-    {
-        if (is_array($match)) {
-            foreach ($match as $condition => $values) {
-                $match[$condition] = $this->resolveReferencesRecursively($values);
-            }
-            return $match;
-        } else {
-            return $this->referenceResolver->resolveReference($match);
-        }
     }
 
     /**

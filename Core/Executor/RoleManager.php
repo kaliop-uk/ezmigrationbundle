@@ -39,7 +39,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         $roleService = $this->repository->getRoleService();
         $userService = $this->repository->getUserService();
 
-        $roleName = $this->referenceResolver->resolveReference($step->dsl['name']);
+        $roleName = $this->resolveReference($step->dsl['name']);
         $roleCreateStruct = $roleService->newRoleCreateStruct($roleName);
 
         // Publish new role
@@ -96,8 +96,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             // Updating role name
             if (isset($step->dsl['new_name'])) {
                 $update = $roleService->newRoleUpdateStruct();
-                $newRoleName = $this->referenceResolver->resolveReference($step->dsl['new_name']);
-                $update->identifier = $this->referenceResolver->resolveReference($newRoleName);
+                $newRoleName = $this->resolveReference($step->dsl['new_name']);
+                $update->identifier = $this->resolveReference($newRoleName);
                 $role = $roleService->updateRole($role, $update);
             }
 
@@ -173,7 +173,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->roleMatcher->match($match, $tolerateMisses);
     }
@@ -318,11 +318,11 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
         $limitationType = $roleService->getLimitationType($limitation['identifier']);
 
         // 1st resolve refs (if we got passed a string)
-        $limitationValue = $this->referenceResolver->resolveReference($limitation['values']);
+        $limitationValue = $this->resolveReference($limitation['values']);
         // then, if we have an array, resolve refs recursively
         if (is_array($limitationValue)) {
             foreach ($limitationValue as $id => $value) {
-                $limitationValue[$id] = $this->referenceResolver->resolveReference($value);
+                $limitationValue[$id] = $this->resolveReference($value);
             }
         } else {
             // if still a scalar, make sure we can loop over it
@@ -358,7 +358,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             switch ($assign['type']) {
                 case 'user':
                     foreach ($assign['ids'] as $userId) {
-                        $userId = $this->referenceResolver->resolveReference($userId);
+                        $userId = $this->resolveReference($userId);
 
                         $user = $userService->loadUser($userId);
 
@@ -374,7 +374,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     break;
                 case 'group':
                     foreach ($assign['ids'] as $groupId) {
-                        $groupId = $this->referenceResolver->resolveReference($groupId);
+                        $groupId = $this->resolveReference($groupId);
 
                         $group = $userService->loadUserGroup($groupId);
 
@@ -400,7 +400,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
             switch ($assign['type']) {
                 case 'user':
                     foreach ($assign['ids'] as $userId) {
-                        $userId = $this->referenceResolver->resolveReference($userId);
+                        $userId = $this->resolveReference($userId);
 
                         $user = $userService->loadUser($userId);
 
@@ -409,7 +409,7 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
                     break;
                 case 'group':
                     foreach ($assign['ids'] as $groupId) {
-                        $groupId = $this->referenceResolver->resolveReference($groupId);
+                        $groupId = $this->resolveReference($groupId);
 
                         $group = $userService->loadUserGroup($groupId);
                         $roleService->unassignRoleFromUserGroup($role, $group);

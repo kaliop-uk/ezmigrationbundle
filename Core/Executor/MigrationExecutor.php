@@ -16,7 +16,6 @@ class MigrationExecutor extends AbstractExecutor
     protected $supportedActions = array('cancel', 'fail', 'suspend', 'sleep');
 
     protected $referenceMatcher;
-    protected $referenceResolver;
     protected $contentManager;
     protected $locationManager;
     protected $contentTypeManager;
@@ -60,7 +59,7 @@ class MigrationExecutor extends AbstractExecutor
      */
     protected function cancel($dsl, $context)
     {
-        $message = isset($dsl['message']) ? $this->referenceResolver->resolveReference($dsl['message']) : '';
+        $message = isset($dsl['message']) ? $this->resolveReference($dsl['message']) : '';
 
         if (isset($dsl['if'])) {
             if (!$this->matchConditions($dsl['if'])) {
@@ -74,7 +73,7 @@ class MigrationExecutor extends AbstractExecutor
 
     protected function fail($dsl, $context)
     {
-        $message = isset($dsl['message']) ? $this->referenceResolver->resolveReference($dsl['message']) : '';
+        $message = isset($dsl['message']) ? $this->resolveReference($dsl['message']) : '';
 
         if (isset($dsl['if'])) {
             if (!$this->matchConditions($dsl['if'])) {
@@ -96,7 +95,7 @@ class MigrationExecutor extends AbstractExecutor
      */
     protected function suspend($dsl, $context)
     {
-        $message = isset($dsl['message']) ? $this->referenceResolver->resolveReference($dsl['message']) : '';
+        $message = isset($dsl['message']) ? $this->resolveReference($dsl['message']) : '';
 
         if (!isset($dsl['until'])) {
             throw new InvalidStepDefinitionException("An until condition is required to suspend a migration");
@@ -128,7 +127,7 @@ class MigrationExecutor extends AbstractExecutor
             }
         }
 
-        sleep($this->referenceResolver->resolveReference($dsl['seconds']));
+        sleep($this->resolveReference($dsl['seconds']));
         return true;
     }
 
@@ -172,7 +171,7 @@ class MigrationExecutor extends AbstractExecutor
 
             switch ($key) {
                 case 'date':
-                    return time() >= $this->referenceResolver->resolveReference($values);
+                    return time() >= $this->resolveReference($values);
 
                 case 'match':
                     return $this->matchConditions($values);

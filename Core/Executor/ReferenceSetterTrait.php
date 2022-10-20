@@ -5,15 +5,22 @@ namespace Kaliop\eZMigrationBundle\Core\Executor;
 use Kaliop\eZMigrationBundle\API\Collection\AbstractCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchResultsNumberException;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
+use Kaliop\eZMigrationBundle\API\ReferenceBagInterface;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
 /**
- * A trait used by Executors which hsa code useful to set values to references.
+ * A trait to be used by Executors which has code useful to set values to references.
  * @todo add a method that validates the 'references' key. Atm all we can check is that it is an array (we could as well
  * reject empty reference arrays in fact)
  */
 trait ReferenceSetterTrait
 {
+    protected function addReference($identifier, $value, $overwrite = false)
+    {
+        /** @var ReferenceBagInterface $this->referenceResolver */
+        return $this->referenceResolver->addReference($identifier, $value, $overwrite);
+    }
+
     /**
      * Allows to have refs defined using two syntax variants:
      *   - { identifier: xxx, attribute: yyy, overwrite: bool }

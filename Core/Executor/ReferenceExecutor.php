@@ -14,16 +14,18 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @property ReferenceResolverBagInterface $referenceResolver
+ */
 class ReferenceExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
+    use ReferenceSetterTrait;
 
     protected $supportedStepTypes = array('reference');
     protected $supportedActions = array('set', 'load', 'save', 'dump');
 
     protected $container;
-    /** @var ReferenceResolverBagInterface $referenceResolver */
-    protected $referenceResolver;
 
     public function __construct(ContainerInterface $container, ReferenceResolverBagInterface $referenceResolver)
     {
@@ -66,11 +68,12 @@ class ReferenceExecutor extends AbstractExecutor
 
         if (!isset($dsl['resolve_references']) || $dsl['resolve_references']) {
             // this makes sense since we started supporting embedded refs...
-            $value = $this->referenceResolver->resolveReference($dsl['value']);
+            $value = $this->resolveReferencesRecursively($dsl['value']);
         } else {
             $value = $dsl['value'];
         }
 
+        /// @todo make this happen recursively too in case the ref value is an array. Overload resolveReferencesRecursively
         if (is_string($value)) {
             if (0 === strpos($value, '%env(') && ')%' === substr($value, -2) && '%env()%' !== $value) {
                 /// @todo find out how to use Sf components to resolve this value instead of doing it by ourselves...
@@ -92,7 +95,7 @@ class ReferenceExecutor extends AbstractExecutor
         }
 
         $overwrite = isset($dsl['overwrite']) ? $dsl['overwrite'] : false;
-        $this->referenceResolver->addReference($dsl['identifier'], $value, $overwrite);
+        $this->addReference($dsl['identifier'], $value, $overwrite);
 
         return $value;
     }
@@ -102,7 +105,7 @@ class ReferenceExecutor extends AbstractExecutor
         if (!isset($dsl['file'])) {
             throw new InvalidStepDefinitionException("Invalid step definition: miss 'file' for loading references");
         }
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
         $overwrite = isset($dsl['overwrite']) ? $dsl['overwrite'] : false;
@@ -135,11 +138,13 @@ class ReferenceExecutor extends AbstractExecutor
         }
 
         foreach ($data as $refName => $value) {
+            /// @todo what about '%env()%' syntax ?
+
             if (preg_match('/%.+%$/', $value)) {
                 $value = $this->container->getParameter(trim($value, '%'));
             }
 
-            if (!$this->referenceResolver->addReference($refName, $value, $overwrite)) {
+            if (!$this->addReference($refName, $value, $overwrite)) {
                 throw new MigrationBundleException("Failed adding to Reference Resolver the reference: $refName");
             }
         }
@@ -155,7 +160,7 @@ class ReferenceExecutor extends AbstractExecutor
         if (!isset($dsl['file'])) {
             throw new InvalidStepDefinitionException("Invalid step definition: miss 'file' for saving references");
         }
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
         $fileName = str_replace('{ENV}', $this->container->get('kernel')->getEnvironment(), $fileName);
 
         $overwrite = isset($dsl['overwrite']) ? $dsl['overwrite'] : false;
@@ -199,7 +204,7 @@ class ReferenceExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Invalid step definition: identifier '{$dsl['identifier']}' is not a reference");
         }
         if (isset($context['output']) && $context['output'] instanceof OutputInterface && $context['output']->isQuiet()) {
-            return $this->referenceResolver->resolveReference($dsl['identifier']);
+            return $this->resolveReference($dsl['identifier']);
         }
 
         if (isset($dsl['label'])) {
@@ -207,7 +212,7 @@ class ReferenceExecutor extends AbstractExecutor
         } else {
             $label = $this->dumpVar($dsl['identifier']);
         }
-        $value = $this->dumpVar($this->referenceResolver->resolveReference($dsl['identifier']));
+        $value = $this->dumpVar($this->resolveReference($dsl['identifier']));
 
         if (isset($context['output']) && $context['output'] instanceof OutputInterface) {
             $context['output']->write($label . $value, false, OutputInterface::OUTPUT_RAW|OutputInterface::VERBOSITY_NORMAL);

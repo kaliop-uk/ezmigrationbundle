@@ -1,0 +1,31 @@
+# This example shows how to add an extra tag to a content's field of type eztags
+
+# 1: load the content, set a ref to the existing list of tags
+-
+    type: content
+    mode: load
+    match:
+        content_remote_id: aabbbbcccddd
+    references:
+        # 'tags' here is the field identifier
+        tags_ref: attributes.tags
+
+# 2: add the new , creating a new reference
+- type: php
+  mode: call_function
+  function: array_merge
+  arguments:
+      - 'reference:tags_ref'
+      # Besides of specifying the tag(s) to be added by id, you can also specify them by `remote_id` or `keyword`
+      - [ {'id': 123456}, {'id': 234567} ]
+  references:
+      new_tags_ref: result
+
+# 3: update the content
+-
+    type: content
+    mode: update
+    match:
+        content_remote_id: aabbbbcccddd
+    attributes:
+        tags: 'reference:new_tags_ref'

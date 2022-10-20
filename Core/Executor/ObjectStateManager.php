@@ -62,10 +62,10 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
         $objectStateService = $this->repository->getObjectStateService();
 
         $objectStateGroupId = $step->dsl['object_state_group'];
-        $objectStateGroupId = $this->referenceResolver->resolveReference($objectStateGroupId);
+        $objectStateGroupId = $this->resolveReference($objectStateGroupId);
         $objectStateGroup = $this->objectStateGroupMatcher->matchOneByKey($objectStateGroupId);
 
-        $objectStateIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $objectStateIdentifier = $this->resolveReference($step->dsl['identifier']);
         $objectStateCreateStruct = $objectStateService->newObjectStateCreateStruct($objectStateIdentifier);
         $objectStateCreateStruct->defaultLanguageCode = $this->getLanguageCode($step); // was: self::DEFAULT_LANGUAGE_CODE;
 
@@ -117,7 +117,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
             $objectStateUpdateStruct = $objectStateService->newObjectStateUpdateStruct();
 
             if (isset($step->dsl['identifier'])) {
-                $objectStateUpdateStruct->identifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+                $objectStateUpdateStruct->identifier = $this->resolveReference($step->dsl['identifier']);
             }
             if (isset($step->dsl['names'])) {
                 foreach ($step->dsl['names'] as $name) {
@@ -171,7 +171,7 @@ class ObjectStateManager extends RepositoryExecutor implements MigrationGenerato
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->objectStateMatcher->match($match, $tolerateMisses);
     }

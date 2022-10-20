@@ -7,16 +7,17 @@ use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
+/**
+ * @property EmbeddedReferenceResolverBagInterface $referenceResolver
+ */
 class FileExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
+    use ReferenceSetterTrait;
     use NonScalarReferenceSetterTrait;
 
     protected $supportedStepTypes = array('file');
     protected $supportedActions = array('load', 'load_csv', 'save', 'copy', 'move', 'delete', 'append', 'prepend', 'exists');
-
-    /** @var EmbeddedReferenceResolverBagInterface $referenceResolver */
-    protected $referenceResolver;
 
     protected $scalarReferences = array('count');
 
@@ -63,7 +64,7 @@ class FileExecutor extends AbstractExecutor
         if (!isset($dsl['file'])) {
             throw new InvalidStepDefinitionException("Can not load file: name missing");
         }
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
         if (!file_exists($fileName)) {
             throw new MigrationBundleException("Can not load '$fileName': file missing");
         }
@@ -95,14 +96,14 @@ class FileExecutor extends AbstractExecutor
         if (!isset($dsl['file'])) {
             throw new InvalidStepDefinitionException("Can not load file: name missing");
         }
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
         if (!file_exists($fileName)) {
             throw new MigrationBundleException("Can not load '$fileName': file missing");
         }
 
-        $separator = isset($dsl['separator']) ? $this->referenceResolver->resolveReference($dsl['separator']) : ',';
-        $enclosure = isset($dsl['enclosure']) ? $this->referenceResolver->resolveReference($dsl['enclosure']) : '"';
-        $escape = isset($dsl['escape']) ? $this->referenceResolver->resolveReference($dsl['escape']) : '\\';
+        $separator = isset($dsl['separator']) ? $this->resolveReference($dsl['separator']) : ',';
+        $enclosure = isset($dsl['enclosure']) ? $this->resolveReference($dsl['enclosure']) : '"';
+        $escape = isset($dsl['escape']) ? $this->resolveReference($dsl['escape']) : '\\';
 
         $singleResult = ($this->expectedResultsType($step) == self::$RESULT_TYPE_SINGLE);
 
@@ -137,7 +138,7 @@ class FileExecutor extends AbstractExecutor
         if (!isset($dsl['file'])) {
             throw new InvalidStepDefinitionException("Can not check for existence of file: name missing");
         }
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
 
         $exists = file_exists($fileName);
 
@@ -150,7 +151,7 @@ class FileExecutor extends AbstractExecutor
                         if (isset($reference['overwrite'])) {
                             $overwrite = $reference['overwrite'];
                         }
-                        $this->referenceResolver->addReference($reference['identifier'], $exists, $overwrite);
+                        $this->addReference($reference['identifier'], $exists, $overwrite);
                         break;
                 }
             }
@@ -174,7 +175,7 @@ class FileExecutor extends AbstractExecutor
         if (isset($dsl['body']) && is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
         } elseif (isset($dsl['template']) && is_string($dsl['template'])) {
-            $path = $this->referenceResolver->resolveReference($dsl['template']);
+            $path = $this->resolveReference($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
             $template = dirname($context['path']) . '/templates/' . $path;
             if (!is_file($template)) {
@@ -185,9 +186,9 @@ class FileExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Can not save file: either body or template tag must be a string");
         }
 
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
 
-        $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
+        $overwrite = isset($dsl['overwrite']) ? $this->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($fileName)) {
             throw new MigrationBundleException("Can not save file '$fileName: file already exists");
         }
@@ -214,7 +215,7 @@ class FileExecutor extends AbstractExecutor
         if (isset($dsl['body']) && is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
         } elseif (isset($dsl['template']) && is_string($dsl['template'])) {
-            $path = $this->referenceResolver->resolveReference($dsl['template']);
+            $path = $this->resolveReference($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
             $template = dirname($context['path']) . '/templates/' . $path;
             if (!is_file($template)) {
@@ -225,7 +226,7 @@ class FileExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Can not append to file: either body or template tag must be a string");
         }
 
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
 
         $return = file_put_contents($fileName, $contents, FILE_APPEND);
 
@@ -249,7 +250,7 @@ class FileExecutor extends AbstractExecutor
         if (isset($dsl['body']) && is_string($dsl['body'])) {
             $contents = $this->resolveReferencesInText($dsl['body']);
         } elseif (isset($dsl['template']) && is_string($dsl['template'])) {
-            $path = $this->referenceResolver->resolveReference($dsl['template']);
+            $path = $this->resolveReference($dsl['template']);
             // we use the same logic as for the image/file fields in content: look up file 1st relative to the migration
             $template = dirname($context['path']) . '/templates/' . $path;
             if (!is_file($template)) {
@@ -260,7 +261,7 @@ class FileExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Can not append to file: either body or template tag must be a string");
         }
 
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
 
         if (file_exists($fileName)) {
             $contents .= file_get_contents($fileName);
@@ -285,15 +286,15 @@ class FileExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Can not copy file: from or to missing");
         }
 
-        $fileName = $this->referenceResolver->resolveReference($dsl['from']);
+        $fileName = $this->resolveReference($dsl['from']);
         if (!file_exists($fileName)) {
             throw new MigrationBundleException("Can not copy file '$fileName': file missing");
         }
 
         $this->setReferences($fileName, $dsl);
 
-        $to = $this->referenceResolver->resolveReference($dsl['to']);
-        $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
+        $to = $this->resolveReference($dsl['to']);
+        $overwrite = isset($dsl['overwrite']) ? $this->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($to)) {
             throw new MigrationBundleException("Can not copy file to '$to: file already exists");
         }
@@ -317,15 +318,15 @@ class FileExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Can not move file: from or to missing");
         }
 
-        $fileName = $this->referenceResolver->resolveReference($dsl['from']);
+        $fileName = $this->resolveReference($dsl['from']);
         if (!file_exists($fileName)) {
             throw new MigrationBundleException("Can not move file '$fileName': file missing");
         }
 
         $this->setReferences($fileName, $dsl);
 
-        $to = $this->referenceResolver->resolveReference($dsl['to']);
-        $overwrite = isset($dsl['overwrite']) ? $this->referenceResolver->resolveReference($dsl['overwrite']) : false;
+        $to = $this->resolveReference($dsl['to']);
+        $overwrite = isset($dsl['overwrite']) ? $this->resolveReference($dsl['overwrite']) : false;
         if (!$overwrite && file_exists($to)) {
             throw new MigrationBundleException("Can not move to '$to': file already exists");
         }
@@ -349,7 +350,7 @@ class FileExecutor extends AbstractExecutor
             throw new InvalidStepDefinitionException("Can not delete file: name missing");
         }
 
-        $fileName = $this->referenceResolver->resolveReference($dsl['file']);
+        $fileName = $this->resolveReference($dsl['file']);
         if (!file_exists($fileName)) {
             throw new MigrationBundleException("Can not move delete '$fileName': file missing");
         }
@@ -414,7 +415,7 @@ class FileExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $this->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;
@@ -456,7 +457,7 @@ class FileExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $this->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;

@@ -28,11 +28,11 @@ class UrlWildcardManager extends RepositoryExecutor
             throw new InvalidStepDefinitionException("The 'destination' key is required to create a new urlwildcard.");
         }
 
-        $forward = isset($step->dsl['forward']) ? $this->referenceResolver->resolveReference($step->dsl['forward']) : false;
+        $forward = isset($step->dsl['forward']) ? $this->resolveReference($step->dsl['forward']) : false;
 
         $url = $urlWildcardService->create(
-            $this->referenceResolver->resolveReference($step->dsl['source']),
-            $this->referenceResolver->resolveReference($step->dsl['destination']), $forward);
+            $this->resolveReference($step->dsl['source']),
+            $this->resolveReference($step->dsl['destination']), $forward);
 
         $this->setReferences($url, $step);
 
@@ -76,7 +76,7 @@ class UrlWildcardManager extends RepositoryExecutor
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->urlWildcardMatcher->match($match, $tolerateMisses);
     }

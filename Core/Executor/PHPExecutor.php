@@ -65,7 +65,7 @@ class PHPExecutor extends BasePHPExecutor
         if (!isset($dsl['function'])) {
             throw new InvalidStepDefinitionException("Missing 'function' for php migration step");
         }
-        $function = $this->referenceResolver->resolveReference($dsl['function']);
+        $function = $this->resolveReference($dsl['function']);
         if (!function_exists($function)) {
             throw new InvalidStepDefinitionException("Can not call function: $function is not a function");
         }
@@ -102,7 +102,7 @@ class PHPExecutor extends BasePHPExecutor
         if (!isset($dsl['method'])) {
             throw new InvalidStepDefinitionException("Missing 'method' for php migration step");
         }
-        $method = $this->referenceResolver->resolveReference($dsl['method']);
+        $method = $this->resolveReference($dsl['method']);
 
         $callable = array($class, $method);
 

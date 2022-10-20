@@ -9,9 +9,13 @@ use Kaliop\eZMigrationBundle\API\Exception\InvalidStepDefinitionException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Kaliop\eZMigrationBundle\API\Value\MigrationStep;
 
+/**
+ * @property EmbeddedReferenceResolverBagInterface $referenceResolver
+ */
 class SQLExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
+    use ReferenceSetterTrait;
     use NonScalarReferenceSetterTrait;
 
     protected $scalarReferences = array('count');
@@ -23,9 +27,6 @@ class SQLExecutor extends AbstractExecutor
 
     protected $supportedStepTypes = array('sql');
     protected $supportedActions = array('exec', 'query');
-
-    /** @var EmbeddedReferenceResolverBagInterface $referenceResolver */
-    protected $referenceResolver;
 
     protected $queryRequiresFetching = false;
 
@@ -151,7 +152,7 @@ class SQLExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $this->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;
@@ -193,7 +194,7 @@ class SQLExecutor extends AbstractExecutor
             if (isset($reference['overwrite'])) {
                 $overwrite = $reference['overwrite'];
             }
-            $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+            $this->addReference($reference['identifier'], $value, $overwrite);
         }
 
         return true;

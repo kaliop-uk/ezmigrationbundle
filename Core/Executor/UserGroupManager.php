@@ -36,7 +36,7 @@ class UserGroupManager extends RepositoryExecutor
         $userService = $this->repository->getUserService();
 
         $parentGroupId = $step->dsl['parent_group_id'];
-        $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
+        $parentGroupId = $this->resolveReference($parentGroupId);
         $parentGroup = $this->userGroupMatcher->matchOneByKey($parentGroupId);
 
         $contentType = $this->repository->getContentTypeService()->loadContentTypeByIdentifier($this->getUserGroupContentType($step));
@@ -53,7 +53,7 @@ class UserGroupManager extends RepositoryExecutor
         }
 
         if (isset($step->dsl['section'])) {
-            $sectionKey = $this->referenceResolver->resolveReference($step->dsl['section']);
+            $sectionKey = $this->resolveReference($step->dsl['section']);
             $section = $this->sectionMatcher->matchOneByKey($sectionKey);
             $userGroupCreateStruct->sectionId = $section->id;
         }
@@ -64,7 +64,7 @@ class UserGroupManager extends RepositoryExecutor
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
             foreach ($step->dsl['roles'] as $roleId) {
-                $roleId = $this->referenceResolver->resolveReference($roleId);
+                $roleId = $this->resolveReference($roleId);
                 $role = $this->roleMatcher->matchOneByKey($roleId);
                 $roleService->assignRoleToUserGroup($role, $userGroup);
             }
@@ -126,7 +126,7 @@ class UserGroupManager extends RepositoryExecutor
 
             if (isset($step->dsl['parent_group_id'])) {
                 $parentGroupId = $step->dsl['parent_group_id'];
-                $parentGroupId = $this->referenceResolver->resolveReference($parentGroupId);
+                $parentGroupId = $this->resolveReference($parentGroupId);
                 $newParentGroup = $this->userGroupMatcher->matchOneByKey($parentGroupId);
 
                 // Move group to new parent
@@ -198,7 +198,7 @@ class UserGroupManager extends RepositoryExecutor
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->userGroupMatcher->match($match, $tolerateMisses);
     }
@@ -256,7 +256,7 @@ class UserGroupManager extends RepositoryExecutor
 
     protected function setSection(Content $content, $sectionKey)
     {
-        $sectionKey = $this->referenceResolver->resolveReference($sectionKey);
+        $sectionKey = $this->resolveReference($sectionKey);
         $section = $this->sectionMatcher->matchOneByKey($sectionKey);
 
         $sectionService = $this->repository->getSectionService();

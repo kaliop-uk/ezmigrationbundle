@@ -59,10 +59,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         $lang = $this->getLanguageCode($step);
 
         $contentTypeGroupId = $step->dsl['content_type_group'];
-        $contentTypeGroupId = $this->referenceResolver->resolveReference($contentTypeGroupId);
+        $contentTypeGroupId = $this->resolveReference($contentTypeGroupId);
         $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
 
-        $contentTypeIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $contentTypeIdentifier = $this->resolveReference($step->dsl['identifier']);
         $contentTypeCreateStruct = $contentTypeService->newContentTypeCreateStruct($contentTypeIdentifier);
         $contentTypeCreateStruct->mainLanguageCode = $lang;
 
@@ -105,7 +105,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         foreach ($step->dsl['attributes'] as $position => $attribute) {
             // allow easy reuse of attribute defs by storing them in references
             if (is_string($attribute)) {
-                $attribute = $this->referenceResolver->resolveReference($attribute);
+                $attribute = $this->resolveReference($attribute);
             }
             $fieldDefinition = $this->createFieldDefinition($contentTypeService, $attribute, $contentTypeIdentifier, $lang);
             $maxFieldDefinitionPos = $fieldDefinition->position > $maxFieldDefinitionPos ? $fieldDefinition->position : $maxFieldDefinitionPos;
@@ -172,7 +172,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
             $newIdentifier = null;
             if (isset($step->dsl['new_identifier'])) {
-                $newIdentifier = $this->referenceResolver->resolveReference($step->dsl['new_identifier']);
+                $newIdentifier = $this->resolveReference($step->dsl['new_identifier']);
                 $contentTypeUpdateStruct->identifier = $newIdentifier;
             }
 
@@ -218,7 +218,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
                     // allow easy reuse of attribute defs by storing them in references
                     if (is_string($attribute)) {
-                        $attribute = $this->referenceResolver->resolveReference($attribute);
+                        $attribute = $this->resolveReference($attribute);
                     }
 
                     $existingFieldDefinition = $this->contentTypeHasFieldDefinition($contentType, $attribute['identifier']);
@@ -350,7 +350,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->contentTypeMatcher->match($match, $tolerateMisses);
     }
@@ -786,7 +786,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
     protected function setContentTypeGroup(ContentType $contentType, $contentTypeGroupId)
     {
-        $contentTypeGroupId = $this->referenceResolver->resolveReference($contentTypeGroupId);
+        $contentTypeGroupId = $this->resolveReference($contentTypeGroupId);
         $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
         $contentTypeGroupId = $contentTypeGroup->id;
 
@@ -802,7 +802,7 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
     protected function unsetContentTypeGroup(ContentType $contentType, $contentTypeGroupId)
     {
-        $contentTypeGroupId = $this->referenceResolver->resolveReference($contentTypeGroupId);
+        $contentTypeGroupId = $this->resolveReference($contentTypeGroupId);
         $contentTypeGroup = $this->contentTypeGroupMatcher->matchOneByKey($contentTypeGroupId);
         $contentTypeGroupId = $contentTypeGroup->id;
 

@@ -5,11 +5,12 @@
     mode: set
     identifier: xxx # name of the reference to set
     value: zzz # value for the reference.
+               # It can be a scalar or an arbitrarily nested array
                # It can be a Symfony configuration parameter by using the syntax '%name%'
                # It can be an environment variable by using the syntax '%env(name)%'
                # NB: in this case variables set by Symfony's .env mechanism are not supported
     overwrite: true|false # Optional, default false. If not set, and the reference already exists, an exception is thrown
-    resolve_references: true|false # Optional, default true. Use this to avoid reference resolution when 'value' is string
+    resolve_references: true|false # Optional, default true. Use this to avoid reference resolution for 'value'
 
 -
     # Load a whole set of references from a json or yaml file

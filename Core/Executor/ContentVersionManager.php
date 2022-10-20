@@ -122,11 +122,11 @@ class ContentVersionManager extends ContentManager
         $match = $this->resolveReferencesRecursively($match);
         $matchVersions = $this->resolveReferencesRecursively($matchVersions);
 
-        $sort = isset($step->dsl['match_sort']) ? $this->referenceResolver->resolveReference($step->dsl['match_sort']) : array();
-        $offset = isset($step->dsl['match_offset']) ? $this->referenceResolver->resolveReference($step->dsl['match_offset']) : 0;
-        $limit = isset($step->dsl['match_limit']) ? $this->referenceResolver->resolveReference($step->dsl['match_limit']) : 0;
+        $sort = isset($step->dsl['match_sort']) ? $this->resolveReference($step->dsl['match_sort']) : array();
+        $offset = isset($step->dsl['match_offset']) ? $this->resolveReference($step->dsl['match_offset']) : 0;
+        $limit = isset($step->dsl['match_limit']) ? $this->resolveReference($step->dsl['match_limit']) : 0;
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->versionMatcher->match($match, $matchVersions, $sort, $offset, $limit, $tolerateMisses);
     }

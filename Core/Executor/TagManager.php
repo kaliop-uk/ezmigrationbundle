@@ -47,7 +47,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
         $parentTagId = 0;
         if (isset($step->dsl['parent_tag_id'])) {
             $parentTagId = $step->dsl['parent_tag_id'];
-            $parentTagId = $this->referenceResolver->resolveReference($parentTagId);
+            $parentTagId = $this->resolveReference($parentTagId);
             // allow remote-ids to be used to reference parent tag
             if (!is_int($parentTagId) && !ctype_digit($parentTagId)) {
                 $parentTag = $this->tagMatcher->matchOneByKey($parentTagId);
@@ -74,12 +74,12 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
         $tagCreateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagCreateStruct($tagCreateArray);
 
         if (is_string($step->dsl['keywords'])) {
-            $keyword = $this->referenceResolver->resolveReference($step->dsl['keywords']);
+            $keyword = $this->resolveReference($step->dsl['keywords']);
             $tagCreateStruct->setKeyword($keyword);
         } else {
             foreach ($step->dsl['keywords'] as $langCode => $keyword)
             {
-                $keyword = $this->referenceResolver->resolveReference($keyword);
+                $keyword = $this->resolveReference($keyword);
                 $tagCreateStruct->setKeyword($keyword, $langCode);
             }
         }
@@ -134,11 +134,11 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
             $tagUpdateStruct = new \Netgen\TagsBundle\API\Repository\Values\Tags\TagUpdateStruct($tagUpdateArray);
 
             if (is_string($step->dsl['keywords'])) {
-                $keyword = $this->referenceResolver->resolveReference($step->dsl['keywords']);
+                $keyword = $this->resolveReference($step->dsl['keywords']);
                 $tagUpdateStruct->setKeyword($keyword);
             } else {
                 foreach ($step->dsl['keywords'] as $langCode => $keyword) {
-                    $keyword = $this->referenceResolver->resolveReference($keyword);
+                    $keyword = $this->resolveReference($keyword);
                     $tagUpdateStruct->setKeyword($keyword, $langCode);
                 }
             }
@@ -191,7 +191,7 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->tagMatcher->match($match, $tolerateMisses);
     }

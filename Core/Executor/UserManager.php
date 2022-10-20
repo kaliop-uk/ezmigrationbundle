@@ -47,7 +47,7 @@ class UserManager extends RepositoryExecutor
 
         $userGroups = array();
         foreach ($step->dsl['groups'] as $groupId) {
-            $groupId = $this->referenceResolver->resolveReference($groupId);
+            $groupId = $this->resolveReference($groupId);
             $userGroup = $this->userGroupMatcher->matchOneByKey($groupId);
 
             // q: in which case can we have no group? And should we throw an exception?
@@ -59,14 +59,14 @@ class UserManager extends RepositoryExecutor
         $userContentType = $contentTypeService->loadContentTypeByIdentifier($this->getUserContentType($step));
 
         $userCreateStruct = $userService->newUserCreateStruct(
-            $this->referenceResolver->resolveReference($step->dsl['username']),
-            $this->referenceResolver->resolveReference($step->dsl['email']),
-            $this->referenceResolver->resolveReference($step->dsl['password']),
+            $this->resolveReference($step->dsl['username']),
+            $this->resolveReference($step->dsl['email']),
+            $this->resolveReference($step->dsl['password']),
             $this->getLanguageCode($step),
             $userContentType
         );
-        $userCreateStruct->setField('first_name', $this->referenceResolver->resolveReference($step->dsl['first_name']));
-        $userCreateStruct->setField('last_name', $this->referenceResolver->resolveReference($step->dsl['last_name']));
+        $userCreateStruct->setField('first_name', $this->resolveReference($step->dsl['first_name']));
+        $userCreateStruct->setField('last_name', $this->resolveReference($step->dsl['last_name']));
 
         // Create the user
         $user = $userService->createUser($userCreateStruct, $userGroups);
@@ -75,7 +75,7 @@ class UserManager extends RepositoryExecutor
             $roleService = $this->repository->getRoleService();
             // we support both Ids and Identifiers
             foreach ($step->dsl['roles'] as $roleId) {
-                $roleId = $this->referenceResolver->resolveReference($roleId);
+                $roleId = $this->resolveReference($roleId);
                 $role = $this->roleMatcher->matchOneByKey($roleId);
                 $roleService->assignRoleToUser($role, $user);
             }
@@ -119,13 +119,13 @@ class UserManager extends RepositoryExecutor
             $userUpdateStruct = $userService->newUserUpdateStruct();
 
             if (isset($step->dsl['email'])) {
-                $userUpdateStruct->email = $this->referenceResolver->resolveReference($step->dsl['email']);
+                $userUpdateStruct->email = $this->resolveReference($step->dsl['email']);
             }
             if (isset($step->dsl['password'])) {
-                $userUpdateStruct->password = (string)$this->referenceResolver->resolveReference($step->dsl['password']);
+                $userUpdateStruct->password = (string)$this->resolveReference($step->dsl['password']);
             }
             if (isset($step->dsl['enabled'])) {
-                $userUpdateStruct->enabled = $this->referenceResolver->resolveReference($step->dsl['enabled']);
+                $userUpdateStruct->enabled = $this->resolveReference($step->dsl['enabled']);
             }
 
             $user = $userService->updateUser($user, $userUpdateStruct);
@@ -142,7 +142,7 @@ class UserManager extends RepositoryExecutor
                 $targetGroupIds = [];
                 // Assigning new groups to the user
                 foreach ($groups as $groupToAssignId) {
-                    $groupId = $this->referenceResolver->resolveReference($groupToAssignId);
+                    $groupId = $this->resolveReference($groupToAssignId);
                     $groupToAssign = $this->userGroupMatcher->matchOneByKey($groupId);
                     $targetGroupIds[] = $groupToAssign->id;
 
@@ -229,7 +229,7 @@ class UserManager extends RepositoryExecutor
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($match);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->userMatcher->match($match, $tolerateMisses);
     }

@@ -13,11 +13,13 @@ use Kaliop\eZMigrationBundle\Core\RepositoryUserSetterTrait;
 
 /**
  * The core manager class that all migration action managers inherit from.
+ * @property ReferenceResolverBagInterface $referenceResolver
  */
 abstract class RepositoryExecutor extends AbstractExecutor
 {
     use RepositoryUserSetterTrait;
     use IgnorableStepExecutorTrait;
+    use ReferenceSetterTrait;
     use NonScalarReferenceSetterTrait;
 
     protected $scalarReferences = array('count');
@@ -45,9 +47,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
     protected $repository;
 
     protected $configResolver;
-
-    /** @var ReferenceResolverBagInterface $referenceResolver */
-    protected $referenceResolver;
 
     // to redefine in subclasses if they don't support all methods, or if they support more...
     protected $supportedActions = array(
@@ -152,7 +151,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     protected function getUserContentType($step)
     {
-        return isset($step->dsl['user_content_type']) ? $this->referenceResolver->resolveReference($step->dsl['user_content_type']) : $this->getUserContentTypeFromContext($step->context);
+        return isset($step->dsl['user_content_type']) ? $this->resolveReference($step->dsl['user_content_type']) : $this->getUserContentTypeFromContext($step->context);
     }
 
     /**
@@ -161,7 +160,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
      */
     protected function getUserGroupContentType($step)
     {
-        return isset($step->dsl['usergroup_content_type']) ? $this->referenceResolver->resolveReference($step->dsl['usergroup_content_type']) : $this->getUserGroupContentTypeFromContext($step->context);
+        return isset($step->dsl['usergroup_content_type']) ? $this->resolveReference($step->dsl['usergroup_content_type']) : $this->getUserGroupContentTypeFromContext($step->context);
     }
 
     /**
@@ -267,7 +266,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
                     $referencesValues[$referenceIdentifier] = array();
                 }
             }
-            $this->referenceResolver->addReference($referenceIdentifier, $referencesValues[$referenceIdentifier], $overwrite);
+            $this->addReference($referenceIdentifier, $referencesValues[$referenceIdentifier], $overwrite);
         }
 
         return true;
@@ -292,7 +291,7 @@ abstract class RepositoryExecutor extends AbstractExecutor
                     if (isset($reference['overwrite'])) {
                         $overwrite = $reference['overwrite'];
                     }
-                    $this->referenceResolver->addReference($reference['identifier'], $value, $overwrite);
+                    $this->addReference($reference['identifier'], $value, $overwrite);
                     unset($referencesDefinition[$key]);
                     break;
 
@@ -324,22 +323,6 @@ abstract class RepositoryExecutor extends AbstractExecutor
 
         return $entity;
     }*/
-
-    /**
-     * Courtesy code to avoid reimplementing it in every subclass
-     * @todo will be moved into the reference resolver classes
-     */
-    protected function resolveReferencesRecursively($match)
-    {
-        if (is_array($match)) {
-            foreach ($match as $condition => $values) {
-                $match[$condition] = $this->resolveReferencesRecursively($values);
-            }
-            return $match;
-        } else {
-            return $this->referenceResolver->resolveReference($match);
-        }
-    }
 
     /**
      * @param array $referenceDefinition

@@ -11,7 +11,7 @@
                     # syntax: "this is an email subject about [reference:my_ref] etc..."
     body: string # references will be resolved within the string, as happens for rich text fields: use the following
                  # syntax: "this is an email body about [reference:my_ref] etc..."
-    attach: string # a path to a file. References will be resolved
+    attach: string|string[] # path to one/many file(s). References will be resolved
     priority: string # references will be resolved
     read_receipt_to: string # references will be resolved
     return_path: string # references will be resolved

@@ -24,8 +24,6 @@ class LoopExecutor extends AbstractExecutor
     /** @var LoopResolver $loopResolver */
     protected $loopResolver;
 
-    protected $referenceResolver;
-
     public function __construct($migrationService, $loopResolver, ReferenceResolverInterface $referenceResolver)
     {
         $this->migrationService = $migrationService;
@@ -77,7 +75,7 @@ class LoopExecutor extends AbstractExecutor
 
     protected function loopRepeat($dsl, $context)
     {
-        $repeat = $this->referenceResolver->resolveReference($dsl['repeat']);
+        $repeat = $this->resolveReference($dsl['repeat']);
         if ((!is_int($repeat) && !ctype_digit($repeat)) || $repeat < 0) {
             throw new InvalidStepDefinitionException("Invalid step definition: '$repeat' is not a positive integer");
         }
@@ -120,7 +118,7 @@ class LoopExecutor extends AbstractExecutor
     {
         $stepExecutors = $this->validateSteps($dsl);
 
-        $over = $this->referenceResolver->resolveReference($dsl['over']);
+        $over = $this->resolveReference($dsl['over']);
 
         $this->loopResolver->beginLoop();
         $result = null;

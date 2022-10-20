@@ -61,7 +61,7 @@ trait EmbeddedRegexpReferenceResolverTrait
     /**
      * @param mixed $stringOrArray
      * @return array|string
-     * @ todo decide what to do with this method...
+     * @todo decide what to do with this method...
      */
     /*protected function resolveEmbeddedReferencesRecursively($stringOrArray)
     {

@@ -1,10 +1,21 @@
-Version 6.x (unreleased)
-========================
+Version 6.2.0 (unreleased)
+==========================
 
-* Fixed: migrations created using `kaliop:migration:generate` would create yml which was not valid for import, for conent
+* Fixed: migrations created using `kaliop:migration:generate` would create yml which was not valid for import, for content
   fields of type eztags
 
-* Improved: it is now possible to set references to the value of content fields which are of type recursive array
+* Improved: it is now possible to set references to the value of content fields which are recursive arrays (only
+  1-level arrays were supported previously)
+
+* Improved: in step `reference/set`, when reference resolving for `value` is enabled, it will be done recursively if
+  value is an array
+
+* Improved: migration step `mail/send` learned how to deal with multiple attachment files, using an array for element `attach`
+
+* Improved: added a cookbook recipe about adding tags to an eztags field
+
+* BC change (for developers extending the bundle): class `AbstractExecutor` gained a few method and properties, and it
+  lost method `parseReferenceDefinition`, which was moved to trait `ReferenceSetterTrait`
 
 
 Version 6.1.0

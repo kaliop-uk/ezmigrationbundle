@@ -47,7 +47,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
         $objectStateService = $this->repository->getObjectStateService();
 
-        $objectStateGroupIdentifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+        $objectStateGroupIdentifier = $this->resolveReference($step->dsl['identifier']);
         $objectStateGroupCreateStruct = $objectStateService->newObjectStateGroupCreateStruct($objectStateGroupIdentifier);
         $objectStateGroupCreateStruct->defaultLanguageCode = $this->getLanguageCode($step); // was: self::DEFAULT_LANGUAGE_CODE;
 
@@ -99,7 +99,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
             $objectStateGroupUpdateStruct = $objectStateService->newObjectStateGroupUpdateStruct();
 
             if (isset($step->dsl['identifier'])) {
-                $objectStateGroupUpdateStruct->identifier = $this->referenceResolver->resolveReference($step->dsl['identifier']);
+                $objectStateGroupUpdateStruct->identifier = $this->resolveReference($step->dsl['identifier']);
             }
             if (isset($step->dsl['names'])) {
                 foreach ($step->dsl['names'] as $languageCode => $name) {
@@ -153,7 +153,7 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
         // convert the references passed in the match
         $match = $this->resolveReferencesRecursively($step->dsl['match']);
 
-        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->referenceResolver->resolveReference($step->dsl['match_tolerate_misses']) : false;
+        $tolerateMisses = isset($step->dsl['match_tolerate_misses']) ? $this->resolveReference($step->dsl['match_tolerate_misses']) : false;
 
         return $this->objectStateGroupMatcher->match($match, $tolerateMisses);
     }

@@ -60,8 +60,8 @@ class ServiceExecutor extends BasePHPExecutor
             throw new InvalidStepDefinitionException("Can not call service method: 'method' missing");
         }
 
-        $service = $this->container->get($this->referenceResolver->resolveReference($dsl['service']));
-        $method = $this->referenceResolver->resolveReference($dsl['method']);
+        $service = $this->container->get($this->resolveReference($dsl['service']));
+        $method = $this->resolveReference($dsl['method']);
         $callable = array($service, $method);
         if (!is_callable($callable)) {
             throw new InvalidStepDefinitionException("Can not call service method: $method is not a method of " . get_class($service));
