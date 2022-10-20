@@ -15,6 +15,7 @@ use Symfony\Component\Process\Process;
 class ProcessExecutor extends AbstractExecutor
 {
     use IgnorableStepExecutorTrait;
+    use ReferenceSetterTrait;
 
     protected $supportedStepTypes = array('process');
     protected $supportedActions = array('run');
