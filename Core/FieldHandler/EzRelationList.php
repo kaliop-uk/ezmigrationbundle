@@ -22,11 +22,11 @@ class EzRelationList extends AbstractFieldHandler implements FieldValueImporterI
      */
     public function hashToFieldValue($fieldValue, array $context = array())
     {
-        if (count($fieldValue) == 1 && isset($fieldValue['destinationContentIds'])) {
+        if ($fieldValue === null) {
+            $ids = array();
+        } else if (count($fieldValue) == 1 && isset($fieldValue['destinationContentIds'])) {
             // fromHash format
             $ids = $fieldValue['destinationContentIds'];
-        } else if ($fieldValue === null) {
-            $ids = array();
         } else {
             // simplified format
             $ids = $fieldValue;
