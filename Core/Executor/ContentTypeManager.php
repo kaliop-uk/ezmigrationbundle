@@ -393,10 +393,10 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                     $value = $contentType->defaultAlwaysAvailable;
                     break;
                 case 'default_sort_field':
-                    $value = $contentType->defaultSortField;
+                    $value = $this->sortConverter->sortField2Hash($contentType->defaultSortField);
                     break;
                 case 'default_sort_order':
-                    $value = $contentType->defaultSortOrder;
+                    $value = $this->sortConverter->sortOrder2Hash($contentType->defaultSortOrder);
                     break;
                 case 'description':
                     $value = $contentType->getDescription($lang);

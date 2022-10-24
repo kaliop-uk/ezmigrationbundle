@@ -1,3 +1,10 @@
+Version ... (unreleased)
+========================
+
+* Fixed: when setting references to a ContentType sorting attributes, numeric values were used instead of their string
+  representation
+
+
 Version 6.2.0
 =============
 
