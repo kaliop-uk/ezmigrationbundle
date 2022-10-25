@@ -4,6 +4,9 @@ Version ... (unreleased)
 * Fixed: when setting references to a ContentType sorting attributes, numeric values were used instead of their string
   representation
 
+* Fixed: when generating contentType migrations, do export the `default_always_available`, `default_sort_order` and
+  `default_sort_field` attributes
+
 
 Version 6.2.0
 =============

@@ -526,6 +526,9 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
                         'name_pattern' => $contentType->nameSchema,
                         'url_name_pattern' => $contentType->urlAliasSchema,
                         'is_container' => $contentType->isContainer,
+                        'default_always_available' => $contentType->defaultAlwaysAvailable,
+                        'default_sort_field' => $this->sortConverter->sortField2Hash($contentType->defaultSortField),
+                        'default_sort_order' => $this->sortConverter->sortOrder2Hash($contentType->defaultSortOrder),
                         'lang' => $this->getLanguageCodeFromContext($context),
                         'attributes' => $attributes
                     )
