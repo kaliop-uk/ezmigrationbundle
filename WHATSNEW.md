@@ -1,5 +1,5 @@
-Version ... (unreleased)
-========================
+Version 6.2.1
+=============
 
 * Fixed: when setting references to a ContentType sorting attributes, numeric values were used instead of their string
   representation
