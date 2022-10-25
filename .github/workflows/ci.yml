@@ -42,7 +42,7 @@ jobs:
                 uses: actions/checkout@v2
 
             # Although this action is useful, we prefer to use the same script to set up php that we use for the
-            # docker image used for local testing. This allows us to make sure that script is always in good shape
+            # docker image used for local testing. This allows us to make sure that the script is always in good shape
             #-
             #    uses: shivammathur/setup-php@v2
             #    with:

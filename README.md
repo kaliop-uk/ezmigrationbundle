@@ -297,7 +297,7 @@ Event Subscribers are supported as an alternative to Event Listeners, as is stan
 
 * if you are using the Doctrine Migrations Bundle to manage your schema, you will get spurious sql created to handle the
     database tables belonging to Kaliop Migrations Bundle.
-    For the moment, the best work around is to use the `filter-expression` parameter on the command-line when running
+    For the moment, the best workaround is to use the `filter-expression` parameter on the command-line when running
     `doctrine:migrations:diff` and friends, with a value of `kaliop_migrations_*`
 
 * if you get fatal errors when running a migration stating that a node or object has not been found, it is most likely
@@ -456,12 +456,12 @@ Steps to set up a dedicated test environment and run the tests in it:
     git clone --depth 1 https://github.com/tanoconsulting/euts.git teststack
     # if you have a github auth token, it is a good idea to copy it now to teststack/docker/data/.composer/auth.json
 
-    # this config sets up a test environment with eZPlatform 2.5 running on php 7.4 / debian bullseye
+    # this config sets up a test environment with eZPlatform 2.5 running on php 7.4 / ubuntu jammy
     export TESTSTACK_CONFIG_FILE=Tests/environment/.euts.2.5.env
 
     ./teststack/teststack build
     ./teststack/teststack runtests
-    ./teststack/teststack.sh stop
+    ./teststack/teststack stop
 
 You can also run a single test case:
 
@@ -487,7 +487,7 @@ The tests in the Docker container run using the version of debian/php/eZPlatform
 If no value is set for that environment variable, a file named `.euts.env` is looked for.
 If no such file is present, some defaults are used, you can check the documentation in ./teststack/README.md to find out
 what they are.
-If you want to test against a different version of eZ/php/debian, feel free to:
+If you want to test against a different version of eZ/php/mysql/debian, feel free to:
 - create the `.euts.env` file, if it does not exist
 - add to it any required var (see file `teststack/.euts.env.example` as guidance)
 - rebuild the test stack
