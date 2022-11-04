@@ -54,7 +54,7 @@ jobs:
             #        coverage: none
 
             -   name: get the teststack, set it up and run tests
-                uses: tanoconsulting/euts@754bd50c9aeed9d7404519e5f1b37825d8045ddc
+                uses: tanoconsulting/euts@b88656ea95324d5440b4a8d98a14f8501cb38665
                 with:
                     configuration-file: ${{ matrix.config_file }}
                     code-coverage-service: ${{ matrix.code-coverage }}
