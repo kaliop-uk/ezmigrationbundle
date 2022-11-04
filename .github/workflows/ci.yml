@@ -54,10 +54,11 @@ jobs:
             #        coverage: none
 
             -   name: get the teststack, set it up and run tests
-                uses: tanoconsulting/euts@45a740aa3027c03d50374d32572f3c8da9034325
+                uses: tanoconsulting/euts@754bd50c9aeed9d7404519e5f1b37825d8045ddc
                 with:
                     configuration-file: ${{ matrix.config_file }}
-                    upload-code-coverage: ${{ matrix.code-coverage }}
+                    code-coverage-service: ${{ matrix.code-coverage }}
+                    repo-token: ${{ secrets.GITHUB_TOKEN }}
 
             -   name: troubleshoot
                 if: ${{ failure() }}
