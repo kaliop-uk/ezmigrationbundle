@@ -56,7 +56,7 @@ jobs:
             -   name: get the teststack, set it up and run tests
                 uses: tanoconsulting/euts@b88656ea95324d5440b4a8d98a14f8501cb38665
                 with:
-                    configuration-file: ${{ matrix.config_file }}
+                    configuration-file: Tests/environment/${{ matrix.config_file }}
                     code-coverage-service: ${{ matrix.code-coverage }}
                     repo-token: ${{ secrets.GITHUB_TOKEN }}
 
