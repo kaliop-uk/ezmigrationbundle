@@ -53,12 +53,14 @@ jobs:
             #        # NB: this disables xdebug completely
             #        coverage: none
 
-            -   name: get the teststack, set it up and run tests
-                uses: tanoconsulting/euts@b88656ea95324d5440b4a8d98a14f8501cb38665
+            -   name: set up the test stack and run tests
+                uses: tanoconsulting/euts@87d6c02587dc39e5337f92c223af546de0188550
                 with:
                     configuration-file: Tests/environment/${{ matrix.config_file }}
                     code-coverage-service: ${{ matrix.code-coverage }}
                     repo-token: ${{ secrets.GITHUB_TOKEN }}
+                env:
+                    MY_ENV: test
 
             -   name: troubleshoot
                 if: ${{ failure() }}
