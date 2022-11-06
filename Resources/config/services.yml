@@ -838,7 +838,7 @@ services:
         arguments:
             - '@ez_migration_bundle.tag_matcher'
 
-    # A service which resolves *only* custom references. As such, it is used in most places
+    # A service which resolves *only* custom references (plus loop variables and expressions). As such, it is used in most places
     ez_migration_bundle.reference_resolver.customreference:
         alias: ez_migration_bundle.reference_resolver.customreference.flexible
 
