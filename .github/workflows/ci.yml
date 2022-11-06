@@ -54,7 +54,7 @@ jobs:
             #        coverage: none
 
             -   name: set up the test stack and run tests
-                uses: tanoconsulting/euts@0.8
+                uses: tanoconsulting/euts@0.8.0
                 with:
                     configuration-file: Tests/environment/${{ matrix.config-file }}
                     code-coverage-service: ${{ matrix.code-coverage }}
