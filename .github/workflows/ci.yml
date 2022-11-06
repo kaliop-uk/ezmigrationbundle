@@ -19,22 +19,22 @@ jobs:
                 # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners for available os versions
                 # @todo add some tests running on 'windows-latest'
                 include:
-                    - config_file: .euts.cp.env
+                    - config-file: .euts.cp.env
                       operating-system: 'ubuntu-20.04'
                       code-coverage: ~
-                    - config_file: .euts.1.7.env
+                    - config-file: .euts.1.7.env
                       operating-system: 'ubuntu-20.04'
                       code-coverage: ~
-                    - config_file: .euts.1.13.env
+                    - config-file: .euts.1.13.env
                       operating-system: 'ubuntu-20.04'
                       code-coverage: ~
-                    - config_file: .euts.2.3.env
+                    - config-file: .euts.2.3.env
                       operating-system: 'ubuntu-22.04'
                       code-coverage: ~
-                    - config_file: .euts.2.4.env
+                    - config-file: .euts.2.4.env
                       operating-system: 'ubuntu-22.04'
                       code-coverage: ~
-                    - config_file: .euts.2.5.env
+                    - config-file: .euts.2.5.env
                       operating-system: 'ubuntu-22.04'
                       code-coverage: codecov
         steps:
@@ -56,11 +56,11 @@ jobs:
             -   name: set up the test stack and run tests
                 uses: tanoconsulting/euts@87d6c02587dc39e5337f92c223af546de0188550
                 with:
-                    configuration-file: Tests/environment/${{ matrix.config_file }}
+                    configuration-file: Tests/environment/${{ matrix.config-file }}
                     code-coverage-service: ${{ matrix.code-coverage }}
                     repo-token: ${{ secrets.GITHUB_TOKEN }}
-                env:
-                    MY_ENV: test
+                    # enable this to run the tests in containers, allowing usage of a custom mysql version for each test run
+                    run-on: containers
 
             -   name: troubleshoot
                 if: ${{ failure() }}
