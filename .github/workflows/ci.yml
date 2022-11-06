@@ -7,7 +7,7 @@ jobs:
         runs-on: ${{ matrix.operating-system }}
         env:
             SYMFONY_ENV: behat
-            #DB_HOST: localhost
+            DB_HOST: localhost
             DB_TYPE: mysql
             DB_ROOT_PASSWORD: root
             DB_EZ_USER: ezp
@@ -59,9 +59,6 @@ jobs:
                     configuration-file: Tests/environment/${{ matrix.config-file }}
                     code-coverage-service: ${{ matrix.code-coverage }}
                     repo-token: ${{ secrets.GITHUB_TOKEN }}
-                    # Enable this to run the tests in containers, allowing usage of a custom mysql version for each test run.
-                    # In that scenario, you have to leave the DB_HOST env var empty or set it to `mysql`
-                    run-on: containers
 
             -   name: troubleshoot
                 if: ${{ failure() }}
