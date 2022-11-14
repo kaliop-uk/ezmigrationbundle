@@ -1,12 +1,11 @@
 Kaliop eZ-Migration Bundle
 ==========================
 
-This bundle makes it easy to programmatically deploy changes to eZPlatform / eZPublish 5 database structure and contents.
+This bundle makes it easy to programmatically deploy changes to eZPlatform 1 and 2 / eZPublish 5 database structure and contents.
 
-It is inspired by the [DoctrineMigrationsBundle](http://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html)
+It is inspired by the [DoctrineMigrationsBundle](https://symfony.com/doc/current/bundles/DoctrineMigrationsBundle/index.html)
 
 You can think of it as the grandson of the legacy [ezxmlinstaller](https://github.com/ezsystems/ezxmlinstaller) extension.
-
 
 ## Requirements
 
@@ -14,7 +13,8 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 * eZPlatform 1, eZPlatform 2 or eZPublish Enterprise 5.4 or eZPublish Community 2014.11 or later.
 
-NB: for eZPlatform 3 and later, head on to https://github.com/tanoconsulting/ezmigrationbundle2
+NB: for eZPlatform 3 (aka Ibexa DXP), head on to https://github.com/tanoconsulting/ezmigrationbundle2. For Ibexa DXP 4,
+go to https://github.com/tanoconsulting/ibexa-migration-bundle.
 
 
 ## Installation
