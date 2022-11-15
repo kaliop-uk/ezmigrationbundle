@@ -69,6 +69,6 @@ class ServiceExecutor extends BasePHPExecutor
 
         $args = $this->getArguments($dsl);
 
-        $this->runCallable($callable, $args, $dsl);
+        return $this->runCallable($callable, $args, $dsl);
     }
 }

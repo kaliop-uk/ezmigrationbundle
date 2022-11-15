@@ -41,7 +41,7 @@ class LoopExecutor extends AbstractExecutor
     {
         parent::execute($step);
 
-        // BC
+        // BC: support 'mode'
         if (isset($step->dsl['repeat'])) {
             if (isset($step->dsl['over'])) {
                 throw new InvalidStepDefinitionException("Invalid step definition: can not have both 'repeat' and 'over'");
@@ -59,6 +59,10 @@ class LoopExecutor extends AbstractExecutor
             $action = $step->dsl['mode'];
         } else {
             throw new InvalidStepDefinitionException("Invalid step definition: missing 'repeat' or 'over' or 'mode'");
+        }
+
+        if (!isset($step->dsl['steps']) || !is_array($step->dsl['steps'])) {
+            throw new InvalidStepDefinitionException("Invalid step definition: missing 'steps' or not an array");
         }
 
         if (!in_array($action, $this->supportedActions)) {

@@ -3,7 +3,6 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\API\Value\Migration;
-use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -98,7 +97,7 @@ EOT
 
         $forcedRefs = array();
         if ($input->getOption('set-reference') /*&& !$input->getOption('separate-process')*/) {
-            $refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
+            //$refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
             foreach ($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
                 if (count($ref) < 2 || $ref[0] === '') {

@@ -133,6 +133,7 @@ parameters:
     ez_migration_bundle.reference_resolver.location.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LocationResolver
     ez_migration_bundle.reference_resolver.loop.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\LoopResolver
     ez_migration_bundle.reference_resolver.tag.class: Kaliop\eZMigrationBundle\Core\ReferenceResolver\TagResolver
+
     ez_migration_bundle.helper.limitation_converter.class: Kaliop\eZMigrationBundle\Core\Helper\LimitationConverter
     ez_migration_bundle.helper.sort_converter.class: Kaliop\eZMigrationBundle\Core\Helper\SortConverter
     ez_migration_bundle.helper.console_io.class: Kaliop\eZMigrationBundle\Core\Helper\ConsoleIO
@@ -636,7 +637,7 @@ services:
         class: '%ez_migration_bundle.url_wildcard_matcher.class%'
         arguments:
             - '@ezpublish.api.repository'
-            -
+
     ez_migration_bundle.user_matcher:
         class: '%ez_migration_bundle.user_matcher.class%'
         arguments:

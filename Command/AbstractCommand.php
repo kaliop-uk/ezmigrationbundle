@@ -2,10 +2,10 @@
 
 namespace Kaliop\eZMigrationBundle\Command;
 
+use Kaliop\eZMigrationBundle\Core\MigrationService;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Kaliop\eZMigrationBundle\Core\MigrationService;
 
 /**
  * Base command class that all migration commands extend from.

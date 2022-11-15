@@ -56,7 +56,7 @@
 -
     type: trash
     mode: load
-    match: # See docs above for update and delete
+    match: # See docs above for recover and delete
     match_tolerate_misses: # Optional. See above for allowed values
     references: # Optional. See above for allowed values
     expect: # Optional. See above for allowed values

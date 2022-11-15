@@ -57,7 +57,7 @@ trait ReferenceSetterTrait
         if (is_object($value) || is_resource($value)) {
             return false;
         }
-        foreach($value as $subValue) {
+        foreach ($value as $subValue) {
             if (!$this->isValidReferenceValue($subValue)) {
                 return false;
             }

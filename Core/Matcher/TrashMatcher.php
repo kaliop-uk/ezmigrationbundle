@@ -9,6 +9,7 @@ use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 /// q: is it better to extend Content or Location Matcher ?
 class TrashMatcher extends ContentMatcher
 {
+    // NB: unused for the moment
     const MATCH_ITEM_ID = 'item_id';
 
     protected $allowedConditions = array(

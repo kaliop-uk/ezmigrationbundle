@@ -267,7 +267,6 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
                 isset($step->dsl['modification_date']) ||
                 isset($step->dsl['publication_date'])) {
 
-
                 $contentMetaDataUpdateStruct = $contentService->newContentMetadataUpdateStruct();
 
                 if (isset($step->dsl['always_available'])) {

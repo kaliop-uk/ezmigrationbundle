@@ -214,7 +214,6 @@ EOT
                 $migrationService->failMigration($migration, $errorMessage);
             }
 
-
             return 0;
         }
 
