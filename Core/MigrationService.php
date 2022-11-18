@@ -290,19 +290,23 @@ class MigrationService implements ContextProviderInterface
     }
 
     /**
+     * Note: previous API is kept for BC (subclasses reimplementing this method).
      * @param MigrationDefinition $migrationDefinition
-     * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
-     * @param string $defaultLanguageCode
-     * @param string|int|false|null $adminLogin when false, current user is used; when null, hardcoded admin account
-     * @param bool $force when true, execute a migration if it was already in status DONE or SKIPPED (would throw by default)
-     * @param bool|null forceSigchildEnabled
+     * @param array $migrationContext Supported array keys are: adminUserLogin, defaultLanguageCode,
+     *                                forcedReferences, forceExecution, forceSigchildEnabled, userContentType, userGroupContentType,
+     *                                useTransaction.
+     *                                Bool usage is deprecated. It was: when set to false, no repo transaction will be used to wrap the migration
+     * @param string $defaultLanguageCode Deprecated - use $migrationContext['defaultLanguageCode']
+     * @param string|int|false|null $adminLogin Deprecated - use $migrationContext['adminLogin']; when false, current user is used; when null, hardcoded admin account
+     * @param bool $force Deprecated - use $migrationContext['forceExecution']; when true, execute a migration if it was already in status DONE or SKIPPED (would throw by default)
+     * @param bool|null $forceSigchildEnabled Deprecated
      * @throws \Exception
      *
+     * @todo add support for setting in $migrationContext a userContentType, userGroupContentType ?
      * @todo treating a null and false $adminLogin values differently is prone to hard-to-track errors.
      *       Shall we use instead -1 to indicate the desire to not-login-as-admin-user-at-all ?
-     * @todo refactor. There are too many parameters here to add more. Move to a single parameter: array of options or value-object
      */
-    public function executeMigration(MigrationDefinition $migrationDefinition, $useTransaction = true,
+    public function executeMigration(MigrationDefinition $migrationDefinition, $migrationContext = true,
         $defaultLanguageCode = null, $adminLogin = null, $force = false, $forceSigchildEnabled = null)
     {
         if ($migrationDefinition->status == MigrationDefinition::STATUS_TO_PARSE) {
@@ -313,27 +317,57 @@ class MigrationService implements ContextProviderInterface
             throw new MigrationBundleException("Can not execute " . $this->getEntityName($migrationDefinition). " '{$migrationDefinition->name}': {$migrationDefinition->parsingError}");
         }
 
-        /// @todo add support for setting in $migrationContext a userContentType, userGroupContentType ?
-        $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin, $forceSigchildEnabled);
+        // BC: handling of legacy method call signature
+        if (!is_array($migrationContext)) {
+            $useTransaction = $migrationContext;
+            $migrationContext = $this->migrationContextFromParameters($defaultLanguageCode, $adminLogin, $forceSigchildEnabled);
+            $migrationContext['useTransaction'] = $useTransaction;
+            $migrationContext['forceExecution'] = $force;
+        } else {
+            if ($defaultLanguageCode !== null || $adminLogin !== null || $force !== false || $forceSigchildEnabled !== null) {
+                throw new MigrationBundleException("Invalid call to executeMigration: argument types mismatch");
+            }
+        }
+        if ($this->output) {
+            $migrationContext['output'] = $this->output;
+        }
+        $forceExecution = array_key_exists('forceExecution', $migrationContext) ? $migrationContext['forceExecution'] : false;
 
         // set migration as begun - has to be in own db transaction
-        $migration = $this->storageHandler->startMigration($migrationDefinition, $force);
+        $migration = $this->storageHandler->startMigration($migrationDefinition, $forceExecution);
 
-        $this->executeMigrationInner($migration, $migrationDefinition, $migrationContext, 0, $useTransaction, $adminLogin);
+        $this->executeMigrationInner($migration, $migrationDefinition, $migrationContext);
     }
 
     /**
+     * Note: previous API is kept for BC (subclasses reimplementing this method).
      * @param Migration $migration
      * @param MigrationDefinition $migrationDefinition
      * @param array $migrationContext
      * @param int $stepOffset
-     * @param bool $useTransaction when set to false, no repo transaction will be used to wrap the migration
-     * @param string|int|false|null $adminLogin used only for committing db transaction if needed. If false or null, hardcoded admin is used
+     * @param bool $useTransaction Deprecated - replaced by $migrationContext['useTransaction']. When set to false, no repo transaction will be used to wrap the migration
+     * @param string|int|false|null $adminLogin Deprecated - $migrationContext['adminLogin']. Used only for committing db transaction if needed. If false or null, hardcoded admin is used
      * @throws \Exception
      */
     protected function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
         $migrationContext, $stepOffset = 0, $useTransaction = true, $adminLogin = null)
     {
+        // BC: handling of legacy method call signature
+        $useTransaction = array_key_exists('useTransaction', $migrationContext) ? $migrationContext['useTransaction'] : $useTransaction;
+        $adminLogin = array_key_exists('adminLogin', $migrationContext) ? $migrationContext['adminLogin'] : $adminLogin;
+
+        /// @todo cane we make this validation smarter / move it somewhere else?
+        if (array_key_exists('path', $migrationContext) || array_key_exists('contentTypeIdentifier', $migrationContext) ||
+            array_key_exists('fieldIdentifier', $migrationContext)) {
+            throw new MigrationBundleException("Invalid call to executeMigrationInner: forbidden elements in migrationContext");
+        }
+
+        if (isset($migrationContext['forcedReferences'])) {
+            foreach ($migrationContext['forcedReferences'] as $name => $value) {
+                $this->referenceResolver->addReference($name, $value, true);
+            }
+        }
+
         if ($useTransaction) {
             $this->repository->beginTransaction();
         }
@@ -466,20 +500,31 @@ class MigrationService implements ContextProviderInterface
                 true
             );
 
-            throw $exception ? $exception : new MigrationStepExecutionException($errorMessage, $i, $e);
+            throw ($exception ? $exception : new MigrationStepExecutionException($errorMessage, $i, $e));
         }
     }
 
     /**
+     * Note: previous API is kept for BC (subclasses reimplementing this method).
      * @param Migration $migration
-     * @param bool $useTransaction
-     * @param array $forcedReferences
+     * @param array $migrationContext see executeMigration
+     * @param array $forcedReferences Deprecated - use $migrationContext['forcedReferences']
      * @throws \Exception
-     *
-     * @todo add support for adminLogin ?
      */
-    public function resumeMigration(Migration $migration, $useTransaction = true, array $forcedReferences = array())
+    public function resumeMigration(Migration $migration, $migrationContext = true, array $forcedReferences = array())
     {
+        // BC: handling of legacy method call signature
+        if (!is_array($migrationContext)) {
+            $migrationContext = array(
+                'useTransaction' => $migrationContext,
+                'forcedReferences' => $forcedReferences,
+            );
+        } else {
+            if (!is_array($forcedReferences) || count($forcedReferences)) {
+                throw new MigrationBundleException("Invalid call to resumeMigration: argument types mismatch");
+            }
+        }
+
         if ($migration->status != Migration::STATUS_SUSPENDED) {
             throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': it is not in suspended status");
         }
@@ -499,13 +544,6 @@ class MigrationService implements ContextProviderInterface
 
         // restore context
         $this->contextHandler->restoreCurrentContext($migration->name);
-
-        if ($forcedReferences) {
-            foreach ($forcedReferences as $name => $value) {
-                $this->referenceResolver->addReference($name, $value, true);
-            }
-        }
-
         if (!isset($this->migrationContext[$migration->name])) {
             throw new MigrationBundleException("Can not resume ".$this->getEntityName($migration)." '{$migration->name}': the stored context is missing");
         }
@@ -522,15 +560,16 @@ class MigrationService implements ContextProviderInterface
 
         // and go
         // note: we store the current step counting starting at 1, but use offset starting at 0, hence the -1 here
-        $this->executeMigrationInner($migration, $migrationDefinition, $restoredContext['context'],
-            $restoredContext['step'] - 1, $useTransaction);
+        $this->executeMigrationInner($migration, $migrationDefinition, array_merge($restoredContext['context'], $migrationContext),
+            $restoredContext['step'] - 1);
     }
 
     /**
      * @param string $defaultLanguageCode
      * @param string|int|false $adminLogin
-     * @param bool|null $forceSigchildEnabled
+     * @param bool|null $forceSigchildEnabled Doubly Deprecated!
      * @return array
+     * @deprecated kept for BC
      */
     protected function migrationContextFromParameters($defaultLanguageCode = null, $adminLogin = null, $forceSigchildEnabled = null)
     {
@@ -543,14 +582,10 @@ class MigrationService implements ContextProviderInterface
         if ($adminLogin !== null) {
             $properties['adminUserLogin'] = $adminLogin;
         }
-        if ($forceSigchildEnabled !== null)
-        {
-            $properties['forceSigchildEnabled'] = $forceSigchildEnabled;
-        }
-
-        if ($this->output) {
-            $properties['output'] = $this->output;
-        }
+        //if ($forceSigchildEnabled !== null)
+        //{
+        //    $properties['forceSigchildEnabled'] = $forceSigchildEnabled;
+        //}
 
         return $properties;
     }
@@ -649,6 +684,7 @@ class MigrationService implements ContextProviderInterface
     }
 
     /**
+     * This gets called when we call $this->contextHandler->restoreCurrentContext().
      * @param string $migrationName
      * @param array $context
      */

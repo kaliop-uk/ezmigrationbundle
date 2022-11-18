@@ -136,6 +136,24 @@ EOT
                 $builder->setPrefix($prefix);
             }
             $builderArgs = $this->createChildProcessArgs($input);
+        } else {
+            $forcedRefs = array();
+            if ($input->getOption('set-reference')) {
+                foreach ($input->getOption('set-reference') as $refSpec) {
+                    $ref = explode(':', $refSpec, 2);
+                    if (count($ref) < 2 || $ref[0] === '') {
+                        throw new \InvalidArgumentException("Invalid reference specification: '$refSpec'");
+                    }
+                    $forcedRefs[$ref[0]] = $ref[1];
+                }
+            }
+            $migrationContext = array(
+                'useTransaction' => !$input->getOption('no-transactions'),
+                'defaultLanguageCode' => $input->getOption('default-language'),
+                'adminUserLogin' => $input->getOption('admin-login'),
+                'forceExecution' => $force,
+                'forcedReferences' => $forcedRefs
+            );
         }
 
         // For cli scripts, this means: do not die if anyone yanks out our stdout.
@@ -143,20 +161,9 @@ EOT
             ignore_user_abort(true);
         }
 
-        // allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
+        // Allow forcing handling of sigchild. Useful on eg. Debian and Ubuntu
         if ($input->getOption('force-sigchild-enabled')) {
             Process::forceSigchildEnabled(true);
-        }
-
-        if ($input->getOption('set-reference') && !$input->getOption('separate-process')) {
-            $refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
-            foreach ($input->getOption('set-reference') as $refSpec) {
-                $ref = explode(':', $refSpec, 2);
-                if (count($ref) < 2 || $ref[0] === '') {
-                    throw new \InvalidArgumentException("Invalid reference specification: '$refSpec'");
-                }
-                $refResolver->addReference($ref[0], $ref[1], true);
-            }
         }
 
         $aborted = false;
@@ -212,9 +219,12 @@ EOT
             } else {
 
                 try {
-                    $this->executeMigrationInProcess($migrationDefinition, $force, $migrationService, $input);
+                    $this->executeMigrationInProcess($migrationDefinition, $migrationService, $migrationContext);
 
                     $executed++;
+
+                    // in case the 1st mig changes values to the refs, we avoid injecting them in the 2nd mig and later
+                    $migrationContext['forcedReferences'] = array();
                 } catch (\Exception $e) {
                     $failed++;
 
@@ -260,18 +270,14 @@ EOT
 
     /**
      * @param MigrationDefinition $migrationDefinition
-     * @param bool $force
      * @param MigrationService $migrationService
-     * @param InputInterface $input
+     * @param array $migrationContext
      */
-    protected function executeMigrationInProcess($migrationDefinition, $force, $migrationService, $input)
+    protected function executeMigrationInProcess($migrationDefinition, $migrationService, $migrationContext)
     {
         $migrationService->executeMigration(
             $migrationDefinition,
-            !$input->getOption('no-transactions'),
-            $input->getOption('default-language'),
-            $input->getOption('admin-login'),
-            $force
+            $migrationContext
         );
     }
 

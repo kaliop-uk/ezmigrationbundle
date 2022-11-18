@@ -1,3 +1,32 @@
+Version 6.3.0 (unreleased)
+==========================
+
+* New: migration step `migration_definition/include`. This allows one migration to basically include another, the same
+  way it is possible to do that in php.
+
+  It is useful for scenarios such as fe. creating a library of reusable migrations, which can be run multiple times with
+  different target contents every time. This is often achieved by copy-pasting the same migration logic many times.
+  As an alternative it is now possible to create a "library" migration, driven by references, and store it only once,
+  in a separate folder, then create many "specific execution" migrations which set up values for the required references
+  and include the library migration's definition.
+
+  Please note that migrations which rely on external resources, such as in this case would be the included migration, go
+  against the principle of migrations being immutable for ease of replay and analysis.
+
+  Ex:
+
+        -
+            type: migration_definition
+            mode: include
+            file: a_path
+
+* BC change (for developers extending the bundle): method `MigrateCommand::executeMigrationInProcess` changed its signature
+
+* BC change (for developers extending the bundle): `Migrationservice` methods `executeMigration`, `executeMigrationInner`
+  and `resumeMigration` should now be called using a different signature. They do still work with the previous signature,
+  but that usage is considered deprecated
+
+
 Version 6.2.1
 =============
 

@@ -1,0 +1,35 @@
+-
+    type: reference
+    mode: set
+    identifier: kmb_test_ref_42
+    value: 1
+
+-
+    type: file
+    mode: save
+    file: /tmp/UnitTestOK042_included.yml
+    overwrite: true
+    body: |
+        -
+            type: reference
+            mode: set
+            identifier: kmb_test_ref_42
+            value: "eval: 1 + resolve('reference:kmb_test_ref_42')"
+            overwrite: true
+
+-
+    type: migration_definition
+    mode: include
+    file: /tmp/UnitTestOK042_included.yml
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref_42
+    test:
+        Equals: 2
+
+-
+    type: file
+    mode: delete
+    file: /tmp/UnitTestOK042_included.yml

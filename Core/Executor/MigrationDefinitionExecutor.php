@@ -20,7 +20,7 @@ class MigrationDefinitionExecutor extends AbstractExecutor
     use ReferenceSetterTrait;
 
     protected $supportedStepTypes = array('migration_definition');
-    protected $supportedActions = array('generate', 'save');
+    protected $supportedActions = array('generate', 'save', 'include');
 
     /** @var \Kaliop\eZMigrationBundle\Core\MigrationService $migrationService */
     protected $migrationService;
@@ -52,7 +52,43 @@ class MigrationDefinitionExecutor extends AbstractExecutor
 
         $this->skipStepIfNeeded($step);
 
+        if ($action === 'include') {
+            // we can not use a keyword as method name
+            $action = 'run';
+        }
+
         return $this->$action($step->dsl, $step->context);
+    }
+
+    public function run($dsl, $context)
+    {
+        if (!isset($dsl['file'])) {
+            throw new InvalidStepDefinitionException("Invalid step definition: miss 'file'");
+        }
+        $fileName = $this->resolveReference($dsl['file']);
+
+        // default format: path is relative to the current mig dir
+        $realFilePath = dirname($context['path']) . $fileName;
+        // but we support as well absolute paths
+        if (!is_file($realFilePath) && is_file($fileName)) {
+            $realFilePath = $fileName;
+        }
+
+        $migrationDefinitions = $this->migrationService->getMigrationsDefinitions(array($realFilePath));
+        if (!count($migrationDefinitions)) {
+            throw new InvalidStepDefinitionException("Invalid step definition: '$fileName' is not a valid migration definition");
+        }
+
+        // avoid overwriting the 'current migration definition file path' for the included definition
+        unset($context['path']);
+
+        /// @todo can we could have the included migration's steps be printed as 1.1, 1.2 etc...
+        /// @todo we could return the result of the included migration's last step
+        foreach($migrationDefinitions as $migrationDefinition) {
+            $this->migrationService->executeMigration($migrationDefinition, $context);
+        }
+
+        return true;
     }
 
     /**

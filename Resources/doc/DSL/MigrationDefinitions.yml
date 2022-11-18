@@ -42,3 +42,11 @@
     if: # Optional. If set, the migration step will be skipped unless the condition is matched
         "reference:_ref_name": # name of a reference to be used for the test
             _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies
+
+-
+    type: migration_definition
+    mode: include
+    file: string # path to the migration definition file to be included. Mandatory. References will be resolved
+    if: # Optional. If set, the migration step will be skipped unless the condition is matched
+        "reference:_ref_name": # name of a reference to be used for the test
+            _operator_: value # allowed operators: eq, gt, gte, lt, lte, ne, count, length, regexp, satisfies

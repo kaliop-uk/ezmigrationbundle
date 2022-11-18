@@ -12,7 +12,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  * Command to resume suspended migrations.
  *
  * @todo add support for resuming a set based on path
- * @todo add support for the separate-process cli switch
+ * @todo add support for the separate-process cli switch, as well as clear-cache, default-language, force-sigchild-enabled, survive-disconnected-tty
  */
 class ResumeCommand extends AbstractCommand
 {
@@ -97,7 +97,6 @@ EOT
 
         $forcedRefs = array();
         if ($input->getOption('set-reference') /*&& !$input->getOption('separate-process')*/) {
-            //$refResolver = $this->getContainer()->get('ez_migration_bundle.reference_resolver.customreference');
             foreach ($input->getOption('set-reference') as $refSpec) {
                 $ref = explode(':', $refSpec, 2);
                 if (count($ref) < 2 || $ref[0] === '') {
@@ -110,11 +109,16 @@ EOT
         $executed = 0;
         $failed = 0;
 
+        $migrationContext = array(
+            'useTransaction' => !$input->getOption('no-transactions'),
+            'forcedReferences' => $forcedRefs,
+        );
+
         foreach ($suspendedMigrations as $suspendedMigration) {
             $output->writeln("<info>Resuming {$suspendedMigration->name}</info>");
 
             try {
-                $migrationService->resumeMigration($suspendedMigration, !$input->getOption('no-transactions'), $forcedRefs);
+                $migrationService->resumeMigration($suspendedMigration, $migrationContext);
 
                 $executed++;
             } catch (\Exception $e) {
@@ -126,6 +130,10 @@ EOT
                 $this->errOutput->writeln("\n<error>Migration aborted! Reason: " . $e->getMessage() . "</error>");
                 return 1;
             }
+
+            // in case we are resuming many migrations, and the 1st one changes values to the injected refs, we do not
+            // inject them any more from the 2nd onwards
+            $migrationContext['forcedReferences'] = array();
         }
 
         $time = microtime(true) - $start;
