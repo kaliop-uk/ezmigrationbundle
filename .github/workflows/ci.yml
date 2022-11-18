@@ -17,7 +17,6 @@ jobs:
             fail-fast: false
             matrix:
                 # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners for available os versions
-                # @todo add some tests running on 'windows-latest'
                 include:
                     - config-file: .euts.cp.env
                       operating-system: 'ubuntu-20.04'

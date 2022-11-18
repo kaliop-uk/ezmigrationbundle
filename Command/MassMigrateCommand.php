@@ -3,18 +3,17 @@
 namespace Kaliop\eZMigrationBundle\Command;
 
 use Kaliop\eZMigrationBundle\API\Exception\AfterMigrationExecutionException;
-use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
+use Kaliop\eZMigrationBundle\Core\Helper\ProcessManager;
+use Kaliop\eZMigrationBundle\Core\Process\Process;
+use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
-use Kaliop\eZMigrationBundle\API\Value\Migration;
-use Kaliop\eZMigrationBundle\API\Value\MigrationDefinition;
-use Kaliop\eZMigrationBundle\Core\Helper\ProcessManager;
-use Kaliop\eZMigrationBundle\Core\Process\Process;
-use Kaliop\eZMigrationBundle\Core\Process\ProcessBuilder;
 
 class MassMigrateCommand extends MigrateCommand
 {
@@ -351,7 +350,7 @@ EOT
     }
 
     /**
-     * @param string $paths
+     * @param string[] $paths
      * @param $migrationService
      * @param bool $force
      * @param bool $isChild when not in child mode, do not waste time parsing migrations

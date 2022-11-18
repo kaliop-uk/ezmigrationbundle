@@ -16,7 +16,6 @@ class FilesystemRecursive extends Filesystem
     {
         // if no paths defined, we look in all bundles
         if (empty($paths)) {
-            $paths = array();
             /** @var $bundle \Symfony\Component\HttpKernel\Bundle\BundleInterface */
             foreach ($this->kernel->getBundles() as $bundle)
             {
