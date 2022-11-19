@@ -362,10 +362,14 @@ class MigrationService implements ContextProviderInterface
             throw new MigrationBundleException("Invalid call to executeMigrationInner: forbidden elements in migrationContext");
         }
 
-        if (isset($migrationContext['forcedReferences'])) {
+        $messageSuffix = '';
+        if (isset($migrationContext['forcedReferences']) && count($migrationContext['forcedReferences'])) {
+            $messageSuffix = array();
             foreach ($migrationContext['forcedReferences'] as $name => $value) {
                 $this->referenceResolver->addReference($name, $value, true);
+                $messageSuffix[] = "$name: $value";
             }
+            $messageSuffix = 'Injected references: ' . implode(', ', $messageSuffix);
         }
 
         if ($useTransaction) {
@@ -380,7 +384,7 @@ class MigrationService implements ContextProviderInterface
 
             $i = $stepOffset+1;
             $finalStatus = Migration::STATUS_DONE;
-            $finalMessage = null;
+            $finalMessage = '';
 
             try {
 
@@ -428,6 +432,8 @@ class MigrationService implements ContextProviderInterface
                 $finalStatus = Migration::STATUS_SUSPENDED;
                 $finalMessage = "Suspended in execution of step $i: " . $e->getMessage();
             }
+
+            $finalMessage = ($finalMessage != '' && $messageSuffix != '') ? $finalMessage . '. '. $messageSuffix : $finalMessage . $messageSuffix;
 
             // in case we have an exception thrown in the commit phase after the last step, make sure we report the correct step
             $i--;
@@ -484,6 +490,8 @@ class MigrationService implements ContextProviderInterface
                     }
                 }
             }
+
+            $errorMessage = ($errorMessage != '' && $messageSuffix != '') ? $errorMessage . '. '. $messageSuffix : $errorMessage . $messageSuffix;
 
             // set migration as failed
             // NB: we use the 'force' flag here because we might be catching an exception happened during the call to

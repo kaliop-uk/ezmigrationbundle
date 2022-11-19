@@ -20,6 +20,9 @@ Version 6.3.0 (unreleased)
             mode: include
             file: a_path
 
+* Improved: when executing migrations with the `set-reference` cli option, the injected references will be saved in the
+  migration status
+
 * BC change (for developers extending the bundle): method `MigrateCommand::executeMigrationInProcess` changed its signature
 
 * BC change (for developers extending the bundle): `Migrationservice` methods `executeMigration`, `executeMigrationInner`

@@ -85,7 +85,7 @@ EOT
             /// @todo if we are passed a path, we could give the user a more specific warning than what we get back from the storage layer
             $migration = $migrationService->getMigration($migrationNameOrPath);
             if ($migration == null) {
-                throw new \InvalidArgumentException(sprintf('The migration "%s" does not exist in the migrations table.', $migrationNameOrPath));
+                throw new \InvalidArgumentException(sprintf('The migration "%s" does not exist in the migrations table. You can use `kaliop:migration:status --show-path` to find out more', $migrationNameOrPath));
             }
 
             switch ($migration->status) {
