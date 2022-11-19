@@ -1,5 +1,5 @@
-Version 6.3.0 (unreleased)
-==========================
+Version 6.3.0
+=============
 
 * New: migration step `migration_definition/include`. This allows one migration to basically include another, the same
   way it is possible to do that in php.
