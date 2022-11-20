@@ -13,8 +13,8 @@ You can think of it as the grandson of the legacy [ezxmlinstaller](https://githu
 
 * eZPlatform 1, eZPlatform 2 or eZPublish Enterprise 5.4 or eZPublish Community 2014.11 or later.
 
-NB: for eZPlatform 3 (aka Ibexa DXP), head on to https://github.com/tanoconsulting/ezmigrationbundle2. For Ibexa DXP 4,
-go to https://github.com/tanoconsulting/ibexa-migration-bundle.
+NB: for eZPlatform 3 (aka Ibexa DXP), head on to [tanoconsulting/ezmigrationbundle2](https://github.com/tanoconsulting/ezmigrationbundle2). For Ibexa DXP 4,
+go to [tanoconsulting/ibexa-migration-bundle](https://github.com/tanoconsulting/ibexa-migration-bundle).
 
 
 ## Installation

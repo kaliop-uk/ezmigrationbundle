@@ -39,6 +39,7 @@ class MigrationService implements ContextProviderInterface
      * @var LoaderInterface $loader
      */
     protected $loader;
+
     /**
      * @var StorageHandlerInterface $storageHandler
      */
