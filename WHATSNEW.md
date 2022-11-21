@@ -1,3 +1,13 @@
+Version 6.3.1
+=============
+
+* Fixed: in rare circumstances (having two siteaccesses configured with the same repo and root node, but different languages),
+  the TagMatcher could use the wrong language when matching by tag keyword
+
+* BC change (for developers extending the bundle): class `TagMatcher` changed its constructor signature. the same applies
+  to service `ez_migration_bundle.tag_matcher`
+
+
 Version 6.3.0
 =============
 

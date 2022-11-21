@@ -4,6 +4,7 @@ namespace Kaliop\eZMigrationBundle\Core\Matcher;
 
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
+use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use Kaliop\eZMigrationBundle\API\Collection\TagCollection;
 use Kaliop\eZMigrationBundle\API\Exception\InvalidMatchConditionsException;
 use Kaliop\eZMigrationBundle\API\Exception\MigrationBundleException;
@@ -30,16 +31,16 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     );
     protected $returns = 'Tag';
 
-    protected $translationHelper;
+    protected $configResolver;
     protected $tagService;
 
     /**
-     * @param $translationHelper
+     * @param ConfigResolverInterface $configResolver
      * @param \Netgen\TagsBundle\API\Repository\TagsService $tagService
      */
-    public function __construct($translationHelper, $tagService = null)
+    public function __construct($configResolver, $tagService = null)
     {
-        $this->translationHelper = $translationHelper;
+        $this->configResolver = $configResolver;
         $this->tagService = $tagService;
     }
 
@@ -242,7 +243,7 @@ class TagMatcher extends AbstractMatcher implements KeyMatcherInterface
     {
         $tags = [];
 
-        $availableLanguages = $this->translationHelper->getAvailableLanguages();
+        $availableLanguages = $this->configResolver->getParameter('languages');
 
         foreach ($tagKeywords as $tagKeyword) {
             // return unique contents
