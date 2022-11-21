@@ -69,11 +69,11 @@ You can optionally specify the path to migration definitions with <info>--path</
 
 Use -v and -vv options to get troubleshooting information on the execution of each step in the migration(s).
 EOT
-            );
+        );
 
-            if (self::$VERBOSITY_CHILD <= OutputInterface::VERBOSITY_QUIET) {
-                self::$VERBOSITY_CHILD = (OutputInterface::VERBOSITY_QUIET + OutputInterface::VERBOSITY_NORMAL) / 2;
-            }
+        if (self::$VERBOSITY_CHILD <= OutputInterface::VERBOSITY_QUIET) {
+            self::$VERBOSITY_CHILD = (OutputInterface::VERBOSITY_QUIET + OutputInterface::VERBOSITY_NORMAL) / 2;
+        }
     }
 
     /**
@@ -172,7 +172,6 @@ EOT
         $skipped = 0;
         $total = count($toExecute);
 
-        /** @var MigrationDefinition $migrationDefinition */
         foreach ($toExecute as $name => $migrationDefinition) {
 
             // let's skip migrations that we know are invalid - user was warned and he decided to proceed anyway
