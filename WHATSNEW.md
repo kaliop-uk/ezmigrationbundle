@@ -1,6 +1,8 @@
 Version 6.3.1
 =============
 
+* Fixed: php warning when generating `Role` migrations for roles with policy limitations
+
 * Fixed: in rare circumstances (having two siteaccesses configured with the same repo and root node, but different languages),
   the TagMatcher could use the wrong language when matching by tag keyword
 
