@@ -1,3 +1,9 @@
+Version: 6.3.2
+==============
+
+* Fixed php warning in class `PHPExecutor` due to trait being used twice
+
+
 Version 6.3.1
 =============
 

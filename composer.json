@@ -41,9 +41,11 @@
         "php-http/httplug-bundle": "Required for usage of HTTP/CALL migration steps"
     },
     "conflict": {
-        "netgen/tagsbundle": "1.*",
         "ezsystems/ezpublish-kernel": "6.7.3",
-        "symfony/symfony": "3.4.12"
+        "netgen/tagsbundle": "1.*",
+        "symfony/symfony": "3.4.12",
+        "tanoconsulting/ibexa-migration-bundle": "*",
+        "tanoconsulting/ezmigrationbundle2": "*"
     },
     "autoload": {
         "psr-4": { "Kaliop\\eZMigrationBundle\\": "" }

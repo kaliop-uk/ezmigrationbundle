@@ -10,8 +10,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PHPExecutor extends BasePHPExecutor
 {
-    use IgnorableStepExecutorTrait;
-
     protected $supportedStepTypes = array('php');
     protected $supportedActions = array('call_function', 'call_static_method');
 
