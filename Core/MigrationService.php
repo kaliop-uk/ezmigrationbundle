@@ -294,7 +294,7 @@ class MigrationService implements ContextProviderInterface
      * Note: previous API is kept for BC (subclasses reimplementing this method).
      * @param MigrationDefinition $migrationDefinition
      * @param array $migrationContext Supported array keys are: adminUserLogin, defaultLanguageCode,
-     *                                forcedReferences, forceExecution, forceSigchildEnabled, userContentType, userGroupContentType,
+     *                                forcedReferences, forceExecution, userContentType, userGroupContentType,
      *                                useTransaction.
      *                                Bool usage is deprecated. It was: when set to false, no repo transaction will be used to wrap the migration
      * @param string $defaultLanguageCode Deprecated - use $migrationContext['defaultLanguageCode']
@@ -303,7 +303,6 @@ class MigrationService implements ContextProviderInterface
      * @param bool|null $forceSigchildEnabled Deprecated
      * @throws \Exception
      *
-     * @todo add support for setting in $migrationContext a userContentType, userGroupContentType ?
      * @todo treating a null and false $adminLogin values differently is prone to hard-to-track errors.
      *       Shall we use instead -1 to indicate the desire to not-login-as-admin-user-at-all ?
      */

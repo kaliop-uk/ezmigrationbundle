@@ -176,8 +176,6 @@ EOT
             /// @todo move these 2 params out of here, pass the context as template parameter instead
             'lang' => $input->getOption('lang'),
             'adminLogin' => $input->getOption('admin-login')
-            /// @todo should we allow users to specify this ?
-            //'forceSigchildEnabled' => null
         );
 
         $date = date('YmdHis');
@@ -383,10 +381,6 @@ EOT
         }
         if (isset($parameters['adminLogin']) && $parameters['adminLogin'] != '') {
             $context['adminUserLogin'] = $parameters['adminLogin'];
-        }
-        if (isset($parameters['forceSigchildEnabled']) && $parameters['forceSigchildEnabled'] !== null)
-        {
-            $context['forceSigchildEnabled'] = $parameters['forceSigchildEnabled'];
         }
 
         return $context;
