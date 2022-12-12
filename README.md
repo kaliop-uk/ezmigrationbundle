@@ -425,11 +425,12 @@ override, take a look at the [services.yml file](Resources/config/services.yml).
 It is also possible to define custom event listeners/subscribers to expand migration execution logic. See the dedicated
 paragraphs above for more details.
 
-### Running tests
+
+## Running tests
 
 The bundle uses PHPUnit to run functional tests.
 
-#### Running tests in a working eZPublish / eZPlatform installation
+### Running tests in a working eZPublish / eZPlatform installation
 
 To run the tests:
 
@@ -442,7 +443,7 @@ To run the tests:
 As such, there are good chances that running tests will leave stale/broken data.
 It is recommended to run the tests suite using a dedicated eZPublish installation or at least a dedicated database.
 
-#### Setting up a dedicated test environment for the bundle
+### Setting up a dedicated test environment for the bundle
 
 A safer choice to run the tests of the bundle is to set up a dedicated environment, similar to the one used when the test
 suite is run on GitHub Actions.
@@ -497,6 +498,48 @@ You can even keep multiple test stacks available in parallel, by using different
 - create a file `.euts.env.local` and add to it any required env var, starting with a unique `COMPOSE_PROJECT_NAME`
 - build the new test stack via `./teststack/teststack. -e .euts.env.local build`
 - run the tests via: `./teststack/teststack -e .euts.env.local runtests`
+
+
+## Our Backward Compatibility Promise
+
+This bundle adheres to Semantic Versioning principles.
+
+However, backward compatibility comes in many different flavors. In fact, almost every change can potentially break an
+application. For example, if we add a new method to a class, this will break an application which extended that class and
+added the same method, but with a different method signature.
+
+This section is dedicated to explain in detail which guidelines inform the choice of incrementing the major/minor/patch
+number for every new release of the bundle.
+
+### For developers _using_ the bundle
+
+Adherence to Semantic versioning is implemented via the following:
+
+- existing migrations will continue to work across all minor and patch version increases
+- new migration steps and new supported elements for existing migration steps might be introduced in minor versions, but
+  not in patch versions
+- any migration steps or step element targeted for removal will first be deprecated in at least one minor version. When
+  that happens, said element will be immediately removed from the DSL documentation, and `@deprecated` or `BC` comments
+  added to the codebase next to where it is handled.
+  Note that so far the library is at version 6, and there has been almost no migration element dropped so far!
+- the syntax for cli commands will continue to work across all minor and patch version increases
+- new options for existing cli commands, and new commands, might be introduced in minor versions, but not in patch versions
+- the textual output of existing cli commands might be altered in any version - please do not rely on it having a fixed
+  format to parse it
+- events emitted by the bundle will continue to work across all minor and patch version increases
+- new events might be introduced in minor versions, but not in patch versions
+
+### For developers _extending_ or _modifying_ the bundle
+
+Things are a bit more sketchy in terms of the internals of the bundle, ie. PHP classes and Symfony services.
+Although great care is taken to avoid breaking code extending existing classes and redefining existing services, it has
+happened a couple of times that the signature of existing methods has been changed in patch versions. Sometimes new
+interfaces have become required by existing classes in minor versions.
+
+- any change which might have a potential impact on developers _extending_ or _modifying_ the bundle should not happen
+  in patch versions, but it might happen in minor versions. Any such change will only be made if there is a compelling
+  reason to do so (ie. mostly because it is required to fix a bug or to make possible implementation of important new
+  functionality) and be documented in the NEWS file.
 
 
 ## Major version upgrades
