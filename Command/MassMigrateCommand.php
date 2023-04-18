@@ -283,7 +283,10 @@ EOT
 
                     $errorMessage = $e->getMessage();
                     if ($errorMessage != $this->subProcessErrorString) {
+                        /// @todo move these bits of strings to class constants
                         $errorMessage = preg_replace('/^\n*(\[[0-9]*\])?(Migration failed|Failure after migration end)! Reason: +/', '', $errorMessage);
+                        /// @todo atm this is impossible case - executeMigrationInSeparateProcess does not know enough
+                        ///       to throw an AfterMigrationExecutionException
                         if ($e instanceof AfterMigrationExecutionException) {
                             $errorMessage = "Failure after migration end! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
                         } else {
@@ -311,7 +314,12 @@ EOT
                     $failed++;
 
                     $errorMessage = $e->getMessage();
-                    $this->writeErrorln("\n<error>Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage . "</error>");
+                    if ($e instanceof AfterMigrationExecutionException) {
+                        $errorMessage = "Failure after migration end! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
+                    } else {
+                        $errorMessage = "Migration failed! Path: " . $migrationDefinition->path . ", Reason: " . $errorMessage;
+                    }
+                    $this->writeErrorln("\n<error>$errorMessage</error>");
 
                     if (!$input->getOption('ignore-failures')) {
                         $aborted = true;
