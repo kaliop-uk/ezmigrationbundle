@@ -516,12 +516,12 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
     }
 
     /**
-     * @param array $matchCondition
+     * @param array $matchConditions
      * @param string $mode
      * @param array $context
-     * @throws \Exception
      * @return array
      *
+     * @throws \Exception
      * @todo add 2ndary locations when in 'update' mode
      * @todo add dumping of sort_field and sort_order for 2ndary locations
      * @todo allow context options to tweak the generated migrations eg:
@@ -531,10 +531,10 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
      *       - match by rid vs match by id on update and on delete
      *       - etc...
      */
-    public function generateMigration(array $matchCondition, $mode, array $context = array())
+    public function generateMigration(array $matchConditions, $mode, array $context = array())
     {
         $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
-        $contentCollection = $this->contentMatcher->match($matchCondition);
+        $contentCollection = $this->contentMatcher->match($matchConditions);
         /// @todo throw if nothing is matched?
         $data = array();
 
