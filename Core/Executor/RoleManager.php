@@ -218,76 +218,82 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
      */
     public function generateMigration(array $matchConditions, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
-        $roleCollection = $this->roleMatcher->match($matchConditions);
         $data = array();
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        try {
+            $roleCollection = $this->roleMatcher->match($matchConditions);
 
-        /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
-        foreach ($roleCollection as $role) {
-            $roleData = array(
-                'type' => reset($this->supportedStepTypes),
-                'mode' => $mode
-            );
+            /** @var \eZ\Publish\API\Repository\Values\User\Role $role */
+            foreach ($roleCollection as $role) {
+                $roleData = array(
+                    'type' => reset($this->supportedStepTypes),
+                    'mode' => $mode
+                );
 
-            switch ($mode) {
-                case 'create':
-                    $roleData = array_merge(
-                        $roleData,
-                        array(
-                            'name' => $role->identifier
-                        )
-                    );
-                    break;
-                case 'update':
-                case 'delete':
-                    $roleData = array_merge(
-                        $roleData,
-                        array(
-                            'match' => array(
-                                RoleMatcher::MATCH_ROLE_IDENTIFIER => $role->identifier
+                switch ($mode) {
+                    case 'create':
+                        $roleData = array_merge(
+                            $roleData,
+                            array(
+                                'name' => $role->identifier
                             )
-                        )
-                    );
-                    break;
-                default:
-                    throw new InvalidStepDefinitionException("Executor 'role' doesn't support mode '$mode'");
-            }
+                        );
+                        break;
+                    case 'update':
+                    case 'delete':
+                        $roleData = array_merge(
+                            $roleData,
+                            array(
+                                'match' => array(
+                                    RoleMatcher::MATCH_ROLE_IDENTIFIER => $role->identifier
+                                )
+                            )
+                        );
+                        break;
+                    default:
+                        throw new InvalidStepDefinitionException("Executor 'role' doesn't support mode '$mode'");
+                }
 
-            if ($mode != 'delete') {
-                $policies = array();
-                foreach ($role->getPolicies() as $policy) {
-                    $limitations = array();
+                if ($mode != 'delete') {
+                    $policies = array();
+                    foreach ($role->getPolicies() as $policy) {
+                        $limitations = array();
 
-                    foreach ($policy->getLimitations() as $limitation) {
-                        if (!($limitation instanceof Limitation)) {
-                            throw new MigrationBundleException("The role contains an invalid limitation for policy {$policy->module}/{$policy->function}, we can not reliably generate its definition.");
+                        foreach ($policy->getLimitations() as $limitation) {
+                            if (!($limitation instanceof Limitation)) {
+                                throw new MigrationBundleException("The role contains an invalid limitation for policy {$policy->module}/{$policy->function}, we can not reliably generate its definition.");
+                            }
+                            $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
                         }
-                        $limitations[] = $this->limitationConverter->getLimitationArrayWithIdentifiers($limitation);
+                        // try to sort predictably to ease diffing
+                        $this->sortPolicyLimitationsDefinitions($limitations);
+
+                        $policies[] = array(
+                            'module' => $policy->module,
+                            'function' => $policy->function,
+                            'limitations' => $limitations
+                        );
                     }
                     // try to sort predictably to ease diffing
-                    $this->sortPolicyLimitationsDefinitions($limitations);
+                    $this->sortPolicyDefinitions($policies);
 
-                    $policies[] = array(
-                        'module' => $policy->module,
-                        'function' => $policy->function,
-                        'limitations' => $limitations
+                    $roleData = array_merge(
+                        $roleData,
+                        array(
+                            'policies' => $policies
+                        )
                     );
                 }
-                // try to sort predictably to ease diffing
-                $this->sortPolicyDefinitions($policies);
 
-                $roleData = array_merge(
-                    $roleData,
-                    array(
-                        'policies' => $policies
-                    )
-                );
+                $data[] = $roleData;
             }
 
-            $data[] = $roleData;
+            $this->loginUser($previousUserId);
+        } catch (\Exception $e) {
+            $this->loginUser($previousUserId);
+            throw $e;
         }
 
-        $this->loginUser($previousUserId);
         return $data;
     }
 

@@ -198,60 +198,66 @@ class LanguageManager extends RepositoryExecutor implements MigrationGeneratorIn
      */
     public function generateMigration(array $matchConditions, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
-        $languageCollection = $this->languageMatcher->match($matchConditions);
         $data = array();
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        try {
+            $languageCollection = $this->languageMatcher->match($matchConditions);
 
-        /** @var \eZ\Publish\API\Repository\Values\Content\Language $language */
-        foreach ($languageCollection as $language) {
+            /** @var \eZ\Publish\API\Repository\Values\Content\Language $language */
+            foreach ($languageCollection as $language) {
 
-            $languageData = array(
-                'type' => reset($this->supportedStepTypes),
-                'mode' => $mode,
-            );
+                $languageData = array(
+                    'type' => reset($this->supportedStepTypes),
+                    'mode' => $mode,
+                );
 
-            switch ($mode) {
-                case 'create':
-                    $languageData = array_merge(
-                        $languageData,
-                        array(
-                            'lang' => $language->languageCode,
-                            'name' => $language->name,
-                            'enabled' => $language->enabled
-                        )
-                    );
-                    break;
-                case 'update':
-                    $languageData = array_merge(
-                        $languageData,
-                        array(
-                            'match' => array(
-                                LanguageMatcher::MATCH_LANGUAGE_ID => $language->id
-                            ),
-                            'lang' => $language->languageCode,
-                            'name' => $language->name,
-                            'enabled' => $language->enabled
-                        )
-                    );
-                    break;
-                case 'delete':
-                    $languageData = array_merge(
-                        $languageData,
-                        array(
-                            'match' => array(
-                                LanguageMatcher::MATCH_LANGUAGE_ID => $language->id
+                switch ($mode) {
+                    case 'create':
+                        $languageData = array_merge(
+                            $languageData,
+                            array(
+                                'lang' => $language->languageCode,
+                                'name' => $language->name,
+                                'enabled' => $language->enabled
                             )
-                        )
-                    );
-                    break;
-                default:
-                    throw new InvalidStepDefinitionException("Executor 'language' doesn't support mode '$mode'");
+                        );
+                        break;
+                    case 'update':
+                        $languageData = array_merge(
+                            $languageData,
+                            array(
+                                'match' => array(
+                                    LanguageMatcher::MATCH_LANGUAGE_ID => $language->id
+                                ),
+                                'lang' => $language->languageCode,
+                                'name' => $language->name,
+                                'enabled' => $language->enabled
+                            )
+                        );
+                        break;
+                    case 'delete':
+                        $languageData = array_merge(
+                            $languageData,
+                            array(
+                                'match' => array(
+                                    LanguageMatcher::MATCH_LANGUAGE_ID => $language->id
+                                )
+                            )
+                        );
+                        break;
+                    default:
+                        throw new InvalidStepDefinitionException("Executor 'language' doesn't support mode '$mode'");
+                }
+
+                $data[] = $languageData;
             }
 
-            $data[] = $languageData;
+            $this->loginUser($previousUserId);
+        } catch (\Exception $e) {
+            $this->loginUser($previousUserId);
+            throw $e;
         }
 
-        $this->loginUser($previousUserId);
         return $data;
     }
 

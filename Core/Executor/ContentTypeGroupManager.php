@@ -174,58 +174,64 @@ class ContentTypeGroupManager extends RepositoryExecutor implements MigrationGen
      */
     public function generateMigration(array $matchConditions, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
-        $contentTypeGroupCollection = $this->contentTypeGroupMatcher->match($matchConditions);
         $data = array();
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        try {
+            $contentTypeGroupCollection = $this->contentTypeGroupMatcher->match($matchConditions);
 
-        /** @var \eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup $contentTypeGroup */
-        foreach ($contentTypeGroupCollection as $contentTypeGroup) {
+            /** @var \eZ\Publish\API\Repository\Values\ContentType\ContentTypeGroup $contentTypeGroup */
+            foreach ($contentTypeGroupCollection as $contentTypeGroup) {
 
-            $contentTypeGroupData = array(
-                'type' => reset($this->supportedStepTypes),
-                'mode' => $mode,
-            );
+                $contentTypeGroupData = array(
+                    'type' => reset($this->supportedStepTypes),
+                    'mode' => $mode,
+                );
 
-            switch ($mode) {
-                case 'create':
-                    $contentTypeGroupData = array_merge(
-                        $contentTypeGroupData,
-                        array(
-                            'identifier' => $contentTypeGroup->identifier,
-                            'creation_date' => $contentTypeGroup->creationDate->getTimestamp()
-                        )
-                    );
-                    break;
-                case 'update':
-                    $contentTypeGroupData = array_merge(
-                        $contentTypeGroupData,
-                        array(
-                            'match' => array(
-                                ContentTypeGroupMatcher::MATCH_CONTENTTYPEGROUP_IDENTIFIER => $contentTypeGroup->identifier
-                            ),
-                            'identifier' => $contentTypeGroup->identifier,
-                            'modification_date' => $contentTypeGroup->modificationDate->getTimestamp()
-                        )
-                    );
-                    break;
-                case 'delete':
-                    $contentTypeGroupData = array_merge(
-                        $contentTypeGroupData,
+                switch ($mode) {
+                    case 'create':
+                        $contentTypeGroupData = array_merge(
+                            $contentTypeGroupData,
+                            array(
+                                'identifier' => $contentTypeGroup->identifier,
+                                'creation_date' => $contentTypeGroup->creationDate->getTimestamp()
+                            )
+                        );
+                        break;
+                    case 'update':
+                        $contentTypeGroupData = array_merge(
+                            $contentTypeGroupData,
+                            array(
+                                'match' => array(
+                                    ContentTypeGroupMatcher::MATCH_CONTENTTYPEGROUP_IDENTIFIER => $contentTypeGroup->identifier
+                                ),
+                                'identifier' => $contentTypeGroup->identifier,
+                                'modification_date' => $contentTypeGroup->modificationDate->getTimestamp()
+                            )
+                        );
+                        break;
+                    case 'delete':
+                        $contentTypeGroupData = array_merge(
+                            $contentTypeGroupData,
                             array(
                                 'match' => array(
                                     ContentTypeGroupMatcher::MATCH_CONTENTTYPEGROUP_IDENTIFIER => $contentTypeGroup->identifier
                                 )
                             )
                         );
-                    break;
-                default:
-                    throw new InvalidStepDefinitionException("Executor 'content_type_group' doesn't support mode '$mode'");
+                        break;
+                    default:
+                        throw new InvalidStepDefinitionException("Executor 'content_type_group' doesn't support mode '$mode'");
+                }
+
+                $data[] = $contentTypeGroupData;
             }
 
-            $data[] = $contentTypeGroupData;
+            $this->loginUser($previousUserId);
+        } catch (\Exception $e) {
+            $this->loginUser($previousUserId);
+            throw $e;
         }
 
-        $this->loginUser($previousUserId);
         return $data;
     }
 

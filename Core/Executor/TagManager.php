@@ -263,87 +263,92 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
      */
     public function generateMigration(array $matchConditions, $mode, array $context = array())
     {
-        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
-
-        $tagCollection = $this->tagMatcher->match($matchConditions);
         $data = array();
-
-        switch ($mode) {
-            case 'create':
-                // sort top to bottom
-                $tagCollection = $tagCollection->getArrayCopy();
-                uasort($tagCollection, function ($t1, $t2) {
-                    if ($t1->depth == $t2->depth) return 0;
-                    return ($t1->depth > $t2->depth) ? 1 : -1;
-                });
-                break;
-            case 'delete':
-                // sort bottom to top
-                $tagCollection = $tagCollection->getArrayCopy();
-                uasort($tagCollection, function ($t1, $t2) {
-                    if ($t1->depth == $t2->depth) return 0;
-                    return ($t1->depth > $t2->depth) ? -1 : 1;
-                });
-                break;
-        }
-
-        /** @var Tag $tag */
-        foreach ($tagCollection as $tag) {
-
-            $tagData = array(
-                'type' => reset($this->supportedStepTypes),
-                'mode' => $mode
-            );
+        $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($context));
+        try {
+            $tagCollection = $this->tagMatcher->match($matchConditions);
 
             switch ($mode) {
                 case 'create':
-                    if ($tag->parentTagId != 0) {
-                        $parentTagRid = $this->tagMatcher->matchOneByKey($tag->parentTagId)->remoteId;
-                    } else {
-                        $parentTagRid = 0;
-                    }
-                    $tagData = array_merge(
-                        $tagData,
-                        array(
-                            'parent_tag_id' => $parentTagRid,
-                            'always_available' => $tag->alwaysAvailable,
-                            'lang' => $tag->mainLanguageCode,
-                            'keywords' => $this->getTagKeywords($tag),
-                            'remote_id' => $tag->remoteId
-                        )
-                    );
-                    break;
-                case 'update':
-                    $tagData = array_merge(
-                        $tagData,
-                        array(
-                            'match' => array(
-                                TagMatcher::MATCH_TAG_REMOTE_ID => $tag->remoteId
-                            ),
-                            'always_available' => $tag->alwaysAvailable,
-                            'lang' => $tag->mainLanguageCode,
-                            'keywords' => $this->getTagKeywords($tag),
-                        )
-                    );
+                    // sort top to bottom
+                    $tagCollection = $tagCollection->getArrayCopy();
+                    uasort($tagCollection, function ($t1, $t2) {
+                        if ($t1->depth == $t2->depth) return 0;
+                        return ($t1->depth > $t2->depth) ? 1 : -1;
+                    });
                     break;
                 case 'delete':
-                    $tagData = array_merge(
-                        $tagData,
-                        array(
-                            'match' => array(
-                                TagMatcher::MATCH_TAG_REMOTE_ID => $tag->remoteId
-                            )
-                        )
-                    );
+                    // sort bottom to top
+                    $tagCollection = $tagCollection->getArrayCopy();
+                    uasort($tagCollection, function ($t1, $t2) {
+                        if ($t1->depth == $t2->depth) return 0;
+                        return ($t1->depth > $t2->depth) ? -1 : 1;
+                    });
                     break;
-                default:
-                    throw new InvalidStepDefinitionException("Executor 'tag' doesn't support mode '$mode'");
             }
 
-            $data[] = $tagData;
+            /** @var Tag $tag */
+            foreach ($tagCollection as $tag) {
+
+                $tagData = array(
+                    'type' => reset($this->supportedStepTypes),
+                    'mode' => $mode
+                );
+
+                switch ($mode) {
+                    case 'create':
+                        if ($tag->parentTagId != 0) {
+                            $parentTagRid = $this->tagMatcher->matchOneByKey($tag->parentTagId)->remoteId;
+                        } else {
+                            $parentTagRid = 0;
+                        }
+                        $tagData = array_merge(
+                            $tagData,
+                            array(
+                                'parent_tag_id' => $parentTagRid,
+                                'always_available' => $tag->alwaysAvailable,
+                                'lang' => $tag->mainLanguageCode,
+                                'keywords' => $this->getTagKeywords($tag),
+                                'remote_id' => $tag->remoteId
+                            )
+                        );
+                        break;
+                    case 'update':
+                        $tagData = array_merge(
+                            $tagData,
+                            array(
+                                'match' => array(
+                                    TagMatcher::MATCH_TAG_REMOTE_ID => $tag->remoteId
+                                ),
+                                'always_available' => $tag->alwaysAvailable,
+                                'lang' => $tag->mainLanguageCode,
+                                'keywords' => $this->getTagKeywords($tag),
+                            )
+                        );
+                        break;
+                    case 'delete':
+                        $tagData = array_merge(
+                            $tagData,
+                            array(
+                                'match' => array(
+                                    TagMatcher::MATCH_TAG_REMOTE_ID => $tag->remoteId
+                                )
+                            )
+                        );
+                        break;
+                    default:
+                        throw new InvalidStepDefinitionException("Executor 'tag' doesn't support mode '$mode'");
+                }
+
+                $data[] = $tagData;
+            }
+
+            $this->loginUser($previousUserId);
+        } catch (\Exception $e) {
+            $this->loginUser($previousUserId);
+            throw $e;
         }
 
-        $this->loginUser($previousUserId);
         return $data;
     }
 
