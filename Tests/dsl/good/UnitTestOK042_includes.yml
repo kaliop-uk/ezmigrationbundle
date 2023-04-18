@@ -29,7 +29,23 @@
     test:
         Equals: 2
 
+# cleanup
+
 -
     type: file
     mode: delete
     file: /tmp/UnitTestOK042_included.yml
+
+-
+    type: sql
+    mode: exec
+    mysql: "delete from kaliop_migrations where migration = 'UnitTestOK042_included.yml'"
+    references:
+        kmb_test_ref_42_1: affected_rows
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_ref_42_1
+    test:
+        Equals: 1
