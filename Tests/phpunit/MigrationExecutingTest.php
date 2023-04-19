@@ -81,7 +81,7 @@ abstract class MigrationExecutingTest extends CommandExecutingTest
 
         $this->assertRegexp('?Processing ' . preg_quote(basename($filePath), '?') . '?', $output);
 
-        $ms = $this->getBootedContainer()->get('ez_migration_bundle.migration_service');
+        $ms = $this->getContainer()->get('ez_migration_bundle.migration_service');
         $m = $ms->getMigration(basename($filePath));
 
         if ($expectedStatus !== false && $expectedStatus !== null) {
