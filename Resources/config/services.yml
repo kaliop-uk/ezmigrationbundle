@@ -154,7 +154,7 @@ services:
             - '@ez_migration_bundle.reference_resolver.customreference'
             # @todo review - is this the best way to get a handle on this ?
         calls:
-            - ['setConnection', ['@ibexa.api.storage_engine.legacy.connection']]
+            - ['setConnection', ['@ezpublish.connection']]
         tags:
             - { name: ez_migration_bundle.context_provider, label: migration_service }
 
