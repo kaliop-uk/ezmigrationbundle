@@ -342,11 +342,8 @@ class TagManager extends RepositoryExecutor implements MigrationGeneratorInterfa
 
                 $data[] = $tagData;
             }
-
+        } finally {
             $this->loginUser($previousUserId);
-        } catch (\Exception $e) {
-            $this->loginUser($previousUserId);
-            throw $e;
         }
 
         return $data;

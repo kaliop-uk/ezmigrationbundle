@@ -91,16 +91,12 @@ abstract class RepositoryExecutor extends AbstractExecutor
         $this->skipStepIfNeeded($step);
 
         $previousUserId = $this->loginUser($this->getAdminUserIdentifierFromContext($step->context));
-
         try {
             $output = $this->$action($step);
-        } catch (\Exception $e) {
+        } finally {
+            // reset the environment as much as possible as we had found it before the migration
             $this->loginUser($previousUserId);
-            throw $e;
         }
-
-        // reset the environment as much as possible as we had found it before the migration
-        $this->loginUser($previousUserId);
 
         return $output;
     }

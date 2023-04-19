@@ -538,11 +538,8 @@ class ContentTypeManager extends RepositoryExecutor implements MigrationGenerato
 
                 $data[] = $contentTypeData;
             }
-
+        } finally {
             $this->loginUser($previousUserId);
-        } catch (\Exception $e) {
-            $this->loginUser($previousUserId);
-            throw $e;
         }
 
         return $data;

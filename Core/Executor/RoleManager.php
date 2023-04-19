@@ -287,11 +287,8 @@ class RoleManager extends RepositoryExecutor implements MigrationGeneratorInterf
 
                 $data[] = $roleData;
             }
-
+        } finally {
             $this->loginUser($previousUserId);
-        } catch (\Exception $e) {
-            $this->loginUser($previousUserId);
-            throw $e;
         }
 
         return $data;

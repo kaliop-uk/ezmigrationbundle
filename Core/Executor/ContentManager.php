@@ -654,11 +654,8 @@ class ContentManager extends RepositoryExecutor implements MigrationGeneratorInt
 
                 $data[] = $contentData;
             }
-
+        } finally {
             $this->loginUser($previousUserId);
-        } catch (\Exception $e) {
-            $this->loginUser($previousUserId);
-            throw $e;
         }
 
         return $data;

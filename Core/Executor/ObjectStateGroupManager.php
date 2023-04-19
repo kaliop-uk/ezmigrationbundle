@@ -265,11 +265,8 @@ class ObjectStateGroupManager extends RepositoryExecutor implements MigrationGen
 
                 $data[] = $groupData;
             }
-
+        } finally {
             $this->loginUser($previousUserId);
-        } catch (\Exception $e) {
-            $this->loginUser($previousUserId);
-            throw $e;
         }
 
         return $data;

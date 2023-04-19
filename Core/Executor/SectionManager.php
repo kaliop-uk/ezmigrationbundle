@@ -230,11 +230,8 @@ class SectionManager extends RepositoryExecutor implements MigrationGeneratorInt
 
                 $data[] = $sectionData;
             }
-
+        } finally {
             $this->loginUser($previousUserId);
-        } catch (\Exception $e) {
-            $this->loginUser($previousUserId);
-            throw $e;
         }
 
         return $data;
