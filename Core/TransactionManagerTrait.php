@@ -2,8 +2,8 @@
 
 namespace Kaliop\eZMigrationBundle\Core;
 
-use Doctrine\DBAL\Connection;
 use eZ\Publish\API\Repository\Repository;
+use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use ProxyManager\Proxy\ValueHolderInterface;
 
 /**
@@ -17,10 +17,10 @@ trait TransactionManagerTrait
     /** @var Repository $repository */
     protected $repository;
 
-    /** @var Connection $connection */
+    /** @var \Doctrine\DBAL\Connection $connection */
     protected $connection;
 
-    public function setRepository(Repository $repository): void
+    public function setRepository(Repository $repository)
     {
         // NB: ideally we should retrieve the DB connection from the Repository. But that means going through
         // multiple steps of access to protected/private members (persistenceHandler / transactionHandler / ...) which
@@ -29,16 +29,16 @@ trait TransactionManagerTrait
         $this->repository = $repository;
     }
 
-    public function setConnection(Connection $connection): void
+    public function setConnection(DatabaseHandler $dbHandler)
     {
-        $this->connection = $connection;
+        $this->connection = $dbHandler->getConnection();
     }
 
     /**
      * Repo transaction
      * @return void
      */
-    protected function beginTransaction(): void
+    protected function beginTransaction()
     {
         $this->repository->beginTransaction();
     }
@@ -47,7 +47,7 @@ trait TransactionManagerTrait
      * Repo transaction
      * @return void
      */
-    protected function commit(): void
+    protected function commit()
     {
         $this->repository->commit();
     }
@@ -56,7 +56,7 @@ trait TransactionManagerTrait
      * Repo transaction
      * @return void
      */
-    protected function rollback(): void
+    protected function rollback()
     {
         $this->repository->rollback();
     }
@@ -69,7 +69,7 @@ trait TransactionManagerTrait
      */
     protected function resetDBTransaction()
     {
-        /** @var Connection $connection */
+        /** @var \Doctrine\DBAL\Connection $connection */
         $connection = ($this->connection instanceof ValueHolderInterface) ? $this->connection->getWrappedValueHolderValue() : $this->connection;
         $cl = \Closure::bind(function () {
             $this->transactionNestingLevel = 0;
