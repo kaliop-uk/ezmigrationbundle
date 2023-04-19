@@ -35,7 +35,7 @@
         "php-http/mock-client": "*",
         "phpunit/phpunit": "^5.0 || ^8.5.14",
         "roave/security-advisories": "dev-disablechecks as dev-master",
-        "yoast/phpunit-polyfills": "*"
+        "yoast/phpunit-polyfills": "^1.0"
     },
     "suggest": {
         "php-http/httplug-bundle": "Required for usage of HTTP/CALL migration steps"
