@@ -20,6 +20,8 @@ abstract class CommandExecutingTestBase extends KernelTestCase
     // tell to phpunit not to mess with ezpublish legacy global vars...
     protected $backupGlobalsBlacklist = array('eZCurrentAccess');
 
+    protected static $attemptMaxConnFix = true;
+
     protected function doSetUp()
     {
         $this->_container = $this->bootContainer();
@@ -29,6 +31,18 @@ abstract class CommandExecutingTestBase extends KernelTestCase
         $fp = fopen('php://temp', 'r+');
         $this->output = new StreamOutput($fp);
         $this->leftovers = array();
+        // Try to fix the issue with too many db connections getting open by tests.
+        // A better fox would be to make sure that the db connections get closed at the end of each test, but that is
+        // not easy with PDO connections which might have many references as php objects...
+        // Note that this requires the ez user to have root perms :-(
+        /*$dbConnection = $this->_container->get('ezpublish.persistence.connection');
+        if (self::$attemptMaxConnFix && $dbConnection->getDatabasePlatform()->getName() == 'mysql') {
+            self::$attemptMaxConnFix = false;
+            try {
+                $dbConnection->executeUpdate('set global max_connections = 256;');
+            } catch (\Exception $e) {
+            }
+        }*/
     }
 
     /**
