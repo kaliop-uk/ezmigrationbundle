@@ -3,12 +3,15 @@
 include_once(__DIR__.'/MigrationExecutingTest.php');
 
 use Kaliop\eZMigrationBundle\API\Value\Migration;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertStringContains;
 
 /**
  * Tests transaction handling
  */
 class TransactionsTest extends MigrationExecutingTest
 {
+    use AssertStringContains;
+
     /**
      * Test executing a transaction-committing migration without the `-u` option: wrap it in a db transaction.
      * This is known to happen f.e. with php >= 8.0 and mysql, when the migration contains ddl statements, which
