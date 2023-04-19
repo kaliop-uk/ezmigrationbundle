@@ -539,7 +539,7 @@ interfaces have become required by existing classes in minor versions.
 - any change which might have a potential impact on developers _extending_ or _modifying_ the bundle should not happen
   in patch versions, but it might happen in minor versions. Any such change will only be made if there is a compelling
   reason to do so (ie. mostly because it is required to fix a bug or to make possible implementation of important new
-  functionality) and be documented in the NEWS file.
+  functionality) and be documented in the NEWS file
 
 
 ## Major version upgrades

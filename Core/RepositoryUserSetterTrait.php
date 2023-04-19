@@ -13,8 +13,8 @@ trait RepositoryUserSetterTrait
     /**
      * Helper method to log in a user that can make changes to the system.
      * @param int|string|false $userLoginOrId a user login or user-id. If *false* is passed in, current user is not changed and false is returned
-     * @return int|false id of the previously logged in user
-     * @throws InvalidAdminUserException
+     * @return int|false id of the previously logged-in user. False when false is passed in.
+     * @throws InvalidUserAccountException
      */
     protected function loginUser($userLoginOrId)
     {

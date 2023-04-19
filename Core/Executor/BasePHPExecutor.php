@@ -89,6 +89,7 @@ abstract class BasePHPExecutor extends AbstractExecutor
         $result = null;
         try {
             $result = call_user_func_array($callable, $args);
+        /// @todo catch \Throwable
         } catch (\Exception $exception) {
             $this->handleException($exception, $dsl);
         }
