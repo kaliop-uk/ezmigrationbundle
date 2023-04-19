@@ -26,9 +26,11 @@ use Kaliop\eZMigrationBundle\API\Event\MigrationSuspendedEvent;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/// @todo replace transaction-manager trait with a transaction-manager service
 class MigrationService implements ContextProviderInterface
 {
     use RepositoryUserSetterTrait;
+    use TransactionManagerTrait;
 
     /**
      * The default Admin user Id, used when no Admin user is specified
@@ -50,8 +52,6 @@ class MigrationService implements ContextProviderInterface
 
     /** @var ExecutorInterface[] $executors */
     protected $executors = array();
-
-    protected $repository;
 
     protected $dispatcher;
 
@@ -352,15 +352,15 @@ class MigrationService implements ContextProviderInterface
     protected function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
         $migrationContext, $stepOffset = 0, $useTransaction = true, $adminLogin = null)
     {
-        // BC: handling of legacy method call signature
-        $useTransaction = array_key_exists('useTransaction', $migrationContext) ? $migrationContext['useTransaction'] : $useTransaction;
-        $adminLogin = array_key_exists('adminLogin', $migrationContext) ? $migrationContext['adminLogin'] : $adminLogin;
-
-        /// @todo cane we make this validation smarter / move it somewhere else?
+        /// @todo can we make this validation smarter / move it somewhere else?
         if (array_key_exists('path', $migrationContext) || array_key_exists('contentTypeIdentifier', $migrationContext) ||
             array_key_exists('fieldIdentifier', $migrationContext)) {
             throw new MigrationBundleException("Invalid call to executeMigrationInner: forbidden elements in migrationContext");
         }
+
+        // BC: handling of legacy method call signature
+        $useTransaction = array_key_exists('useTransaction', $migrationContext) ? $migrationContext['useTransaction'] : true;
+        $adminLogin = array_key_exists('adminLogin', $migrationContext) ? $migrationContext['adminLogin'] : null;
 
         $messageSuffix = '';
         if (isset($migrationContext['forcedReferences']) && count($migrationContext['forcedReferences'])) {
@@ -372,22 +372,39 @@ class MigrationService implements ContextProviderInterface
             $messageSuffix = 'Injected references: ' . implode(', ', $messageSuffix);
         }
 
-        if ($useTransaction) {
-            $this->repository->beginTransaction();
-        }
-
         $this->migrationContext[$migration->name] = array('context' => $migrationContext);
-        $previousUserId = null;
+
         $steps = array_slice($migrationDefinition->steps->getArrayCopy(), $stepOffset);
+        $i = $stepOffset+1;
+        $finalStatus = Migration::STATUS_DONE;
+        $finalMessage = '';
+        $error = null;
+        $isCommitting = false;
+        $requires = null;
 
         try {
 
-            $i = $stepOffset+1;
-            $finalStatus = Migration::STATUS_DONE;
-            $finalMessage = '';
+            if ($useTransaction) {
+                /// @todo in case there is already a db transaction running, we should throw - or at least
+                ///       give a warning
+                try {
+                    $this->beginTransaction();
+                    $requires = 'commit';
+                } catch (\Exception $e) {
+                    $finalStatus = Migration::STATUS_FAILED;
+                    $finalMessage = 'An exception was thrown while starting the transaction before the migration: ' . $this->getFullExceptionMessage($e, true);
+                    /// @todo use a more specific exception?
+                    $error = new MigrationBundleException($finalMessage, 0, $e);
+                    $steps = array();
+                }
+            }
+
+            if ($steps) {
+                /// @todo catch errors thrown here
+                $startTransactionLevel = $this->getDBTransactionNestingLevel();
+            }
 
             try {
-
                 foreach ($steps as $step) {
                     // save enough data in the context to be able to successfully suspend/resume
                     $this->migrationContext[$migration->name]['step'] = $i;
@@ -421,6 +438,18 @@ class MigrationService implements ContextProviderInterface
 
                 $finalStatus = $e->getCode();
                 $finalMessage = "Abort in execution of step $i: " . $e->getMessage();
+
+                /// @todo we should allow another type of migration aborting: one which forces rollback of changes, and
+                ///       possibly exits execution with a non-zero code.
+                ///       Atm it can be achieved by throwing any exception, which is easy to do in php but hard in yml...
+                ///       Eg. distinguish between STATUS_PARTIALLY_DONE and STATUS_FAILED
+                /*if ($e->getCode() == Migration::STATUS_FAILED) {
+                    $error = $e;
+                    if ($requires == 'commit') {
+                        $requires = 'rollback';
+                    }
+                }*/
+
             } catch (MigrationSuspendedException $e) {
                 // allow a migration step (or events) to suspend the migration via a specific exception
 
@@ -431,84 +460,160 @@ class MigrationService implements ContextProviderInterface
 
                 $finalStatus = Migration::STATUS_SUSPENDED;
                 $finalMessage = "Suspended in execution of step $i: " . $e->getMessage();
+
+            } catch (\Exception $e) {
+                /// @todo shall we emit a signal as well?
+
+                if ($requires == 'commit') {
+                    $requires = 'rollback';
+                }
+
+                $finalStatus = Migration::STATUS_FAILED;
+                $finalMessage = $this->getFullExceptionMessage($e, true);
+                $error = new MigrationStepExecutionException($finalMessage, $i, $e);
+                $finalMessage = $error->getMessage();
             }
 
-            $finalMessage = ($finalMessage != '' && $messageSuffix != '') ? $finalMessage . '. '. $messageSuffix : $finalMessage . $messageSuffix;
+            /// @todo this test only works if the transaction left pending was opened using the PDO connection.
+            ///       If it was opened by a stray/unterminated sql `begin`, it will not be detected, and most likely
+            ///       throw an error later when we try to save the migration status (unless the migration is run
+            ///       with $useTransaction, in which case the pending transaction just gets committed).
+            ///       We could try to use PDO::inTransaction to check for pending transactions, but we'd
+            ///       have to first check if it behaves the same way across all db/php-version combinations...
+            if ($steps && ($pendingTransactionLevel = $this->getDBTransactionNestingLevel() - $startTransactionLevel) > 0) {
+                // a migration step has opened a transaction and forgotten to close it! For safety, we have to roll back
 
-            // in case we have an exception thrown in the commit phase after the last step, make sure we report the correct step
-            $i--;
-
-            // set migration as done
-            $this->storageHandler->endMigration(new Migration(
-                $migration->name,
-                $migration->md5,
-                $migration->path,
-                $migration->executionDate,
-                $finalStatus,
-                $finalMessage
-            ));
-
-            if ($useTransaction) {
-                // there might be workflows or other actions happening at commit time that fail if we are not admin
-                $previousUserId = $this->loginUser($this->getAdminUserIdentifier($adminLogin));
-
-                $this->repository->commit();
-                $this->loginUser($previousUserId);
+                // remove extra transaction levels
+                for ($i = 0; $i < $pendingTransactionLevel; $i++) {
+                    /// @todo catch errors thrown here
+                    $this->rollbackDBTransaction();
+                }
+                // if there was a transaction added by ourselves, let it be rolled back
+                if ($requires == 'commit') {
+                    $requires = 'rollback';
+                }
+                // mark the migration as failed
+                $finalStatus = Migration::STATUS_FAILED;
+                if ($error) {
+                    /// @todo re-inject the new message into $error
+                    $finalMessage .= '. In addition, the migration had left a database transaction pending';
+                } else {
+                    // it would be nice to tell the user which step actually has opened the transaction left dangling,
+                    // but that could be complicated, taking into account the case of migrations starting a transaction
+                    // in step X and closing it in step Y, as well as for the possibility of exceptions being thrown
+                    // halfway through a step
+                    $finalMessage = 'The migration was rolled back because it had left a database transaction pending';
+                    $error = new MigrationBundleException($finalMessage);
+                }
             }
 
-        } catch (\Exception $e) {
-            /// @todo shall we emit a signal as well?
+            /// @todo in the same way that we check for migration steps having left a pending transaction in the code
+            ///       block above, we could check if any transaction has changed the currently logged-in user, and roll
+            ///       that back, too
 
-            $errorMessage = $this->getFullExceptionMessage($e) . ' in file ' . $e->getFile() . ' line ' . $e->getLine();
-            $finalStatus = Migration::STATUS_FAILED;
-            $exception = null;
-
-            if ($useTransaction) {
+            // in case we are wrapping the migration in a transaction, either commit or roll back
+            if ($requires == 'commit') {
                 try {
-                    // cater to the case where the $this->repository->commit() call above throws an exception
+                    // there might be workflows or other actions happening at commit time that fail if we are not admin
+                    // when committing
+                    $previousUserId = null;
+                    $previousUserId = $this->loginUser($this->getAdminUserIdentifier($adminLogin));
+
+                    // Note that the repository by design does first execute a db commit, then carries out some other stuff,
+                    // such as f.e. sending data to Solr. It is useful to differentiate between errors thrown during the
+                    // two phases, as the end results are very different in the db, but it is hard to do so by looking
+                    // into the exception that gets thrown here. So we just mark the transaction for rollback in case an
+                    // error occurs, and check what happens during rollback later on.
+                    $isCommitting = true;
+                    $this->commit();
+                    $isCommitting = false;
+                } catch (\Exception $e) {
+                    // When running some DDL queries, some databases (eg. mysql, oracle) do commit any pending transaction.
+                    // Since php 8.0, the PDO driver does properly take that into account, and throws an exception
+                    // when we try to commit here. Short of analyzing any executed migration step checking for execution
+                    // of DDL, all we can do is swallow the error.
+                    // NB: what we get is a chain: RuntimeException/RuntimeException/PDOException. Should we validate it fully?
+                    if ($e instanceof \RuntimeException && $e->getMessage() == 'There is no active transaction') {
+                        $isCommitting = false;
+                        $this->resetDBTransaction();
+                        // save a warning in the migration status
+                        $finalMessage = 'Some migration step committed the transaction halfway';
+                    } else {
+                        $finalStatus = Migration::STATUS_FAILED;
+                        $finalMessage = 'An exception was thrown while committing: ' . $this->getFullExceptionMessage($e, true);
+                        $requires = 'rollback';
+                        /// @todo use a more specific exception?
+                        $error = new MigrationBundleException($finalMessage, 0, $e);
+                    }
+                } finally {
+                    /// @todo wrap any (unlikely) exception from this call in an AfterMigrationExecutionException
                     if ($previousUserId) {
                         $this->loginUser($previousUserId);
-                    }
-
-                    // there is no need to become admin here, at least in theory
-                    $this->repository->rollBack();
-
-                } catch (\Exception $e2) {
-                    // This check is not rock-solid, but at the moment is all we can do to tell apart 2 cases of
-                    // exceptions originating above: the case where the commit was successful but handling of a commit-queue
-                    // signal failed, from the case where something failed beforehand.
-                    // Known cases for signals failing at commit time include fe. https://jira.ez.no/browse/EZP-29333
-                    if ($previousUserId && $e2->getMessage() == 'There is no active transaction.') {
-                        // since the migration succeeded and it was committed, no use to mark it as failed...
-                        $finalStatus = Migration::STATUS_DONE;
-                        $errorMessage = 'An exception was thrown after committing, in file ' .
-                            $e->getFile() . ' line ' . $e->getLine() . ': ' . $this->getFullExceptionMessage($e);
-                        $exception = new AfterMigrationExecutionException($errorMessage, $i, $e);
-                    } else {
-                        $errorMessage .= '. In addition, an exception was thrown while rolling back, in file ' .
-                            $e2->getFile() . ' line ' . $e2->getLine() . ': ' . $this->getFullExceptionMessage($e2);
                     }
                 }
             }
 
-            $errorMessage = ($errorMessage != '' && $messageSuffix != '') ? $errorMessage . '. '. $messageSuffix : $errorMessage . $messageSuffix;
+            if ($requires == 'rollback') {
+                try {
+                    // there is no need to be admin here, at least in theory
+                    $this->rollBack();
+                } catch (\Exception $e) {
+                    // This check is not rock-solid, but at the moment is the best we can do to tell apart 2 cases of
+                    // exceptions originating above during commit: the case where the commit was successful but handling
+                    // of a commit-queue signal failed, from the case where something failed beforehand.
+                    // Known cases for signals failing at commit time include fe. https://jira.ez.no/browse/EZP-29333
+                    if ($isCommitting && $e instanceof \RuntimeException && $e->getMessage() == 'There is no active transaction') {
+                        // since all the migration steps succeeded and it was committed (because there was nothing to roll back),
+                        // no use to mark it as failed...
+                        $finalStatus = Migration::STATUS_DONE;
+                        $finalMessage = 'An exception was thrown after committing, in file: ' .
+                            $this->getFullExceptionMessage($error, true);
+                        $error = new AfterMigrationExecutionException($finalMessage, 0, $e);
+                    } else {
+                        $finalMessage .= '. In addition, an exception was thrown while rolling back, in file ' .
+                            $e->getFile() . ' line ' . $e->getLine() . ': ' . $e->getMessage();
+                        $errorClass = get_class($error);
+                        // we trust the constructor to be fine as error should only be a subclass of MigrationBundleException
+                        $error = new $errorClass($finalMessage, $error->getCode(), $error->getPrevious());
+                    }
+                }
+            }
 
-            // set migration as failed
-            // NB: we use the 'force' flag here because we might be catching an exception happened during the call to
-            // $this->repository->commit() above, in which case the Migration might already be in the DB with a status 'done'
-            $this->storageHandler->endMigration(
-                new Migration(
+        } finally {
+
+            // save migration status
+
+            $finalMessage = ($finalMessage != '' && $messageSuffix != '') ? $finalMessage . '. '. $messageSuffix : $finalMessage . $messageSuffix;
+
+            try {
+                $this->storageHandler->endMigration(new Migration(
                     $migration->name,
                     $migration->md5,
                     $migration->path,
                     $migration->executionDate,
                     $finalStatus,
-                    $errorMessage
-                ),
-                true
-            );
+                    $finalMessage
+                ));
+            } catch (\Exception $e) {
+                // If we get here, the migration will be left in 'executing' state. It might be worth re-trying
+                // to store its status for a couple of times, in case the error is transient, but that would
+                // overcomplicate the business logic. So we at least give to the end user a specific error message
 
-            throw ($exception ? $exception : new MigrationStepExecutionException($errorMessage, $i, $e));
+                if ($error) {
+                    /// @todo use a more specific exception
+                    $errorMessage = $finalMessage . '. In addition, an exception was thrown while saving migration status after its execution, in file ' .
+                        $e->getFile() . ' line ' . $e->getLine() . ': ' . $e->getMessage();
+                    $error = new MigrationBundleException($errorMessage, 0, $e);
+                } else {
+                    $errorMessage = 'An exception was thrown while saving migration status after its execution: ' .
+                        $this->getFullExceptionMessage($e, true);
+                    $error = new AfterMigrationExecutionException($errorMessage, 0, $e);
+                }
+            }
+
+            if ($error) {
+                throw $error;
+            }
         }
     }
 

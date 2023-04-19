@@ -2,7 +2,7 @@
 
 include_once(__DIR__.'/CommandExecutingTest.php');
 
-use Symfony\Component\Console\Input\ArrayInput;
+use Kaliop\eZMigrationBundle\API\Value\Migration;
 
 abstract class MigrationExecutingTest extends CommandExecutingTest
 {
@@ -68,5 +68,42 @@ abstract class MigrationExecutingTest extends CommandExecutingTest
         // Make sure migration is not in the db: delete it, ignoring errors
         $this->deleteMigration($filePath, false);
         $this->addMigration($filePath);
+    }
+
+
+    protected function executeMigration($filePath, $flags = array(), $expectedStatus = Migration::STATUS_DONE, $checkExitCode = true)
+    {
+        $output = $this->runCommand(
+            'kaliop:migration:migrate',
+            array_merge($flags, ['--path' => [$filePath], '-n' => true]),
+            $checkExitCode
+        );
+
+        $this->assertRegexp('?Processing ' . preg_quote(basename($filePath), '?') . '?', $output);
+
+        $ms = $this->getBootedContainer()->get('ez_migration_bundle.migration_service');
+        $m = $ms->getMigration(basename($filePath));
+
+        if ($expectedStatus !== false && $expectedStatus !== null) {
+            $this->assertEquals($m->status, $expectedStatus, 'Migration in unexpected state after execution');
+        }
+
+        return $m;
+    }
+
+    /**
+     * Run a migration, checking that it executes ok, then remove it from the migrations table
+     * @param string $filePath
+     * @param array $flags
+     * @param null|int $expectedStatus
+     * @return Migration
+     * @throws \Exception
+     */
+    protected function runMigration($filePath, $flags = array(), $expectedStatus = Migration::STATUS_DONE, $checkExitCode = true)
+    {
+        $this->prepareMigration($filePath);
+        $m = $this->executeMigration($filePath, $flags, $expectedStatus, $checkExitCode);
+        $this->deleteMigration($filePath);
+        return $m;
     }
 }

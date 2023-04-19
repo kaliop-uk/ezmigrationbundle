@@ -1,0 +1,7 @@
+-
+    type: 'sql'
+    mysql: 'insert into ezmb_test_table_2 values (1);'
+
+-
+    type: 'sql'
+    mysql: "insert into ezmb_test_table_2 values ('hello', 'world');"

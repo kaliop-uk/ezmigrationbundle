@@ -1,0 +1,7 @@
+-
+    type: 'sql'
+    mysql: 'drop table if exists ezmb_test_table_2;'
+
+-
+    type: 'sql'
+    mysql: 'create table ezmb_test_table_2 (id integer);'

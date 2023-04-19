@@ -1,0 +1,20 @@
+-
+    type: sql
+    mode: query
+    mysql: "SELECT * FROM ezmb_test_table_2"
+    expect: any
+    references:
+        -   identifier: kmb_test_102
+            attribute: count
+
+#-
+#    type: reference
+#    mode: dump
+#    identifier: reference:kmb_test_102
+
+-
+    type: assert
+    target: reference
+    identifier: reference:kmb_test_102
+    test:
+        equals: 0
