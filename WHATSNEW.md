@@ -111,7 +111,7 @@ Version 6.1.0
                   - content_type_identifier: file
                   - attribute: {'file': empty}
 
-* New: command `k:m:migration` learned action `--fail`. It should be used sparingly, only to set manully to failed status
+* New: command `k:m:migration` learned action `--fail`. It should be used sparingly, only to set manually to failed status
   migrations which for any reason got stuck in an incorrect status, f.e. those which are still listed as `executing`
   after the corresponding process is terminated
 
