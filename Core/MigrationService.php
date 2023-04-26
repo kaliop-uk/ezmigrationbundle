@@ -333,6 +333,9 @@ class MigrationService implements ContextProviderInterface
         }
         $forceExecution = array_key_exists('forceExecution', $migrationContext) ? $migrationContext['forceExecution'] : false;
 
+        /// @todo log a warning if there are already db transactions active (an active pdo-only transaction will result in an
+        ///       exception, but a dbal transaction will result in not committing immediately transaction status update)
+
         // set migration as begun - has to be in own db transaction
         $migration = $this->storageHandler->startMigration($migrationDefinition, $forceExecution);
 
@@ -359,8 +362,8 @@ class MigrationService implements ContextProviderInterface
         }
 
         // BC: handling of legacy method call signature
-        $useTransaction = array_key_exists('useTransaction', $migrationContext) ? $migrationContext['useTransaction'] : true;
-        $adminLogin = array_key_exists('adminLogin', $migrationContext) ? $migrationContext['adminLogin'] : null;
+        $useTransaction = array_key_exists('useTransaction', $migrationContext) ? $migrationContext['useTransaction'] : $useTransaction;
+        $adminLogin = array_key_exists('adminLogin', $migrationContext) ? $migrationContext['adminLogin'] : $adminLogin;
 
         $messageSuffix = '';
         if (isset($migrationContext['forcedReferences']) && count($migrationContext['forcedReferences'])) {
