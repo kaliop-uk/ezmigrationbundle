@@ -1,3 +1,23 @@
+Version: 6.3.3
+==============
+
+* Fixed: exception thrown at end of migration if the migration steps include sql executing transaction commits
+
+* Fixed: correctly abort a migration when it leaves a database transaction pending (nb: this can be detected
+  only for transactions started using Doctrine, not for transactions started using sql `begin` statements)
+
+* Improved: reporting of errors happening before/during/after migration execution, esp. anything related to transactions
+
+* Improved: when generating migrations, try harder to reset the repository to the originally connected user in case of
+  exceptions being thrown
+
+BC notes (for developers extending the bundle):
+
+* `MigrationService::getFullExceptionMessage` gained a 2nd parameter: `$addLineNumber = false`
+* `AfterMigrationExecutionException` produces a different error message when passed `0` for the `$step` parameter
+* service `ez_migration_bundle.migration_service` requires an added `setConnection` call in its definition
+
+
 Version: 6.3.2
 ==============
 
