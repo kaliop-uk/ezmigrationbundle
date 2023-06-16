@@ -349,7 +349,7 @@ class MigrationService implements ContextProviderInterface
      * @param array $migrationContext
      * @param int $stepOffset
      * @param bool $useTransaction Deprecated - replaced by $migrationContext['useTransaction']. When set to false, no repo transaction will be used to wrap the migration
-     * @param string|int|false|null $adminLogin Deprecated - $migrationContext['adminLogin']. Used only for committing db transaction if needed. If false or null, hardcoded admin is used
+     * @param string|int|false|null $adminLogin Deprecated - $migrationContext['adminUserLogin']. Used only for committing db transaction if needed. If false or null, hardcoded admin is used
      * @throws \Exception
      */
     protected function executeMigrationInner(Migration $migration, MigrationDefinition $migrationDefinition,
@@ -363,7 +363,7 @@ class MigrationService implements ContextProviderInterface
 
         // BC: handling of legacy method call signature
         $useTransaction = array_key_exists('useTransaction', $migrationContext) ? $migrationContext['useTransaction'] : $useTransaction;
-        $adminLogin = array_key_exists('adminLogin', $migrationContext) ? $migrationContext['adminLogin'] : $adminLogin;
+        $adminLogin = array_key_exists('adminUserLogin', $migrationContext) ? $migrationContext['adminUserLogin'] : $adminLogin;
 
         $messageSuffix = '';
         if (isset($migrationContext['forcedReferences']) && count($migrationContext['forcedReferences'])) {

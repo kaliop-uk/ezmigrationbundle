@@ -1,3 +1,9 @@
+Version: 6.3.4
+==============
+
+* Fixed: the `--admin-login` option had been broken for `migrate` commands since version 6.3.0
+
+
 Version: 6.3.3
 ==============
 
